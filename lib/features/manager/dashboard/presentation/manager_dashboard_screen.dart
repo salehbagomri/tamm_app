@@ -39,7 +39,7 @@ class ManagerDashboardScreen extends ConsumerWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 1.6,
+                  childAspectRatio: 1.35,
                   children: [
                     _StatCard(
                       label: 'معلق',
@@ -172,7 +172,7 @@ class _StatCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, color: color, size: 24),
-          const Spacer(),
+          const SizedBox(height: 8),
           Text(
             value,
             style: GoogleFonts.harmattan(

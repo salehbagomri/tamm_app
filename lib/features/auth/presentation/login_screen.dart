@@ -16,23 +16,57 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _loading = false;
+  bool _isSignUp = false;
 
-  Future<void> _sendOtp() async {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
     try {
-      final phone = '+967${_phoneController.text.trim()}';
-      await ref.read(authRepositoryProvider).sendOtp(phone);
-      if (mounted) context.push('/otp', extra: phone);
+      final repo = ref.read(authRepositoryProvider);
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+
+      if (_isSignUp) {
+        await repo.signUp(
+          email,
+          password,
+          _nameController.text.trim(),
+          _phoneController.text.trim(),
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تم إنشاء الحساب بنجاح! سجل دخولك الآن'),
+            ),
+          );
+          setState(() => _isSignUp = false);
+        }
+      } else {
+        await repo.signIn(email, password);
+        final profile = await repo.getProfile();
+        if (!mounted) return;
+
+        switch (profile?.role) {
+          case 'manager':
+            context.go('/manager/dashboard');
+          case 'technician':
+            context.go('/technician/tasks');
+          default:
+            context.go('/customer/home');
+        }
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('حدث خطأ: ${e.toString()}')));
+        ).showSnackBar(SnackBar(content: Text('خطأ: ${e.toString()}')));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -48,75 +82,122 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [AppColors.bluePrimary, AppColors.blueLight],
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 80),
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [AppColors.bluePrimary, AppColors.blueLight],
+                      ),
                     ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'تمّ',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                    child: Center(
+                      child: Text(
+                        'تمّ',
+                        style: GoogleFonts.harmattan(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                Text(
-                  AppStrings.welcome,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                  const SizedBox(height: 32),
+                  Text(
+                    AppStrings.welcome,
+                    style: GoogleFonts.harmattan(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  AppStrings.welcomeSub,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    color: AppColors.textSecond,
+                  const SizedBox(height: 8),
+                  Text(
+                    AppStrings.welcomeSub,
+                    style: GoogleFonts.harmattan(
+                      fontSize: 16,
+                      color: AppColors.textSecond,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 48),
-                TammTextField(
-                  label: AppStrings.enterPhone,
-                  hint: AppStrings.phoneHint,
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  prefix: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  const SizedBox(height: 48),
+
+                  if (_isSignUp) ...[
+                    TammTextField(
+                      label: 'الاسم الكامل',
+                      hint: 'مثال: صالح عمر',
+                      controller: _nameController,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return 'أدخل الاسم الكامل';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TammTextField(
+                      label: 'رقم الجوال',
+                      hint: 'مثال: 777123456',
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return 'أدخل رقم الجوال';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  TammTextField(
+                    label: 'البريد الإلكتروني',
+                    hint: 'example@email.com',
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (v) {
+                      if (v == null || v.isEmpty)
+                        return 'أدخل البريد الإلكتروني';
+                      if (!v.contains('@')) return 'بريد إلكتروني غير صحيح';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  TammTextField(
+                    label: 'كلمة المرور',
+                    hint: '••••••••',
+                    controller: _passwordController,
+                    obscureText: true,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return 'أدخل كلمة المرور';
+                      if (v.length < 6)
+                        return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 32),
+
+                  TammButton(
+                    label: _isSignUp ? 'إنشاء حساب' : 'دخول',
+                    isLoading: _loading,
+                    onPressed: _submit,
+                  ),
+                  const SizedBox(height: 16),
+
+                  TextButton(
+                    onPressed: () => setState(() => _isSignUp = !_isSignUp),
                     child: Text(
-                      '967+',
+                      _isSignUp
+                          ? 'لديك حساب؟ سجل دخول'
+                          : 'ليس لديك حساب؟ أنشئ حساب',
                       style: GoogleFonts.harmattan(
                         fontSize: 16,
-                        color: AppColors.textSecond,
+                        color: AppColors.blueLight,
                       ),
                     ),
                   ),
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'أدخل رقم الجوال';
-                    if (v.length < 9) return 'رقم الجوال غير صحيح';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-                TammButton(
-                  label: AppStrings.loginBtn,
-                  isLoading: _loading,
-                  onPressed: _sendOtp,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -126,6 +207,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
     _phoneController.dispose();
     super.dispose();
   }

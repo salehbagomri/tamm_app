@@ -4,17 +4,25 @@ import '../models/user_profile.dart';
 class AuthRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
-  /// إرسال OTP لرقم الجوال
-  Future<void> sendOtp(String phone) async {
-    await _client.auth.signInWithOtp(phone: phone);
+  /// تسجيل حساب جديد بالإيميل وكلمة المرور بالإضافة للاسم ورقم الجوال
+  Future<AuthResponse> signUp(
+    String email,
+    String password,
+    String fullName,
+    String phone,
+  ) async {
+    return await _client.auth.signUp(
+      email: email,
+      password: password,
+      data: {'full_name': fullName, 'phone': phone},
+    );
   }
 
-  /// التحقق من OTP
-  Future<AuthResponse> verifyOtp(String phone, String otp) async {
-    return await _client.auth.verifyOTP(
-      phone: phone,
-      token: otp,
-      type: OtpType.sms,
+  /// تسجيل دخول بالإيميل وكلمة المرور
+  Future<AuthResponse> signIn(String email, String password) async {
+    return await _client.auth.signInWithPassword(
+      email: email,
+      password: password,
     );
   }
 
