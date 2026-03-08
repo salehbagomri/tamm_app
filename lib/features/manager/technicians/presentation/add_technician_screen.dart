@@ -114,8 +114,10 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                     padding: const EdgeInsets.only(top: 28.0),
                     child: SizedBox(
                       height: 52,
+                      width: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
                           backgroundColor: AppColors.bluePrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: AppSpacing.radius,
