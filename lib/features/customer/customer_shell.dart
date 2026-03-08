@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/widgets/tamm_bottom_nav.dart';
+import '../../shared/providers/auth_providers.dart';
+import '../../shared/providers/product_providers.dart';
+import '../../shared/providers/service_providers.dart';
+import '../../shared/providers/order_providers.dart';
 
-class CustomerShell extends StatelessWidget {
+class CustomerShell extends ConsumerWidget {
   final Widget child;
   const CustomerShell({super.key, required this.child});
 
@@ -16,7 +21,7 @@ class CustomerShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: child,
       bottomNavigationBar: TammBottomNav(
@@ -24,12 +29,18 @@ class CustomerShell extends StatelessWidget {
         onTap: (i) {
           switch (i) {
             case 0:
+              ref.invalidate(userProfileProvider);
+              ref.invalidate(featuredProductsProvider);
               context.go('/customer/home');
             case 1:
+              ref.invalidate(productsProvider);
               context.go('/customer/store');
             case 2:
+              ref.invalidate(serviceTypesProvider);
               context.go('/customer/services');
             case 3:
+              ref.invalidate(userProfileProvider);
+              ref.invalidate(myOrdersProvider);
               context.go('/customer/profile');
           }
         },

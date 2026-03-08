@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/widgets/tamm_bottom_nav.dart';
+import '../../shared/providers/auth_providers.dart';
+import '../../shared/providers/technician_providers.dart';
 
-class TechnicianShell extends StatelessWidget {
+class TechnicianShell extends ConsumerWidget {
   final Widget child;
   const TechnicianShell({super.key, required this.child});
   int _idx(BuildContext c) {
@@ -13,7 +16,7 @@ class TechnicianShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: child,
       bottomNavigationBar: TammBottomNav(
@@ -21,8 +24,10 @@ class TechnicianShell extends StatelessWidget {
         onTap: (i) {
           switch (i) {
             case 0:
+              ref.invalidate(myAssignmentsProvider);
               context.go('/technician/tasks');
             case 1:
+              ref.invalidate(userProfileProvider);
               context.go('/technician/profile');
           }
         },
