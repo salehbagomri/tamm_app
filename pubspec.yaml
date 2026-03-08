@@ -1,0 +1,66 @@
+name: tamm_app
+description: "تمّ — تطبيق خدمات التكييف والطاقة الشمسية"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State Management
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # Navigation
+  go_router: ^13.2.0
+
+  # Backend
+  supabase_flutter: ^2.5.0
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # Local Storage
+  shared_preferences: ^2.2.3
+  flutter_secure_storage: ^9.0.0
+
+  # UI
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  flutter_svg: ^2.0.10+1
+  lottie: ^3.1.0
+
+  # Utils
+  intl: any
+  uuid: ^4.4.0
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.1
+  url_launcher: ^6.3.0
+
+  # Forms & Validation
+  reactive_forms: ^17.0.1
+
+  # Annotations (needed at runtime)
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  riverpod_generator: ^2.4.3
+  build_runner: ^2.4.9
+  json_serializable: ^6.8.0
+  freezed: ^2.5.2
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/lottie/

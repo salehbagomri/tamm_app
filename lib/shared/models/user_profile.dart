@@ -1,0 +1,50 @@
+class UserProfile {
+  final String id;
+  final String fullName;
+  final String phone;
+  final String role; // customer, manager, technician
+  final String? avatarUrl;
+  final String? address;
+  final String city;
+  final DateTime createdAt;
+
+  const UserProfile({
+    required this.id,
+    required this.fullName,
+    required this.phone,
+    required this.role,
+    this.avatarUrl,
+    this.address,
+    this.city = 'صنعاء',
+    required this.createdAt,
+  });
+
+  factory UserProfile.fromMap(Map<String, dynamic> map) {
+    return UserProfile(
+      id: map['id'] as String,
+      fullName: map['full_name'] as String? ?? '',
+      phone: map['phone'] as String? ?? '',
+      role: map['role'] as String? ?? 'customer',
+      avatarUrl: map['avatar_url'] as String?,
+      address: map['address'] as String?,
+      city: map['city'] as String? ?? 'صنعاء',
+      createdAt: DateTime.parse(map['created_at'] as String),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'full_name': fullName,
+      'phone': phone,
+      'role': role,
+      'avatar_url': avatarUrl,
+      'address': address,
+      'city': city,
+    };
+  }
+
+  bool get isCustomer => role == 'customer';
+  bool get isManager => role == 'manager';
+  bool get isTechnician => role == 'technician';
+}
