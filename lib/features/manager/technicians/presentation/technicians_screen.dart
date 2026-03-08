@@ -38,78 +38,88 @@ class TechniciansScreen extends ConsumerWidget {
                         icon: Icons.engineering,
                         message: 'لا يوجد فنيون',
                       );
-                    return ListView.separated(
-                      itemCount: techs.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
-                      itemBuilder: (_, i) {
-                        final t = techs[i];
-                        final p = t['profiles'] as Map<String, dynamic>?;
-                        return TammCard(
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: AppColors.blueDark,
-                                child: Text(
-                                  p?['full_name']?.toString().isNotEmpty == true
-                                      ? p!['full_name'][0]
-                                      : '?',
-                                  style: GoogleFonts.harmattan(
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      p?['full_name'] ?? '',
-                                      style: GoogleFonts.harmattan(
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
-                                      ),
-                                    ),
-                                    Text(
-                                      t['specialization'] ?? '',
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 14,
-                                        color: AppColors.textSecond,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: t['status'] == 'available'
-                                      ? AppColors.success.withValues(
-                                          alpha: 0.15,
-                                        )
-                                      : AppColors.warning.withValues(
-                                          alpha: 0.15,
-                                        ),
-                                  borderRadius: AppSpacing.radiusFull,
-                                ),
-                                child: Text(
-                                  t['status'] == 'available' ? 'متاح' : 'مشغول',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 12,
-                                    color: t['status'] == 'available'
-                                        ? AppColors.success
-                                        : AppColors.warning,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        ref.invalidate(techniciansProvider);
                       },
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: techs.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (_, i) {
+                          final t = techs[i];
+                          final p = t['profiles'] as Map<String, dynamic>?;
+                          return TammCard(
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: AppColors.blueDark,
+                                  child: Text(
+                                    p?['full_name']?.toString().isNotEmpty ==
+                                            true
+                                        ? p!['full_name'][0]
+                                        : '?',
+                                    style: GoogleFonts.harmattan(
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        p?['full_name'] ?? '',
+                                        style: GoogleFonts.harmattan(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                      Text(
+                                        t['specialization'] ?? '',
+                                        style: GoogleFonts.harmattan(
+                                          fontSize: 14,
+                                          color: AppColors.textSecond,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: t['status'] == 'available'
+                                        ? AppColors.success.withValues(
+                                            alpha: 0.15,
+                                          )
+                                        : AppColors.warning.withValues(
+                                            alpha: 0.15,
+                                          ),
+                                    borderRadius: AppSpacing.radiusFull,
+                                  ),
+                                  child: Text(
+                                    t['status'] == 'available'
+                                        ? 'متاح'
+                                        : 'مشغول',
+                                    style: GoogleFonts.harmattan(
+                                      fontSize: 12,
+                                      color: t['status'] == 'available'
+                                          ? AppColors.success
+                                          : AppColors.warning,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                   loading: () => const TammLoading(),

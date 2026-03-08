@@ -27,7 +27,12 @@ class TechnicianRepository {
   }
 
   Future<Map<String, dynamic>> getDashboardStats() async {
-    final today = DateTime.now().toIso8601String().split('T')[0];
+    final now = DateTime.now();
+    final startOfDay = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).toUtc().toIso8601String();
     final pending = await _client
         .from('orders')
         .select()
@@ -37,7 +42,7 @@ class TechnicianRepository {
         .from('orders')
         .select()
         .eq('status', 'completed')
-        .gte('updated_at', '${today}T00:00:00')
+        .gte('updated_at', startOfDay)
         .count(CountOption.exact);
     final inProgress = await _client
         .from('orders')

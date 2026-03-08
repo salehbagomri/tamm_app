@@ -8,6 +8,7 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/order_providers.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ManagerOrdersScreen extends ConsumerStatefulWidget {
   const ManagerOrdersScreen({super.key});
@@ -26,6 +27,33 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
     'in_progress': 'جاري',
     'completed': 'مكتمل',
   };
+
+  RealtimeChannel? _ordersChannel;
+
+  @override
+  void initState() {
+    super.initState();
+    // استماع للتغييرات الفورية في جدول الطلبات (Realtime)
+    _ordersChannel = Supabase.instance.client
+        .channel('public:orders_manager')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'orders',
+          callback: (payload) {
+            // تحديث الشاشة تلقائياً عند أي تغيير (إضافة، تعديل، حذف) بجدول الطلبات
+            ref.invalidate(allOrdersProvider(null));
+            ref.invalidate(allOrdersProvider(_statusFilter));
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    Supabase.instance.client.removeChannel(_ordersChannel!);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,83 +114,92 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                       icon: Icons.receipt_long_outlined,
                       message: 'لا توجد طلبات',
                     );
-                  return ListView.separated(
-                    padding: AppSpacing.pagePadding,
-                    itemCount: orders.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (_, i) {
-                      final o = orders[i];
-                      final customer = o.customerProfile;
-                      return TammCard(
-                        onTap: () => context.push('/manager/order/${o.id}'),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  o.orderNumber,
-                                  style: GoogleFonts.harmattan(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.bluePrimary.withValues(
-                                      alpha: 0.15,
-                                    ),
-                                    borderRadius: AppSpacing.radiusFull,
-                                  ),
-                                  child: Text(
-                                    o.statusLabel,
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 12,
-                                      color: AppColors.bluePrimary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            if (customer != null)
-                              Text(
-                                customer['full_name'] ?? '',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 14,
-                                  color: AppColors.textSecond,
-                                ),
-                              ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  o.address,
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 13,
-                                    color: AppColors.textFaint,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  '${o.totalAmount.toInt()} ريال',
-                                  style: GoogleFonts.harmattan(
-                                    color: AppColors.blueSky,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(allOrdersProvider(null));
+                      ref.invalidate(allOrdersProvider(_statusFilter));
                     },
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: AppSpacing.pagePadding,
+                      itemCount: orders.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (_, i) {
+                        final o = orders[i];
+                        final customer = o.customerProfile;
+                        return TammCard(
+                          onTap: () => context.push('/manager/order/${o.id}'),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    o.orderNumber,
+                                    style: GoogleFonts.harmattan(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.bluePrimary.withValues(
+                                        alpha: 0.15,
+                                      ),
+                                      borderRadius: AppSpacing.radiusFull,
+                                    ),
+                                    child: Text(
+                                      o.statusLabel,
+                                      style: GoogleFonts.harmattan(
+                                        fontSize: 12,
+                                        color: AppColors.bluePrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              if (customer != null)
+                                Text(
+                                  customer['full_name'] ?? '',
+                                  style: GoogleFonts.harmattan(
+                                    fontSize: 14,
+                                    color: AppColors.textSecond,
+                                  ),
+                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    o.address,
+                                    style: GoogleFonts.harmattan(
+                                      fontSize: 13,
+                                      color: AppColors.textFaint,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    '${o.totalAmount.toInt()} ريال',
+                                    style: GoogleFonts.harmattan(
+                                      color: AppColors.blueSky,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   );
                 },
                 loading: () => const TammLoading(),

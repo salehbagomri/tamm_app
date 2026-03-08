@@ -10,150 +10,205 @@ import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 
-class ManagerDashboardScreen extends ConsumerWidget {
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class ManagerDashboardScreen extends ConsumerStatefulWidget {
   const ManagerDashboardScreen({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ManagerDashboardScreen> createState() =>
+      _ManagerDashboardScreenState();
+}
+
+class _ManagerDashboardScreenState
+    extends ConsumerState<ManagerDashboardScreen> {
+  RealtimeChannel? _dashboardChannel;
+
+  @override
+  void initState() {
+    super.initState();
+    _dashboardChannel = Supabase.instance.client
+        .channel('public:dashboard')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'orders',
+          callback: (_) {
+            ref.invalidate(dashboardStatsProvider);
+            ref.invalidate(allOrdersProvider(null));
+          },
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'assignments',
+          callback: (_) {
+            ref.invalidate(dashboardStatsProvider);
+            ref.invalidate(allOrdersProvider(null));
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    Supabase.instance.client.removeChannel(_dashboardChannel!);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final statsAsync = ref.watch(dashboardStatsProvider);
     final ordersAsync = ref.watch(allOrdersProvider(null));
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: AppSpacing.pagePadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'لوحة التحكم',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      await ref.read(authRepositoryProvider).signOut();
-                      if (context.mounted) context.go('/login');
-                    },
-                    icon: const Icon(Icons.logout, color: AppColors.error),
-                    tooltip: 'تسجيل الخروج',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              statsAsync.when(
-                data: (stats) => GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.35,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(dashboardStatsProvider);
+            ref.invalidate(allOrdersProvider(null));
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: AppSpacing.pagePadding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _StatCard(
-                      label: 'معلق',
-                      value: '${stats['pending']}',
-                      color: AppColors.warning,
-                      icon: Icons.pending_actions,
+                    Text(
+                      'لوحة التحكم',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                    _StatCard(
-                      label: 'جاري التنفيذ',
-                      value: '${stats['in_progress']}',
-                      color: AppColors.blueLight,
-                      icon: Icons.engineering,
-                    ),
-                    _StatCard(
-                      label: 'مكتمل اليوم',
-                      value: '${stats['completed']}',
-                      color: AppColors.success,
-                      icon: Icons.check_circle,
-                    ),
-                    _StatCard(
-                      label: 'الفنيون',
-                      value: '${stats['technicians']}',
-                      color: AppColors.blueSky,
-                      icon: Icons.people,
+                    IconButton(
+                      onPressed: () async {
+                        await ref.read(authRepositoryProvider).signOut();
+                        if (context.mounted) context.go('/login');
+                      },
+                      icon: const Icon(Icons.logout, color: AppColors.error),
+                      tooltip: 'تسجيل الخروج',
                     ),
                   ],
                 ),
-                loading: () => const TammLoading(),
-                error: (e, _) => Text('$e'),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'آخر الطلبات',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                const SizedBox(height: 20),
+                statsAsync.when(
+                  data: (stats) => GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 1.35,
+                    children: [
+                      _StatCard(
+                        label: 'معلق',
+                        value: '${stats['pending']}',
+                        color: AppColors.warning,
+                        icon: Icons.pending_actions,
+                      ),
+                      _StatCard(
+                        label: 'جاري التنفيذ',
+                        value: '${stats['in_progress']}',
+                        color: AppColors.blueLight,
+                        icon: Icons.engineering,
+                      ),
+                      _StatCard(
+                        label: 'مكتمل اليوم',
+                        value: '${stats['completed']}',
+                        color: AppColors.success,
+                        icon: Icons.check_circle,
+                      ),
+                      _StatCard(
+                        label: 'الفنيون',
+                        value: '${stats['technicians']}',
+                        color: AppColors.blueSky,
+                        icon: Icons.people,
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () => context.go('/manager/orders'),
-                    child: Text(
-                      'عرض الكل',
-                      style: GoogleFonts.harmattan(color: AppColors.blueLight),
+                  loading: () => const TammLoading(),
+                  error: (e, _) => Text('$e'),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'آخر الطلبات',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              ordersAsync.when(
-                data: (orders) => Column(
-                  children: orders
-                      .take(5)
-                      .map(
-                        (o) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: TammCard(
-                            onTap: () => context.push('/manager/order/${o.id}'),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      o.orderNumber,
-                                      style: GoogleFonts.harmattan(
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
+                    TextButton(
+                      onPressed: () => context.go('/manager/orders'),
+                      child: Text(
+                        'عرض الكل',
+                        style: GoogleFonts.harmattan(
+                          color: AppColors.blueLight,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                ordersAsync.when(
+                  data: (orders) => Column(
+                    children: orders
+                        .take(5)
+                        .map(
+                          (o) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: TammCard(
+                              onTap: () =>
+                                  context.push('/manager/order/${o.id}'),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        o.orderNumber,
+                                        style: GoogleFonts.harmattan(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textPrimary,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      o.statusLabel,
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 14,
-                                        color: AppColors.textSecond,
+                                      Text(
+                                        o.statusLabel,
+                                        style: GoogleFonts.harmattan(
+                                          fontSize: 14,
+                                          color: AppColors.textSecond,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  '${o.totalAmount.toInt()} ريال',
-                                  style: GoogleFonts.harmattan(
-                                    color: AppColors.blueSky,
-                                    fontWeight: FontWeight.w700,
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    '${o.totalAmount.toInt()} ريال',
+                                    style: GoogleFonts.harmattan(
+                                      color: AppColors.blueSky,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
+                  loading: () => const TammLoading(),
+                  error: (e, _) => Text('$e'),
                 ),
-                loading: () => const TammLoading(),
-                error: (e, _) => Text('$e'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
