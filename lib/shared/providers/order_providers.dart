@@ -5,18 +5,16 @@ import '../models/cart_item.dart';
 
 final orderRepositoryProvider = Provider((ref) => OrderRepository());
 
-final myOrdersProvider = FutureProvider<List<Order>>((ref) async {
+final myOrdersProvider = FutureProvider.autoDispose<List<Order>>((ref) async {
   return ref.read(orderRepositoryProvider).getMyOrders();
 });
 
-final allOrdersProvider = FutureProvider.family<List<Order>, String?>((
-  ref,
-  status,
-) async {
-  return ref.read(orderRepositoryProvider).getAllOrders(status: status);
-});
+final allOrdersProvider = FutureProvider.autoDispose
+    .family<List<Order>, String?>((ref, status) async {
+      return ref.read(orderRepositoryProvider).getAllOrders(status: status);
+    });
 
-final orderDetailProvider = FutureProvider.family<Order, String>((
+final orderDetailProvider = FutureProvider.autoDispose.family<Order, String>((
   ref,
   id,
 ) async {

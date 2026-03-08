@@ -6,7 +6,9 @@ final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepository(),
 );
 
-final userProfileProvider = FutureProvider<UserProfile?>((ref) async {
+final userProfileProvider = FutureProvider.autoDispose<UserProfile?>((
+  ref,
+) async {
   final repo = ref.read(authRepositoryProvider);
   return repo.getProfile();
 });
