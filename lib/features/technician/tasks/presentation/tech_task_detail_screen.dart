@@ -264,7 +264,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               hint: 'اكتب تفاصيل وإصلاحات المهمة هنا...',
               maxLines: 4,
             ),
-            const Spacer(),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
