@@ -16,3 +16,10 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((
 ) async {
   return ref.read(technicianRepositoryProvider).getDashboardStats();
 });
+
+final technicianDetailProvider =
+    FutureProvider.family<Map<String, dynamic>, String>((ref, techId) async {
+      return ref
+          .read(technicianRepositoryProvider)
+          .getTechnicianDetails(techId);
+    });

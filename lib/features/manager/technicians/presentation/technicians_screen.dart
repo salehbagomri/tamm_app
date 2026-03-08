@@ -7,11 +7,42 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
 
-class TechniciansScreen extends ConsumerWidget {
+class TechniciansScreen extends ConsumerStatefulWidget {
   const TechniciansScreen({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TechniciansScreen> createState() => _TechniciansScreenState();
+}
+
+class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
+  RealtimeChannel? _techsChannel;
+
+  @override
+  void initState() {
+    super.initState();
+    _techsChannel = Supabase.instance.client
+        .channel('public:technicians_manager')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'technicians',
+          callback: (_) {
+            ref.invalidate(techniciansProvider);
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    Supabase.instance.client.removeChannel(_techsChannel!);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final techsAsync = ref.watch(techniciansProvider);
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
@@ -50,6 +81,8 @@ class TechniciansScreen extends ConsumerWidget {
                           final t = techs[i];
                           final p = t['profiles'] as Map<String, dynamic>?;
                           return TammCard(
+                            onTap: () =>
+                                context.push('/manager/technicians/${t['id']}'),
                             child: Row(
                               children: [
                                 CircleAvatar(
@@ -82,6 +115,14 @@ class TechniciansScreen extends ConsumerWidget {
                                         style: GoogleFonts.harmattan(
                                           fontSize: 14,
                                           color: AppColors.textSecond,
+                                        ),
+                                      ),
+                                      Text(
+                                        t['phone'] ?? '',
+                                        style: GoogleFonts.harmattan(
+                                          fontSize: 13,
+                                          color: AppColors.textFaint,
+                                          letterSpacing: 1,
                                         ),
                                       ),
                                     ],
@@ -130,6 +171,18 @@ class TechniciansScreen extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: AppColors.bluePrimary,
+        icon: const Icon(Icons.person_add, color: Colors.white),
+        label: Text(
+          'إضافة فني',
+          style: GoogleFonts.harmattan(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        onPressed: () => context.push('/manager/add-technician'),
       ),
     );
   }

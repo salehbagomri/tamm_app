@@ -26,6 +26,45 @@ class TechnicianRepository {
     await _client.from('technicians').update({'status': status}).eq('id', id);
   }
 
+  Future<Map<String, dynamic>?> getProfileByPhone(String phone) async {
+    try {
+      return await _client
+          .from('profiles')
+          .select()
+          .eq('phone', phone)
+          .single();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> promoteToTechnician({
+    required String profileId,
+    required String phone,
+    required String specialization,
+  }) async {
+    await _client.rpc(
+      'promote_to_technician',
+      params: {
+        'p_profile_id': profileId,
+        'p_phone': phone,
+        'p_specialization': specialization,
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>> getTechnicianDetails(String id) async {
+    final techData = await _client
+        .from('technicians')
+        .select(
+          '*, profiles(full_name, phone, avatar_url), assignments(*, orders(*))',
+        )
+        .eq('id', id)
+        .single();
+
+    return techData;
+  }
+
   Future<Map<String, dynamic>> getDashboardStats() async {
     final now = DateTime.now();
     final startOfDay = DateTime(

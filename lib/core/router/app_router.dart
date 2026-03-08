@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,6 +27,8 @@ import '../../features/manager/dashboard/presentation/manager_dashboard_screen.d
 import '../../features/manager/orders/presentation/manager_orders_screen.dart';
 import '../../features/manager/orders/presentation/manager_order_detail_screen.dart';
 import '../../features/manager/technicians/presentation/technicians_screen.dart';
+import '../../features/manager/technicians/presentation/add_technician_screen.dart';
+import '../../features/manager/technicians/presentation/manager_technician_detail_screen.dart';
 import '../../features/manager/products/presentation/manage_products_screen.dart';
 import '../../features/manager/products/presentation/product_form_screen.dart';
 
@@ -132,6 +133,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/manager/order/:id',
         builder: (_, state) =>
             ManagerOrderDetailScreen(orderId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/manager/add-technician',
+        builder: (_, __) => const AddTechnicianScreen(),
+      ),
+      GoRoute(
+        path: '/manager/technicians/:id',
+        builder: (_, state) => ManagerTechnicianDetailScreen(
+          technicianId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
         path: '/manager/product/form',
