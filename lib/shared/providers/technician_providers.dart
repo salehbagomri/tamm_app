@@ -22,3 +22,27 @@ final myAssignmentsProvider = FutureProvider<List<Map<String, dynamic>>>((
       .inFilter('status', ['assigned', 'started'])
       .order('created_at', ascending: false);
 });
+
+final myTechnicianProfileProvider = FutureProvider<Map<String, dynamic>>((
+  ref,
+) async {
+  final client = Supabase.instance.client;
+  final userId = client.auth.currentUser!.id;
+
+  final tech = await client
+      .from('technicians')
+      .select('*, profiles(*)')
+      .eq('profile_id', userId)
+      .single();
+
+  final techId = tech['id'] as String;
+
+  final completed = await client
+      .from('assignments')
+      .select()
+      .eq('technician_id', techId)
+      .eq('status', 'completed')
+      .count(CountOption.exact);
+
+  return {'technician': tech, 'completed_count': completed.count};
+});

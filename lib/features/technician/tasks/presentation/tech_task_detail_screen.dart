@@ -9,6 +9,7 @@ import '../../../../core/widgets/tamm_success_badge.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/technician_providers.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TechTaskDetailScreen extends ConsumerStatefulWidget {
   final String assignmentId;
@@ -51,8 +52,50 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     }
   }
 
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    if (phoneNumber.isEmpty) return;
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (!await launchUrl(launchUri)) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('تعذر فتح تطبيق الاتصال')));
+      }
+    }
+  }
+
+  Future<void> _openMaps(String address) async {
+    if (address.isEmpty) return;
+    final query = Uri.encodeComponent(address);
+    final Uri launchUri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$query',
+    );
+    if (!await launchUrl(launchUri, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('تعذر فتح الخرائط')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final tasksAsync = ref.watch(myAssignmentsProvider);
+    final assignmentList = tasksAsync.value ?? [];
+    final assignment = assignmentList.firstWhere(
+      (e) => e['id'] == widget.assignmentId,
+      orElse: () => <String, dynamic>{},
+    );
+
+    final order = (assignment['orders'] as Map<String, dynamic>?) ?? {};
+    final customer = (order['profiles'] as Map<String, dynamic>?) ?? {};
+    final customerName = customer['full_name']?.toString() ?? 'غير معروف';
+    final customerPhone = customer['phone']?.toString() ?? '';
+    final address = order['address']?.toString() ?? 'غير متوفر';
+    final orderNumber = order['order_number']?.toString() ?? '';
+    final isStarted = assignment['status'] == 'started';
+
     if (_completed) {
       return Scaffold(
         backgroundColor: AppColors.bgPrimary,
@@ -80,7 +123,94 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
       body: Padding(
         padding: AppSpacing.pagePadding,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: AppSpacing.radiusLg,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'طلب #$orderNumber',
+                        style: const TextStyle(
+                          color: AppColors.bluePrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isStarted
+                              ? AppColors.warning.withValues(alpha: 0.2)
+                              : AppColors.bluePrimary.withValues(alpha: 0.2),
+                          borderRadius: AppSpacing.radiusSm,
+                        ),
+                        child: Text(
+                          isStarted ? 'قيد التنفيذ' : 'جديدة',
+                          style: TextStyle(
+                            color: isStarted
+                                ? AppColors.warning
+                                : AppColors.bluePrimary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 24),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const CircleAvatar(
+                      backgroundColor: AppColors.bgPrimary,
+                      child: Icon(Icons.person, color: AppColors.blueDark),
+                    ),
+                    title: Text(
+                      customerName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(customerPhone),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.call, color: AppColors.success),
+                      onPressed: () => _makePhoneCall(customerPhone),
+                    ),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const CircleAvatar(
+                      backgroundColor: AppColors.bgPrimary,
+                      child: Icon(Icons.location_on, color: AppColors.blueDark),
+                    ),
+                    title: const Text(
+                      'العنوان',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(address),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.map, color: AppColors.bluePrimary),
+                      onPressed: () => _openMaps(address),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
             TammTextField(
               controller: _notesCtrl,

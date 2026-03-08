@@ -26,6 +26,15 @@ class TechnicianRepository {
     await _client.from('technicians').update({'status': status}).eq('id', id);
   }
 
+  Future<void> updateMyAvailability(bool isAvailable) async {
+    final userId = _client.auth.currentUser!.id;
+    final status = isAvailable ? 'available' : 'busy';
+    await _client
+        .from('technicians')
+        .update({'status': status})
+        .eq('profile_id', userId);
+  }
+
   Future<Map<String, dynamic>?> getProfileByPhone(String phone) async {
     try {
       return await _client
