@@ -44,11 +44,15 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             .updateAssignmentStatus(widget.assignmentId, status);
       }
       ref.invalidate(myAssignmentsProvider);
-      if (status == 'completed') setState(() => _completed = true);
+      if (status == 'started') {
+        if (mounted) Navigator.pop(context);
+      } else if (status == 'completed') {
+        setState(() => _completed = true);
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -94,6 +98,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     final customerPhone = customer['phone']?.toString() ?? '';
     final address = order['address']?.toString() ?? 'غير متوفر';
     final orderNumber = order['order_number']?.toString() ?? '';
+    final notes = order['notes']?.toString();
     final isStarted = assignment['status'] == 'started';
 
     if (_completed) {
@@ -128,7 +133,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.bgSurface,
                 borderRadius: AppSpacing.radiusLg,
                 boxShadow: [
                   BoxShadow(
@@ -212,6 +217,47 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            if (notes != null && notes.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.bgSurface,
+                  borderRadius: AppSpacing.radiusLg,
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.speaker_notes,
+                      color: AppColors.textSecond,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'ملاحظات العميل:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            notes,
+                            style: const TextStyle(color: AppColors.textSecond),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             TammTextField(
               controller: _notesCtrl,
               label: 'ملاحظات الفني',

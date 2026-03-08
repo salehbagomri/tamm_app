@@ -38,7 +38,6 @@ class _ManagerOrderDetailScreenState
   }
 
   void _showAssignDialog() {
-    final techsAsync = ref.read(techniciansProvider);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -47,65 +46,72 @@ class _ManagerOrderDetailScreenState
           'تعيين فني',
           style: GoogleFonts.harmattan(color: AppColors.textPrimary),
         ),
-        content: techsAsync.when(
-          data: (techs) => SizedBox(
-            width: double.maxFinite,
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemCount: techs.length,
-              separatorBuilder: (_, __) => const Divider(),
-              itemBuilder: (_, i) {
-                final t = techs[i];
-                final p = t['profiles'] as Map<String, dynamic>?;
-                return ListTile(
-                  title: Text(
-                    p?['full_name'] ?? '',
-                    style: GoogleFonts.harmattan(color: AppColors.textPrimary),
-                  ),
-                  subtitle: Text(
-                    t['specialization'] ?? '',
-                    style: GoogleFonts.harmattan(
-                      color: AppColors.textSecond,
-                      fontSize: 14,
-                    ),
-                  ),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: t['status'] == 'available'
-                          ? AppColors.success.withValues(alpha: 0.15)
-                          : AppColors.warning.withValues(alpha: 0.15),
-                      borderRadius: AppSpacing.radiusFull,
-                    ),
-                    child: Text(
-                      t['status'] == 'available' ? 'متاح' : 'مشغول',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 12,
-                        color: t['status'] == 'available'
-                            ? AppColors.success
-                            : AppColors.warning,
+        content: Consumer(
+          builder: (context, ref, child) {
+            final techsAsync = ref.watch(techniciansProvider);
+            return techsAsync.when(
+              data: (techs) => SizedBox(
+                width: double.maxFinite,
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: techs.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (_, i) {
+                    final t = techs[i];
+                    final p = t['profiles'] as Map<String, dynamic>?;
+                    return ListTile(
+                      title: Text(
+                        p?['full_name'] ?? '',
+                        style: GoogleFonts.harmattan(
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                  ),
-                  onTap: () async {
-                    await ref
-                        .read(assignmentRepositoryProvider)
-                        .assignTechnician(
-                          orderId: widget.orderId,
-                          technicianId: t['id'],
-                        );
-                    ref.invalidate(orderDetailProvider(widget.orderId));
-                    Navigator.pop(context);
+                      subtitle: Text(
+                        t['specialization'] ?? '',
+                        style: GoogleFonts.harmattan(
+                          color: AppColors.textSecond,
+                          fontSize: 14,
+                        ),
+                      ),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: t['status'] == 'available'
+                              ? AppColors.success.withValues(alpha: 0.15)
+                              : AppColors.warning.withValues(alpha: 0.15),
+                          borderRadius: AppSpacing.radiusFull,
+                        ),
+                        child: Text(
+                          t['status'] == 'available' ? 'متاح' : 'مشغول',
+                          style: GoogleFonts.harmattan(
+                            fontSize: 12,
+                            color: t['status'] == 'available'
+                                ? AppColors.success
+                                : AppColors.warning,
+                          ),
+                        ),
+                      ),
+                      onTap: () async {
+                        await ref
+                            .read(assignmentRepositoryProvider)
+                            .assignTechnician(
+                              orderId: widget.orderId,
+                              technicianId: t['id'],
+                            );
+                        ref.invalidate(orderDetailProvider(widget.orderId));
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                    );
                   },
-                );
-              },
-            ),
-          ),
-          loading: () => const TammLoading(),
-          error: (e, _) => Text('$e'),
+                ),
+              ),
+              loading: () => const TammLoading(),
+              error: (e, _) => Text('$e'),
+            );
+          },
         ),
       ),
     );
@@ -156,6 +162,28 @@ class _ManagerOrderDetailScreenState
                         'الموعد: ${o.preferredDate!.day}/${o.preferredDate!.month}',
                         style: GoogleFonts.harmattan(
                           color: AppColors.textSecond,
+                        ),
+                      ),
+                    if (o.notes != null && o.notes!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'ملاحظات العميل: ${o.notes}',
+                          style: GoogleFonts.harmattan(
+                            color: AppColors.textSecond,
+                          ),
+                        ),
+                      ),
+                    if (o.technicianNotes != null &&
+                        o.technicianNotes!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'تقرير الفني (${o.technicianName ?? 'غير معروف'}): ${o.technicianNotes}',
+                          style: GoogleFonts.harmattan(
+                            color: AppColors.blueDark,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     Text(

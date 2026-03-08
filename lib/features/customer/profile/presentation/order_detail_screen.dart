@@ -72,11 +72,23 @@ class OrderDetailScreen extends ConsumerWidget {
                           color: AppColors.textSecond,
                         ),
                       ),
-                    if (o.notes != null)
+                    if (o.notes != null && o.notes!.isNotEmpty)
                       Text(
-                        'ملاحظات: ${o.notes}',
+                        'ملاحظاتك: ${o.notes}',
                         style: GoogleFonts.harmattan(
                           color: AppColors.textSecond,
+                        ),
+                      ),
+                    if (o.technicianNotes != null &&
+                        o.technicianNotes!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'تقرير الموظف: ${o.technicianNotes}',
+                          style: GoogleFonts.harmattan(
+                            color: AppColors.blueDark,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                   ],

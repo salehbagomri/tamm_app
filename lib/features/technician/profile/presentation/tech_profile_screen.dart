@@ -95,7 +95,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.bgSurface,
                       borderRadius: AppSpacing.radiusLg,
                       boxShadow: [
                         BoxShadow(
@@ -158,7 +158,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.bgSurface,
                             borderRadius: AppSpacing.radiusLg,
                             boxShadow: [
                               BoxShadow(
@@ -199,7 +199,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.bgSurface,
                             borderRadius: AppSpacing.radiusLg,
                             boxShadow: [
                               BoxShadow(

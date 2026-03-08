@@ -8,7 +8,9 @@ class OrderRepository {
     final userId = _client.auth.currentUser!.id;
     final data = await _client
         .from('orders')
-        .select('*, order_items(*)')
+        .select(
+          '*, order_items(*), assignments(technician_notes, technicians(profiles(full_name)))',
+        )
         .eq('customer_id', userId)
         .order('created_at', ascending: false);
     return data.map((e) => Order.fromMap(e)).toList();
@@ -17,7 +19,9 @@ class OrderRepository {
   Future<List<Order>> getAllOrders({String? status}) async {
     var query = _client
         .from('orders')
-        .select('*, order_items(*), profiles!customer_id(full_name, phone)');
+        .select(
+          '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_notes, technicians(profiles(full_name)))',
+        );
     if (status != null) query = query.eq('status', status);
     final data = await query.order('created_at', ascending: false);
     return data.map((e) => Order.fromMap(e)).toList();
@@ -26,7 +30,9 @@ class OrderRepository {
   Future<Order> getOrder(String id) async {
     final data = await _client
         .from('orders')
-        .select('*, order_items(*)')
+        .select(
+          '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_notes, technicians(profiles(full_name)))',
+        )
         .eq('id', id)
         .single();
     return Order.fromMap(data);

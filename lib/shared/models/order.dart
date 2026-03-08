@@ -13,6 +13,8 @@ class Order {
   final DateTime createdAt;
   final List<OrderItem> items;
   final Map<String, dynamic>? customerProfile;
+  final String? technicianNotes;
+  final String? technicianName;
 
   const Order({
     required this.id,
@@ -29,30 +31,49 @@ class Order {
     required this.createdAt,
     this.items = const [],
     this.customerProfile,
+    this.technicianNotes,
+    this.technicianName,
   });
 
-  factory Order.fromMap(Map<String, dynamic> m) => Order(
-    id: m['id'],
-    orderNumber: m['order_number'],
-    customerId: m['customer_id'],
-    orderType: m['order_type'],
-    status: m['status'],
-    totalAmount: (m['total_amount'] as num?)?.toDouble() ?? 0,
-    address: m['address'] ?? '',
-    preferredDate: m['preferred_date'] != null
-        ? DateTime.tryParse(m['preferred_date'])
-        : null,
-    preferredTimeSlot: m['preferred_time_slot'],
-    notes: m['notes'],
-    includeInstallation: m['include_installation'] ?? false,
-    createdAt: DateTime.parse(m['created_at']),
-    items:
-        (m['order_items'] as List?)
-            ?.map((e) => OrderItem.fromMap(e))
-            .toList() ??
-        [],
-    customerProfile: m['profiles'] as Map<String, dynamic>?,
-  );
+  factory Order.fromMap(Map<String, dynamic> m) {
+    String? tNotes;
+    String? tName;
+    final assignments = m['assignments'] as List?;
+    if (assignments != null && assignments.isNotEmpty) {
+      final a = assignments.first as Map<String, dynamic>;
+      tNotes = a['technician_notes']?.toString();
+      final t = a['technicians'] as Map<String, dynamic>?;
+      if (t != null) {
+        final p = t['profiles'] as Map<String, dynamic>?;
+        tName = p?['full_name']?.toString();
+      }
+    }
+
+    return Order(
+      id: m['id'],
+      orderNumber: m['order_number'],
+      customerId: m['customer_id'],
+      orderType: m['order_type'],
+      status: m['status'],
+      totalAmount: (m['total_amount'] as num?)?.toDouble() ?? 0,
+      address: m['address'] ?? '',
+      preferredDate: m['preferred_date'] != null
+          ? DateTime.tryParse(m['preferred_date'])
+          : null,
+      preferredTimeSlot: m['preferred_time_slot'],
+      notes: m['notes'],
+      includeInstallation: m['include_installation'] ?? false,
+      createdAt: DateTime.parse(m['created_at']),
+      items:
+          (m['order_items'] as List?)
+              ?.map((e) => OrderItem.fromMap(e))
+              .toList() ??
+          [],
+      customerProfile: m['profiles'] as Map<String, dynamic>?,
+      technicianNotes: tNotes,
+      technicianName: tName,
+    );
+  }
 
   String get statusLabel => switch (status) {
     'pending' => 'معلق',
