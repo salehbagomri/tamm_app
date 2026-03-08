@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/widgets/tamm_bottom_nav.dart';
+import '../../shared/providers/manager_providers.dart';
+import '../../shared/providers/order_providers.dart';
 
-class ManagerShell extends StatelessWidget {
+class ManagerShell extends ConsumerWidget {
   final Widget child;
   const ManagerShell({super.key, required this.child});
   int _idx(BuildContext c) {
@@ -15,7 +18,7 @@ class ManagerShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: child,
       bottomNavigationBar: TammBottomNav(
@@ -23,10 +26,13 @@ class ManagerShell extends StatelessWidget {
         onTap: (i) {
           switch (i) {
             case 0:
+              ref.invalidate(dashboardStatsProvider);
               context.go('/manager/dashboard');
             case 1:
+              ref.invalidate(allOrdersProvider);
               context.go('/manager/orders');
             case 2:
+              ref.invalidate(techniciansProvider);
               context.go('/manager/technicians');
             case 3:
               context.go('/manager/products');

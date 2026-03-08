@@ -182,7 +182,10 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        onPressed: () => context.push('/manager/add-technician'),
+        onPressed: () async {
+          await context.push('/manager/add-technician');
+          ref.invalidate(techniciansProvider);
+        },
       ),
     );
   }
