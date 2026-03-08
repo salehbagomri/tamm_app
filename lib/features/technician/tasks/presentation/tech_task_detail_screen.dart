@@ -125,7 +125,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       appBar: const TammAppBar(title: 'تفاصيل المهمة'),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: AppSpacing.pagePadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
