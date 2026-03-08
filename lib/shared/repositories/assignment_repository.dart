@@ -46,4 +46,15 @@ class AssignmentRepository {
       updates['completed_at'] = DateTime.now().toIso8601String();
     await _client.from('assignments').update(updates).eq('id', id);
   }
+
+  Future<void> updateAssignmentData(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    final updates = Map<String, dynamic>.from(data);
+    if (updates['status'] == 'completed') {
+      updates['completed_at'] = DateTime.now().toIso8601String();
+    }
+    await _client.from('assignments').update(updates).eq('id', id);
+  }
 }

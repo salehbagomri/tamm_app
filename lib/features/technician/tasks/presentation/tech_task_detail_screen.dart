@@ -6,7 +6,9 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_success_badge.dart';
+import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import '../../../../shared/providers/technician_providers.dart';
 
 class TechTaskDetailScreen extends ConsumerStatefulWidget {
   final String assignmentId;
@@ -19,13 +21,28 @@ class TechTaskDetailScreen extends ConsumerStatefulWidget {
 class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   bool _loading = false;
   bool _completed = false;
+  final _notesCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _notesCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _updateStatus(String status) async {
     setState(() => _loading = true);
     try {
-      await ref
-          .read(assignmentRepositoryProvider)
-          .updateAssignmentStatus(widget.assignmentId, status);
+      if (status == 'completed') {
+        final updates = {'status': status, 'technician_notes': _notesCtrl.text};
+        await ref
+            .read(assignmentRepositoryProvider)
+            .updateAssignmentData(widget.assignmentId, updates);
+      } else {
+        await ref
+            .read(assignmentRepositoryProvider)
+            .updateAssignmentStatus(widget.assignmentId, status);
+      }
+      ref.invalidate(myAssignmentsProvider);
       if (status == 'completed') setState(() => _completed = true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
@@ -64,6 +81,13 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
         padding: AppSpacing.pagePadding,
         child: Column(
           children: [
+            const SizedBox(height: 16),
+            TammTextField(
+              controller: _notesCtrl,
+              label: 'ملاحظات الفني',
+              hint: 'اكتب تفاصيل وإصلاحات المهمة هنا...',
+              maxLines: 4,
+            ),
             const Spacer(),
             Row(
               children: [

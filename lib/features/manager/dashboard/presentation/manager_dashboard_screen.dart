@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
+import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 
@@ -23,13 +24,26 @@ class ManagerDashboardScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'لوحة التحكم',
-                style: GoogleFonts.harmattan(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'لوحة التحكم',
+                    style: GoogleFonts.harmattan(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      await ref.read(authRepositoryProvider).signOut();
+                      if (context.mounted) context.go('/login');
+                    },
+                    icon: const Icon(Icons.logout, color: AppColors.error),
+                    tooltip: 'تسجيل الخروج',
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               statsAsync.when(

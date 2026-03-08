@@ -45,7 +45,8 @@ class TechTasksScreen extends ConsumerWidget {
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (_, i) {
                         final a = tasks[i];
-                        final order = a['orders'] as Map<String, dynamic>;
+                        final order =
+                            a['orders'] as Map<String, dynamic>? ?? {};
                         final customer =
                             order['profiles'] as Map<String, dynamic>?;
                         final isStarted = a['status'] == 'started';
