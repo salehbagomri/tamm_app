@@ -88,11 +88,11 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   Future<void> _makePhoneCall(String phoneNumber) async {
     if (phoneNumber.isEmpty) return;
 
-    final cleanPhone = phoneNumber.replaceAll(RegExp(r'\s+'), '');
-    final Uri launchUri = Uri.parse('tel:$cleanPhone');
+    final cleanPhone = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    final Uri launchUri = Uri(scheme: 'tel', path: cleanPhone);
 
     try {
-      if (!await launchUrl(launchUri, mode: LaunchMode.externalApplication)) {
+      if (!await launchUrl(launchUri)) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('تعذر فتح تطبيق الاتصال')),
