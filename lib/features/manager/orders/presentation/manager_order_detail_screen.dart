@@ -181,7 +181,8 @@ class _ManagerOrderDetailScreenState
                         child: Text(
                           'تقرير الفني (${o.technicianName ?? 'غير معروف'}): ${o.technicianNotes}',
                           style: GoogleFonts.harmattan(
-                            color: AppColors.blueDark,
+                            color: AppColors.textPrimary,
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

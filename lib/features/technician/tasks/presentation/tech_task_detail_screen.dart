@@ -50,22 +50,21 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   Future<void> _updateStatus(String status, [String? orderId]) async {
     setState(() => _loading = true);
     try {
-      if (status == 'completed') {
-        final updates = {'status': status, 'technician_notes': _notesCtrl.text};
-        await ref
-            .read(assignmentRepositoryProvider)
-            .updateAssignmentData(widget.assignmentId, updates);
+      final updates = {'status': status, 'technician_notes': _notesCtrl.text};
+      if (status == 'started') {
+        updates['started_at'] = DateTime.now().toIso8601String();
+      }
 
-        if (orderId != null) {
+      await ref
+          .read(assignmentRepositoryProvider)
+          .updateAssignmentData(widget.assignmentId, updates);
+
+      if (orderId != null) {
+        if (status == 'completed') {
           await ref
               .read(orderRepositoryProvider)
               .updateOrderStatus(orderId, 'completed');
-        }
-      } else {
-        await ref
-            .read(assignmentRepositoryProvider)
-            .updateAssignmentStatus(widget.assignmentId, status);
-        if (orderId != null && status == 'started') {
+        } else if (status == 'started') {
           await ref
               .read(orderRepositoryProvider)
               .updateOrderStatus(orderId, 'in_progress');
