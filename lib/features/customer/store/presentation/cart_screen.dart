@@ -47,7 +47,7 @@ class CartScreen extends ConsumerWidget {
                             Container(
                               width: 60,
                               height: 60,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: AppColors.bgSurface2,
                                 borderRadius: AppSpacing.radiusSm,
                               ),

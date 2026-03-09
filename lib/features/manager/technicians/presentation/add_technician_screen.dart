@@ -119,7 +119,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.zero,
                           backgroundColor: AppColors.bluePrimary,
-                          shape: RoundedRectangleBorder(
+                          shape: const RoundedRectangleBorder(
                             borderRadius: AppSpacing.radius,
                           ),
                         ),

@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
-import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
@@ -59,7 +58,7 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                value: type,
+                initialValue: type,
                 dropdownColor: AppColors.bgSurface2,
                 items: const [
                   DropdownMenuItem(value: 'ac_split', child: Text('سبليت')),

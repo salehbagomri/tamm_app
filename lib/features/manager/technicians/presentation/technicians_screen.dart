@@ -64,11 +64,12 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
               Expanded(
                 child: techsAsync.when(
                   data: (techs) {
-                    if (techs.isEmpty)
+                    if (techs.isEmpty) {
                       return const TammEmptyState(
                         icon: Icons.engineering,
                         message: 'لا يوجد فنيون',
                       );
+                    }
                     return RefreshIndicator(
                       onRefresh: () async {
                         ref.invalidate(techniciansProvider);

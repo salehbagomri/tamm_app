@@ -142,7 +142,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                               )
                             : Switch(
                                 value: isAvailable,
-                                activeColor: AppColors.success,
+                                activeThumbColor: AppColors.success,
                                 onChanged: _toggleAvailability,
                               ),
                       ],

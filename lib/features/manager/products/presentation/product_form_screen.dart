@@ -108,7 +108,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               TammTextField(label: 'الوصف', controller: _descCtrl, maxLines: 3),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _category,
+                initialValue: _category,
                 dropdownColor: AppColors.bgSurface2,
                 decoration: const InputDecoration(labelText: 'الفئة'),
                 items: const [

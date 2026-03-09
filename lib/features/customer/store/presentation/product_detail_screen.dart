@@ -132,7 +132,7 @@ class ProductDetailScreen extends ConsumerWidget {
                               .read(cartProvider.notifier)
                               .addItem(CartItem(product: p));
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('تمت الإضافة للسلة')),
+                            const SnackBar(content: Text('تمت الإضافة للسلة')),
                           );
                         },
                       )

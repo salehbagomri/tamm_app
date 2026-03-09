@@ -22,7 +22,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
   final _formKey = GlobalKey<FormState>();
   final _addressCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
-  String _timeSlot = 'صباحاً';
+  final String _timeSlot = 'صباحاً';
   bool _loading = false;
   DateTime _date = DateTime.now().add(const Duration(days: 1));
 

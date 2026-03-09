@@ -20,11 +20,12 @@ class MyOrdersScreen extends ConsumerWidget {
       appBar: const TammAppBar(title: 'طلباتي'),
       body: ordersAsync.when(
         data: (orders) {
-          if (orders.isEmpty)
+          if (orders.isEmpty) {
             return const TammEmptyState(
               icon: Icons.receipt_long_outlined,
               message: 'لا توجد طلبات',
             );
+          }
           return ListView.separated(
             padding: AppSpacing.pagePadding,
             itemCount: orders.length,

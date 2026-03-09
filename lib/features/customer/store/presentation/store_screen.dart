@@ -85,11 +85,12 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             Expanded(
               child: productsAsync.when(
                 data: (products) {
-                  if (products.isEmpty)
+                  if (products.isEmpty) {
                     return const TammEmptyState(
                       icon: Icons.shopping_bag_outlined,
                       message: 'لا توجد منتجات',
                     );
+                  }
                   return GridView.builder(
                     padding: AppSpacing.pagePadding,
                     gridDelegate:
@@ -117,9 +118,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                 flex: 3,
                                 child: Container(
                                   width: double.infinity,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: AppColors.bgSurface2,
-                                    borderRadius: const BorderRadius.vertical(
+                                    borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(12),
                                     ),
                                   ),

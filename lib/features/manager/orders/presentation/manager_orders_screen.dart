@@ -109,11 +109,12 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
             Expanded(
               child: ordersAsync.when(
                 data: (orders) {
-                  if (orders.isEmpty)
+                  if (orders.isEmpty) {
                     return const TammEmptyState(
                       icon: Icons.receipt_long_outlined,
                       message: 'لا توجد طلبات',
                     );
+                  }
                   return RefreshIndicator(
                     onRefresh: () async {
                       ref.invalidate(allOrdersProvider(null));

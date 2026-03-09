@@ -66,11 +66,12 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
               Expanded(
                 child: tasksAsync.when(
                   data: (tasks) {
-                    if (tasks.isEmpty)
+                    if (tasks.isEmpty) {
                       return const TammEmptyState(
                         icon: Icons.task_alt,
                         message: 'لا توجد مهام حالياً',
                       );
+                    }
                     return RefreshIndicator(
                       onRefresh: () async {
                         ref.invalidate(myAssignmentsProvider);

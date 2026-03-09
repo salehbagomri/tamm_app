@@ -40,10 +40,12 @@ class AssignmentRepository {
 
   Future<void> updateAssignmentStatus(String id, String status) async {
     final updates = <String, dynamic>{'status': status};
-    if (status == 'started')
+    if (status == 'started') {
       updates['started_at'] = DateTime.now().toIso8601String();
-    if (status == 'completed')
+    }
+    if (status == 'completed') {
       updates['completed_at'] = DateTime.now().toIso8601String();
+    }
     await _client.from('assignments').update(updates).eq('id', id);
   }
 

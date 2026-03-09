@@ -155,8 +155,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     validator: (v) {
-                      if (v == null || v.isEmpty)
+                      if (v == null || v.isEmpty) {
                         return 'أدخل البريد الإلكتروني';
+                      }
                       if (!v.contains('@')) return 'بريد إلكتروني غير صحيح';
                       return null;
                     },
@@ -170,8 +171,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     obscureText: true,
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'أدخل كلمة المرور';
-                      if (v.length < 6)
+                      if (v.length < 6) {
                         return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                      }
                       return null;
                     },
                   ),

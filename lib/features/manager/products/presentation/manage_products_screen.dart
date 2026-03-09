@@ -39,11 +39,12 @@ class ManageProductsScreen extends ConsumerWidget {
               Expanded(
                 child: productsAsync.when(
                   data: (products) {
-                    if (products.isEmpty)
+                    if (products.isEmpty) {
                       return const TammEmptyState(
                         icon: Icons.inventory,
                         message: 'لا توجد منتجات',
                       );
+                    }
                     return ListView.separated(
                       itemCount: products.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -59,7 +60,7 @@ class ManageProductsScreen extends ConsumerWidget {
                               Container(
                                 width: 50,
                                 height: 50,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: AppColors.bgSurface2,
                                   borderRadius: AppSpacing.radiusSm,
                                 ),

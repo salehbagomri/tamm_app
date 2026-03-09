@@ -124,7 +124,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                             children: [
                               Expanded(
                                 child: Container(
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: AppColors.bgSurface2,
                                     borderRadius: AppSpacing.radiusSm,
                                   ),
@@ -203,8 +203,8 @@ class _QuickServiceCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           height: 90,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
               colors: [AppColors.blueDark, AppColors.blueMid],
             ),
             borderRadius: AppSpacing.radius,
