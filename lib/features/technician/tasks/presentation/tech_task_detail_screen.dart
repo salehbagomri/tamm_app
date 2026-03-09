@@ -9,6 +9,7 @@ import '../../../../core/widgets/tamm_success_badge.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/technician_providers.dart';
+import '../../../../shared/providers/order_providers.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TechTaskDetailScreen extends ConsumerStatefulWidget {
@@ -25,12 +26,28 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   final _notesCtrl = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final tasksAsync = ref.read(myAssignmentsProvider);
+      final assignmentList = tasksAsync.value ?? [];
+      final assignment = assignmentList.firstWhere(
+        (e) => e['id'] == widget.assignmentId,
+        orElse: () => <String, dynamic>{},
+      );
+      if (assignment['technician_notes'] != null) {
+        _notesCtrl.text = assignment['technician_notes'].toString();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _notesCtrl.dispose();
     super.dispose();
   }
 
-  Future<void> _updateStatus(String status) async {
+  Future<void> _updateStatus(String status, [String? orderId]) async {
     setState(() => _loading = true);
     try {
       if (status == 'completed') {
@@ -38,12 +55,24 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
         await ref
             .read(assignmentRepositoryProvider)
             .updateAssignmentData(widget.assignmentId, updates);
+
+        if (orderId != null) {
+          await ref
+              .read(orderRepositoryProvider)
+              .updateOrderStatus(orderId, 'completed');
+        }
       } else {
         await ref
             .read(assignmentRepositoryProvider)
             .updateAssignmentStatus(widget.assignmentId, status);
+        if (orderId != null && status == 'started') {
+          await ref
+              .read(orderRepositoryProvider)
+              .updateOrderStatus(orderId, 'in_progress');
+        }
       }
       ref.invalidate(myAssignmentsProvider);
+
       if (status == 'started') {
         if (mounted) Navigator.pop(context);
       } else if (status == 'completed') {
@@ -58,8 +87,19 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
   Future<void> _makePhoneCall(String phoneNumber) async {
     if (phoneNumber.isEmpty) return;
-    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
-    if (!await launchUrl(launchUri)) {
+
+    final cleanPhone = phoneNumber.replaceAll(RegExp(r'\s+'), '');
+    final Uri launchUri = Uri.parse('tel:$cleanPhone');
+
+    try {
+      if (!await launchUrl(launchUri, mode: LaunchMode.externalApplication)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تعذر فتح تطبيق الاتصال')),
+          );
+        }
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -74,7 +114,15 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     final Uri launchUri = Uri.parse(
       'https://www.google.com/maps/search/?api=1&query=$query',
     );
-    if (!await launchUrl(launchUri, mode: LaunchMode.externalApplication)) {
+    try {
+      if (!await launchUrl(launchUri, mode: LaunchMode.externalApplication)) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('تعذر فتح الخرائط')));
+        }
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -272,7 +320,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     label: AppStrings.startTask,
                     isOutlined: true,
                     isLoading: _loading,
-                    onPressed: () => _updateStatus('started'),
+                    onPressed: () => _updateStatus('started', order['id']),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -280,7 +328,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                   child: TammButton(
                     label: AppStrings.endTask,
                     isLoading: _loading,
-                    onPressed: () => _updateStatus('completed'),
+                    onPressed: () => _updateStatus('completed', order['id']),
                   ),
                 ),
               ],
