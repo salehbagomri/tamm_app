@@ -61,19 +61,23 @@ class CustomerHomeScreen extends ConsumerWidget {
                   _QuickServiceCard(
                     icon: Icons.ac_unit,
                     label: 'تركيب',
-                    onTap: () => context.push('/customer/services'),
+                    onTap: () =>
+                        context.push('/customer/services?category=ac_install'),
                   ),
                   const SizedBox(width: 12),
                   _QuickServiceCard(
                     icon: Icons.build,
                     label: 'صيانة',
-                    onTap: () => context.push('/customer/services'),
+                    onTap: () =>
+                        context.push('/customer/services?category=ac_repair'),
                   ),
                   const SizedBox(width: 12),
                   _QuickServiceCard(
                     icon: Icons.support_agent,
                     label: 'استشارة',
-                    onTap: () => context.push('/customer/services'),
+                    onTap: () => context.push(
+                      '/customer/services?category=consultation',
+                    ),
                   ),
                 ],
               ),

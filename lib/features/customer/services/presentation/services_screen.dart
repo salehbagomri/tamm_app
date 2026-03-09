@@ -6,10 +6,37 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_card.dart';
+import '../../../../core/widgets/tamm_empty_state.dart';
+import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/service_providers.dart';
 
-class ServicesScreen extends ConsumerWidget {
-  const ServicesScreen({super.key});
+class ServicesScreen extends ConsumerStatefulWidget {
+  final String? initialCategory;
+  const ServicesScreen({super.key, this.initialCategory});
+
+  @override
+  ConsumerState<ServicesScreen> createState() => _ServicesScreenState();
+}
+
+class _ServicesScreenState extends ConsumerState<ServicesScreen> {
+  String? _selectedCategory;
+
+  final _categories = const {
+    null: 'الكل',
+    'ac_install': 'تركيب مكيف',
+    'ac_repair': 'صيانة مكيف',
+    'ac_wash': 'غسيل مكيف',
+    'ac_maintenance': 'متابعة دورية',
+    'solar_install': 'تركيب طاقة شمسية',
+    'solar_maintenance': 'صيانة شمسية',
+    'consultation': 'استشارة فنية',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategory = widget.initialCategory;
+  }
 
   IconData _getIcon(String? name) => switch (name) {
     'ac_unit' => Icons.ac_unit,
@@ -22,18 +49,18 @@ class ServicesScreen extends ConsumerWidget {
   };
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final servicesAsync = ref.watch(serviceTypesProvider);
 
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
-        child: Padding(
-          padding: AppSpacing.pagePadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
                 'الخدمات',
                 style: GoogleFonts.harmattan(
                   fontSize: 26,
@@ -41,14 +68,63 @@ class ServicesScreen extends ConsumerWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: servicesAsync.when(
-                  data: (services) => ListView.separated(
-                    itemCount: services.length,
+            ),
+            SizedBox(
+              height: 48,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: _categories.entries.map((e) {
+                  final selected = _selectedCategory == e.key;
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: ChoiceChip(
+                      label: Text(
+                        e.value,
+                        style: GoogleFonts.harmattan(
+                          fontSize: 14,
+                          color: selected ? Colors.white : AppColors.textSecond,
+                        ),
+                      ),
+                      selected: selected,
+                      selectedColor: AppColors.bluePrimary,
+                      backgroundColor: AppColors.bgSurface,
+                      side: BorderSide(
+                        color: selected
+                            ? AppColors.bluePrimary
+                            : AppColors.border,
+                      ),
+                      onSelected: (_) =>
+                          setState(() => _selectedCategory = e.key),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: servicesAsync.when(
+                data: (services) {
+                  List<ServiceType> filtered = services;
+                  if (_selectedCategory != null) {
+                    filtered = services
+                        .where((s) => s.category == _selectedCategory)
+                        .toList();
+                  }
+
+                  if (filtered.isEmpty) {
+                    return const TammEmptyState(
+                      icon: Icons.miscellaneous_services,
+                      message: 'لا توجد خدمات في هذا التصنيف حالياً',
+                    );
+                  }
+
+                  return ListView.separated(
+                    padding: AppSpacing.pagePadding,
+                    itemCount: filtered.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
                     itemBuilder: (_, i) {
-                      final s = services[i];
+                      final s = filtered[i];
                       return TammCard(
                         onTap: () =>
                             context.push('/customer/service-request/${s.id}'),
@@ -109,13 +185,13 @@ class ServicesScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                  ),
-                  loading: () => const TammLoading(),
-                  error: (e, _) => Center(child: Text('$e')),
-                ),
+                  );
+                },
+                loading: () => const TammLoading(),
+                error: (e, _) => Center(child: Text('$e')),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
