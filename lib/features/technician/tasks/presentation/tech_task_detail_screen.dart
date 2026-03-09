@@ -250,18 +250,19 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          Text(
-                            customerPhone.isNotEmpty
-                                ? customerPhone
-                                : 'الرقم غير مسجل - بيانات العميل: ${customer.toString()}',
-                            textDirection: TextDirection.ltr,
-                            style: TextStyle(
-                              color: customerPhone.isEmpty
-                                  ? Colors.red
-                                  : AppColors.textSecond,
-                              fontSize: 12,
+                          if (customerPhone.isNotEmpty)
+                            Text(
+                              customerPhone,
+                              textDirection: TextDirection.ltr,
+                            )
+                          else
+                            const Text(
+                              'لا يوجد رقم هاتف مسجل',
+                              style: TextStyle(
+                                color: AppColors.textSecond,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
