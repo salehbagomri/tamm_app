@@ -235,11 +235,29 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                       backgroundColor: AppColors.bgPrimary,
                       child: Icon(Icons.person, color: AppColors.blueDark),
                     ),
-                    title: Text(
-                      customerName,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    title: const Text(
+                      'العميل',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(customerPhone),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            customerName,
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          if (customerPhone.isNotEmpty)
+                            Text(
+                              customerPhone,
+                              textDirection: TextDirection.ltr,
+                            ),
+                        ],
+                      ),
+                    ),
                     trailing: IconButton(
                       icon: const Icon(Icons.call, color: AppColors.success),
                       onPressed: () => _makePhoneCall(customerPhone),
