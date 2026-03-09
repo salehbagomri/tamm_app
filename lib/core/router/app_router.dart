@@ -31,6 +31,9 @@ import '../../features/manager/technicians/presentation/add_technician_screen.da
 import '../../features/manager/technicians/presentation/manager_technician_detail_screen.dart';
 import '../../features/manager/products/presentation/manage_products_screen.dart';
 import '../../features/manager/products/presentation/product_form_screen.dart';
+import '../../features/manager/services/presentation/manage_services_screen.dart';
+import '../../features/manager/services/presentation/service_form_screen.dart';
+import '../../shared/models/service_type.dart';
 
 // Technician
 import '../../features/technician/technician_shell.dart';
@@ -126,6 +129,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/manager/products',
             builder: (_, __) => const ManageProductsScreen(),
           ),
+          GoRoute(
+            path: '/manager/services',
+            builder: (_, __) => const ManageServicesScreen(),
+          ),
         ],
       ),
       // Manager routes outside shell
@@ -148,6 +155,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/manager/product/form',
         builder: (_, state) =>
             ProductFormScreen(productId: state.extra as String?),
+      ),
+      GoRoute(
+        path: '/manager/service/form',
+        builder: (_, state) =>
+            ServiceFormScreen(service: state.extra as ServiceType?),
       ),
 
       // ========== TECHNICIAN ==========

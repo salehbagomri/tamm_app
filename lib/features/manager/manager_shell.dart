@@ -14,6 +14,7 @@ class ManagerShell extends ConsumerWidget {
     if (loc.startsWith('/manager/orders')) return 1;
     if (loc.startsWith('/manager/technicians')) return 2;
     if (loc.startsWith('/manager/products')) return 3;
+    if (loc.startsWith('/manager/services')) return 4;
     return 0;
   }
 
@@ -36,6 +37,9 @@ class ManagerShell extends ConsumerWidget {
               context.go('/manager/technicians');
             case 3:
               context.go('/manager/products');
+            case 4:
+              ref.invalidate(managerServicesProvider);
+              context.go('/manager/services');
           }
         },
         items: const [
@@ -54,6 +58,10 @@ class ManagerShell extends ConsumerWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory_rounded),
             label: AppStrings.manageProducts,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.handyman_rounded),
+            label: 'الخدمات',
           ),
         ],
       ),

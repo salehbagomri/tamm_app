@@ -20,6 +20,7 @@ class TammBottomNav extends StatelessWidget {
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: currentIndex,
         onTap: onTap,
         items: items,
