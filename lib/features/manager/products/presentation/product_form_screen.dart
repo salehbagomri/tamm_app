@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
@@ -27,6 +30,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   bool _loading = false;
   bool _isEdit = false;
 
+  XFile? _selectedImage;
+  String? _existingImageUrl;
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +51,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
     _priceCtrl.text = p.price?.toString() ?? '';
     _brandCtrl.text = p.brand ?? '';
     _category = p.category;
+    _existingImageUrl = p.imageUrl;
     setState(() {});
   }
 
@@ -60,6 +67,19 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         'price': _priceCtrl.text.isEmpty ? null : double.parse(_priceCtrl.text),
         'is_price_on_request': _priceCtrl.text.isEmpty,
       };
+
+      if (_selectedImage != null) {
+        final ext = _selectedImage!.path.split('.').last;
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.$ext';
+        await Supabase.instance.client.storage
+            .from('products')
+            .upload(fileName, File(_selectedImage!.path));
+        final imageUrl = Supabase.instance.client.storage
+            .from('products')
+            .getPublicUrl(fileName);
+        data['image_url'] = imageUrl;
+      }
+
       if (_isEdit) {
         await ref
             .read(productRepositoryProvider)
@@ -76,6 +96,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 isPriceOnRequest: data['is_price_on_request'] as bool,
                 description: data['description'] as String?,
                 brand: data['brand'] as String?,
+                imageUrl: data['image_url'] as String?,
               ),
             );
       }
@@ -99,6 +120,58 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
           key: _formKey,
           child: Column(
             children: [
+              GestureDetector(
+                onTap: () async {
+                  final picker = ImagePicker();
+                  final img = await picker.pickImage(
+                    source: ImageSource.gallery,
+                  );
+                  if (img != null) {
+                    setState(() => _selectedImage = img);
+                  }
+                },
+                child: Container(
+                  height: 180,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.bgSurface2,
+                    borderRadius: AppSpacing.radius,
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: _selectedImage != null
+                      ? ClipRRect(
+                          borderRadius: AppSpacing.radius,
+                          child: Image.file(
+                            File(_selectedImage!.path),
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : _existingImageUrl != null
+                      ? ClipRRect(
+                          borderRadius: AppSpacing.radius,
+                          child: Image.network(
+                            _existingImageUrl!,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate_outlined,
+                              size: 40,
+                              color: AppColors.textSecond,
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'اضغط لإضافة صورة',
+                              style: TextStyle(color: AppColors.textSecond),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+              const SizedBox(height: 24),
               TammTextField(
                 label: 'اسم المنتج',
                 controller: _nameCtrl,
