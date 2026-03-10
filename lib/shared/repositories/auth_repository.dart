@@ -10,7 +10,10 @@ class AuthRepository {
   /// Initialize GoogleSignIn singleton (call once)
   Future<void> _ensureGoogleInitialized() async {
     if (_googleInitialized) return;
-    await GoogleSignIn.instance.initialize();
+    await GoogleSignIn.instance.initialize(
+      serverClientId:
+          '440693875608-isggm9vjtftu8qvdkn4mpslk6mg0c164.apps.googleusercontent.com',
+    );
     _googleInitialized = true;
   }
 

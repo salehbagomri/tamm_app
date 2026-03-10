@@ -46,6 +46,8 @@ class OrderRepository {
     String? timeSlot,
     String? notes,
     bool includeInstall = false,
+    double? latitude,
+    double? longitude,
     required List<Map<String, dynamic>> items,
   }) async {
     final userId = _client.auth.currentUser!.id;
@@ -60,6 +62,8 @@ class OrderRepository {
           'preferred_time_slot': timeSlot,
           'notes': notes,
           'include_installation': includeInstall,
+          if (latitude != null) 'latitude': latitude,
+          if (longitude != null) 'longitude': longitude,
         })
         .select()
         .single();

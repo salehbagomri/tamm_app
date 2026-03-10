@@ -107,12 +107,22 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     }
   }
 
-  Future<void> _openMaps(String address) async {
-    if (address.isEmpty) return;
-    final query = Uri.encodeComponent(address);
-    final Uri launchUri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=$query',
-    );
+  Future<void> _openMaps(String address, {double? lat, double? lng}) async {
+    Uri launchUri;
+    if (lat != null && lng != null) {
+      // Direct navigation with exact coordinates
+      launchUri = Uri.parse(
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
+      );
+    } else if (address.isNotEmpty) {
+      // Fallback: search by text address
+      final query = Uri.encodeComponent(address);
+      launchUri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$query',
+      );
+    } else {
+      return;
+    }
     try {
       if (!await launchUrl(launchUri, mode: LaunchMode.externalApplication)) {
         if (mounted) {
@@ -144,6 +154,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     final customerName = customer['full_name']?.toString() ?? 'غير معروف';
     final customerPhone = customer['phone']?.toString() ?? '';
     final address = order['address']?.toString() ?? 'غير متوفر';
+    final orderLat = order['latitude'] as double?;
+    final orderLng = order['longitude'] as double?;
+    final hasCoordinates = orderLat != null && orderLng != null;
     final orderNumber = order['order_number']?.toString() ?? '';
     final notes = order['notes']?.toString();
     final isStarted = assignment['status'] == 'started';
@@ -280,10 +293,47 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                       'العنوان',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(address),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(address),
+                        if (hasCoordinates)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.success.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                '📍 موقع GPS متوفر',
+                                style: TextStyle(
+                                  color: AppColors.success,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                     trailing: IconButton(
-                      icon: const Icon(Icons.map, color: AppColors.bluePrimary),
-                      onPressed: () => _openMaps(address),
+                      icon: Icon(
+                        hasCoordinates ? Icons.navigation : Icons.map,
+                        color: hasCoordinates
+                            ? AppColors.success
+                            : AppColors.bluePrimary,
+                      ),
+                      tooltip: hasCoordinates ? 'ابدأ الملاحة' : 'فتح الخرائط',
+                      onPressed: () => _openMaps(
+                        address,
+                        lat: orderLat,
+                        lng: orderLng,
+                      ),
                     ),
                   ),
                 ],
