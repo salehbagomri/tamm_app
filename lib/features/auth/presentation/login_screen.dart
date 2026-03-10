@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../shared/providers/auth_providers.dart';
+import '../../../core/services/fcm_service.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +25,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       final profile = await repo.getProfile();
       if (!mounted) return;
+
+      // تسجيل FCM Token بعد تسجيل الدخول
+      await FcmService.registerToken();
 
       if (profile == null || !profile.isComplete) {
         context.go('/onboarding');

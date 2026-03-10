@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/providers/auth_providers.dart';
+import '../../../core/services/fcm_service.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -34,6 +35,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       context.go('/onboarding');
       return;
     }
+
+    // تسجيل FCM Token بعد التحقق من الجلسة
+    await FcmService.registerToken();
 
     switch (profile.role) {
       case 'manager':
