@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "504988713429",
+    "project_id": "tamm-app-8c990",
+    "storage_bucket": "tamm-app-8c990.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504988713429:android:af07c1ac2f804a21cc3d5c",
+        "android_client_info": {
+          "package_name": "com.bagomri.tamm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "504988713429-c5f4p7s07f4idf8ikc666uqnsmkoj60k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABDBZiCIqiGv6RHKicAIEoAwNpVy2Cp-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "504988713429-c5f4p7s07f4idf8ikc666uqnsmkoj60k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

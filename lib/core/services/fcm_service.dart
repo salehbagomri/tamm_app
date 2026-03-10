@@ -30,7 +30,7 @@ class FcmService {
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     await _localNotifications.initialize(
-      const InitializationSettings(android: androidSettings),
+      settings: const InitializationSettings(android: androidSettings),
     );
 
     // إنشاء قناة إشعارات Android
@@ -50,10 +50,10 @@ class FcmService {
       final notification = message.notification;
       if (notification != null) {
         _localNotifications.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          const NotificationDetails(
+          id: notification.hashCode,
+          title: notification.title,
+          body: notification.body,
+          notificationDetails: const NotificationDetails(
             android: AndroidNotificationDetails(
               'tamm_notifications',
               'إشعارات تمّ',

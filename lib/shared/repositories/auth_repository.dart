@@ -12,7 +12,7 @@ class AuthRepository {
     if (_googleInitialized) return;
     await GoogleSignIn.instance.initialize(
       serverClientId:
-          '440693875608-isggm9vjtftu8qvdkn4mpslk6mg0c164.apps.googleusercontent.com',
+          '504988713429-c5f4p7s07f4idf8ikc666uqnsmkoj60k.apps.googleusercontent.com',
     );
     _googleInitialized = true;
   }
