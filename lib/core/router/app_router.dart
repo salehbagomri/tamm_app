@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 // Auth
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/onboarding_screen.dart';
 
 // Customer
 import '../../features/customer/customer_shell.dart';
@@ -48,6 +49,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // ========== AUTH ==========
       GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
       GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
+      GoRoute(
+        path: '/onboarding',
+        builder: (_, __) => const OnboardingScreen(),
+      ),
 
       // ========== CUSTOMER ==========
       ShellRoute(

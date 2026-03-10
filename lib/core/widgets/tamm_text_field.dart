@@ -13,6 +13,7 @@ class TammTextField extends StatelessWidget {
   final void Function(String)? onChanged;
   final Widget? prefix;
   final Widget? suffix;
+  final String? prefixText;
 
   const TammTextField({
     super.key,
@@ -26,6 +27,7 @@ class TammTextField extends StatelessWidget {
     this.onChanged,
     this.prefix,
     this.suffix,
+    this.prefixText,
   });
 
   @override
@@ -57,6 +59,7 @@ class TammTextField extends StatelessWidget {
             hintText: hint,
             prefixIcon: prefix,
             suffixIcon: suffix,
+            prefixText: prefixText,
           ),
         ),
       ],

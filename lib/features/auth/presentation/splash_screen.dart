@@ -30,8 +30,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
 
     final profile = await repo.getProfile();
-    if (profile == null) {
-      context.go('/login');
+    if (profile == null || !profile.isComplete) {
+      context.go('/onboarding');
       return;
     }
 
