@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "504988713429-rt48nlq1qhlchm8h6dm3a1vpfd2p0969.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bagomri.tamm",
+            "certificate_hash": "22d8ee8968c79334584a7090b6312aed6d3e7bce"
+          }
+        },
+        {
           "client_id": "504988713429-c5f4p7s07f4idf8ikc666uqnsmkoj60k.apps.googleusercontent.com",
           "client_type": 3
         }
