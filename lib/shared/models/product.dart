@@ -10,6 +10,7 @@ class Product {
   final Map<String, dynamic> specs;
   final bool isAvailable;
   final bool isFeatured;
+  final bool requiresInstallation;
 
   const Product({
     required this.id,
@@ -23,6 +24,7 @@ class Product {
     this.specs = const {},
     this.isAvailable = true,
     this.isFeatured = false,
+    this.requiresInstallation = false,
   });
 
   factory Product.fromMap(Map<String, dynamic> m) => Product(
@@ -37,6 +39,7 @@ class Product {
     specs: m['specs'] ?? {},
     isAvailable: m['is_available'] ?? true,
     isFeatured: m['is_featured'] ?? false,
+    requiresInstallation: m['requires_installation'] ?? false,
   );
 
   Map<String, dynamic> toMap() => {
@@ -50,6 +53,7 @@ class Product {
     'specs': specs,
     'is_available': isAvailable,
     'is_featured': isFeatured,
+    'requires_installation': requiresInstallation,
   };
 
   String get categoryLabel => switch (category) {

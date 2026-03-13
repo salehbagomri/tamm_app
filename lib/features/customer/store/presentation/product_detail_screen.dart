@@ -10,7 +10,9 @@ import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../shared/models/cart_item.dart';
+import 'buy_install_sheet.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   final String productId;
@@ -22,7 +24,29 @@ class ProductDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
-      appBar: const TammAppBar(title: 'تفاصيل المنتج'),
+      appBar: TammAppBar(
+        title: 'تفاصيل المنتج',
+        actions: [
+          Consumer(
+            builder: (context, ref, child) {
+              final count = ref.watch(cartCountProvider);
+              return Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: IconButton(
+                  icon: Badge(
+                    isLabelVisible: count > 0,
+                    label: Text('$count'),
+                    backgroundColor: AppColors.error,
+                    child: const Icon(Icons.shopping_cart_outlined, color: AppColors.textPrimary),
+                  ),
+                  onPressed: () => context.push('/customer/cart'),
+                  tooltip: 'السلة',
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: productAsync.when(
         data: (p) => SingleChildScrollView(
           child: Column(
@@ -33,7 +57,15 @@ class ProductDetailScreen extends ConsumerWidget {
                 width: double.infinity,
                 color: AppColors.bgSurface2,
                 child: p.imageUrl != null
-                    ? Image.network(p.imageUrl!, fit: BoxFit.cover)
+                    ? CachedNetworkImage(
+                        imageUrl: p.imageUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.image,
+                          size: 80,
+                          color: AppColors.textFaint,
+                        ),
+                      )
                     : const Center(
                         child: Icon(
                           Icons.image,
@@ -125,21 +157,43 @@ class ProductDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 32),
                     if (p.price != null)
                       TammButton(
-                        label: AppStrings.addToCart,
+                        label: p.requiresInstallation ? 'اشترِ وركّب / أضف للسلة' : AppStrings.addToCart,
                         icon: Icons.shopping_cart_outlined,
-                        onPressed: () {
-                          ref
-                              .read(cartProvider.notifier)
-                              .addItem(CartItem(product: p));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('تمت الإضافة للسلة')),
-                          );
+                        onPressed: () async {
+                          if (p.requiresInstallation) {
+                            final result = await showModalBottomSheet<bool>(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => const BuyInstallSheet(),
+                            );
+                            if (result == null) return; // User cancelled
+                            // result holds whether user wants installation, handled in checkout later
+                          }
+
+                          try {
+                            // We use ref.read to interact with our async cart provider
+                            final cartNotifier = ref.read(cartProvider.notifier);
+                            await cartNotifier.addItem(CartItem(product: p));
+                            
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('تمت الإضافة للسلة')),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('تعذرت الإضافة للسلة: \$e')),
+                              );
+                            }
+                          }
                         },
                       )
                     else
                       TammButton(
                         label: AppStrings.requestQuote,
-                        isOutlined: true,
+                        type: TammButtonType.secondary,
                         onPressed: () => context.push('/customer/services'),
                       ),
                     const SizedBox(height: 16),

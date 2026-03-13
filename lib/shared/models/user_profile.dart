@@ -47,6 +47,30 @@ class UserProfile {
     };
   }
 
+  UserProfile copyWith({
+    String? id,
+    String? email,
+    String? fullName,
+    String? phone,
+    String? role,
+    bool? isComplete,
+    String? avatarUrl,
+    String? address,
+    DateTime? createdAt,
+  }) {
+    return UserProfile(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      fullName: fullName ?? this.fullName,
+      phone: phone ?? this.phone,
+      role: role ?? this.role,
+      isComplete: isComplete ?? this.isComplete,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      address: address ?? this.address,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   bool get isCustomer => role == 'customer';
   bool get isManager => role == 'manager';
   bool get isTechnician => role == 'technician';

@@ -17,6 +17,17 @@ class TechnicianShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(roleStreamProvider, (prev, next) {
+      final role = next.valueOrNull;
+      if (role != null && role != 'technician') {
+        if (role == 'manager') {
+          context.go('/manager/dashboard');
+        } else if (role == 'customer') {
+          context.go('/customer/home');
+        }
+      }
+    });
+
     return Scaffold(
       body: child,
       bottomNavigationBar: TammBottomNav(

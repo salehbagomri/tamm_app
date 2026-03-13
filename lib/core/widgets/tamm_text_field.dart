@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 
@@ -14,6 +15,7 @@ class TammTextField extends StatelessWidget {
   final Widget? prefix;
   final Widget? suffix;
   final String? prefixText;
+  final List<TextInputFormatter>? inputFormatters;
 
   const TammTextField({
     super.key,
@@ -28,6 +30,7 @@ class TammTextField extends StatelessWidget {
     this.prefix,
     this.suffix,
     this.prefixText,
+    this.inputFormatters,
   });
 
   @override
@@ -51,6 +54,7 @@ class TammTextField extends StatelessWidget {
           maxLines: maxLines,
           validator: validator,
           onChanged: onChanged,
+          inputFormatters: inputFormatters,
           style: GoogleFonts.harmattan(
             color: AppColors.textPrimary,
             fontSize: 16,

@@ -1,5 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/services/fcm_service.dart';
+import '../providers/auth_providers.dart';
 import '../models/user_profile.dart';
 
 class AuthRepository {
@@ -86,6 +93,51 @@ class AuthRepository {
       await GoogleSignIn.instance.signOut();
     } catch (_) {}
     await _client.auth.signOut();
+  }
+
+  /// تسجيل الخروج مع تأكيد (UI)
+  static Future<void> confirmSignOut(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.bgSurface,
+        title: Text(
+          'تسجيل الخروج',
+          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+        ),
+        content: Text(
+          'هل أنت متأكد أنك تريد تسجيل الخروج؟',
+          style: GoogleFonts.harmattan(fontSize: 18, color: AppColors.textPrimary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('إلغاء', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textSecond)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.bluePrimary),
+            child: Text('تأكيد', style: GoogleFonts.harmattan(fontSize: 16)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    // إلغاء تسجيل FCM قبل الخروج
+    await FcmService.unregisterToken();
+    await ref.read(authRepositoryProvider).signOut();
+    if (context.mounted) {
+      context.go('/login');
+    }
+  }
+
+  /// حذف الحساب
+  Future<void> deleteAccount() async {
+    await FcmService.unregisterToken();
+    await _client.functions.invoke('delete-user');
+    await signOut();
   }
 
   /// هل المستخدم مسجل الدخول

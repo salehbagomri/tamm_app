@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
+import '../../../../core/widgets/tamm_button.dart';
 import '../../../../shared/providers/auth_providers.dart';
+import '../../../../shared/repositories/auth_repository.dart';
 
 class CustomerProfileScreen extends ConsumerWidget {
   const CustomerProfileScreen({super.key});
@@ -22,17 +25,24 @@ class CustomerProfileScreen extends ConsumerWidget {
             data: (p) => Column(
               children: [
                 const SizedBox(height: 20),
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: AppColors.blueDark,
-                  child: Text(
-                    p?.fullName.isNotEmpty == true ? p!.fullName[0] : '?',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 32,
-                      color: AppColors.textPrimary,
+                if (p?.avatarUrl != null && p!.avatarUrl!.isNotEmpty)
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: AppColors.blueDark,
+                    backgroundImage: CachedNetworkImageProvider(p.avatarUrl!),
+                  )
+                else
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: AppColors.blueDark,
+                    child: Text(
+                      p?.fullName.isNotEmpty == true ? p!.fullName[0] : '?',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 32,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
-                ),
                 const SizedBox(height: 12),
                 Text(
                   p?.fullName ?? '',
@@ -48,6 +58,14 @@ class CustomerProfileScreen extends ConsumerWidget {
                     fontSize: 16,
                     color: AppColors.textSecond,
                   ),
+                ),
+                const SizedBox(height: 16),
+                TammButton(
+                  label: 'تعديل الحساب',
+                  type: TammButtonType.secondary,
+                  icon: Icons.edit,
+                  width: 160,
+                  onPressed: () => context.push('/profile/edit'),
                 ),
                 const SizedBox(height: 32),
                 _ProfileItem(
@@ -65,10 +83,14 @@ class CustomerProfileScreen extends ConsumerWidget {
                 _ProfileItem(
                   icon: Icons.logout,
                   label: 'تسجيل الخروج',
-                  onTap: () async {
-                    await ref.read(authRepositoryProvider).signOut();
-                    if (context.mounted) context.go('/login');
-                  },
+                  onTap: () => AuthRepository.confirmSignOut(context, ref),
+                ),
+                const SizedBox(height: 16),
+                TammButton(
+                  label: 'حذف الحساب',
+                  type: TammButtonType.danger,
+                  icon: Icons.delete_forever,
+                  onPressed: () => _confirmDelete(context, ref),
                 ),
                 const SizedBox(height: 16),
               ],
@@ -79,6 +101,56 @@ class CustomerProfileScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.bgSurface,
+        title: Text(
+          'حذف الحساب نهائياً',
+          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold, color: AppColors.error),
+        ),
+        content: Text(
+          'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء وسيتم مسح كافة البيانات المرتبطة بك.',
+          style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textPrimary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('إلغاء', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textSecond)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text('حذف حسابي', style: GoogleFonts.harmattan(fontSize: 16, color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!context.mounted) return;
+
+    try {
+      await ref.read(authRepositoryProvider).deleteAccount();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تم حذف حسابك', style: GoogleFonts.harmattan()),
+            backgroundColor: AppColors.success,
+          ),
+        );
+        context.go('/login');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ أثناء الحذف: $e', style: GoogleFonts.harmattan())),
+        );
+      }
+    }
   }
 }
 

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -41,15 +42,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             context.go('/customer/home');
         }
       }
+    } on SocketException catch (_) {
+      _showError('تحقق من اتصالك بالإنترنت');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('خطأ: ${e.toString()}')));
+      final msg = e.toString();
+      if (msg.contains('canceled') || msg.contains('cancelled') || msg.toLowerCase().contains('sign_in_canceled')) {
+        return; // المستخدم ألغى الدخول
+      }
+      debugPrint('Login error: $msg');
+      if (msg.contains('AuthException')) {
+        _showError('حدث خطأ في الخادم، حاول مجدداً');
+      } else {
+        _showError('حدث خطأ، حاول مجدداً');
       }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.harmattan(fontSize: 16),
+        ),
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override

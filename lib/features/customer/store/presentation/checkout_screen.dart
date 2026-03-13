@@ -76,21 +76,30 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     try {
-      final cart = ref.read(cartProvider);
+      final cartAsync = ref.read(cartProvider);
       final notifier = ref.read(cartProvider.notifier);
-      final items = cart
-          .map(
-            (c) => {
-              'item_type': 'product',
-              'product_id': c.product.id,
-              'quantity': c.quantity,
-              'unit_price': c.product.price,
-              'total_price': c.total,
-            },
-          )
-          .toList();
+      
+      final items = cartAsync.maybeWhen(
+        data: (cart) => cart.map<Map<String, dynamic>>((c) => {
+          'item_type': 'product',
+          'product_id': c.product.id,
+          'quantity': c.quantity,
+          'unit_price': c.product.price,
+          'total_price': c.total,
+        }).toList(),
+        orElse: () => <Map<String, dynamic>>[],
+      );
 
-      await ref
+      if (items.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('السلة فارغة')),
+          );
+        }
+        return;
+      }
+
+      final orderId = await ref
           .read(orderRepositoryProvider)
           .createOrder(
             orderType: _includeInstall ? 'product_and_service' : 'product',
@@ -104,8 +113,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             longitude: _longitude,
             items: items,
           );
-      notifier.clear();
-      if (mounted) context.go('/customer/order-success');
+      await notifier.clear();
+      if (mounted) context.go('/customer/order-success/$orderId');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
     } finally {
@@ -123,7 +132,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _buildOrderSummary(ref),
+              const SizedBox(height: 24),
               // GPS Location Button
               Container(
                 width: double.infinity,
@@ -280,7 +292,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 controller: _notesCtrl,
                 maxLines: 3,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  const Icon(Icons.money, color: AppColors.bluePrimary),
+                  const SizedBox(width: 8),
+                  Text(
+                    'طريقة الدفع: كاش عند الاستلام',
+                    style: GoogleFonts.harmattan(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
               CheckboxListTile(
                 title: Text(
                   AppStrings.includeInstall,
@@ -300,6 +327,84 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildOrderSummary(WidgetRef ref) {
+    final cartAsync = ref.watch(cartProvider);
+    final notifier = ref.read(cartProvider.notifier);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.bgSurface,
+        borderRadius: AppSpacing.radius,
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'ملخص الطلب',
+            style: GoogleFonts.harmattan(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          cartAsync.when(
+            data: (cart) => Column(
+              children: cart.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${item.quantity}x ${item.product.name}',
+                        style: GoogleFonts.harmattan(fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text(
+                      '${item.total.toInt()} ريال',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList(),
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Text('Error: $e'),
+          ),
+          const Divider(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'المبلغ الإجمالي',
+                style: GoogleFonts.harmattan(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecond,
+                ),
+              ),
+              Text(
+                '${notifier.total.toInt()} ريال',
+                style: GoogleFonts.harmattan(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.blueSky,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

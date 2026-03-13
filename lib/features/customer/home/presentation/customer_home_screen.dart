@@ -5,9 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/widgets/tamm_loading.dart';
+import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/providers/auth_providers.dart';
+import '../widgets/active_order_card.dart';
+import '../widgets/buy_install_banner.dart';
+import '../widgets/recent_orders.dart';
 
 class CustomerHomeScreen extends ConsumerWidget {
   const CustomerHomeScreen({super.key});
@@ -45,6 +48,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                   color: AppColors.textSecond,
                 ),
               ),
+              const ActiveOrderCard(),
               const SizedBox(height: 24),
 
               Text(
@@ -56,31 +60,61 @@ class CustomerHomeScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Row(
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
                 children: [
-                  _QuickServiceCard(
-                    icon: Icons.ac_unit,
-                    label: 'تركيب',
-                    onTap: () =>
-                        context.push('/customer/services?category=ac_install'),
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - AppSpacing.pagePadding.horizontal - 24) / 3,
+                    child: _QuickServiceCard(
+                      icon: Icons.ac_unit,
+                      label: 'تركيب',
+                      onTap: () =>
+                          context.push('/customer/services?category=ac_install'),
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  _QuickServiceCard(
-                    icon: Icons.build,
-                    label: 'صيانة',
-                    onTap: () =>
-                        context.push('/customer/services?category=ac_repair'),
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - AppSpacing.pagePadding.horizontal - 24) / 3,
+                    child: _QuickServiceCard(
+                      icon: Icons.build,
+                      label: 'صيانة',
+                      onTap: () =>
+                          context.push('/customer/services?category=ac_repair'),
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  _QuickServiceCard(
-                    icon: Icons.support_agent,
-                    label: 'استشارة',
-                    onTap: () => context.push(
-                      '/customer/services?category=consultation',
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - AppSpacing.pagePadding.horizontal - 24) / 3,
+                    child: _QuickServiceCard(
+                      icon: Icons.support_agent,
+                      label: 'استشارة',
+                      onTap: () => context.push(
+                        '/customer/services?category=consultation',
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - AppSpacing.pagePadding.horizontal - 12) / 2,
+                    child: _QuickServiceCard(
+                      icon: Icons.cleaning_services,
+                      label: 'غسيل',
+                      onTap: () => context.push(
+                        '/customer/services?category=ac_wash',
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - AppSpacing.pagePadding.horizontal - 12) / 2,
+                    child: _QuickServiceCard(
+                      icon: Icons.solar_power,
+                      label: 'طاقة شمسية',
+                      onTap: () => context.push(
+                        '/customer/services?category=solar_install',
+                      ),
                     ),
                   ),
                 ],
               ),
+              const BuyInstallBanner(),
               const SizedBox(height: 32),
 
               Row(
@@ -179,9 +213,24 @@ class CustomerHomeScreen extends ConsumerWidget {
                     },
                   ),
                 ),
-                loading: () => const TammLoading(),
+                loading: () => SizedBox(
+                  height: 200,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 3,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (_, __) => TammShimmer(
+                      width: 160,
+                      height: 200,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
                 error: (e, _) => Text('$e'),
               ),
+              const SizedBox(height: 32),
+              const RecentOrders(),
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -202,32 +251,30 @@ class _QuickServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 90,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.blueDark, AppColors.blueMid],
-            ),
-            borderRadius: AppSpacing.radius,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 90,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.blueDark, AppColors.blueMid],
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: AppColors.blueSky, size: 28),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                style: GoogleFonts.harmattan(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+          borderRadius: AppSpacing.radius,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: AppColors.blueSky, size: 28),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: GoogleFonts.harmattan(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

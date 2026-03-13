@@ -393,7 +393,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                 Expanded(
                   child: TammButton(
                     label: AppStrings.startTask,
-                    isOutlined: true,
+                    type: TammButtonType.secondary,
                     isLoading: _loading,
                     onPressed: () => _updateStatus('started', order['id']),
                   ),

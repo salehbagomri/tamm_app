@@ -217,7 +217,7 @@ class _ManagerOrderDetailScreenState
               if (o.status != 'completed' && o.status != 'cancelled') ...[
                 TammButton(
                   label: 'إلغاء الطلب',
-                  isOutlined: true,
+                  type: TammButtonType.secondary,
                   isLoading: _loading,
                   onPressed: () => _updateStatus('cancelled'),
                 ),

@@ -79,6 +79,7 @@ class Order {
     'pending' => 'معلق',
     'confirmed' => 'مؤكد',
     'assigned' => 'تم التعيين',
+    'on_the_way' => 'في الطريق',
     'in_progress' => 'جاري التنفيذ',
     'completed' => 'مكتمل',
     'cancelled' => 'ملغي',

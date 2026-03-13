@@ -8,6 +8,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../shared/providers/product_providers.dart';
+import '../../../../shared/providers/order_providers.dart';
 
 class StoreScreen extends ConsumerStatefulWidget {
   const StoreScreen({super.key});
@@ -18,6 +19,9 @@ class StoreScreen extends ConsumerStatefulWidget {
 
 class _StoreScreenState extends ConsumerState<StoreScreen> {
   String? _selectedCategory;
+  final TextEditingController _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+
   final _categories = const {
     null: 'الكل',
     'ac': 'مكيفات',
@@ -26,6 +30,12 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     'solar_inverter': 'إنفرتر',
     'accessory': 'إكسسوارات',
   };
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +49,72 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Text(
-                AppStrings.store,
-                style: GoogleFonts.harmattan(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppStrings.store,
+                    style: GoogleFonts.harmattan(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final count = ref.watch(cartCountProvider);
+                      return IconButton(
+                        icon: Badge(
+                          isLabelVisible: count > 0,
+                          label: Text('$count'),
+                          backgroundColor: AppColors.error,
+                          child: const Icon(Icons.shopping_cart_outlined, color: AppColors.textPrimary),
+                        ),
+                        onPressed: () => context.push('/customer/cart'),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _searchCtrl,
+                style: GoogleFonts.harmattan(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'ابحث عن منتج أو ماركة...',
+                  hintStyle: GoogleFonts.harmattan(color: AppColors.textSecond),
+                  prefixIcon: const Icon(Icons.search, color: AppColors.textSecond),
+                  filled: true,
+                  fillColor: AppColors.bgSurface,
+                  border: OutlineInputBorder(
+                    borderRadius: AppSpacing.radius,
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: AppSpacing.radius,
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: AppSpacing.radius,
+                    borderSide: const BorderSide(color: AppColors.bluePrimary),
+                  ),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: AppColors.textSecond),
+                          onPressed: () {
+                            _searchCtrl.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                        )
+                      : null,
+                ),
+                onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+              ),
+            ),
+            const SizedBox(height: 16),
             SizedBox(
               height: 40,
               child: ListView(
@@ -85,10 +151,19 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             Expanded(
               child: productsAsync.when(
                 data: (products) {
-                  if (products.isEmpty) {
-                    return const TammEmptyState(
-                      icon: Icons.shopping_bag_outlined,
-                      message: 'لا توجد منتجات',
+                  var filtered = products;
+                  if (_searchQuery.isNotEmpty) {
+                    filtered = products.where((p) {
+                      final nameMatch = p.name.toLowerCase().contains(_searchQuery);
+                      final brandMatch = p.brand?.toLowerCase().contains(_searchQuery) ?? false;
+                      return nameMatch || brandMatch;
+                    }).toList();
+                  }
+
+                  if (filtered.isEmpty) {
+                    return TammEmptyState(
+                      icon: Icons.search_off,
+                      message: _searchQuery.isNotEmpty ? 'لا توجد نتائج للبحث' : 'لا توجد منتجات',
                     );
                   }
                   return GridView.builder(
@@ -100,9 +175,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           mainAxisSpacing: 12,
                           childAspectRatio: 0.72,
                         ),
-                    itemCount: products.length,
+                    itemCount: filtered.length,
                     itemBuilder: (_, i) {
-                      final p = products[i];
+                      final p = filtered[i];
                       return GestureDetector(
                         onTap: () => context.push('/customer/product/${p.id}'),
                         child: Container(

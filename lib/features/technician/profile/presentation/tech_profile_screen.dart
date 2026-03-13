@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../shared/repositories/auth_repository.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
-import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/technician_providers.dart';
 
@@ -62,17 +62,24 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
               return Column(
                 children: [
                   const SizedBox(height: 20),
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: AppColors.blueDark,
-                    child: Text(
-                      fullName.isNotEmpty ? fullName[0] : '?',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 32,
-                        color: AppColors.textPrimary,
+                  if (profile['avatar_url'] != null && profile['avatar_url'].toString().isNotEmpty)
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: AppColors.blueDark,
+                      backgroundImage: CachedNetworkImageProvider(profile['avatar_url'].toString()),
+                    )
+                  else
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: AppColors.blueDark,
+                      child: Text(
+                        fullName.isNotEmpty ? fullName[0] : '?',
+                        style: GoogleFonts.harmattan(
+                          fontSize: 32,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 12),
                   Text(
                     fullName,
@@ -241,12 +248,9 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                   const Spacer(),
                   TammButton(
                     label: 'تسجيل الخروج',
-                    isOutlined: true,
+                    type: TammButtonType.secondary,
                     icon: Icons.logout,
-                    onPressed: () async {
-                      await ref.read(authRepositoryProvider).signOut();
-                      if (context.mounted) context.go('/login');
-                    },
+                    onPressed: () => AuthRepository.confirmSignOut(context, ref),
                   ),
                   const SizedBox(height: 16),
                 ],

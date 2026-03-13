@@ -21,6 +21,7 @@ import '../../features/customer/profile/presentation/customer_profile_screen.dar
 import '../../features/customer/profile/presentation/my_orders_screen.dart';
 import '../../features/customer/profile/presentation/order_detail_screen.dart';
 import '../../features/customer/profile/presentation/my_devices_screen.dart';
+import '../../features/profile/screens/edit_profile_screen.dart';
 
 // Manager
 import '../../features/manager/manager_shell.dart';
@@ -90,8 +91,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const CheckoutScreen(),
       ),
       GoRoute(
-        path: '/customer/order-success',
-        builder: (_, __) => const OrderSuccessScreen(),
+        path: '/customer/order-success/:id',
+        builder: (_, state) => OrderSuccessScreen(
+          orderId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
         path: '/customer/service-request/:id',
@@ -114,6 +117,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/customer/devices',
         builder: (_, __) => const MyDevicesScreen(),
+      ),
+
+      // Edit Profile
+      GoRoute(
+        path: '/profile/edit',
+        builder: (_, __) => const EditProfileScreen(),
       ),
 
       // ========== MANAGER ==========

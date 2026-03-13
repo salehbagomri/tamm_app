@@ -5,6 +5,7 @@ import '../../core/constants/app_strings.dart';
 import '../../core/widgets/tamm_bottom_nav.dart';
 import '../../shared/providers/manager_providers.dart';
 import '../../shared/providers/order_providers.dart';
+import '../../shared/providers/auth_providers.dart';
 
 class ManagerShell extends ConsumerWidget {
   final Widget child;
@@ -20,6 +21,17 @@ class ManagerShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(roleStreamProvider, (prev, next) {
+      final role = next.valueOrNull;
+      if (role != null && role != 'manager') {
+        if (role == 'technician') {
+          context.go('/technician/tasks');
+        } else if (role == 'customer') {
+          context.go('/customer/home');
+        }
+      }
+    });
+
     return Scaffold(
       body: child,
       bottomNavigationBar: TammBottomNav(
