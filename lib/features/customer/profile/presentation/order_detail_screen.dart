@@ -118,7 +118,7 @@ class OrderDetailScreen extends ConsumerWidget {
                           ),
                         ),
                         Text(
-                          '${item.totalPrice.toInt()} ريال',
+                          '${item.totalPrice.toInt()} ر.س',
                           style: GoogleFonts.harmattan(
                             color: AppColors.blueSky,
                             fontWeight: FontWeight.w700,
@@ -141,7 +141,7 @@ class OrderDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    '${o.totalAmount.toInt()} ريال',
+                    '${o.totalAmount.toInt()} ر.س',
                     style: GoogleFonts.harmattan(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,

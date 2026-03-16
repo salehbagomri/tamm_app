@@ -191,7 +191,7 @@ class _ManagerDashboardScreenState
                                     ],
                                   ),
                                   Text(
-                                    '${o.totalAmount.toInt()} ريال',
+                                    '${o.totalAmount.toInt()} ر.س',
                                     style: GoogleFonts.harmattan(
                                       color: AppColors.blueSky,
                                       fontWeight: FontWeight.w700,

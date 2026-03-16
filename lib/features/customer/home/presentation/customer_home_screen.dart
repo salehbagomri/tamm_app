@@ -198,7 +198,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                               const SizedBox(height: 4),
                               Text(
                                 p.price != null
-                                    ? '${p.price!.toInt()} ريال'
+                                    ? '${p.price!.toInt()} ر.س'
                                     : AppStrings.requestQuote,
                                 style: GoogleFonts.harmattan(
                                   fontSize: 14,

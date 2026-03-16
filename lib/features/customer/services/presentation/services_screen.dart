@@ -173,7 +173,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                             ),
                             Text(
                               s.basePrice != null
-                                  ? '${s.basePrice!.toInt()} ريال'
+                                  ? '${s.basePrice!.toInt()} ر.س'
                                   : 'عرض سعر',
                               style: GoogleFonts.harmattan(
                                 fontSize: 14,

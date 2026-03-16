@@ -188,7 +188,7 @@ class _ManagerOrderDetailScreenState
                         ),
                       ),
                     Text(
-                      'المجموع: ${o.totalAmount.toInt()} ريال',
+                      'المجموع: ${o.totalAmount.toInt()} ر.س',
                       style: GoogleFonts.harmattan(
                         color: AppColors.blueSky,
                         fontWeight: FontWeight.w700,

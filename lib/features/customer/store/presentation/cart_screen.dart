@@ -111,7 +111,7 @@ class CartScreen extends ConsumerWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                     Text(
-                                      '${((item.product.price ?? 0) * item.quantity).toInt()} ريال',
+                                      '${((item.product.price ?? 0) * item.quantity).toInt()} ر.س',
                                       style: GoogleFonts.harmattan(
                                         fontSize: 14,
                                         color: AppColors.blueSky,
@@ -198,7 +198,7 @@ class CartScreen extends ConsumerWidget {
                           ),
                         ),
                         Text(
-                          '${notifier.total.toInt()} ريال',
+                          '${notifier.total.toInt()} ر.س',
                           style: GoogleFonts.harmattan(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,

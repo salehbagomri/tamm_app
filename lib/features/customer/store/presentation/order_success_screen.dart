@@ -44,7 +44,7 @@ class OrderSuccessScreen extends ConsumerWidget {
               const SizedBox(height: 32),
               TammButton(
                 label: 'تتبع الطلب',
-                onPressed: () => context.go('/customer/order/$orderId'),
+                onPressed: () => context.push('/customer/order/$orderId'),
               ),
               const SizedBox(height: 12),
               TammButton(

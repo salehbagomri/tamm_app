@@ -99,7 +99,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     Text(
                       p.price != null
-                          ? '${p.price!.toInt()} ريال'
+                          ? '${p.price!.toInt()} ر.س'
                           : AppStrings.requestQuote,
                       style: GoogleFonts.harmattan(
                         fontSize: 22,

@@ -91,11 +91,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [AppColors.bluePrimary, AppColors.blueLight],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.bluePrimary.withValues(alpha: 0.4),
@@ -104,14 +99,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
                 ),
-                child: Center(
-                  child: Text(
-                    'تمّ',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/icons/tamm-logo.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),

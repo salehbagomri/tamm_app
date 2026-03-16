@@ -101,7 +101,7 @@ class ManageProductsScreen extends ConsumerWidget {
                               ),
                               Text(
                                 p.price != null
-                                    ? '${p.price!.toInt()} ريال'
+                                    ? '${p.price!.toInt()} ر.س'
                                     : 'عرض سعر',
                                 style: GoogleFonts.harmattan(
                                   color: AppColors.blueSky,

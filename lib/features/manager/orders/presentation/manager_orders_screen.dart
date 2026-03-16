@@ -188,7 +188,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
-                                    '${o.totalAmount.toInt()} ريال',
+                                    '${o.totalAmount.toInt()} ر.س',
                                     style: GoogleFonts.harmattan(
                                       color: AppColors.blueSky,
                                       fontWeight: FontWeight.w700,

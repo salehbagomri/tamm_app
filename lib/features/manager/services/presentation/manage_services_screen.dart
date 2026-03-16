@@ -76,7 +76,7 @@ class ManageServicesScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${service.basePrice?.toInt() ?? 0} ريال',
+                              '${service.basePrice?.toInt() ?? 0} ر.س',
                               style: GoogleFonts.harmattan(
                                 fontSize: 16,
                                 color: AppColors.bluePrimary,
