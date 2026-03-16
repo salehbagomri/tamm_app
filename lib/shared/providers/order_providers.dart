@@ -82,7 +82,11 @@ class CartNotifier extends StateNotifier<AsyncValue<List<CartItem>>> {
 
   Future<void> addItem(CartItem item) async {
     try {
-      await _repository.addToCart(item.product.id, item.quantity);
+      await _repository.addToCart(
+        item.product.id, 
+        item.quantity, 
+        item.includeInstallation,
+      );
       await loadCart();
     } catch (e, st) {
       state = AsyncValue.error(e, st);

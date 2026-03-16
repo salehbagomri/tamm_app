@@ -110,15 +110,32 @@ class CartScreen extends ConsumerWidget {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  Text(
-                                    '${item.total.toInt()} ريال',
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 14,
-                                      color: AppColors.blueSky,
-                                      fontWeight: FontWeight.w700,
+                                    Text(
+                                      '${((item.product.price ?? 0) * item.quantity).toInt()} ريال',
+                                      style: GoogleFonts.harmattan(
+                                        fontSize: 14,
+                                        color: AppColors.blueSky,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    if (item.includeInstallation)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 2),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.handyman, size: 12, color: AppColors.bluePrimary),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'تركيب (+${item.product.installationPrice.toInt()})',
+                                              style: GoogleFonts.harmattan(
+                                                fontSize: 12,
+                                                color: AppColors.bluePrimary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                  ],
                               ),
                             ),
                             Row(

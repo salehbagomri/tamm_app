@@ -160,6 +160,7 @@ class ProductDetailScreen extends ConsumerWidget {
                         label: p.requiresInstallation ? 'اشترِ وركّب / أضف للسلة' : AppStrings.addToCart,
                         icon: Icons.shopping_cart_outlined,
                         onPressed: () async {
+                          bool wantsInstallation = false;
                           if (p.requiresInstallation) {
                             final result = await showModalBottomSheet<bool>(
                               context: context,
@@ -168,13 +169,16 @@ class ProductDetailScreen extends ConsumerWidget {
                               builder: (context) => const BuyInstallSheet(),
                             );
                             if (result == null) return; // User cancelled
-                            // result holds whether user wants installation, handled in checkout later
+                            wantsInstallation = result;
                           }
 
                           try {
                             // We use ref.read to interact with our async cart provider
                             final cartNotifier = ref.read(cartProvider.notifier);
-                            await cartNotifier.addItem(CartItem(product: p));
+                            await cartNotifier.addItem(CartItem(
+                              product: p,
+                              includeInstallation: wantsInstallation,
+                            ));
                             
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(

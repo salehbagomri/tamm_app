@@ -18,11 +18,15 @@ class CartRepository {
     return data.map((e) {
       final productData = e['products'] as Map<String, dynamic>;
       final product = Product.fromMap(productData);
-      return CartItem(product: product, quantity: e['quantity'] as int);
+      return CartItem(
+        product: product, 
+        quantity: e['quantity'] as int,
+        includeInstallation: e['include_installation'] ?? false,
+      );
     }).toList();
   }
 
-  Future<void> addToCart(String productId, int quantity) async {
+  Future<void> addToCart(String productId, int quantity, bool includeInstallation) async {
     final userId = _client.auth.currentUser!.id;
     
     // Check if it already exists to upsert
@@ -37,7 +41,10 @@ class CartRepository {
       final currentQty = existing['quantity'] as int;
       await _client
           .from('cart_items')
-          .update({'quantity': currentQty + quantity})
+          .update({
+            'quantity': currentQty + quantity,
+            'include_installation': includeInstallation, // Update preference if it changes
+          })
           .eq('user_id', userId)
           .eq('product_id', productId);
     } else {
@@ -45,6 +52,7 @@ class CartRepository {
         'user_id': userId,
         'product_id': productId,
         'quantity': quantity,
+        'include_installation': includeInstallation,
       });
     }
   }

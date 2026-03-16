@@ -22,7 +22,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _addressCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
   String _timeSlot = 'صباحاً';
-  bool _includeInstall = false;
   bool _loading = false;
   DateTime _preferredDate = DateTime.now().add(const Duration(days: 1));
 
@@ -84,7 +83,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           'item_type': 'product',
           'product_id': c.product.id,
           'quantity': c.quantity,
-          'unit_price': c.product.price,
+          // If installation is included for this product, add its price to the unit price for the order item record
+          'unit_price': (c.product.price ?? 0) + (c.includeInstallation ? c.product.installationPrice : 0),
           'total_price': c.total,
         }).toList(),
         orElse: () => <Map<String, dynamic>>[],
@@ -99,16 +99,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         return;
       }
 
+      // Check if any item in the cart includes installation
+      final hasInstallation = cartAsync.maybeWhen(
+        data: (cart) => cart.any((c) => c.includeInstallation),
+        orElse: () => false,
+      );
+
       final orderId = await ref
           .read(orderRepositoryProvider)
           .createOrder(
-            orderType: _includeInstall ? 'product_and_service' : 'product',
+            orderType: hasInstallation ? 'product_and_service' : 'product',
             address: _addressCtrl.text,
             total: notifier.total,
             preferredDate: _preferredDate,
             timeSlot: _timeSlot,
             notes: _notesCtrl.text.isEmpty ? null : _notesCtrl.text,
-            includeInstall: _includeInstall,
+            includeInstall: hasInstallation,
             latitude: _latitude,
             longitude: _longitude,
             items: items,
@@ -307,17 +313,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              CheckboxListTile(
-                title: Text(
-                  AppStrings.includeInstall,
-                  style: GoogleFonts.harmattan(color: AppColors.textPrimary),
-                ),
-                value: _includeInstall,
-                onChanged: (v) => setState(() => _includeInstall = v!),
-                activeColor: AppColors.bluePrimary,
-                contentPadding: EdgeInsets.zero,
-              ),
+              // We removed the old _includeInstall checkbox because it's now handled per-product in the cart
               const SizedBox(height: 24),
               TammButton(
                 label: AppStrings.confirm,
@@ -358,23 +354,57 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             data: (cart) => Column(
               children: cart.map((item) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        '${item.quantity}x ${item.product.name}',
-                        style: GoogleFonts.harmattan(fontSize: 14),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${item.quantity}x ${item.product.name}',
+                            style: GoogleFonts.harmattan(fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          '${((item.product.price ?? 0) * item.quantity).toInt()} ريال',
+                          style: GoogleFonts.harmattan(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '${item.total.toInt()} ريال',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    if (item.includeInstallation)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4, right: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.handyman, size: 14, color: AppColors.bluePrimary),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'خدمة التركيب',
+                                  style: GoogleFonts.harmattan(
+                                    fontSize: 14,
+                                    color: AppColors.bluePrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              '+ ${item.product.installationPrice.toInt()} ريال',
+                              style: GoogleFonts.harmattan(
+                                fontSize: 14,
+                                color: AppColors.textSecond,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
               )).toList(),
