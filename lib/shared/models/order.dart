@@ -15,6 +15,17 @@ class Order {
   final Map<String, dynamic>? customerProfile;
   final String? technicianNotes;
   final String? technicianName;
+  
+  // New Fields
+  final String? scheduledPeriod;
+  final String? scheduledHour;
+  final double? quotePrice;
+  final String? quoteDetails;
+  final String? quoteDuration;
+  final String? quoteStatus;
+  final DateTime? quoteSentAt;
+  final DateTime? quoteRespondedAt;
+  final String? rejectionReason;
 
   const Order({
     required this.id,
@@ -33,6 +44,15 @@ class Order {
     this.customerProfile,
     this.technicianNotes,
     this.technicianName,
+    this.scheduledPeriod,
+    this.scheduledHour,
+    this.quotePrice,
+    this.quoteDetails,
+    this.quoteDuration,
+    this.quoteStatus,
+    this.quoteSentAt,
+    this.quoteRespondedAt,
+    this.rejectionReason,
   });
 
   factory Order.fromMap(Map<String, dynamic> m) {
@@ -72,19 +92,36 @@ class Order {
       customerProfile: m['profiles'] as Map<String, dynamic>?,
       technicianNotes: tNotes,
       technicianName: tName,
+      scheduledPeriod: m['scheduled_period'],
+      scheduledHour: m['scheduled_hour'],
+      quotePrice: (m['quote_price'] as num?)?.toDouble(),
+      quoteDetails: m['quote_details'],
+      quoteDuration: m['quote_duration'],
+      quoteStatus: m['quote_status'],
+      quoteSentAt: m['quote_sent_at'] != null ? DateTime.parse(m['quote_sent_at']) : null,
+      quoteRespondedAt: m['quote_responded_at'] != null ? DateTime.parse(m['quote_responded_at']) : null,
+      rejectionReason: m['rejection_reason'],
     );
   }
 
-  String get statusLabel => switch (status) {
-    'pending' => 'معلق',
-    'confirmed' => 'مؤكد',
-    'assigned' => 'تم التعيين',
-    'on_the_way' => 'في الطريق',
-    'in_progress' => 'جاري التنفيذ',
-    'completed' => 'مكتمل',
-    'cancelled' => 'ملغي',
-    _ => status,
-  };
+  String get statusLabel {
+    if (orderType == 'quote_request') {
+      if (quoteStatus == 'pending') return 'بانتظار العرض';
+      if (quoteStatus == 'sent') return 'تم إرسال العرض';
+      if (quoteStatus == 'rejected') return 'عرض مرفوض';
+    }
+    
+    return switch (status) {
+      'pending' => 'معلق',
+      'confirmed' => 'مؤكد',
+      'assigned' => 'تم التعيين',
+      'on_the_way' => 'في الطريق',
+      'in_progress' => 'جاري التنفيذ',
+      'completed' => 'مكتمل',
+      'cancelled' => 'ملغي',
+      _ => status,
+    };
+  }
 }
 
 class OrderItem {

@@ -46,6 +46,9 @@ class OrderRepository {
     String? timeSlot,
     String? notes,
     bool includeInstall = false,
+    String? scheduledPeriod,
+    String? scheduledHour,
+    String? quoteStatus,
     double? latitude,
     double? longitude,
     required List<Map<String, dynamic>> items,
@@ -62,6 +65,9 @@ class OrderRepository {
           'preferred_time_slot': timeSlot,
           'notes': notes,
           'include_installation': includeInstall,
+          'scheduled_period': scheduledPeriod,
+          'scheduled_hour': scheduledHour,
+          'quote_status': quoteStatus,
           if (latitude != null) 'latitude': latitude,
           if (longitude != null) 'longitude': longitude,
         })
@@ -78,5 +84,21 @@ class OrderRepository {
 
   Future<void> updateOrderStatus(String id, String status) async {
     await _client.from('orders').update({'status': status}).eq('id', id);
+  }
+
+  Future<void> updateQuoteStatus(String orderId, String status, {String? rejectionReason}) async {
+    final updates = <String, dynamic>{
+      'quote_status': status,
+      'quote_responded_at': DateTime.now().toIso8601String(),
+    };
+    if (status == 'accepted') {
+      updates['status'] = 'confirmed';
+    } else if (status == 'rejected') {
+      updates['status'] = 'cancelled';
+      if (rejectionReason != null) {
+        updates['rejection_reason'] = rejectionReason;
+      }
+    }
+    await _client.from('orders').update(updates).eq('id', orderId);
   }
 }

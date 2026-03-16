@@ -15,8 +15,11 @@ import '../../features/customer/store/presentation/cart_screen.dart';
 import '../../features/customer/store/presentation/checkout_screen.dart';
 import '../../features/customer/store/presentation/order_success_screen.dart';
 import '../../features/customer/services/presentation/services_screen.dart';
+import '../../features/customer/services/presentation/service_detail_screen.dart';
 import '../../features/customer/services/presentation/service_request_screen.dart';
-import '../../features/customer/services/presentation/service_success_screen.dart';
+import '../../features/customer/services/presentation/booking_confirmation_screen.dart';
+import '../../features/customer/services/presentation/quote_request_screen.dart';
+import '../../features/customer/services/presentation/quote_response_screen.dart';
 import '../../features/customer/profile/presentation/customer_profile_screen.dart';
 import '../../features/customer/profile/presentation/my_orders_screen.dart';
 import '../../features/customer/profile/presentation/order_detail_screen.dart';
@@ -27,14 +30,14 @@ import '../../features/profile/screens/edit_profile_screen.dart';
 import '../../features/manager/manager_shell.dart';
 import '../../features/manager/dashboard/presentation/manager_dashboard_screen.dart';
 import '../../features/manager/orders/presentation/manager_orders_screen.dart';
-import '../../features/manager/orders/presentation/manager_order_detail_screen.dart';
 import '../../features/manager/technicians/presentation/technicians_screen.dart';
 import '../../features/manager/technicians/presentation/add_technician_screen.dart';
 import '../../features/manager/technicians/presentation/manager_technician_detail_screen.dart';
 import '../../features/manager/products/presentation/manage_products_screen.dart';
 import '../../features/manager/products/presentation/product_form_screen.dart';
-import '../../features/manager/services/presentation/manage_services_screen.dart';
 import '../../features/manager/services/presentation/service_form_screen.dart';
+import '../../features/manager/quotes/presentation/manager_quotes_screen.dart';
+import '../../features/manager/quotes/presentation/manager_quote_detail_screen.dart';
 import '../../shared/models/service_type.dart';
 
 // Technician
@@ -102,8 +105,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ServiceRequestScreen(serviceTypeId: state.pathParameters['id']!),
       ),
       GoRoute(
-        path: '/customer/service-success',
-        builder: (_, __) => const ServiceSuccessScreen(),
+        path: '/customer/service-detail/:id',
+        builder: (_, state) =>
+            ServiceDetailScreen(serviceTypeId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/customer/booking-confirmation/:id',
+        builder: (_, state) => BookingConfirmationScreen(
+          orderId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/customer/quote-request/:id',
+        builder: (_, state) => QuoteRequestScreen(
+          serviceTypeId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/customer/quote-response/:id',
+        builder: (_, state) => QuoteResponseScreen(
+          orderId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
         path: '/customer/orders',
@@ -146,16 +168,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (_, __) => const ManageProductsScreen(),
           ),
           GoRoute(
-            path: '/manager/services',
-            builder: (_, __) => const ManageServicesScreen(),
+            path: '/manager/quotes',
+            builder: (_, __) => const ManagerQuotesScreen(),
           ),
         ],
       ),
       // Manager routes outside shell
       GoRoute(
-        path: '/manager/order/:id',
-        builder: (_, state) =>
-            ManagerOrderDetailScreen(orderId: state.pathParameters['id']!),
+        path: '/manager/quote/:id',
+        builder: (_, state) => ManagerQuoteDetailScreen(
+          orderId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
         path: '/manager/add-technician',

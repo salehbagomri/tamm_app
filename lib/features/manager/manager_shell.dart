@@ -16,6 +16,7 @@ class ManagerShell extends ConsumerWidget {
     if (loc.startsWith('/manager/technicians')) return 2;
     if (loc.startsWith('/manager/products')) return 3;
     if (loc.startsWith('/manager/services')) return 4;
+    if (loc.startsWith('/manager/quotes')) return 5;
     return 0;
   }
 
@@ -52,6 +53,8 @@ class ManagerShell extends ConsumerWidget {
             case 4:
               ref.invalidate(managerServicesProvider);
               context.go('/manager/services');
+            case 5:
+              context.go('/manager/quotes');
           }
         },
         items: const [
@@ -74,6 +77,10 @@ class ManagerShell extends ConsumerWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.handyman_rounded),
             label: 'الخدمات',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.request_quote_rounded),
+            label: 'عروض الأسعار',
           ),
         ],
       ),

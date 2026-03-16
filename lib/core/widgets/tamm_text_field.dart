@@ -17,6 +17,8 @@ class TammTextField extends StatelessWidget {
   final String? prefixText;
   final List<TextInputFormatter>? inputFormatters;
 
+  final bool readOnly;
+
   const TammTextField({
     super.key,
     required this.label,
@@ -31,6 +33,7 @@ class TammTextField extends StatelessWidget {
     this.suffix,
     this.prefixText,
     this.inputFormatters,
+    this.readOnly = false,
   });
 
   @override
@@ -55,6 +58,7 @@ class TammTextField extends StatelessWidget {
           validator: validator,
           onChanged: onChanged,
           inputFormatters: inputFormatters,
+          readOnly: readOnly,
           style: GoogleFonts.harmattan(
             color: AppColors.textPrimary,
             fontSize: 16,

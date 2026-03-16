@@ -22,7 +22,10 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
   final _nameCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
+  final _includesCtrl = TextEditingController();
+  final _durationCtrl = TextEditingController();
   String _category = 'ac_install';
+  bool _isQuoteBased = false;
 
   bool _loading = false;
 
@@ -44,6 +47,9 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
       _nameCtrl.text = s.name;
       _descCtrl.text = s.description ?? '';
       _priceCtrl.text = s.basePrice?.toStringAsFixed(0) ?? '';
+      _isQuoteBased = s.isQuoteBased;
+      _includesCtrl.text = s.includes.join('\n');
+      _durationCtrl.text = s.estimatedDuration ?? '';
       if (_categories.containsKey(s.category)) {
         _category = s.category;
       }
@@ -62,6 +68,9 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
             : _descCtrl.text.trim(),
         'category': _category,
         'base_price': double.tryParse(_priceCtrl.text) ?? 0.0,
+        'is_quote_based': _isQuoteBased,
+        'includes': _includesCtrl.text.trim().split('\n').where((e) => e.isNotEmpty).toList(),
+        'estimated_duration': _durationCtrl.text.trim().isEmpty ? null : _durationCtrl.text.trim(),
       };
 
       final repo = ref.read(serviceRepositoryProvider);
@@ -176,7 +185,36 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                 controller: _priceCtrl,
                 keyboardType: TextInputType.number,
                 validator: (val) =>
-                    val == null || val.isEmpty ? 'حقل مطلوب' : null,
+                    !_isQuoteBased && (val == null || val.isEmpty) ? 'حقل مطلوب للسعر الثابت' : null,
+              ),
+              const SizedBox(height: 16),
+              CheckboxListTile(
+                title: Text(
+                  'خدمة عرض سعر (بدون سعر ثابت)',
+                  style: GoogleFonts.harmattan(
+                    fontSize: 16,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                contentPadding: EdgeInsets.zero,
+                value: _isQuoteBased,
+                activeColor: AppColors.bluePrimary,
+                onChanged: (val) {
+                  if (val != null) setState(() => _isQuoteBased = val);
+                },
+              ),
+              const SizedBox(height: 16),
+              TammTextField(
+                label: 'قائمة ما تشمله الخدمة (سطر لكل عنصر)',
+                hint: 'شامل الفك\nشامل الفريون...',
+                controller: _includesCtrl,
+                maxLines: 4,
+              ),
+              const SizedBox(height: 16),
+              TammTextField(
+                label: 'مدة التنفيذ التقديرية',
+                hint: 'مثال: ٢-٤ ساعات',
+                controller: _durationCtrl,
               ),
               const SizedBox(height: 16),
               TammTextField(
@@ -203,6 +241,8 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
     _nameCtrl.dispose();
     _descCtrl.dispose();
     _priceCtrl.dispose();
+    _includesCtrl.dispose();
+    _durationCtrl.dispose();
     super.dispose();
   }
 }

@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/widgets/tamm_loading.dart';
+import '../../../../core/widgets/tamm_shimmer.dart';
+import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../shared/models/service_type.dart';
@@ -127,7 +128,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                       final s = filtered[i];
                       return TammCard(
                         onTap: () =>
-                            context.push('/customer/service-request/${s.id}'),
+                            context.push('/customer/service-detail/${s.id}'),
                         child: Row(
                           children: [
                             Container(
@@ -187,8 +188,29 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     },
                   );
                 },
-                loading: () => const TammLoading(),
-                error: (e, _) => Center(child: Text('$e')),
+                loading: () => ListView.separated(
+                  padding: AppSpacing.pagePadding,
+                  itemCount: 4,
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemBuilder: (_, __) => TammShimmer(height: 80, width: double.infinity, borderRadius: BorderRadius.circular(12)),
+                ),
+                error: (e, _) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('حدث خطأ أثناء تحميل الخدمات', style: GoogleFonts.harmattan(fontSize: 18, color: AppColors.textPrimary)),
+                        const SizedBox(height: 16),
+                        TammButton(
+                          label: 'حاول مجدداً',
+                          type: TammButtonType.secondary,
+                          onPressed: () => ref.invalidate(serviceTypesProvider),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

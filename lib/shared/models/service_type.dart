@@ -6,6 +6,9 @@ class ServiceType {
   final double? basePrice;
   final String? iconName;
   final bool isActive;
+  final bool isQuoteBased;
+  final List<String> includes;
+  final String? estimatedDuration;
 
   const ServiceType({
     required this.id,
@@ -15,6 +18,9 @@ class ServiceType {
     this.basePrice,
     this.iconName,
     this.isActive = true,
+    this.isQuoteBased = false,
+    this.includes = const [],
+    this.estimatedDuration,
   });
 
   factory ServiceType.fromMap(Map<String, dynamic> m) => ServiceType(
@@ -25,5 +31,8 @@ class ServiceType {
     basePrice: (m['base_price'] as num?)?.toDouble(),
     iconName: m['icon_name'],
     isActive: m['is_active'] ?? true,
+    isQuoteBased: m['is_quote_based'] ?? false,
+    includes: (m['includes'] as List<dynamic>?)?.cast<String>() ?? [],
+    estimatedDuration: m['estimated_duration'],
   );
 }
