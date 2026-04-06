@@ -128,7 +128,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) => AlertDialog(
+          builder: (dialogContext) => AlertDialog(
             title: const Row(
               children: [
                 Icon(Icons.check_circle, color: AppColors.success),
@@ -140,7 +140,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close dialog
+                  Navigator.pop(dialogContext); // Close dialog
                   context.push('/customer/order/$orderId'); // Go to order
                 },
                 child: const Text('تتبع الطلب'),
@@ -148,7 +148,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
               TammButton(
                 label: 'الرئيسية',
                 onPressed: () {
-                  Navigator.pop(context); // Close dialog
+                  Navigator.pop(dialogContext); // Close dialog
                   context.go('/customer/home'); // Go to home
                 },
               ),

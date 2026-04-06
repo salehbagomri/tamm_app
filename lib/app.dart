@@ -34,7 +34,7 @@ class _TammAppState extends ConsumerState<TammApp> {
 
   @override
   Widget build(BuildContext context) {
-    final router = ref.watch(appRouterProvider);
+    final router = ref.read(appRouterProvider);
 
     return MaterialApp.router(
       title: 'تمّ',

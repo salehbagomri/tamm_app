@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -47,8 +48,15 @@ import '../../features/technician/tasks/presentation/tech_tasks_screen.dart';
 import '../../features/technician/tasks/presentation/tech_task_detail_screen.dart';
 import '../../features/technician/profile/presentation/tech_profile_screen.dart';
 
+// Navigator keys — prevent duplicate page key assertions
+final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+final _customerShellKey = GlobalKey<NavigatorState>(debugLabel: 'customerShell');
+final _managerShellKey = GlobalKey<NavigatorState>(debugLabel: 'managerShell');
+final _technicianShellKey = GlobalKey<NavigatorState>(debugLabel: 'techShell');
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     routes: [
       // ========== AUTH ==========
@@ -61,6 +69,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // ========== CUSTOMER ==========
       ShellRoute(
+        navigatorKey: _customerShellKey,
         builder: (_, __, child) => CustomerShell(child: child),
         routes: [
           GoRoute(
@@ -83,73 +92,90 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      // Customer routes outside shell (full-screen)
+      // Customer routes outside shell (full-screen, root navigator)
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/product/:id',
         builder: (_, state) =>
             ProductDetailScreen(productId: state.pathParameters['id']!),
       ),
-      GoRoute(path: '/customer/cart', builder: (_, __) => const CartScreen()),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/customer/cart',
+        builder: (_, __) => const CartScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/checkout',
         builder: (_, __) => const CheckoutScreen(),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/order-success/:id',
         builder: (_, state) => OrderSuccessScreen(
           orderId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/service-request/:id',
         builder: (_, state) =>
             ServiceRequestScreen(serviceTypeId: state.pathParameters['id']!),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/service-detail/:id',
         builder: (_, state) =>
             ServiceDetailScreen(serviceTypeId: state.pathParameters['id']!),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/booking-confirmation/:id',
         builder: (_, state) => BookingConfirmationScreen(
           orderId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/quote-request/:id',
         builder: (_, state) => QuoteRequestScreen(
           serviceTypeId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/quote-response/:id',
         builder: (_, state) => QuoteResponseScreen(
           orderId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/orders',
         builder: (_, __) => const MyOrdersScreen(),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/order/:id',
         builder: (_, state) =>
             OrderDetailScreen(orderId: state.pathParameters['id']!),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/devices',
         builder: (_, __) => const MyDevicesScreen(),
       ),
 
       // Edit Profile
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/profile/edit',
         builder: (_, __) => const EditProfileScreen(),
       ),
 
       // ========== MANAGER ==========
       ShellRoute(
+        navigatorKey: _managerShellKey,
         builder: (_, __, child) => ManagerShell(child: child),
         routes: [
           GoRoute(
@@ -180,27 +206,32 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       // Manager routes outside shell
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/manager/quote/:id',
         builder: (_, state) => ManagerQuoteDetailScreen(
           orderId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/manager/add-technician',
         builder: (_, __) => const AddTechnicianScreen(),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/manager/technicians/:id',
         builder: (_, state) => ManagerTechnicianDetailScreen(
           technicianId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/manager/product/form',
         builder: (_, state) =>
             ProductFormScreen(productId: state.extra as String?),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/manager/service/form',
         builder: (_, state) =>
             ServiceFormScreen(service: state.extra as ServiceType?),
@@ -208,6 +239,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // ========== TECHNICIAN ==========
       ShellRoute(
+        navigatorKey: _technicianShellKey,
         builder: (_, __, child) => TechnicianShell(child: child),
         routes: [
           GoRoute(
@@ -222,6 +254,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       // Technician routes outside shell
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/technician/task/:id',
         builder: (_, state) =>
             TechTaskDetailScreen(assignmentId: state.pathParameters['id']!),
