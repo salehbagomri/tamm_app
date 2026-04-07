@@ -38,6 +38,7 @@ import '../../features/manager/products/presentation/manage_products_screen.dart
 import '../../features/manager/products/presentation/product_form_screen.dart';
 import '../../features/manager/services/presentation/manage_services_screen.dart';
 import '../../features/manager/services/presentation/service_form_screen.dart';
+import '../../features/manager/orders/presentation/manager_order_detail_screen.dart';
 import '../../features/manager/quotes/presentation/manager_quotes_screen.dart';
 import '../../features/manager/quotes/presentation/manager_quote_detail_screen.dart';
 import '../../shared/models/service_type.dart';
@@ -205,6 +206,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
       // Manager routes outside shell
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/manager/order/:id',
+        builder: (_, state) => ManagerOrderDetailScreen(
+          orderId: state.pathParameters['id']!,
+        ),
+      ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/manager/quote/:id',

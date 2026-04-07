@@ -129,7 +129,13 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                         final o = orders[i];
                         final customer = o.customerProfile;
                         return TammCard(
-                          onTap: () => context.push('/manager/order/${o.id}'),
+                          onTap: () {
+                            if (o.orderType == 'quote_request') {
+                              context.push('/manager/quote/${o.id}');
+                            } else {
+                              context.push('/manager/order/${o.id}');
+                            }
+                          },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -137,11 +143,13 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    o.orderNumber,
-                                    style: GoogleFonts.harmattan(
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textPrimary,
+                                  Expanded(
+                                    child: Text(
+                                      o.orderTypeLabel,
+                                      style: GoogleFonts.harmattan(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textPrimary,
+                                      ),
                                     ),
                                   ),
                                   Container(
@@ -166,6 +174,13 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                 ],
                               ),
                               const SizedBox(height: 4),
+                              Text(
+                                '#${o.orderNumber}',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 13,
+                                  color: AppColors.textSecond,
+                                ),
+                              ),
                               if (customer != null)
                                 Text(
                                   customer['full_name'] ?? '',
@@ -178,19 +193,26 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    o.address,
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 13,
-                                      color: AppColors.textFaint,
+                                  Expanded(
+                                    child: Text(
+                                      o.address,
+                                      style: GoogleFonts.harmattan(
+                                        fontSize: 13,
+                                        color: AppColors.textFaint,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    '${o.totalAmount.toInt()} ر.س',
+                                    o.orderType == 'quote_request' && o.totalAmount == 0
+                                        ? o.statusLabel
+                                        : '${o.totalAmount.toInt()} ر.س',
                                     style: GoogleFonts.harmattan(
-                                      color: AppColors.blueSky,
+                                      color: o.orderType == 'quote_request' && o.totalAmount == 0
+                                          ? AppColors.warning
+                                          : AppColors.blueSky,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),

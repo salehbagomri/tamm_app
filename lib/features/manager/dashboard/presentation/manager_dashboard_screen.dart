@@ -96,14 +96,18 @@ class _ManagerDashboardScreenState
                 ),
                 const SizedBox(height: 20),
                 statsAsync.when(
-                  data: (stats) => GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.35,
-                    children: [
+                  data: (stats) {
+                    final screenWidth = MediaQuery.of(context).size.width;
+                    final cardWidth = (screenWidth - 32 - 12) / 2; // padding + spacing
+                    final aspectRatio = cardWidth / 100; // dynamic height
+                    return GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: aspectRatio.clamp(1.0, 1.8),
+                      children: [
                       _StatCard(
                         label: 'معلق',
                         value: '${stats['pending']}',
@@ -128,8 +132,9 @@ class _ManagerDashboardScreenState
                         color: AppColors.blueSky,
                         icon: Icons.people,
                       ),
-                    ],
-                  ),
+                      ],
+                  );
+                  },
                   loading: () => const TammLoading(),
                   error: (e, _) => Text('$e'),
                 ),
@@ -164,36 +169,47 @@ class _ManagerDashboardScreenState
                           (o) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: TammCard(
-                              onTap: () =>
-                                  context.push('/manager/order/${o.id}'),
+                              onTap: () {
+                                if (o.orderType == 'quote_request') {
+                                  context.push('/manager/quote/${o.id}');
+                                } else {
+                                  context.push('/manager/order/${o.id}');
+                                }
+                              },
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        o.orderNumber,
-                                        style: GoogleFonts.harmattan(
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.textPrimary,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          o.orderTypeLabel,
+                                          style: GoogleFonts.harmattan(
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.textPrimary,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        o.statusLabel,
-                                        style: GoogleFonts.harmattan(
-                                          fontSize: 14,
-                                          color: AppColors.textSecond,
+                                        Text(
+                                          '#${o.orderNumber} • ${o.statusLabel}',
+                                          style: GoogleFonts.harmattan(
+                                            fontSize: 13,
+                                            color: AppColors.textSecond,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   Text(
-                                    '${o.totalAmount.toInt()} ر.س',
+                                    o.orderType == 'quote_request' && o.totalAmount == 0
+                                        ? o.statusLabel
+                                        : '${o.totalAmount.toInt()} ر.س',
                                     style: GoogleFonts.harmattan(
-                                      color: AppColors.blueSky,
+                                      color: o.orderType == 'quote_request' && o.totalAmount == 0
+                                          ? AppColors.warning
+                                          : AppColors.blueSky,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -239,22 +255,29 @@ class _StatCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: GoogleFonts.harmattan(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              color: color,
+          Icon(icon, color: color, size: 22),
+          const SizedBox(height: 6),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: GoogleFonts.harmattan(
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
             ),
           ),
-          Text(
-            label,
-            style: GoogleFonts.harmattan(
-              fontSize: 13,
-              color: AppColors.textSecond,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              style: GoogleFonts.harmattan(
+                fontSize: 13,
+                color: AppColors.textSecond,
+              ),
             ),
           ),
         ],
