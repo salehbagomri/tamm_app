@@ -104,7 +104,7 @@ class _ManagerDashboardScreenState
                             Expanded(
                               child: _StatCard(
                                 label: 'معلق',
-                                value: '${stats['pending']}',
+                                value: '${stats['pending'] ?? 0}',
                                 color: AppColors.warning,
                                 icon: Icons.pending_actions,
                               ),
@@ -112,10 +112,10 @@ class _ManagerDashboardScreenState
                             const SizedBox(width: 12),
                             Expanded(
                               child: _StatCard(
-                                label: 'جاري التنفيذ',
-                                value: '${stats['in_progress']}',
-                                color: AppColors.blueLight,
-                                icon: Icons.engineering,
+                                label: 'عروض تحتاج إجراء',
+                                value: '${stats['quotes_need_action'] ?? 0}',
+                                color: AppColors.error,
+                                icon: Icons.request_quote,
                               ),
                             ),
                           ],
@@ -125,19 +125,19 @@ class _ManagerDashboardScreenState
                           children: [
                             Expanded(
                               child: _StatCard(
-                                label: 'مكتمل اليوم',
-                                value: '${stats['completed']}',
-                                color: AppColors.success,
-                                icon: Icons.check_circle,
+                                label: 'جاري التنفيذ',
+                                value: '${stats['in_progress'] ?? 0}',
+                                color: AppColors.blueLight,
+                                icon: Icons.engineering,
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: _StatCard(
-                                label: 'الفنيون',
-                                value: '${stats['technicians']}',
-                                color: AppColors.blueSky,
-                                icon: Icons.people,
+                                label: 'مكتمل اليوم',
+                                value: '${stats['completed'] ?? 0}',
+                                color: AppColors.success,
+                                icon: Icons.check_circle,
                               ),
                             ),
                           ],

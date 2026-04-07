@@ -81,29 +81,43 @@ class TechnicianRepository {
       now.month,
       now.day,
     ).toUtc().toIso8601String();
+    
     final pending = await _client
         .from('orders')
         .select()
         .eq('status', 'pending')
+        .neq('order_type', 'quote_request')
         .count(CountOption.exact);
+        
+    final quotesNeedAction = await _client
+        .from('orders')
+        .select()
+        .eq('order_type', 'quote_request')
+        .inFilter('quote_status', ['pending', 'rejected'])
+        .count(CountOption.exact);
+        
     final completed = await _client
         .from('orders')
         .select()
         .eq('status', 'completed')
         .gte('updated_at', startOfDay)
         .count(CountOption.exact);
+        
     final inProgress = await _client
         .from('orders')
         .select()
-        .eq('status', 'in_progress')
+        .inFilter('status', ['in_progress', 'assigned', 'on_the_way'])
         .count(CountOption.exact);
+        
     final techs = await _client
         .from('technicians')
         .select()
         .eq('is_active', true)
         .count(CountOption.exact);
+        
     return {
       'pending': pending.count,
+      'quotes_need_action': quotesNeedAction.count,
       'completed': completed.count,
       'in_progress': inProgress.count,
       'technicians': techs.count,

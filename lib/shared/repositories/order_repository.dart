@@ -92,9 +92,11 @@ class OrderRepository {
       'quote_responded_at': DateTime.now().toIso8601String(),
     };
     if (status == 'accepted') {
+      final order = await _client.from('orders').select('quote_price').eq('id', orderId).single();
+      final price = (order['quote_price'] as num?)?.toDouble() ?? 0;
       updates['status'] = 'confirmed';
+      updates['total_amount'] = price;
     } else if (status == 'rejected') {
-      updates['status'] = 'cancelled';
       if (rejectionReason != null) {
         updates['rejection_reason'] = rejectionReason;
       }

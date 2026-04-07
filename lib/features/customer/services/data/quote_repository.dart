@@ -69,11 +69,10 @@ class QuoteRepository {
     }).eq('id', orderId);
   }
 
-  // 5. Manager: Get all Quote Requests
   Future<List<Order>> getQuoteRequests() async {
     final res = await _client
         .from('orders')
-        .select('*, items:order_items(*), profiles!orders_customer_id_fkey(*)')
+        .select('*, items:order_items(*), profiles!customer_id(full_name, phone)')
         .eq('order_type', 'quote_request')
         .order('created_at', ascending: false);
 
