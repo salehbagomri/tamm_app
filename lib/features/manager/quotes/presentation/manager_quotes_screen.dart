@@ -33,6 +33,12 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with 
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    
+    // إعادة جلب البيانات فور فتح الشاشة (مهم عند العودة من شاشة التفاصيل)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(managerQuotesProvider);
+    });
+
     // Realtime: تحديث تلقائي عند أي تغيير في طلبات العروض
     _channel = Supabase.instance.client
         .channel('public:quotes_list')
@@ -129,7 +135,14 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with 
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final order = quotes[index];
-          return _QuoteRequestCard(order: order);
+          return _QuoteRequestCard(
+            order: order,
+            onTap: () async {
+              await context.push('/manager/quote/${order.id}');
+              // عند العودة من شاشة التفاصيل، أعد جلب البيانات
+              ref.invalidate(managerQuotesProvider);
+            },
+          );
         },
       ),
     );
@@ -138,8 +151,9 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with 
 
 class _QuoteRequestCard extends StatelessWidget {
   final Order order;
+  final VoidCallback onTap;
 
-  const _QuoteRequestCard({required this.order});
+  const _QuoteRequestCard({required this.order, required this.onTap});
 
   Color _getStatusColor(String? status) {
     if (status == 'pending') return AppColors.warning;
@@ -155,7 +169,7 @@ class _QuoteRequestCard extends StatelessWidget {
     final needsAction = order.quoteStatus == 'pending' || order.quoteStatus == 'rejected';
 
     return TammCard(
-      onTap: () => context.push('/manager/quote/${order.id}'),
+      onTap: onTap,
       child: Stack(
         children: [
           Column(

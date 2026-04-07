@@ -50,14 +50,13 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
           event: PostgresChangeEvent.update,
           schema: 'public',
           table: 'orders',
-          filter: PostgresChangeFilter(
-            type: PostgresChangeFilterType.eq,
-            column: 'id',
-            value: widget.orderId,
-          ),
-          callback: (_) {
-            ref.invalidate(orderDetailProvider(widget.orderId));
-            ref.invalidate(managerQuotesProvider);
+          callback: (payload) {
+            // تحقق ان التغيير للطلب الحالي فقط
+            final changedId = payload.newRecord['id']?.toString();
+            if (changedId == widget.orderId || changedId == null) {
+              ref.invalidate(orderDetailProvider(widget.orderId));
+              ref.invalidate(managerQuotesProvider);
+            }
           },
         )
         .subscribe();
@@ -282,10 +281,18 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
   @override
   Widget build(BuildContext context) {
     final orderAsync = ref.watch(orderDetailProvider(widget.orderId));
+    final currentQuoteStatus = orderAsync.valueOrNull?.quoteStatus;
+    final appBarTitle = switch (currentQuoteStatus) {
+      'pending' => 'عرض السعر - بانتظار إرسال',
+      'sent' => 'عرض السعر - تم الإرسال',
+      'accepted' => 'عرض السعر - مقبول ✓',
+      'rejected' => 'عرض السعر - مرفوض',
+      _ => 'تفاصيل العرض',
+    };
 
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
-      appBar: const TammAppBar(title: 'تفاصيل العرض'),
+      appBar: TammAppBar(title: appBarTitle),
       body: orderAsync.when(
         data: (order) => _buildBody(order),
         loading: () => const TammLoading(),
@@ -747,10 +754,10 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
         ),
 
         // 3. Sticky Buttons
-        if (isPending)
+        if (showForm)
           _buildStickyBar(
             child: TammButton(
-              label: 'إرسال العرض للعميل',
+              label: isRejected ? 'إرسال العرض الجديد' : 'إرسال العرض للعميل',
               icon: Icons.send,
               isLoading: _isSubmitting,
               onPressed: _isFormValid() ? _sendQuote : null,
