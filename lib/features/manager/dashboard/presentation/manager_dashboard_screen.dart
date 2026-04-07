@@ -97,43 +97,53 @@ class _ManagerDashboardScreenState
                 const SizedBox(height: 20),
                 statsAsync.when(
                   data: (stats) {
-                    final screenWidth = MediaQuery.of(context).size.width;
-                    final cardWidth = (screenWidth - 32 - 12) / 2; // padding + spacing
-                    final aspectRatio = cardWidth / 100; // dynamic height
-                    return GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: aspectRatio.clamp(1.0, 1.8),
+                    return Column(
                       children: [
-                      _StatCard(
-                        label: 'معلق',
-                        value: '${stats['pending']}',
-                        color: AppColors.warning,
-                        icon: Icons.pending_actions,
-                      ),
-                      _StatCard(
-                        label: 'جاري التنفيذ',
-                        value: '${stats['in_progress']}',
-                        color: AppColors.blueLight,
-                        icon: Icons.engineering,
-                      ),
-                      _StatCard(
-                        label: 'مكتمل اليوم',
-                        value: '${stats['completed']}',
-                        color: AppColors.success,
-                        icon: Icons.check_circle,
-                      ),
-                      _StatCard(
-                        label: 'الفنيون',
-                        value: '${stats['technicians']}',
-                        color: AppColors.blueSky,
-                        icon: Icons.people,
-                      ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _StatCard(
+                                label: 'معلق',
+                                value: '${stats['pending']}',
+                                color: AppColors.warning,
+                                icon: Icons.pending_actions,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _StatCard(
+                                label: 'جاري التنفيذ',
+                                value: '${stats['in_progress']}',
+                                color: AppColors.blueLight,
+                                icon: Icons.engineering,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _StatCard(
+                                label: 'مكتمل اليوم',
+                                value: '${stats['completed']}',
+                                color: AppColors.success,
+                                icon: Icons.check_circle,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _StatCard(
+                                label: 'الفنيون',
+                                value: '${stats['technicians']}',
+                                color: AppColors.blueSky,
+                                icon: Icons.people,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-                  );
+                    );
                   },
                   loading: () => const TammLoading(),
                   error: (e, _) => Text('$e'),
