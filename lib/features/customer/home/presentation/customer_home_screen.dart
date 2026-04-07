@@ -199,7 +199,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                               Text(
                                 p.price != null
                                     ? '${p.price!.toInt()} ر.س'
-                                    : AppStrings.requestQuote,
+                                    : 'السعر غير محدد',
                                 style: GoogleFonts.harmattan(
                                   fontSize: 14,
                                   color: AppColors.blueSky,

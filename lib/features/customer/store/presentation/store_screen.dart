@@ -241,7 +241,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                       Text(
                                         p.price != null
                                             ? '${p.price!.toInt()} ر.س'
-                                            : AppStrings.requestQuote,
+                                            : 'السعر غير محدد',
                                         style: GoogleFonts.harmattan(
                                           fontSize: 15,
                                           color: AppColors.blueSky,

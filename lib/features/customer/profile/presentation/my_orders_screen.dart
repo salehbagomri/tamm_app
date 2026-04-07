@@ -37,31 +37,51 @@ class MyOrdersScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            o.orderTypeLabel,
+                            style: GoogleFonts.harmattan(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '#${o.orderNumber}',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 13,
+                              color: AppColors.textSecond,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          o.orderNumber,
+                          o.orderType == 'quote_request' && o.totalAmount == 0
+                              ? o.statusLabel
+                              : '${o.totalAmount.toInt()} ر.س',
                           style: GoogleFonts.harmattan(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                            color: o.orderType == 'quote_request' && o.totalAmount == 0
+                                ? AppColors.warning
+                                : AppColors.blueSky,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
                           o.statusLabel,
                           style: GoogleFonts.harmattan(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: AppColors.textSecond,
                           ),
                         ),
                       ],
-                    ),
-                    Text(
-                      '${o.totalAmount.toInt()} ر.س',
-                      style: GoogleFonts.harmattan(
-                        color: AppColors.blueSky,
-                        fontWeight: FontWeight.w700,
-                      ),
                     ),
                   ],
                 ),

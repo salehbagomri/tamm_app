@@ -141,7 +141,8 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
               TextButton(
                 onPressed: () {
                   Navigator.pop(dialogContext); // Close dialog
-                  context.push('/customer/order/$orderId'); // Go to order
+                  context.go('/customer/home'); // Reset stack
+                  context.push('/customer/order/$orderId'); // Then open order
                 },
                 child: const Text('تتبع الطلب'),
               ),

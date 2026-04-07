@@ -100,7 +100,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     Text(
                       p.price != null
                           ? '${p.price!.toInt()} ر.س'
-                          : AppStrings.requestQuote,
+                          : 'السعر غير محدد',
                       style: GoogleFonts.harmattan(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
@@ -196,7 +196,8 @@ class ProductDetailScreen extends ConsumerWidget {
                       )
                     else
                       TammButton(
-                        label: AppStrings.requestQuote,
+                        label: 'تواصل معنا للسعر',
+                        icon: Icons.chat_outlined,
                         type: TammButtonType.secondary,
                         onPressed: () => context.push('/customer/services'),
                       ),

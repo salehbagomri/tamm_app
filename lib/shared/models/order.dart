@@ -122,6 +122,14 @@ class Order {
       _ => status,
     };
   }
+
+  String get orderTypeLabel => switch (orderType) {
+    'product' => 'طلب منتج',
+    'service' => 'طلب خدمة',
+    'product_and_service' => 'منتج وخدمة',
+    'quote_request' => 'طلب عرض سعر',
+    _ => 'طلب',
+  };
 }
 
 class OrderItem {

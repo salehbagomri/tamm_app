@@ -32,7 +32,7 @@ class RecentOrders extends ConsumerWidget {
             ),
             if (recentOrdersAsync.valueOrNull?.isNotEmpty ?? false)
               TextButton(
-                onPressed: () => context.go('/customer/orders'),
+                onPressed: () => context.push('/customer/orders'),
                 child: Text(
                   'كل الطلبات',
                   style: GoogleFonts.harmattan(
@@ -109,10 +109,11 @@ class RecentOrders extends ConsumerWidget {
   }
 
   Widget _buildOrderTile(BuildContext context, Order order) {
-    // Generate an icon/label based on type or notes
+    // Generate an icon/label based on type
     final isProduct = order.items.isNotEmpty && order.items.first.itemType == 'product';
-    final icon = isProduct ? Icons.shopping_bag : Icons.build_circle;
-    final title = isProduct ? 'طلب متجر' : order.orderType;
+    final icon = isProduct ? Icons.shopping_bag : 
+        order.orderType == 'quote_request' ? Icons.request_quote : Icons.build_circle;
+    final title = _getOrderTypeLabel(order.orderType, isProduct);
     
     final dateFormat = DateFormat('yyyy/MM/dd');
     
@@ -221,5 +222,16 @@ class RecentOrders extends ConsumerWidget {
         color: color,
       ),
     );
+  }
+
+  String _getOrderTypeLabel(String orderType, bool isProduct) {
+    if (isProduct) return 'طلب متجر';
+    return switch (orderType) {
+      'service' => 'طلب خدمة',
+      'quote_request' => 'طلب عرض سعر',
+      'product' => 'طلب منتج',
+      'product_and_service' => 'منتج وخدمة',
+      _ => 'طلب',
+    };
   }
 }
