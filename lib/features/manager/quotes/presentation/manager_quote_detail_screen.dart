@@ -13,6 +13,7 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/models/order.dart';
 import '../../../../shared/providers/order_providers.dart';
+import '../../../../shared/providers/manager_providers.dart';
 import '../../../customer/services/data/quote_repository.dart';
 import 'manager_quotes_screen.dart';
 
@@ -521,31 +522,86 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     ),
                   ),
                 ],
+
+                // Accepted status card
+                if (order.quoteStatus == 'accepted') ...[
+                  const SizedBox(height: 24),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withValues(alpha: 0.08),
+                      borderRadius: AppSpacing.radiusLg,
+                      border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle, color: AppColors.success, size: 32),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'العميل وافق على العرض ✓',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.success,
+                                ),
+                              ),
+                              Text(
+                                'يمكنك الآن تعيين فني لتنفيذ الطلب',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 14,
+                                  color: AppColors.textSecond,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                // Rejected status card
+                if (order.quoteStatus == 'rejected') ...[
+                  const SizedBox(height: 24),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.08),
+                      borderRadius: AppSpacing.radiusLg,
+                      border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.cancel, color: AppColors.error, size: 32),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            'العميل رفض العرض',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.error,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
         ),
 
-        // 3. Sticky Button
+        // 3. Sticky Buttons
         if (isPending)
-          Container(
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 16,
-              bottom: MediaQuery.of(context).padding.bottom + 16,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.bgSurface,
-              border: const Border(top: BorderSide(color: AppColors.border)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
+          _buildStickyBar(
             child: TammButton(
               label: 'إرسال العرض للعميل',
               icon: Icons.send,
@@ -553,8 +609,171 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
               onPressed: _isFormValid() ? _sendQuote : null,
             ),
           ),
+
+        // After acceptance: assign technician
+        if (order.quoteStatus == 'accepted' && (order.status == 'confirmed' || order.status == 'pending'))
+          _buildStickyBar(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TammButton(
+                  label: 'تعيين فني للتنفيذ',
+                  icon: Icons.engineering,
+                  onPressed: () => _showAssignDialog(order),
+                ),
+                const SizedBox(height: 10),
+                TammButton(
+                  label: 'إلغاء الطلب',
+                  type: TammButtonType.secondary,
+                  isLoading: _isSubmitting,
+                  onPressed: () => _cancelOrder(order),
+                ),
+              ],
+            ),
+          ),
       ],
     );
+  }
+
+  Widget _buildStickyBar({required Widget child}) {
+    return Container(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 16,
+        bottom: MediaQuery.of(context).padding.bottom + 16,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.bgSurface,
+        border: const Border(top: BorderSide(color: AppColors.border)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  void _showAssignDialog(Order order) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.bgSurface,
+        title: Text(
+          'تعيين فني',
+          style: GoogleFonts.harmattan(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Consumer(
+          builder: (context, ref, child) {
+            final techsAsync = ref.watch(techniciansProvider);
+            return techsAsync.when(
+              data: (techs) => SizedBox(
+                width: double.maxFinite,
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: techs.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (_, i) {
+                    final t = techs[i];
+                    final p = t['profiles'] as Map<String, dynamic>?;
+                    return ListTile(
+                      title: Text(
+                        p?['full_name'] ?? '',
+                        style: GoogleFonts.harmattan(color: AppColors.textPrimary),
+                      ),
+                      subtitle: Text(
+                        t['specialization'] ?? '',
+                        style: GoogleFonts.harmattan(color: AppColors.textSecond, fontSize: 14),
+                      ),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: t['status'] == 'available'
+                              ? AppColors.success.withValues(alpha: 0.15)
+                              : AppColors.warning.withValues(alpha: 0.15),
+                          borderRadius: AppSpacing.radiusFull,
+                        ),
+                        child: Text(
+                          t['status'] == 'available' ? 'متاح' : 'مشغول',
+                          style: GoogleFonts.harmattan(
+                            fontSize: 12,
+                            color: t['status'] == 'available' ? AppColors.success : AppColors.warning,
+                          ),
+                        ),
+                      ),
+                      onTap: () async {
+                        await ref.read(assignmentRepositoryProvider).assignTechnician(
+                          orderId: widget.orderId,
+                          technicianId: t['id'],
+                        );
+                        ref.invalidate(orderDetailProvider(widget.orderId));
+                        ref.invalidate(managerQuotesProvider);
+                        ref.invalidate(allOrdersProvider(null));
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تم تعيين الفني بنجاح')),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+              loading: () => const TammLoading(),
+              error: (e, _) => Text('$e'),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _cancelOrder(Order order) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('تأكيد الإلغاء'),
+        content: const Text('هل أنت متأكد من إلغاء هذا الطلب؟'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('لا')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('نعم، ألغِ', style: TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      setState(() => _isSubmitting = true);
+      try {
+        await ref.read(orderRepositoryProvider).updateOrderStatus(widget.orderId, 'cancelled');
+        ref.invalidate(orderDetailProvider(widget.orderId));
+        ref.invalidate(managerQuotesProvider);
+        ref.invalidate(allOrdersProvider(null));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تم إلغاء الطلب')),
+          );
+          context.pop();
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطأ: $e')));
+        }
+      } finally {
+        if (mounted) setState(() => _isSubmitting = false);
+      }
+    }
   }
 }
 
