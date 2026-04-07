@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/models/order.dart';
@@ -7,23 +8,44 @@ final quoteRepositoryProvider = Provider((ref) => QuoteRepository());
 class QuoteRepository {
   final _client = Supabase.instance.client;
 
-  // 1. Manager: Send Quote to Customer
+  // 1. Manager: Upload attachment (PDF/image) to Supabase Storage
+  Future<String?> uploadAttachment({
+    required String orderId,
+    required File file,
+  }) async {
+    final ext = file.path.split('.').last.toLowerCase();
+    final path = 'quotes/$orderId/attachment_${DateTime.now().millisecondsSinceEpoch}.$ext';
+
+    await _client.storage.from('quote-attachments').upload(path, file);
+
+    final publicUrl = _client.storage.from('quote-attachments').getPublicUrl(path);
+    return publicUrl;
+  }
+
+  // 2. Manager: Send Quote to Customer (with optional attachment)
   Future<void> sendQuote({
     required String orderId,
     required double price,
     required String details,
     String? duration,
+    String? attachmentUrl,
   }) async {
-    await _client.from('orders').update({
+    final updates = <String, dynamic>{
       'quote_price': price,
       'quote_details': details,
       'quote_duration': duration,
       'quote_status': 'sent',
       'quote_sent_at': DateTime.now().toIso8601String(),
-    }).eq('id', orderId);
+    };
+
+    if (attachmentUrl != null && attachmentUrl.isNotEmpty) {
+      updates['quote_attachment_url'] = attachmentUrl;
+    }
+
+    await _client.from('orders').update(updates).eq('id', orderId);
   }
 
-  // 2. Customer: Accept Quote
+  // 3. Customer: Accept Quote
   Future<void> acceptQuote(String orderId) async {
     await _client.from('orders').update({
       'quote_status': 'accepted',
@@ -32,7 +54,7 @@ class QuoteRepository {
     }).eq('id', orderId);
   }
 
-  // 3. Customer: Reject Quote
+  // 4. Customer: Reject Quote
   Future<void> rejectQuote(String orderId, {String? reason}) async {
     final updates = <String, dynamic>{
       'quote_status': 'rejected',
@@ -46,7 +68,7 @@ class QuoteRepository {
     await _client.from('orders').update(updates).eq('id', orderId);
   }
 
-  // 4. Manager: Get all Quote Requests
+  // 5. Manager: Get all Quote Requests
   Future<List<Order>> getQuoteRequests() async {
     final res = await _client
         .from('orders')

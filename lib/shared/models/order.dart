@@ -26,6 +26,7 @@ class Order {
   final DateTime? quoteSentAt;
   final DateTime? quoteRespondedAt;
   final String? rejectionReason;
+  final String? quoteAttachmentUrl;
 
   const Order({
     required this.id,
@@ -53,6 +54,7 @@ class Order {
     this.quoteSentAt,
     this.quoteRespondedAt,
     this.rejectionReason,
+    this.quoteAttachmentUrl,
   });
 
   factory Order.fromMap(Map<String, dynamic> m) {
@@ -101,6 +103,7 @@ class Order {
       quoteSentAt: m['quote_sent_at'] != null ? DateTime.parse(m['quote_sent_at']) : null,
       quoteRespondedAt: m['quote_responded_at'] != null ? DateTime.parse(m['quote_responded_at']) : null,
       rejectionReason: m['rejection_reason'],
+      quoteAttachmentUrl: m['quote_attachment_url'],
     );
   }
 

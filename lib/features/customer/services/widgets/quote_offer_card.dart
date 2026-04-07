@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -115,6 +116,67 @@ class QuoteOfferCard extends StatelessWidget {
               ),
             ],
           ),
+
+          // Attachment
+          if (order.quoteAttachmentUrl != null) ...[
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Divider(color: AppColors.border),
+            ),
+            InkWell(
+              onTap: () async {
+                final url = Uri.parse(order.quoteAttachmentUrl!);
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              },
+              borderRadius: AppSpacing.radiusSm,
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.bluePrimary.withValues(alpha: 0.05),
+                  borderRadius: AppSpacing.radiusSm,
+                  border: Border.all(color: AppColors.bluePrimary.withValues(alpha: 0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.bluePrimary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.file_present, color: AppColors.bluePrimary, size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'مرفق عرض السعر',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            'اضغط لعرض الملف',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 13,
+                              color: AppColors.bluePrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.open_in_new, color: AppColors.bluePrimary, size: 20),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
