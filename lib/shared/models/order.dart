@@ -111,6 +111,7 @@ class Order {
     if (orderType == 'quote_request') {
       if (quoteStatus == 'pending') return 'بانتظار العرض';
       if (quoteStatus == 'sent') return 'تم إرسال العرض';
+      if (quoteStatus == 'accepted') return 'تم قبول العرض';
       if (quoteStatus == 'rejected') return 'عرض مرفوض';
     }
     
@@ -132,6 +133,14 @@ class Order {
     'product_and_service' => 'منتج وخدمة',
     'quote_request' => 'طلب عرض سعر',
     _ => 'طلب',
+  };
+
+  String get quoteStatusLabel => switch (quoteStatus) {
+    'pending' => 'بانتظار العرض',
+    'sent' => 'تم إرسال العرض',
+    'accepted' => 'تم قبول العرض',
+    'rejected' => 'مرفوض - بانتظار عرض جديد',
+    _ => 'غير محدد',
   };
 }
 

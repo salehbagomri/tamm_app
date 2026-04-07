@@ -107,7 +107,23 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
         ref.invalidate(myOrdersProvider);
         
         if (mounted) {
-          context.pushReplacement('/customer/order/${widget.orderId}');
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => AlertDialog(
+              title: const Text('تم إرسال الرفض'),
+              content: const Text('تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.'),
+              actions: [
+                TammButton(
+                  label: 'حسناً',
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog
+                    context.pushReplacement('/customer/order/${widget.orderId}');
+                  },
+                )
+              ],
+            ),
+          );
         }
       } catch (e) {
         if (mounted) {

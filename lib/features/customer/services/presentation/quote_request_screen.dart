@@ -105,7 +105,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
         orderType: 'quote_request',
         address: _addressController.text.trim(),
         total: 0.0, // Since it's a quote, price isn't set yet
-        notes: '${_descriptionController.text.trim()}\n\nملاحظات إضافية: ${_notesController.text.trim()}',
+        notes: _descriptionController.text.trim(),
         latitude: _lat,
         longitude: _lng,
         includeInstall: false,

@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -221,13 +223,24 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
         }
       }
       
-      await repo.sendQuote(
-        orderId: widget.orderId,
-        price: price,
-        details: _detailsController.text.trim(),
-        duration: _durationController.text.trim().isNotEmpty ? _durationController.text.trim() : null,
-        attachmentUrl: attachmentUrl,
-      );
+      final currentOrderAsync = ref.read(orderDetailProvider(widget.orderId));
+      if (currentOrderAsync.value?.quoteStatus == 'rejected') {
+        await repo.resendQuote(
+          orderId: widget.orderId,
+          price: price,
+          details: _detailsController.text.trim(),
+          duration: _durationController.text.trim().isNotEmpty ? _durationController.text.trim() : null,
+          attachmentUrl: attachmentUrl,
+        );
+      } else {
+        await repo.sendQuote(
+          orderId: widget.orderId,
+          price: price,
+          details: _detailsController.text.trim(),
+          duration: _durationController.text.trim().isNotEmpty ? _durationController.text.trim() : null,
+          attachmentUrl: attachmentUrl,
+        );
+      }
       
       ref.invalidate(orderDetailProvider(widget.orderId));
       ref.invalidate(managerQuotesProvider);
@@ -283,6 +296,8 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
 
   Widget _buildBody(Order order) {
     final isPending = order.quoteStatus == 'pending';
+    final isRejected = order.quoteStatus == 'rejected';
+    final showForm = isPending || isRejected;
 
     return Column(
       children: [
@@ -335,6 +350,19 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                             ],
                           ),
                         ),
+                        if (order.customerProfile!['phone'] != null)
+                          IconButton(
+                            icon: const Icon(Icons.phone, color: AppColors.bluePrimary),
+                            style: IconButton.styleFrom(
+                              backgroundColor: AppColors.bluePrimary.withValues(alpha: 0.1),
+                            ),
+                            onPressed: () async {
+                              final url = Uri.parse('tel:${order.customerProfile!['phone']}');
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url);
+                              }
+                            },
+                          ),
                       ],
                     ),
                   ),
@@ -405,7 +433,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
 
                 // 2. Manager Response Form or Display Sent Details
                 Text(
-                  isPending ? 'تقديم عرض السعر' : 'العرض المُرسل',
+                  showForm ? (isRejected ? 'تقديم عرض جديد' : 'تقديم عرض السعر') : 'العرض المُرسل',
                   style: GoogleFonts.harmattan(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -414,8 +442,46 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                 ),
                 const SizedBox(height: 12),
                 
-                if (isPending) ...[
-                  // Edit Form for Pending
+                if (showForm) ...[
+                  if (isRejected && order.rejectionReason != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withValues(alpha: 0.08),
+                        borderRadius: AppSpacing.radiusLg,
+                        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.feedback, color: AppColors.error),
+                              const SizedBox(width: 8),
+                              Text(
+                                'سبب الرفض من العميل:',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            order.rejectionReason!,
+                            style: GoogleFonts.harmattan(
+                              fontSize: 16,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  // Edit Form for Pending / Rejected
                   TammTextField(
                     label: 'السعر الإجمالي (ر.س)',
                     hint: '500',
@@ -598,6 +664,11 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     ),
                   ),
                 ],
+                const SizedBox(height: 32),
+                
+                // 3. Timeline
+                _buildTimeline(order),
+                const SizedBox(height: 32),
 
                 // Accepted status card
                 if (order.quoteStatus == 'accepted') ...[
@@ -731,6 +802,47 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
         ],
       ),
       child: child,
+    );
+  }
+
+  Widget _buildTimeline(Order order) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'التسلسل الزمني:',
+          style: GoogleFonts.harmattan(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _TimelineItem(
+          title: 'الطلب مبدئي',
+          content: 'تم رفع الطلب من العميل',
+          time: order.createdAt,
+          isCompleted: true,
+          isLast: order.quoteSentAt == null,
+        ),
+        if (order.quoteSentAt != null)
+          _TimelineItem(
+            title: 'تم إرسال العرض',
+            content: 'قام المدير بتقديم العرض',
+            time: order.quoteSentAt!,
+            isCompleted: true,
+            isLast: order.quoteRespondedAt == null,
+          ),
+        if (order.quoteRespondedAt != null)
+          _TimelineItem(
+            title: order.quoteStatus == 'rejected' ? 'تم الرفض' : 'تم القبول',
+            content: order.quoteStatus == 'rejected' ? 'تم الرفض من العميل' : 'تم القبول من العميل وبانتظار تعيين فني',
+            time: order.quoteRespondedAt!,
+            isCompleted: true,
+            isLast: true,
+            color: order.quoteStatus == 'rejected' ? AppColors.error : AppColors.success,
+          ),
+      ],
     );
   }
 
@@ -884,6 +996,88 @@ class _DetailRow extends StatelessWidget {
             fontSize: isBoldValue ? 20 : 16,
             fontWeight: isBoldValue ? FontWeight.w700 : FontWeight.w600,
             color: valueColor ?? AppColors.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TimelineItem extends StatelessWidget {
+  final String title;
+  final String content;
+  final DateTime time;
+  final bool isCompleted;
+  final bool isLast;
+  final Color? color;
+
+  const _TimelineItem({
+    required this.title,
+    required this.content,
+    required this.time,
+    required this.isCompleted,
+    this.isLast = false,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color ?? (isCompleted ? AppColors.bluePrimary : AppColors.textSecond.withValues(alpha: 0.3)),
+              ),
+            ),
+            if (!isLast)
+              Container(
+                width: 2,
+                height: 40,
+                color: isCompleted ? AppColors.bluePrimary : AppColors.textSecond.withValues(alpha: 0.3),
+              ),
+          ],
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.harmattan(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: color ?? AppColors.textPrimary,
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      content,
+                      style: GoogleFonts.harmattan(
+                        fontSize: 14,
+                        color: AppColors.textSecond,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    DateFormat('yyyy/MM/dd HH:mm').format(time),
+                    style: GoogleFonts.harmattan(
+                      fontSize: 12,
+                      color: AppColors.textSecond,
+                    ),
+                  ),
+                ],
+              ),
+              if (!isLast) const SizedBox(height: 16),
+            ],
           ),
         ),
       ],

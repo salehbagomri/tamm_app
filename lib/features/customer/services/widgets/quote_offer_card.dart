@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -46,12 +47,27 @@ class QuoteOfferCard extends StatelessWidget {
                 child: const Icon(Icons.local_offer, color: AppColors.bluePrimary),
               ),
               const SizedBox(width: 12),
-              Text(
-                'عرض السعر المقترح',
-                style: GoogleFonts.harmattan(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'عرض السعر المقترح',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    if (order.quoteSentAt != null)
+                      Text(
+                        'مُرسل: ${DateFormat('yyyy/MM/dd HH:mm').format(order.quoteSentAt!)}',
+                        style: GoogleFonts.harmattan(
+                          fontSize: 14,
+                          color: AppColors.textSecond,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ],

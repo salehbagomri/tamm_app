@@ -25,12 +25,14 @@ class ManagerQuotesScreen extends ConsumerStatefulWidget {
   ConsumerState<ManagerQuotesScreen> createState() => _ManagerQuotesScreenState();
 }
 
-class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> {
+class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with SingleTickerProviderStateMixin {
   RealtimeChannel? _channel;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 5, vsync: this);
     // Realtime: تحديث تلقائي عند أي تغيير في طلبات العروض
     _channel = Supabase.instance.client
         .channel('public:quotes_list')
@@ -50,6 +52,7 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> {
     if (_channel != null) {
       Supabase.instance.client.removeChannel(_channel!);
     }
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -59,8 +62,23 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
-      appBar: const TammAppBar(
+      appBar: TammAppBar(
         title: 'طلبات عروض الأسعار',
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          labelColor: AppColors.bluePrimary,
+          unselectedLabelColor: AppColors.textSecond,
+          indicatorColor: AppColors.bluePrimary,
+          labelStyle: GoogleFonts.harmattan(fontWeight: FontWeight.w700, fontSize: 16),
+          tabs: const [
+            Tab(text: 'الكل'),
+            Tab(text: 'معلقة'),
+            Tab(text: 'مرسلة'),
+            Tab(text: 'مقبولة'),
+            Tab(text: 'مرفوضة'),
+          ],
+        ),
       ),
       body: quotesAsync.when(
         data: (quotes) {
@@ -71,24 +89,48 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> {
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(managerQuotesProvider);
-              await ref.read(managerQuotesProvider.future);
-            },
-            child: ListView.separated(
-              padding: AppSpacing.pagePadding,
-              itemCount: quotes.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final order = quotes[index];
-                return _QuoteRequestCard(order: order);
-              },
-            ),
+          final pendingQuotes = quotes.where((q) => q.quoteStatus == 'pending').toList();
+          final sentQuotes = quotes.where((q) => q.quoteStatus == 'sent').toList();
+          final acceptedQuotes = quotes.where((q) => q.quoteStatus == 'accepted').toList();
+          final rejectedQuotes = quotes.where((q) => q.quoteStatus == 'rejected').toList();
+
+          return TabBarView(
+            controller: _tabController,
+            children: [
+              _buildList(quotes),
+              _buildList(pendingQuotes),
+              _buildList(sentQuotes),
+              _buildList(acceptedQuotes),
+              _buildList(rejectedQuotes),
+            ],
           );
         },
         loading: () => const TammLoading(),
         error: (err, stack) => Center(child: Text('حدث خطأ: $err')),
+      ),
+    );
+  }
+
+  Widget _buildList(List<Order> quotes) {
+    if (quotes.isEmpty) {
+       return const TammEmptyState(
+         icon: Icons.playlist_remove,
+         message: 'لا توجد طلبات في هذي القائمة',
+       );
+    }
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(managerQuotesProvider);
+        await ref.read(managerQuotesProvider.future);
+      },
+      child: ListView.separated(
+        padding: AppSpacing.pagePadding,
+        itemCount: quotes.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final order = quotes[index];
+          return _QuoteRequestCard(order: order);
+        },
       ),
     );
   }
@@ -110,66 +152,101 @@ class _QuoteRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(order.quoteStatus);
+    final needsAction = order.quoteStatus == 'pending' || order.quoteStatus == 'rejected';
 
     return TammCard(
       onTap: () => context.push('/manager/quote/${order.id}'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'رقم الطلب: ${order.orderNumber}',
+                    style: GoogleFonts.harmattan(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecond,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.1),
+                      borderRadius: AppSpacing.radiusSm,
+                    ),
+                    child: Text(
+                      order.quoteStatusLabel,
+                      style: GoogleFonts.harmattan(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: statusColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  const Icon(Icons.person, size: 16, color: AppColors.bluePrimary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      order.customerProfile?['full_name'] ?? 'عميل',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.location_on, size: 16, color: AppColors.textSecond),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      order.address,
+                      style: GoogleFonts.harmattan(
+                        fontSize: 15,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
               Text(
-                'رقم الطلب: ${order.orderNumber}',
+                'منذ: ${_formatDate(order.createdAt)}',
                 style: GoogleFonts.harmattan(
                   fontSize: 14,
-                  fontWeight: FontWeight.w700,
                   color: AppColors.textSecond,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: AppSpacing.radiusSm,
-                ),
-                child: Text(
-                  order.statusLabel,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: statusColor,
-                  ),
-                ),
-              ),
             ],
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(Icons.location_on, size: 16, color: AppColors.textSecond),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  order.address,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    color: AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+          if (needsAction)
+            Positioned(
+              left: 0,
+              top: 0,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: AppColors.error,
+                  shape: BoxShape.circle,
                 ),
+                child: const Icon(Icons.priority_high, size: 12, color: Colors.white),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'منذ: ${_formatDate(order.createdAt)}',
-            style: GoogleFonts.harmattan(
-              fontSize: 14,
-              color: AppColors.textSecond,
             ),
-          ),
         ],
       ),
     );

@@ -11,12 +11,47 @@ import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/models/order.dart';
 import '../../../../shared/providers/order_providers.dart';
 
-class OrderDetailScreen extends ConsumerWidget {
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class OrderDetailScreen extends ConsumerStatefulWidget {
   final String orderId;
   const OrderDetailScreen({super.key, required this.orderId});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final orderAsync = ref.watch(orderDetailProvider(orderId));
+  ConsumerState<OrderDetailScreen> createState() => _OrderDetailScreenState();
+}
+
+class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
+  RealtimeChannel? _channel;
+
+  @override
+  void initState() {
+    super.initState();
+    _channel = Supabase.instance.client
+        .channel('public:order_${widget.orderId}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'orders',
+          filter: PostgresChangeFilter(type: PostgresChangeFilterType.eq, column: 'id', value: widget.orderId),
+          callback: (_) {
+            ref.invalidate(orderDetailProvider(widget.orderId));
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    if (_channel != null) {
+      Supabase.instance.client.removeChannel(_channel!);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final orderAsync = ref.watch(orderDetailProvider(widget.orderId));
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       appBar: const TammAppBar(title: 'تفاصيل الطلب'),
@@ -220,6 +255,45 @@ class OrderDetailScreen extends ConsumerWidget {
                                 style: GoogleFonts.harmattan(
                                   fontSize: 14,
                                   color: AppColors.textSecond,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ] else if (o.orderType == 'quote_request' && o.quoteStatus == 'rejected') ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.08),
+                      borderRadius: AppSpacing.radiusLg,
+                      border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.cancel, color: AppColors.error, size: 32),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'تم رفض العرض',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.error,
+                                ),
+                              ),
+                              Text(
+                                'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 14,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                             ],

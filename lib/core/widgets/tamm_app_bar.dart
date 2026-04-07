@@ -6,16 +6,18 @@ class TammAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final bool showBack;
+  final PreferredSizeWidget? bottom;
 
   const TammAppBar({
     super.key,
     required this.title,
     this.actions,
     this.showBack = true,
+    this.bottom,
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0.0));
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class TammAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       automaticallyImplyLeading: showBack,
       actions: actions,
+      bottom: bottom,
     );
   }
 }
