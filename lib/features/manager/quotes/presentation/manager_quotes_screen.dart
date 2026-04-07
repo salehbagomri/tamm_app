@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -17,11 +18,43 @@ final managerQuotesProvider = FutureProvider.autoDispose<List<Order>>((ref) asyn
   return repo.getQuoteRequests();
 });
 
-class ManagerQuotesScreen extends ConsumerWidget {
+class ManagerQuotesScreen extends ConsumerStatefulWidget {
   const ManagerQuotesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ManagerQuotesScreen> createState() => _ManagerQuotesScreenState();
+}
+
+class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> {
+  RealtimeChannel? _channel;
+
+  @override
+  void initState() {
+    super.initState();
+    // Realtime: تحديث تلقائي عند أي تغيير في طلبات العروض
+    _channel = Supabase.instance.client
+        .channel('public:quotes_list')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'orders',
+          callback: (_) {
+            ref.invalidate(managerQuotesProvider);
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    if (_channel != null) {
+      Supabase.instance.client.removeChannel(_channel!);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final quotesAsync = ref.watch(managerQuotesProvider);
 
     return Scaffold(

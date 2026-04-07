@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -35,9 +36,36 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
   File? _attachedFile;
   String? _attachedFileName;
   bool _isSubmitting = false;
+  RealtimeChannel? _channel;
+
+  @override
+  void initState() {
+    super.initState();
+    // Realtime: تحديث تلقائي عند تغيير حالة الطلب (مثلاً العميل قبل أو رفض)
+    _channel = Supabase.instance.client
+        .channel('quote_detail_${widget.orderId}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'orders',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'id',
+            value: widget.orderId,
+          ),
+          callback: (_) {
+            ref.invalidate(orderDetailProvider(widget.orderId));
+            ref.invalidate(managerQuotesProvider);
+          },
+        )
+        .subscribe();
+  }
 
   @override
   void dispose() {
+    if (_channel != null) {
+      Supabase.instance.client.removeChannel(_channel!);
+    }
     _priceController.dispose();
     _detailsController.dispose();
     _durationController.dispose();
@@ -117,10 +145,22 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
 
     if (source == 'file') {
       final result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+        type: FileType.any,
       );
       if (result != null && result.files.single.path != null) {
+        final ext = result.files.single.extension?.toLowerCase() ?? '';
+        final allowed = ['pdf', 'jpg', 'jpeg', 'png'];
+        if (!allowed.contains(ext)) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('يرجى اختيار ملف PDF أو صورة (jpg, png)'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+          return;
+        }
         setState(() {
           _attachedFile = File(result.files.single.path!);
           _attachedFileName = result.files.single.name;
