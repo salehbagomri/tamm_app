@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -50,9 +51,6 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
   }
 
   Future<void> _pickFile() async {
-    final picker = ImagePicker();
-    
-    // Show options: camera, gallery, or file
     final source = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: AppColors.bgSurface,
@@ -97,6 +95,18 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
               title: Text('التقط صورة', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textPrimary)),
               onTap: () => Navigator.pop(ctx, 'camera'),
             ),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.file_present, color: AppColors.warning),
+              ),
+              title: Text('اختر ملف PDF', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textPrimary)),
+              onTap: () => Navigator.pop(ctx, 'file'),
+            ),
             const SizedBox(height: 8),
           ],
         ),
@@ -105,18 +115,31 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
 
     if (source == null) return;
 
-    XFile? picked;
-    if (source == 'gallery') {
-      picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
-    } else if (source == 'camera') {
-      picked = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
-    }
-
-    if (picked != null) {
-      setState(() {
-        _attachedFile = File(picked!.path);
-        _attachedFileName = picked.name;
-      });
+    if (source == 'file') {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+      );
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          _attachedFile = File(result.files.single.path!);
+          _attachedFileName = result.files.single.name;
+        });
+      }
+    } else {
+      final picker = ImagePicker();
+      XFile? picked;
+      if (source == 'gallery') {
+        picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+      } else if (source == 'camera') {
+        picked = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+      }
+      if (picked != null) {
+        setState(() {
+          _attachedFile = File(picked!.path);
+          _attachedFileName = picked.name;
+        });
+      }
     }
   }
 
@@ -136,13 +159,26 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
       final repo = ref.read(quoteRepositoryProvider);
       final price = double.parse(_priceController.text.trim());
       
-      // Upload attachment if exists
+      // Upload attachment if exists (non-blocking if fails)
       String? attachmentUrl;
       if (_attachedFile != null) {
-        attachmentUrl = await repo.uploadAttachment(
-          orderId: widget.orderId,
-          file: _attachedFile!,
-        );
+        try {
+          attachmentUrl = await repo.uploadAttachment(
+            orderId: widget.orderId,
+            file: _attachedFile!,
+          );
+        } catch (uploadError) {
+          // Upload failed - continue sending quote without attachment
+          debugPrint('Attachment upload failed: $uploadError');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('تعذر رفع المرفق، سيتم إرسال العرض بدون مرفق'),
+                backgroundColor: AppColors.warning,
+              ),
+            );
+          }
+        }
       }
       
       await repo.sendQuote(
