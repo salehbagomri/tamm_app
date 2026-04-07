@@ -45,28 +45,17 @@ class QuoteRepository {
     await _client.from('orders').update(updates).eq('id', orderId);
   }
 
-  // 3. Customer: Accept Quote
+  // 3. Customer: Accept Quote — via RPC (SECURITY DEFINER يتجاوز RLS)
   Future<void> acceptQuote(String orderId) async {
-    // جلب السعر أولاً
-    final order = await _client.from('orders').select('quote_price').eq('id', orderId).single();
-    final price = (order['quote_price'] as num?)?.toDouble() ?? 0;
-    
-    await _client.from('orders').update({
-      'quote_status': 'accepted',
-      'quote_responded_at': DateTime.now().toIso8601String(),
-      'status': 'confirmed',
-      'total_amount': price, // ← تحديث المجموع
-    }).eq('id', orderId);
+    await _client.rpc('accept_quote', params: {'p_order_id': orderId});
   }
 
-  // 4. Customer: Reject Quote
+  // 4. Customer: Reject Quote — via RPC (SECURITY DEFINER يتجاوز RLS)
   Future<void> rejectQuote(String orderId, {String? reason}) async {
-    await _client.from('orders').update({
-      'quote_status': 'rejected',
-      'quote_responded_at': DateTime.now().toIso8601String(),
-      // لا نغير status - يبقى الطلب مفتوح للمدير ليرسل عرض جديد
-      'rejection_reason': reason,
-    }).eq('id', orderId);
+    await _client.rpc('reject_quote', params: {
+      'p_order_id': orderId,
+      'p_reason': reason ?? '',
+    });
   }
 
   Future<List<Order>> getQuoteRequests() async {
