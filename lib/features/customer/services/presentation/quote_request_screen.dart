@@ -30,6 +30,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
   
   bool _isLoadingLocation = false;
   double? _lat, _lng;
+  bool _locationPicked = false;
   bool _isSubmitting = false;
 
   @override
@@ -68,7 +69,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
         setState(() {
           _lat = 24.7136;
           _lng = 46.6753;
-          _addressController.text = 'موقع افتراضي (الرياض)';
+          _locationPicked = true;
           _isLoadingLocation = false;
         });
         return;
@@ -78,7 +79,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
       setState(() {
         _lat = position.latitude;
         _lng = position.longitude;
-        _addressController.text = 'موقعي الحالي (Lat: ${_lat!.toStringAsFixed(2)}, Lng: ${_lng!.toStringAsFixed(2)})';
+        _locationPicked = true;
         _isLoadingLocation = false;
       });
     } catch (e) {
@@ -259,30 +260,93 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                     ),
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.bgSurface,
+                        color: _locationPicked
+                            ? AppColors.success.withValues(alpha: 0.1)
+                            : AppColors.bgSurface,
                         borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(
+                          color: _locationPicked
+                              ? AppColors.success
+                              : AppColors.border,
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          TammButton(
-                            label: 'اختر موقعي الحالي (GPS)',
-                            icon: Icons.my_location,
-                            type: TammButtonType.secondary,
-                            isLoading: _isLoadingLocation,
-                            onPressed: _pickLocation,
-                          ),
-                          const SizedBox(height: 16),
-                          TammTextField(
-                            label: 'أو اكتب العنوان بالتفصيل',
-                            hint: 'المدينة، الحي، الشارع...',
-                            controller: _addressController,
-                            onChanged: (val) => setState((){}),
-                          ),
-                        ],
+                      child: InkWell(
+                        onTap: _isLoadingLocation ? null : _pickLocation,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: _locationPicked
+                                    ? AppColors.success
+                                    : AppColors.bluePrimary,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: _isLoadingLocation
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Icon(
+                                      _locationPicked
+                                          ? Icons.check_circle
+                                          : Icons.my_location,
+                                      color: Colors.white,
+                                    ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _locationPicked
+                                        ? 'تم تحديد الموقع ✓'
+                                        : '📍 تحديد موقعي الحالي',
+                                    style: GoogleFonts.harmattan(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: _locationPicked
+                                          ? AppColors.success
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  Text(
+                                    _locationPicked
+                                        ? '${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
+                                        : 'اضغط لإرسال موقعك الدقيق للفني',
+                                    style: GoogleFonts.harmattan(
+                                      fontSize: 12,
+                                      color: AppColors.textSecond,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (_locationPicked)
+                              IconButton(
+                                icon: const Icon(Icons.refresh, color: AppColors.textSecond),
+                                onPressed: _pickLocation,
+                                tooltip: 'تحديث الموقع',
+                              ),
+                          ],
+                        ),
                       ),
+                    ),
+                    const SizedBox(height: 16),
+                    TammTextField(
+                      label: 'العنوان بالتفصيل',
+                      hint: 'المدينة، الحي، الشارع، رقم المبنى...',
+                      controller: _addressController,
+                      maxLines: 2,
+                      onChanged: (val) => setState((){}),
                     ),
                     const SizedBox(height: 24),
 

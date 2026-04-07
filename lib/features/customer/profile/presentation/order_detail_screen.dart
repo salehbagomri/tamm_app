@@ -64,6 +64,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   }
 
   Widget _buildBody(BuildContext context, Order o) {
+    final isQuotePhase = o.orderType == 'quote_request' && 
+        (o.status == 'pending' || o.status == 'confirmed');
+    final isExecutionPhase = o.orderType == 'quote_request' && 
+        ['assigned', 'on_the_way', 'in_progress', 'completed'].contains(o.status);
+
     return Column(
       children: [
         Expanded(
@@ -140,168 +145,175 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Quote Details Section (for quote_request orders)
-                if (o.orderType == 'quote_request' && o.quoteStatus == 'sent') ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.bluePrimary.withValues(alpha: 0.08),
-                          AppColors.blueSky.withValues(alpha: 0.05),
+                // Quote Details Section (for quote_request orders in quote phase)
+                if (isQuotePhase) ...[
+                  if (o.quoteStatus == 'sent') ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.bluePrimary.withValues(alpha: 0.08),
+                            AppColors.blueSky.withValues(alpha: 0.05),
+                          ],
+                        ),
+                        borderRadius: AppSpacing.radiusLg,
+                        border: Border.all(color: AppColors.bluePrimary.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(Icons.local_offer, color: AppColors.bluePrimary, size: 36),
+                          const SizedBox(height: 8),
+                          Text(
+                            'تم استلام عرض السعر!',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'السعر: ${o.quotePrice?.toInt() ?? 0} ر.س',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.blueSky,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TammButton(
+                            label: 'عرض التفاصيل والرد',
+                            icon: Icons.reply,
+                            onPressed: () => context.push('/customer/quote-response/${o.id}'),
+                          ),
                         ],
                       ),
-                      borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: AppColors.bluePrimary.withValues(alpha: 0.3)),
                     ),
-                    child: Column(
-                      children: [
-                        const Icon(Icons.local_offer, color: AppColors.bluePrimary, size: 36),
-                        const SizedBox(height: 8),
-                        Text(
-                          'تم استلام عرض السعر!',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                    const SizedBox(height: 16),
+                  ] else if (o.quoteStatus == 'pending') ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.08),
+                        borderRadius: AppSpacing.radiusLg,
+                        border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.hourglass_top, color: AppColors.warning, size: 32),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'بانتظار عرض السعر',
+                                  style: GoogleFonts.harmattan(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                Text(
+                                  'يقوم فريقنا بمراجعة طلبك وسيتم إرسال العرض قريباً',
+                                  style: GoogleFonts.harmattan(
+                                    fontSize: 14,
+                                    color: AppColors.textSecond,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'السعر: ${o.quotePrice?.toInt() ?? 0} ر.س',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.blueSky,
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ] else if (o.quoteStatus == 'accepted') ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.08),
+                        borderRadius: AppSpacing.radiusLg,
+                        border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.check_circle, color: AppColors.success, size: 32),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'تم قبول العرض',
+                                  style: GoogleFonts.harmattan(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.success,
+                                  ),
+                                ),
+                                Text(
+                                  'السعر المتفق عليه: ${o.quotePrice?.toInt() ?? 0} ر.س',
+                                  style: GoogleFonts.harmattan(
+                                    fontSize: 14,
+                                    color: AppColors.textSecond,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        TammButton(
-                          label: 'عرض التفاصيل والرد',
-                          icon: Icons.reply,
-                          onPressed: () => context.push('/customer/quote-response/${o.id}'),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                ] else if (o.orderType == 'quote_request' && o.quoteStatus == 'pending') ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.warning.withValues(alpha: 0.08),
-                      borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.hourglass_top, color: AppColors.warning, size: 32),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'بانتظار عرض السعر',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                    const SizedBox(height: 16),
+                  ] else if (o.quoteStatus == 'rejected') ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withValues(alpha: 0.08),
+                        borderRadius: AppSpacing.radiusLg,
+                        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.cancel, color: AppColors.error, size: 32),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'تم رفض العرض',
+                                  style: GoogleFonts.harmattan(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.error,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'يقوم فريقنا بمراجعة طلبك وسيتم إرسال العرض قريباً',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 14,
-                                  color: AppColors.textSecond,
+                                Text(
+                                  'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
+                                  style: GoogleFonts.harmattan(
+                                    fontSize: 14,
+                                    color: AppColors.textPrimary,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                ] else if (o.orderType == 'quote_request' && o.quoteStatus == 'accepted') ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withValues(alpha: 0.08),
-                      borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check_circle, color: AppColors.success, size: 32),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'تم قبول العرض',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.success,
-                                ),
-                              ),
-                              Text(
-                                'السعر المتفق عليه: ${o.quotePrice?.toInt() ?? 0} ر.س',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 14,
-                                  color: AppColors.textSecond,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ] else if (o.orderType == 'quote_request' && o.quoteStatus == 'rejected') ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.08),
-                      borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.cancel, color: AppColors.error, size: 32),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'تم رفض العرض',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.error,
-                                ),
-                              ),
-                              Text(
-                                'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 14,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                    const SizedBox(height: 16),
+                  ],
+                ],
+
+                if (isExecutionPhase || (o.orderType != 'quote_request' && ['assigned', 'on_the_way', 'in_progress', 'completed'].contains(o.status))) ...[
+                  _buildProgressBar(o),
                   const SizedBox(height: 16),
                 ],
 
@@ -368,6 +380,87 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   ),
               ],
             ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgressBar(Order o) {
+    int currentStep = 0;
+    if (o.status == 'assigned') currentStep = 1;
+    if (o.status == 'on_the_way') currentStep = 2;
+    if (o.status == 'in_progress') currentStep = 3;
+    if (o.status == 'completed') currentStep = 4;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.bgSurface,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'حالة التنفيذ',
+            style: GoogleFonts.harmattan(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildProgressStep('تم التعيين', currentStep >= 1, isFirst: true),
+              _buildProgressLine(currentStep >= 2),
+              _buildProgressStep('في الطريق', currentStep >= 2),
+              _buildProgressLine(currentStep >= 3),
+              _buildProgressStep('جاري التنفيذ', currentStep >= 3),
+              _buildProgressLine(currentStep >= 4),
+              _buildProgressStep('مكتمل', currentStep >= 4, isLast: true),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressLine(bool active) {
+    return Expanded(
+      child: Container(
+        height: 2,
+        color: active ? AppColors.success : AppColors.border,
+      ),
+    );
+  }
+
+  Widget _buildProgressStep(String label, bool active, {bool isFirst = false, bool isLast = false}) {
+    return Column(
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            color: active ? AppColors.success : AppColors.bgSurface,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: active ? AppColors.success : AppColors.border,
+              width: 2,
+            ),
+          ),
+          child: active ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: GoogleFonts.harmattan(
+            fontSize: 12,
+            color: active ? AppColors.textPrimary : AppColors.textSecond,
+            fontWeight: active ? FontWeight.w700 : FontWeight.w400,
           ),
         ),
       ],

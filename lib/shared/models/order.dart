@@ -109,6 +109,17 @@ class Order {
 
   String get statusLabel {
     if (orderType == 'quote_request') {
+      // بعد التعيين: نستخدم حالة الطلب العادية
+      if (['assigned', 'on_the_way', 'in_progress', 'completed'].contains(status)) {
+        return switch (status) {
+          'assigned' => 'تم التعيين',
+          'on_the_way' => 'الفني في الطريق',
+          'in_progress' => 'جاري التنفيذ',
+          'completed' => 'مكتمل',
+          _ => status,
+        };
+      }
+      // مرحلة العرض
       if (quoteStatus == 'pending') return 'بانتظار العرض';
       if (quoteStatus == 'sent') return 'تم إرسال العرض';
       if (quoteStatus == 'accepted') return 'تم قبول العرض';

@@ -10,6 +10,8 @@ import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/providers/order_providers.dart';
+import '../../services/widgets/appointment_picker.dart';
+import '../../services/widgets/appointment_display_card.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
@@ -21,9 +23,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _formKey = GlobalKey<FormState>();
   final _addressCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
-  String _timeSlot = 'صباحاً';
+  DateTime? _selectedDate;
+  String? _selectedPeriod;
+  String? _selectedHour;
   bool _loading = false;
-  DateTime _preferredDate = DateTime.now().add(const Duration(days: 1));
 
   // GPS
   double? _latitude;
@@ -73,6 +76,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedDate == null || _selectedPeriod == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('الرجاء تحديد موعد')),
+        );
+      }
+      return;
+    }
     setState(() => _loading = true);
     try {
       final cartAsync = ref.read(cartProvider);
@@ -111,8 +122,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             orderType: hasInstallation ? 'product_and_service' : 'product',
             address: _addressCtrl.text,
             total: notifier.total,
-            preferredDate: _preferredDate,
-            timeSlot: _timeSlot,
+            preferredDate: _selectedDate,
+            timeSlot: _selectedHour,
+            scheduledPeriod: _selectedPeriod,
+            scheduledHour: _selectedHour,
             notes: _notesCtrl.text.isEmpty ? null : _notesCtrl.text,
             includeInstall: hasInstallation,
             latitude: _latitude,
@@ -233,65 +246,63 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 validator: (v) =>
                     v == null || v.isEmpty ? 'أدخل العنوان' : null,
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Text(
-                    AppStrings.preferredDate,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecond,
-                    ),
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () async {
-                      final d = await showDatePicker(
-                        context: context,
-                        initialDate: _preferredDate,
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 30)),
-                      );
-                      if (d != null) setState(() => _preferredDate = d);
+              const SizedBox(height: 24),
+              Text(
+                'حدد الموعد',
+                style: GoogleFonts.harmattan(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (_selectedDate != null && _selectedPeriod != null) ...[
+                AppointmentDisplayCard(
+                  date: _selectedDate!,
+                  period: _selectedPeriod!,
+                  hour: _selectedHour,
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _selectedDate = null;
+                        _selectedPeriod = null;
+                        _selectedHour = null;
+                      });
                     },
-                    child: Text(
-                      '${_preferredDate.day}/${_preferredDate.month}/${_preferredDate.year}',
-                      style: GoogleFonts.harmattan(color: AppColors.blueLight),
+                    icon: const Icon(Icons.edit, size: 16, color: AppColors.bluePrimary),
+                    label: Text(
+                      'تعديل الموعد',
+                      style: GoogleFonts.harmattan(
+                        color: AppColors.bluePrimary,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Text(
-                    'الفترة',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecond,
-                    ),
+                ),
+              ] else ...[
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgSurface,
+                    borderRadius: AppSpacing.radiusLg,
+                    border: Border.all(color: AppColors.border),
                   ),
-                  const Spacer(),
-                  SegmentedButton<String>(
-                    segments: [
-                      ButtonSegment(
-                        value: 'صباحاً',
-                        label: Text('صباحاً', style: GoogleFonts.harmattan()),
-                      ),
-                      ButtonSegment(
-                        value: 'مساءً',
-                        label: Text('مساءً', style: GoogleFonts.harmattan()),
-                      ),
-                    ],
-                    selected: {_timeSlot},
-                    onSelectionChanged: (s) =>
-                        setState(() => _timeSlot = s.first),
+                  child: AppointmentPicker(
+                    initialDate: _selectedDate,
+                    onDateSelected: (date, period, hour) {
+                      setState(() {
+                        _selectedDate = date;
+                        _selectedPeriod = period;
+                        _selectedHour = hour;
+                      });
+                    },
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
+                ),
+              ],
+              const SizedBox(height: 24),
               TammTextField(
                 label: AppStrings.notes,
                 hint: 'ملاحظات إضافية (اختياري)',
