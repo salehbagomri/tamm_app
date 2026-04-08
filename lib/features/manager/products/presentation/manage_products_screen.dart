@@ -30,25 +30,26 @@ class ManageProductsScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'إدارة المنتجات',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                  Flexible(
+                    child: Text(
+                      'إدارة المنتجات',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
-                  ElevatedButton.icon(
+                  const SizedBox(width: 8),
+                  TextButton.icon(
                     onPressed: () => context.push('/manager/promotions'),
-                    icon: const Icon(Icons.campaign, size: 20),
+                    icon: const Icon(Icons.campaign, size: 18, color: AppColors.blueSky),
                     label: Text(
-                      'إدارة العروض',
-                      style: GoogleFonts.harmattan(fontWeight: FontWeight.w600),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blueSky.withValues(alpha: 0.1),
-                      foregroundColor: AppColors.blueSky,
-                      elevation: 0,
+                      'العروض',
+                      style: GoogleFonts.harmattan(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.blueSky,
+                      ),
                     ),
                   ),
                 ],
