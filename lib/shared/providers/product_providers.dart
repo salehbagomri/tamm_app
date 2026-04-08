@@ -21,3 +21,9 @@ final productDetailProvider = FutureProvider.family<Product, String>((
 ) async {
   return ref.read(productRepositoryProvider).getProduct(id);
 });
+
+final dealsProvider = FutureProvider<List<Product>>((ref) async {
+  final repo = ref.read(productRepositoryProvider);
+  final all = await repo.getProducts();
+  return all.where((p) => p.hasDiscount).toList();
+});

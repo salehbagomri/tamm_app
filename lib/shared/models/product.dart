@@ -12,6 +12,7 @@ class Product {
   final bool isFeatured;
   final bool requiresInstallation;
   final double installationPrice;
+  final double? oldPrice;
 
   const Product({
     required this.id,
@@ -27,6 +28,7 @@ class Product {
     this.isFeatured = false,
     this.requiresInstallation = false,
     this.installationPrice = 0.0,
+    this.oldPrice,
   });
 
   factory Product.fromMap(Map<String, dynamic> m) => Product(
@@ -43,6 +45,7 @@ class Product {
     isFeatured: m['is_featured'] ?? false,
     requiresInstallation: m['requires_installation'] ?? false,
     installationPrice: (m['installation_price'] as num?)?.toDouble() ?? 0.0,
+    oldPrice: (m['old_price'] as num?)?.toDouble(),
   );
 
   Map<String, dynamic> toMap() => {
@@ -58,7 +61,13 @@ class Product {
     'is_featured': isFeatured,
     'requires_installation': requiresInstallation,
     'installation_price': installationPrice,
+    'old_price': oldPrice,
   };
+
+  bool get hasDiscount => oldPrice != null && price != null && oldPrice! > price!;
+  int get discountPercentage => hasDiscount
+      ? (((oldPrice! - price!) / oldPrice!) * 100).round()
+      : 0;
 
   String get categoryLabel => switch (category) {
     'ac' => 'مكيفات',
