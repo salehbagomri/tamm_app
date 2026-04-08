@@ -41,8 +41,10 @@ import '../../features/manager/services/presentation/service_form_screen.dart';
 import '../../features/manager/orders/presentation/manager_order_detail_screen.dart';
 import '../../features/manager/quotes/presentation/manager_quotes_screen.dart';
 import '../../features/manager/quotes/presentation/manager_quote_detail_screen.dart';
+import '../../features/manager/promotions/presentation/manage_promotions_screen.dart';
+import '../../features/manager/promotions/presentation/promotion_form_screen.dart';
+import '../../shared/models/promotion.dart';
 import '../../shared/models/service_type.dart';
-
 // Technician
 import '../../features/technician/technician_shell.dart';
 import '../../features/technician/tasks/presentation/tech_tasks_screen.dart';
@@ -237,6 +239,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/manager/product/form',
         builder: (_, state) =>
             ProductFormScreen(productId: state.extra as String?),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/manager/promotions',
+        builder: (_, __) => const ManagePromotionsScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/manager/promotion/form',
+        builder: (_, state) =>
+            PromotionFormScreen(promotion: state.extra as Promotion?),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,

@@ -27,13 +27,31 @@ class ManageProductsScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'إدارة المنتجات',
-                style: GoogleFonts.harmattan(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'إدارة المنتجات',
+                    style: GoogleFonts.harmattan(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => context.push('/manager/promotions'),
+                    icon: const Icon(Icons.campaign, size: 20),
+                    label: Text(
+                      'إدارة العروض',
+                      style: GoogleFonts.harmattan(fontWeight: FontWeight.w600),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.blueSky.withValues(alpha: 0.1),
+                      foregroundColor: AppColors.blueSky,
+                      elevation: 0,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               Expanded(
@@ -96,17 +114,68 @@ class ManageProductsScreen extends ConsumerWidget {
                                         color: AppColors.textSecond,
                                       ),
                                     ),
+                                    Row(
+                                      children: [
+                                        if (p.isFeatured)
+                                          Container(
+                                            margin: const EdgeInsets.only(left: 4),
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.warning,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'مميز ⭐',
+                                              style: GoogleFonts.harmattan(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        if (p.hasDiscount)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.error,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'خصم ${p.discountPercentage}%',
+                                              style: GoogleFonts.harmattan(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
-                              Text(
-                                p.price != null
-                                    ? '${p.price!.toInt()} ر.س'
-                                    : 'عرض سعر',
-                                style: GoogleFonts.harmattan(
-                                  color: AppColors.blueSky,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  if (p.hasDiscount)
+                                    Text(
+                                      '${p.oldPrice!.toInt()}',
+                                      style: GoogleFonts.harmattan(
+                                        fontSize: 12,
+                                        color: AppColors.textSecond,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                  Text(
+                                    p.price != null
+                                        ? '${p.price!.toInt()} ر.س'
+                                        : 'عرض سعر',
+                                    style: GoogleFonts.harmattan(
+                                      color: AppColors.blueSky,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

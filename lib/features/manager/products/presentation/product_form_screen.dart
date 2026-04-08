@@ -25,10 +25,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   final _nameCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
+  final _oldPriceCtrl = TextEditingController();
   final _brandCtrl = TextEditingController();
   final _installPriceCtrl = TextEditingController();
   String _category = 'ac';
   bool _requiresInstallation = false;
+  bool _isFeatured = false;
   bool _loading = false;
   bool _isEdit = false;
 
@@ -51,10 +53,12 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
     _nameCtrl.text = p.name;
     _descCtrl.text = p.description ?? '';
     _priceCtrl.text = p.price?.toString() ?? '';
+    _oldPriceCtrl.text = p.oldPrice?.toString() ?? '';
     _brandCtrl.text = p.brand ?? '';
     _installPriceCtrl.text = p.installationPrice > 0 ? p.installationPrice.toString() : '';
     _category = p.category;
     _requiresInstallation = p.requiresInstallation;
+    _isFeatured = p.isFeatured;
     _existingImageUrl = p.imageUrl;
     setState(() {});
   }
@@ -69,9 +73,11 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         'category': _category,
         'brand': _brandCtrl.text.isEmpty ? null : _brandCtrl.text,
         'price': _priceCtrl.text.isEmpty ? null : double.parse(_priceCtrl.text),
+        'old_price': _oldPriceCtrl.text.isEmpty ? null : double.parse(_oldPriceCtrl.text),
         'is_price_on_request': _priceCtrl.text.isEmpty,
         'requires_installation': _requiresInstallation,
         'installation_price': _installPriceCtrl.text.isEmpty ? 0.0 : double.parse(_installPriceCtrl.text),
+        'is_featured': _isFeatured,
       };
 
       if (_selectedImage != null) {
@@ -105,6 +111,8 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 imageUrl: data['image_url'] as String?,
                 requiresInstallation: data['requires_installation'] as bool,
                 installationPrice: data['installation_price'] as double,
+                oldPrice: data['old_price'] as double?,
+                isFeatured: data['is_featured'] as bool,
               ),
             );
       }
@@ -215,12 +223,67 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               ),
               const SizedBox(height: 12),
               TammTextField(
-                label: 'السعر (اتركه فارغ لطلب عرض سعر)',
+                label: 'السعر الحالي (اتركه فارغ لطلب عرض سعر)',
                 controller: _priceCtrl,
                 keyboardType: TextInputType.number,
+                onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 12),
+              TammTextField(
+                label: 'السعر قبل الخصم (اختياري، يظهر كعرض)',
+                controller: _oldPriceCtrl,
+                keyboardType: TextInputType.number,
+                onChanged: (_) => setState(() {}),
+              ),
+              if (_oldPriceCtrl.text.isNotEmpty &&
+                  _priceCtrl.text.isNotEmpty &&
+                  (double.tryParse(_oldPriceCtrl.text) ?? 0) >
+                      (double.tryParse(_priceCtrl.text) ?? 0)) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withValues(alpha: 0.1),
+                    borderRadius: AppSpacing.radius,
+                    border: Border.all(color: AppColors.success),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: AppColors.success),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '✅ هذا المنتج سيظهر كعرض خاص',
+                              style: TextStyle(
+                                color: AppColors.success,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'الخصم: ${(((double.parse(_oldPriceCtrl.text) - double.parse(_priceCtrl.text)) / double.parse(_oldPriceCtrl.text)) * 100).round()}% | ~~${_oldPriceCtrl.text}~~ → ${_priceCtrl.text}',
+                              style: const TextStyle(color: AppColors.textSecond),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
               TammTextField(label: 'العلامة التجارية', controller: _brandCtrl),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('منتج مميز ⭐'),
+                subtitle: const Text('يظهر في قسم "الأكثر طلباً" بالرئيسية'),
+                value: _isFeatured,
+                onChanged: (v) => setState(() => _isFeatured = v),
+                activeColor: AppColors.warning,
+                contentPadding: EdgeInsets.zero,
+              ),
               const SizedBox(height: 16),
               CheckboxListTile(
                 title: const Text('هذا المنتج يتطلب خدمة تركيب؟'),
@@ -256,6 +319,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
     _nameCtrl.dispose();
     _descCtrl.dispose();
     _priceCtrl.dispose();
+    _oldPriceCtrl.dispose();
     _brandCtrl.dispose();
     _installPriceCtrl.dispose();
     super.dispose();
