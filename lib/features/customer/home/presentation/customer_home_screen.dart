@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
@@ -28,68 +29,97 @@ class CustomerHomeScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Header with Cart
+              // 1. Header with Icons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      profileAsync.when(
-                        data: (p) => Text(
-                          'أهلاً ${p?.fullName ?? ''} 👋',
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        profileAsync.when(
+                          data: (p) => Text(
+                            'أهلاً ${p?.fullName ?? ''} 👋',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'كيف نقدر نخدمك اليوم؟',
                           style: GoogleFonts.harmattan(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            fontSize: 16,
+                            color: AppColors.textSecond,
                           ),
                         ),
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'كيف نقدر نخدمك اليوم؟',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 16,
-                          color: AppColors.textSecond,
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                        _HeaderIcon(
+                          icon: Icons.receipt_long_outlined,
+                          onTap: () => context.push('/customer/orders'),
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            final count = ref.watch(cartCountProvider);
+                            return _HeaderIcon(
+                              icon: Icons.shopping_cart_outlined,
+                              badgeCount: count,
+                              onTap: () => context.push('/customer/cart'),
+                            );
+                          },
+                        ),
                     ],
-                  ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final count = ref.watch(cartCountProvider);
-                      return IconButton(
-                        onPressed: () => context.push('/customer/store'),
-                        icon: Badge(
-                          isLabelVisible: count > 0,
-                          label: Text('$count'),
-                          backgroundColor: AppColors.error,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.bluePrimary.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.shopping_cart_outlined,
-                              color: AppColors.blueSky,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  )
                 ],
               ),
               const SizedBox(height: 24),
 
-              // 2. Promo Slider
+              // 2. Search Bar
+              GestureDetector(
+                onTap: () {
+                  context.push('/customer/search');
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgSurface,
+                    borderRadius: AppSpacing.radius,
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search, color: AppColors.textSecond),
+                      const SizedBox(width: 8),
+                      Text(
+                        'ابحث عن منتجات، مكيفات، ألواح...',
+                        style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textSecond),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+
+
+              // 4. Promo Slider
               const PromoSlider(),
               const SizedBox(height: 32),
 
-              // 3. Quick Services (3 Cards)
+              // 5. Quick Services (3 Cards)
               Text(
                 'خدمات سريعة',
                 style: GoogleFonts.harmattan(
@@ -128,7 +158,7 @@ class CustomerHomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 32),
 
-              // 4. Most Popular (Featured Products)
+              // 6. Most Popular (Featured Products)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -157,7 +187,7 @@ class CustomerHomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 32),
 
-              // 5. Special Deals
+              // 7. Special Deals
               dealsAsync.when(
                 data: (deals) {
                   if (deals.isEmpty) return const SizedBox.shrink();
@@ -190,7 +220,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     ],
                   );
                 },
-                loading: () => const SizedBox.shrink(), // Don't show shimmer for deals to keep UI clean if empty
+                loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),
               ),
             ],
@@ -199,6 +229,8 @@ class CustomerHomeScreen extends ConsumerWidget {
       ),
     );
   }
+
+
 
   Widget _buildProductList(BuildContext context, List<Product> products) {
     if (products.isEmpty) return const SizedBox.shrink();
@@ -236,10 +268,20 @@ class CustomerHomeScreen extends ConsumerWidget {
                           child: p.imageUrl != null
                               ? ClipRRect(
                                   borderRadius: AppSpacing.radiusSm,
-                                  child: Image.network(
-                                    p.imageUrl!,
+                                  child: CachedNetworkImage(
+                                    imageUrl: p.imageUrl!,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
+                                    placeholder: (context, url) => TammShimmer(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      borderRadius: AppSpacing.radiusSm,
+                                    ),
+                                    errorWidget: (context, url, err) => const Icon(
+                                      Icons.image,
+                                      color: AppColors.textFaint,
+                                      size: 40,
+                                    ),
                                   ),
                                 )
                               : const Center(
@@ -364,6 +406,42 @@ class CustomerHomeScreen extends ConsumerWidget {
   }
 }
 
+class _HeaderIcon extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final int badgeCount;
+
+  const _HeaderIcon({
+    required this.icon,
+    required this.onTap,
+    this.badgeCount = 0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Badge(
+        isLabelVisible: badgeCount > 0,
+        label: Text('$badgeCount'),
+        backgroundColor: AppColors.error,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.bluePrimary.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: AppColors.blueSky,
+            size: 24,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _QuickServiceCard extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -405,3 +483,4 @@ class _QuickServiceCard extends StatelessWidget {
     );
   }
 }
+

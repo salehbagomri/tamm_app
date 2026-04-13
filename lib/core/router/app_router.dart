@@ -10,6 +10,7 @@ import '../../features/auth/presentation/onboarding_screen.dart';
 // Customer
 import '../../features/customer/customer_shell.dart';
 import '../../features/customer/home/presentation/customer_home_screen.dart';
+import '../../features/customer/search/presentation/search_screen.dart';
 import '../../features/customer/store/presentation/store_screen.dart';
 import '../../features/customer/store/presentation/product_detail_screen.dart';
 import '../../features/customer/store/presentation/cart_screen.dart';
@@ -96,6 +97,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
       // Customer routes outside shell (full-screen, root navigator)
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/customer/search',
+        builder: (_, __) => const SearchScreen(),
+      ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/product/:id',

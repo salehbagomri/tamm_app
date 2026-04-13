@@ -32,6 +32,19 @@ class CartScreen extends ConsumerWidget {
             );
           }
 
+          // Calculate totals
+          double originalTotal = 0.0;
+          double finalTotal = notifier.total;
+          
+          for (final item in cart) {
+            final double basePrice = item.product.oldPrice ?? item.product.price ?? 0;
+            final double baseTotal = basePrice * item.quantity;
+            final double installTotal = item.includeInstallation ? (item.product.installationPrice * item.quantity) : 0;
+            originalTotal += baseTotal + installTotal;
+          }
+          
+          final double savings = originalTotal - finalTotal;
+
           return Column(
             children: [
               Expanded(
@@ -47,7 +60,7 @@ class CartScreen extends ConsumerWidget {
                       background: Container(
                         padding: const EdgeInsets.only(right: 20),
                         decoration: BoxDecoration(
-                          color: AppColors.error.withOpacity(0.8),
+                          color: AppColors.error.withValues(alpha: 0.8),
                           borderRadius: AppSpacing.radius,
                         ),
                         alignment: Alignment.centerRight,
@@ -64,10 +77,11 @@ class CartScreen extends ConsumerWidget {
                           border: Border.all(color: AppColors.border),
                         ),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              width: 60,
-                              height: 60,
+                              width: 70,
+                              height: 70,
                               decoration: const BoxDecoration(
                                 color: AppColors.bgSurface2,
                                 borderRadius: AppSpacing.radiusSm,
@@ -85,15 +99,14 @@ class CartScreen extends ConsumerWidget {
                                           ),
                                         ),
                                       ),
-                                      errorWidget: (context, url, err) => const Icon(
-                                        Icons.image,
-                                        color: AppColors.textFaint,
+                                      placeholder: (context, url) => TammShimmer(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        borderRadius: AppSpacing.radiusSm,
                                       ),
+                                      errorWidget: (context, url, err) => const Icon(Icons.image, color: AppColors.textFaint),
                                     )
-                                  : const Icon(
-                                      Icons.image,
-                                      color: AppColors.textFaint,
-                                    ),
+                                  : const Icon(Icons.image, color: AppColors.textFaint),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -106,50 +119,68 @@ class CartScreen extends ConsumerWidget {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.textPrimary,
+                                      height: 1.2,
                                     ),
-                                    maxLines: 1,
+                                    maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                    Text(
-                                      '${((item.product.price ?? 0) * item.quantity).toInt()} ر.س',
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 14,
-                                        color: AppColors.blueSky,
-                                        fontWeight: FontWeight.w700,
+                                  const SizedBox(height: 4),
+                                  if (item.product.hasDiscount)
+                                    Row(
+                                      children: [
+                                        Text(
+                                          '${(item.product.oldPrice! * item.quantity).toInt()}',
+                                          style: GoogleFonts.harmattan(
+                                            fontSize: 13,
+                                            color: AppColors.textSecond,
+                                            decoration: TextDecoration.lineThrough,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'وفرت ${((item.product.oldPrice! - item.product.price!) * item.quantity).toInt()} ر.س',
+                                          style: GoogleFonts.harmattan(
+                                            fontSize: 13,
+                                            color: AppColors.success,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  Text(
+                                    '${((item.product.price ?? 0) * item.quantity).toInt()} ر.س',
+                                    style: GoogleFonts.harmattan(
+                                      fontSize: 16,
+                                      color: AppColors.blueSky,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.2,
+                                    ),
+                                  ),
+                                  if (item.includeInstallation)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Row(
+                                        children: [
+                                          const Icon(Icons.handyman, size: 14, color: AppColors.bluePrimary),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'تركيب (+${(item.product.installationPrice * item.quantity).toInt()})',
+                                            style: GoogleFonts.harmattan(fontSize: 13, color: AppColors.bluePrimary),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    if (item.includeInstallation)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 2),
-                                        child: Row(
-                                          children: [
-                                            const Icon(Icons.handyman, size: 12, color: AppColors.bluePrimary),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'تركيب (+${item.product.installationPrice.toInt()})',
-                                              style: GoogleFonts.harmattan(
-                                                fontSize: 12,
-                                                color: AppColors.bluePrimary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                  ],
+                                ],
                               ),
                             ),
-                            Row(
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.remove_circle_outline,
-                                    color: AppColors.textSecond,
-                                    size: 22,
-                                  ),
-                                  onPressed: () => notifier.updateQuantity(
-                                    item.product.id,
-                                    item.quantity - 1,
-                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                  icon: const Icon(Icons.add_circle_outline, color: AppColors.bluePrimary, size: 24),
+                                  onPressed: () => notifier.updateQuantity(item.product.id, item.quantity + 1),
                                 ),
                                 Text(
                                   '${item.quantity}',
@@ -160,15 +191,10 @@ class CartScreen extends ConsumerWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.add_circle_outline,
-                                    color: AppColors.bluePrimary,
-                                    size: 22,
-                                  ),
-                                  onPressed: () => notifier.updateQuantity(
-                                    item.product.id,
-                                    item.quantity + 1,
-                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                  icon: const Icon(Icons.remove_circle_outline, color: AppColors.textSecond, size: 24),
+                                  onPressed: () => notifier.updateQuantity(item.product.id, item.quantity - 1),
                                 ),
                               ],
                             ),
@@ -183,35 +209,57 @@ class CartScreen extends ConsumerWidget {
                 padding: AppSpacing.pagePadding,
                 decoration: const BoxDecoration(
                   color: AppColors.bgSurface,
-                  border: Border(top: BorderSide(color: AppColors.border)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -4)),
+                  ],
                 ),
                 child: Column(
                   children: [
+                    if (savings > 0) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('المجموع الأصلي', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textSecond)),
+                          Text('${originalTotal.toInt()} ر.س', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textSecond, decoration: TextDecoration.lineThrough)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('إجمالي التوفير', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.success, fontWeight: FontWeight.w600)),
+                          Text('-${savings.toInt()} ر.س', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.success, fontWeight: FontWeight.w700)),
+                        ],
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Divider(color: AppColors.border),
+                      ),
+                    ],
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          'المجموع',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 18,
-                            color: AppColors.textSecond,
-                          ),
+                          'المبلغ الإجمالي',
+                          style: GoogleFonts.harmattan(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                         ),
                         Text(
-                          '${notifier.total.toInt()} ر.س',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.blueSky,
-                          ),
+                          '${finalTotal.toInt()} ر.س',
+                          style: GoogleFonts.harmattan(fontSize: 26, fontWeight: FontWeight.w700, color: AppColors.blueSky, height: 1),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    TammButton(
-                      label: AppStrings.checkout,
-                      onPressed: () => context.push('/customer/checkout'),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: TammButton(
+                        label: AppStrings.checkout,
+                        onPressed: () => context.push('/customer/checkout'),
+                      ),
                     ),
+                    const SizedBox(height: 8), // For safe area
                   ],
                 ),
               ),
@@ -224,7 +272,7 @@ class CartScreen extends ConsumerWidget {
           separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (_, __) => TammShimmer(
             width: double.infinity,
-            height: 86,
+            height: 96,
             borderRadius: AppSpacing.radius,
           ),
         ),
