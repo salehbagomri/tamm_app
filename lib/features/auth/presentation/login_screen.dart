@@ -1,4 +1,5 @@
 import '../../../core/utils/platform_utils.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +24,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.signInWithGoogle();
+      
+      // على الويب، المصادقة تتم عبر إعادة توجيه (Redirect)، لذلك لا نكمل الكود هنا
+      if (kIsWeb) return;
 
       final profile = await repo.getProfile();
       if (!mounted) return;

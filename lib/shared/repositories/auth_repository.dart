@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,9 +15,9 @@ class AuthRepository {
 
   bool _googleInitialized = false;
 
-  /// Initialize GoogleSignIn singleton (call once)
+  /// Initialize GoogleSignIn singleton (call once) — mobile only
   Future<void> _ensureGoogleInitialized() async {
-    if (_googleInitialized) return;
+    if (_googleInitialized || kIsWeb) return;
     await GoogleSignIn.instance.initialize(
       serverClientId:
           '504988713429-c5f4p7s07f4idf8ikc666uqnsmkoj60k.apps.googleusercontent.com',
@@ -24,8 +25,19 @@ class AuthRepository {
     _googleInitialized = true;
   }
 
-  /// تسجيل الدخول بحساب Google (v7 API)
-  Future<AuthResponse> signInWithGoogle() async {
+  /// تسجيل الدخول بحساب Google
+  Future<AuthResponse?> signInWithGoogle() async {
+    if (kIsWeb) {
+      // Web: استخدام Supabase OAuth redirect flow
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'https://tamm-app-8c990.web.app',
+      );
+      // OAuth redirect — لن يصل لهنا لأن الصفحة ستتحول
+      return null;
+    }
+
+    // Mobile: استخدام google_sign_in + ID token
     await _ensureGoogleInitialized();
 
     final GoogleSignInAccount account = await GoogleSignIn.instance
