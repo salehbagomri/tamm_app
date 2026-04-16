@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/constants/app_colors.dart';
-import '../../core/widgets/tamm_bottom_nav.dart';
+import '../../core/widgets/adaptive_shell.dart';
 import '../../shared/providers/auth_providers.dart';
 import '../../shared/providers/product_providers.dart';
 import '../../shared/providers/service_providers.dart';
@@ -34,58 +34,51 @@ class CustomerShell extends ConsumerWidget {
       }
     });
 
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: TammBottomNav(
-        currentIndex: _currentIndex(context),
-        onTap: (i) {
-          switch (i) {
-            case 0:
-              ref.invalidate(userProfileProvider);
-              ref.invalidate(featuredProductsProvider);
-              context.go('/customer/home');
-            case 1:
-              ref.invalidate(productsProvider);
-              context.go('/customer/store');
-            case 2:
-              ref.invalidate(serviceTypesProvider);
-              context.go('/customer/services');
-            case 3:
-              ref.invalidate(userProfileProvider);
-              ref.invalidate(myOrdersProvider);
-              context.go('/customer/profile');
-          }
-        },
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: AppStrings.home,
-          ),
-          BottomNavigationBarItem(
-            icon: Consumer(
-              builder: (context, ref, child) {
-                final count = ref.watch(cartCountProvider);
-                
-                return Badge(
-                  isLabelVisible: count > 0,
-                  label: Text('$count'),
-                  backgroundColor: AppColors.error,
-                  child: const Icon(Icons.store_rounded),
-                );
-              },
-            ),
-            label: AppStrings.store,
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.build_rounded),
-            label: AppStrings.services,
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: AppStrings.profile,
-          ),
-        ],
-      ),
+    final cartCount = ref.watch(cartCountProvider);
+
+    return AdaptiveShell(
+      currentIndex: _currentIndex(context),
+      onTap: (i) {
+        switch (i) {
+          case 0:
+            ref.invalidate(userProfileProvider);
+            ref.invalidate(featuredProductsProvider);
+            context.go('/customer/home');
+          case 1:
+            ref.invalidate(productsProvider);
+            context.go('/customer/store');
+          case 2:
+            ref.invalidate(serviceTypesProvider);
+            context.go('/customer/services');
+          case 3:
+            ref.invalidate(userProfileProvider);
+            ref.invalidate(myOrdersProvider);
+            context.go('/customer/profile');
+        }
+      },
+      items: [
+        const NavItem(
+          icon: Icons.home_rounded,
+          label: AppStrings.home,
+        ),
+        NavItem(
+          icon: Icons.store_rounded,
+          label: AppStrings.store,
+          badge: cartCount > 0
+              ? Text('$cartCount',
+                  style: const TextStyle(fontSize: 10, color: Colors.white))
+              : null,
+        ),
+        const NavItem(
+          icon: Icons.build_rounded,
+          label: AppStrings.services,
+        ),
+        const NavItem(
+          icon: Icons.person_rounded,
+          label: AppStrings.profile,
+        ),
+      ],
+      child: child,
     );
   }
 }
