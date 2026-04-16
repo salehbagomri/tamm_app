@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +35,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
   final _detailsController = TextEditingController();
   final _durationController = TextEditingController();
   
-  File? _attachedFile;
+  Uint8List? _attachedBytes;
   String? _attachedFileName;
   bool _isSubmitting = false;
   RealtimeChannel? _channel;
@@ -148,7 +148,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
       final result = await FilePicker.pickFiles(
         type: FileType.any,
       );
-      if (result != null && result.files.single.path != null) {
+      if (result != null && result.files.single.bytes != null) {
         final ext = result.files.single.extension?.toLowerCase() ?? '';
         final allowed = ['pdf', 'jpg', 'jpeg', 'png'];
         if (!allowed.contains(ext)) {
@@ -163,8 +163,29 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
           return;
         }
         setState(() {
-          _attachedFile = File(result.files.single.path!);
+          _attachedBytes = result.files.single.bytes;
           _attachedFileName = result.files.single.name;
+        });
+      } else if (result != null && result.files.single.path != null) {
+        // Fallback for mobile where bytes may be null
+        final file = result.files.single;
+        final ext = file.extension?.toLowerCase() ?? '';
+        final allowed = ['pdf', 'jpg', 'jpeg', 'png'];
+        if (!allowed.contains(ext)) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('يرجى اختيار ملف PDF أو صورة (jpg, png)'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+          return;
+        }
+        final bytes = await XFile(file.path!).readAsBytes();
+        setState(() {
+          _attachedBytes = bytes;
+          _attachedFileName = file.name;
         });
       }
     } else {
@@ -176,9 +197,10 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
         picked = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
       }
       if (picked != null) {
+        final bytes = await picked.readAsBytes();
         setState(() {
-          _attachedFile = File(picked!.path);
-          _attachedFileName = picked.name;
+          _attachedBytes = bytes;
+          _attachedFileName = picked!.name;
         });
       }
     }
@@ -186,7 +208,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
 
   void _removeAttachment() {
     setState(() {
-      _attachedFile = null;
+      _attachedBytes = null;
       _attachedFileName = null;
     });
   }
@@ -202,11 +224,12 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
       
       // Upload attachment if exists (non-blocking if fails)
       String? attachmentUrl;
-      if (_attachedFile != null) {
+      if (_attachedBytes != null) {
         try {
           attachmentUrl = await repo.uploadAttachment(
             orderId: widget.orderId,
-            file: _attachedFile!,
+            bytes: _attachedBytes!,
+            fileName: _attachedFileName ?? 'attachment',
           );
         } catch (uploadError) {
           // Upload failed - continue sending quote without attachment
@@ -522,7 +545,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     ),
                   ),
                   const SizedBox(height: 8),
-                  if (_attachedFile != null) ...[
+                  if (_attachedBytes != null) ...[
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(

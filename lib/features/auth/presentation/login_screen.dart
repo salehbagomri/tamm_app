@@ -1,4 +1,4 @@
-import 'dart:io';
+import '../../../core/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -42,9 +42,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             context.go('/customer/home');
         }
       }
-    } on SocketException catch (_) {
-      _showError('تحقق من اتصالك بالإنترنت');
     } catch (e) {
+      if (PlatformUtils.isNetworkError(e)) {
+        _showError('تحقق من اتصالك بالإنترنت');
+        return;
+      }
       final msg = e.toString();
       if (msg.contains('canceled') || msg.contains('cancelled') || msg.toLowerCase().contains('sign_in_canceled')) {
         return; // المستخدم ألغى الدخول

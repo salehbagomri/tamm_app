@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/models/order.dart';
@@ -11,12 +11,13 @@ class QuoteRepository {
   // 1. Manager: Upload attachment (PDF/image) to Supabase Storage
   Future<String?> uploadAttachment({
     required String orderId,
-    required File file,
+    required Uint8List bytes,
+    required String fileName,
   }) async {
-    final ext = file.path.split('.').last.toLowerCase();
+    final ext = fileName.split('.').last.toLowerCase();
     final path = 'quotes/$orderId/attachment_${DateTime.now().millisecondsSinceEpoch}.$ext';
 
-    await _client.storage.from('quote-attachments').upload(path, file);
+    await _client.storage.from('quote-attachments').uploadBinary(path, bytes);
 
     final publicUrl = _client.storage.from('quote-attachments').getPublicUrl(path);
     return publicUrl;

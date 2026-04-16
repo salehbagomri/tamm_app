@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -83,9 +83,10 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
       if (_selectedImage != null) {
         final ext = _selectedImage!.path.split('.').last;
         final fileName = '${DateTime.now().millisecondsSinceEpoch}.$ext';
+        final bytes = await _selectedImage!.readAsBytes();
         await Supabase.instance.client.storage
             .from('products')
-            .upload(fileName, File(_selectedImage!.path));
+            .uploadBinary(fileName, bytes);
         final imageUrl = Supabase.instance.client.storage
             .from('products')
             .getPublicUrl(fileName);
@@ -157,9 +158,17 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   child: _selectedImage != null
                       ? ClipRRect(
                           borderRadius: AppSpacing.radius,
-                          child: Image.file(
-                            File(_selectedImage!.path),
-                            fit: BoxFit.cover,
+                          child: FutureBuilder<Uint8List>(
+                            future: _selectedImage!.readAsBytes(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Image.memory(
+                                  snapshot.data!,
+                                  fit: BoxFit.cover,
+                                );
+                              }
+                              return const Center(child: CircularProgressIndicator());
+                            },
                           ),
                         )
                       : _existingImageUrl != null

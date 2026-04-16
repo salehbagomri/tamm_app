@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,7 +18,6 @@ class FcmService {
   /// يُستدعى مرة واحدة في main()
   static Future<void> initialize() async {
     await Firebase.initializeApp();
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
     // طلب إذن الإشعارات
     await _messaging.requestPermission(
@@ -25,6 +25,12 @@ class FcmService {
       badge: true,
       sound: true,
     );
+
+    // على الويب نكتفي بإذن الإشعارات بدون Local Notifications
+    if (kIsWeb) return;
+
+    // --- Mobile only ---
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
     // إعداد Local Notifications (للإشعارات أثناء استخدام التطبيق)
     const androidSettings =
