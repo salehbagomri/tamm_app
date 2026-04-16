@@ -3,11 +3,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../firebase_options.dart';
 
 /// Background message handler — يجب أن تكون top-level function
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
 class FcmService {
@@ -17,7 +18,7 @@ class FcmService {
 
   /// يُستدعى مرة واحدة في main()
   static Future<void> initialize() async {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
     // طلب إذن الإشعارات
     await _messaging.requestPermission(
