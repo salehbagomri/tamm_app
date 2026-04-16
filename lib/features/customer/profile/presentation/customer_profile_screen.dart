@@ -8,6 +8,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_button.dart';
+import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/repositories/auth_repository.dart';
 
@@ -19,9 +20,10 @@ class CustomerProfileScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
-        child: Padding(
-          padding: AppSpacing.pagePadding,
-          child: profileAsync.when(
+        child: ResponsiveWrapper(
+          child: Padding(
+            padding: AppSpacing.pagePadding,
+            child: profileAsync.when(
             data: (p) => Column(
               children: [
                 const SizedBox(height: 20),
@@ -98,6 +100,7 @@ class CustomerProfileScreen extends ConsumerWidget {
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Center(child: Text('$e')),
           ),
+        ),
         ),
       ),
     );

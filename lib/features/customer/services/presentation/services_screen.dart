@@ -8,6 +8,7 @@ import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
+import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/service_providers.dart';
 
@@ -56,9 +57,10 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: ResponsiveWrapper(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
@@ -214,6 +216,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

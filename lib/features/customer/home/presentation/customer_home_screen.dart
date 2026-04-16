@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
+import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
@@ -24,8 +25,9 @@ class CustomerHomeScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: AppSpacing.pagePadding,
+        child: ResponsiveWrapper(
+          child: SingleChildScrollView(
+            padding: AppSpacing.pagePadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -225,6 +227,7 @@ class CustomerHomeScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

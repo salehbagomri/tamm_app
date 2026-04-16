@@ -10,6 +10,8 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_button.dart';
+import '../../../../core/widgets/responsive_wrapper.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../shared/models/cart_item.dart';
 import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
@@ -74,9 +76,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: ResponsiveWrapper(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Row(
@@ -254,11 +257,11 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     return GridView.builder(
                       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
                       physics: const AlwaysScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: Responsive.gridColumns(context),
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
-                        childAspectRatio: 0.62, // Taller cards for more info
+                        childAspectRatio: Responsive.isDesktop(context) ? 0.75 : 0.62,
                       ),
                       itemCount: products.length,
                       itemBuilder: (_, i) {
@@ -431,6 +434,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

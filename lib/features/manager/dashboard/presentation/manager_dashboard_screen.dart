@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
+import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
@@ -62,9 +63,10 @@ class _ManagerDashboardScreenState
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(dashboardStatsProvider);
+        child: ResponsiveWrapper(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(dashboardStatsProvider);
             ref.invalidate(allOrdersProvider(null));
           },
           child: SingleChildScrollView(
@@ -236,6 +238,7 @@ class _ManagerDashboardScreenState
               ],
             ),
           ),
+        ),
         ),
       ),
     );
