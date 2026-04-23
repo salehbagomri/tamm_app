@@ -16,6 +16,7 @@ import '../../../../shared/models/cart_item.dart';
 import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/auth_guard.dart';
 import 'buy_install_sheet.dart';
 
 class StoreScreen extends ConsumerStatefulWidget {
@@ -441,6 +442,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
   }
 
   Future<void> _quickAddToCart(BuildContext context, dynamic p) async {
+    if (!await requireAuth(context, ref)) return;
+
     bool wantsInstallation = false;
     if (p.requiresInstallation) {
       final result = await showModalBottomSheet<bool>(

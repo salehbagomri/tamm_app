@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/adaptive_shell.dart';
@@ -24,6 +25,9 @@ class CustomerShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(roleStreamProvider, (prev, next) {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return; // Guest
+
       final role = next.valueOrNull;
       if (role != null && role != 'customer') {
         if (role == 'manager') {
@@ -39,9 +43,10 @@ class CustomerShell extends ConsumerWidget {
     return AdaptiveShell(
       currentIndex: _currentIndex(context),
       onTap: (i) {
+        final isGuest = ref.read(isGuestProvider);
         switch (i) {
           case 0:
-            ref.invalidate(userProfileProvider);
+            if (!isGuest) ref.invalidate(userProfileProvider);
             ref.invalidate(featuredProductsProvider);
             context.go('/customer/home');
           case 1:
@@ -51,8 +56,10 @@ class CustomerShell extends ConsumerWidget {
             ref.invalidate(serviceTypesProvider);
             context.go('/customer/services');
           case 3:
-            ref.invalidate(userProfileProvider);
-            ref.invalidate(myOrdersProvider);
+            if (!isGuest) {
+              ref.invalidate(userProfileProvider);
+              ref.invalidate(myOrdersProvider);
+            }
             context.go('/customer/profile');
         }
       },

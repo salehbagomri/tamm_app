@@ -16,6 +16,34 @@ class CustomerProfileScreen extends ConsumerWidget {
   const CustomerProfileScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isGuest = ref.watch(isGuestProvider);
+    if (isGuest) {
+      return Scaffold(
+        backgroundColor: AppColors.bgPrimary,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.person_outline, size: 80, color: AppColors.textFaint),
+                  const SizedBox(height: 16),
+                  Text('سجّل دخولك لإدارة حسابك',
+                    style: GoogleFonts.harmattan(fontSize: 20, color: AppColors.textPrimary)),
+                  const SizedBox(height: 24),
+                  TammButton(label: 'تسجيل الدخول', onPressed: () => context.push('/login')),
+                  const SizedBox(height: 12),
+                  TammButton(label: 'إنشاء حساب', type: TammButtonType.secondary,
+                    onPressed: () => context.push('/register')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     final profileAsync = ref.watch(userProfileProvider);
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
@@ -145,7 +173,7 @@ class CustomerProfileScreen extends ConsumerWidget {
             backgroundColor: AppColors.success,
           ),
         );
-        context.go('/login');
+        context.go('/customer/home');
       }
     } catch (e) {
       if (context.mounted) {

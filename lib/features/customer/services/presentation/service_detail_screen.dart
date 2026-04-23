@@ -10,6 +10,7 @@ import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/service_providers.dart';
+import '../../../../core/utils/auth_guard.dart';
 
 class ServiceDetailScreen extends ConsumerWidget {
   final String serviceTypeId;
@@ -25,7 +26,7 @@ class ServiceDetailScreen extends ConsumerWidget {
       backgroundColor: AppColors.bgPrimary,
       appBar: const TammAppBar(title: 'تفاصيل الخدمة'),
       body: serviceAsync.when(
-        data: (service) => _buildBody(context, service),
+        data: (service) => _buildBody(context, ref, service),
         loading: () => const TammLoading(),
         error: (err, stack) => Center(
           child: Column(
@@ -50,7 +51,7 @@ class ServiceDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, ServiceType service) {
+  Widget _buildBody(BuildContext context, WidgetRef ref, ServiceType service) {
     return Column(
       children: [
         Expanded(
@@ -202,7 +203,10 @@ class ServiceDetailScreen extends ConsumerWidget {
           child: TammButton(
             label: service.isQuoteBased ? 'اطلب عرض السعر' : 'احجز الخدمة الآن',
             icon: Icons.arrow_forward_rounded,
-            onPressed: () {
+            onPressed: () async {
+              if (!await requireAuth(context, ref)) return;
+              if (!context.mounted) return;
+              
               if (service.isQuoteBased) {
                 context.push('/customer/quote-request/${service.id}');
               } else {

@@ -89,7 +89,7 @@ class _ManagerDashboardScreenState
                     IconButton(
                       onPressed: () async {
                         await ref.read(authRepositoryProvider).signOut();
-                        if (context.mounted) context.go('/login');
+                        if (context.mounted) context.go('/customer/home');
                       },
                       icon: const Icon(Icons.logout, color: AppColors.error),
                       tooltip: 'تسجيل الخروج',

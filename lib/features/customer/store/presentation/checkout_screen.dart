@@ -10,6 +10,7 @@ import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/providers/order_providers.dart';
+import '../../../../core/utils/auth_guard.dart';
 import '../../services/widgets/appointment_picker.dart';
 import '../../services/widgets/appointment_display_card.dart';
 
@@ -75,6 +76,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Future<void> _submit() async {
+    if (!await requireAuth(context, ref)) return;
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDate == null || _selectedPeriod == null) {
       if (mounted) {

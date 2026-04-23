@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/providers/auth_providers.dart';
 import '../../../core/services/fcm_service.dart';
@@ -43,7 +44,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     try {
       final repo = ref.read(authRepositoryProvider);
       if (!repo.isLoggedIn) {
-        _navigate('/login');
+        final prefs = await SharedPreferences.getInstance();
+        final seen = prefs.getBool('hasSeenWelcome') ?? false;
+        if (!seen) {
+          _navigate('/welcome');
+        } else {
+          _navigate('/customer/home'); // Guest mode
+        }
         return;
       }
 

@@ -15,6 +15,7 @@ import '../../../../shared/models/product.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/models/cart_item.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/auth_guard.dart';
 import 'buy_install_sheet.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
@@ -279,6 +280,8 @@ class ProductDetailScreen extends ConsumerWidget {
   }
 
   Future<void> _addToCart(BuildContext context, WidgetRef ref, Product p) async {
+    if (!await requireAuth(context, ref)) return;
+
     bool wantsInstallation = false;
     if (p.requiresInstallation) {
       final result = await showModalBottomSheet<bool>(

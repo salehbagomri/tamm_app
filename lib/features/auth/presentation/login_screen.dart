@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../shared/providers/auth_providers.dart';
+import '../../../shared/providers/order_providers.dart';
 import '../../../core/services/fcm_service.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -18,6 +19,16 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _loading = false;
+  final _emailCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
+  bool _obscure = true;
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _signInWithGoogle() async {
     setState(() => _loading = true);
@@ -25,14 +36,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final repo = ref.read(authRepositoryProvider);
       await repo.signInWithGoogle();
       
-      // على الويب، المصادقة تتم عبر إعادة توجيه (Redirect)، لذلك لا نكمل الكود هنا
       if (kIsWeb) return;
 
       final profile = await repo.getProfile();
       if (!mounted) return;
 
-      // تسجيل FCM Token بعد تسجيل الدخول
       await FcmService.registerToken();
+      await ref.read(cartProvider.notifier).mergeGuestCart();
 
       if (profile == null || !profile.isComplete) {
         context.go('/onboarding');
@@ -53,13 +63,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       final msg = e.toString();
       if (msg.contains('canceled') || msg.contains('cancelled') || msg.toLowerCase().contains('sign_in_canceled')) {
-        return; // المستخدم ألغى الدخول
+        return; 
       }
       debugPrint('Login error: $msg');
       if (msg.contains('AuthException')) {
         _showError('حدث خطأ في الخادم، حاول مجدداً');
       } else {
         _showError('حدث خطأ، حاول مجدداً');
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _signInWithEmail() async {
+    final email = _emailCtrl.text.trim();
+    final password = _passCtrl.text;
+    if (email.isEmpty || password.isEmpty) {
+      _showError('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+      return;
+    }
+    setState(() => _loading = true);
+    try {
+      final repo = ref.read(authRepositoryProvider);
+      await repo.signInWithEmail(email: email, password: password);
+      
+      final profile = await repo.getProfile();
+      if (!mounted) return;
+
+      await FcmService.registerToken();
+      await ref.read(cartProvider.notifier).mergeGuestCart();
+
+      if (profile == null || !profile.isComplete) {
+        context.go('/onboarding');
+      } else {
+        switch (profile.role) {
+          case 'manager':
+            context.go('/manager/dashboard');
+          case 'technician':
+            context.go('/technician/tasks');
+          default:
+            context.go('/customer/home');
+        }
+      }
+    } catch (e) {
+      debugPrint('Email login error: $e');
+      final msg = e.toString().toLowerCase();
+      if (msg.contains('invalid login credentials') || msg.contains('invalid_credentials')) {
+        _showError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+      } else {
+        _showError('فشل تسجيل الدخول، حاول مجدداً');
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -85,12 +138,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Spacer(flex: 2),
+              const SizedBox(height: 48),
               // Logo
               Container(
                 width: 120,
@@ -125,14 +178,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                AppStrings.welcomeSub,
+                'سجّل دخولك للاستمتاع بكافة المميزات',
                 style: GoogleFonts.harmattan(
                   fontSize: 16,
                   color: AppColors.textSecond,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const Spacer(flex: 2),
+              const SizedBox(height: 32),
+              
               // Google Sign-In Button
               SizedBox(
                 width: double.infinity,
@@ -179,16 +233,109 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                'سيتم إنشاء حسابك تلقائياً عند أول تسجيل',
-                style: GoogleFonts.harmattan(
-                  fontSize: 13,
-                  color: AppColors.textSecond,
-                ),
-                textAlign: TextAlign.center,
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Expanded(child: Divider(color: AppColors.textFaint, thickness: 0.5)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text('أو', style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.textFaint)),
+                  ),
+                  const Expanded(child: Divider(color: AppColors.textFaint, thickness: 0.5)),
+                ],
               ),
-              const Spacer(),
+              const SizedBox(height: 20),
+              
+              // Email / Password
+              TextField(
+                controller: _emailCtrl,
+                keyboardType: TextInputType.emailAddress,
+                style: const TextStyle(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'البريد الإلكتروني',
+                  hintStyle: GoogleFonts.harmattan(color: AppColors.textFaint),
+                  filled: true,
+                  fillColor: AppColors.bgSurface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _passCtrl,
+                obscureText: _obscure,
+                style: const TextStyle(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'كلمة المرور',
+                  hintStyle: GoogleFonts.harmattan(color: AppColors.textFaint),
+                  filled: true,
+                  fillColor: AppColors.bgSurface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscure ? Icons.visibility_off : Icons.visibility,
+                      color: AppColors.textSecond,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscure = !_obscure;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _loading ? null : _signInWithEmail,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.bluePrimary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _loading
+                      ? const SizedBox(
+                          width: 24, height: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Text(
+                          'تسجيل الدخول',
+                          style: GoogleFonts.harmattan(fontSize: 18, fontWeight: FontWeight.w600),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => context.push('/register'),
+                    child: Text(
+                      'ليس لديك حساب؟ أنشئ حساباً',
+                      style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.blueSky),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => context.push('/forgot-password'),
+                    child: Text(
+                      'نسيت كلمة المرور؟',
+                      style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.textSecond),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 48),
             ],
           ),
         ),

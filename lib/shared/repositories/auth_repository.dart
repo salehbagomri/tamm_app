@@ -54,6 +54,33 @@ class AuthRepository {
     );
   }
 
+  /// تسجيل الدخول بالبريد وكلمة المرور
+  Future<AuthResponse> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    return await _client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+  }
+
+  /// إنشاء حساب جديد بالبريد
+  Future<AuthResponse> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    return await _client.auth.signUp(
+      email: email,
+      password: password,
+    );
+  }
+
+  /// إعادة تعيين كلمة المرور
+  Future<void> resetPassword(String email) async {
+    await _client.auth.resetPasswordForEmail(email);
+  }
+
   /// جلب بروفايل المستخدم
   Future<UserProfile?> getProfile() async {
     final userId = _client.auth.currentUser?.id;
@@ -141,7 +168,7 @@ class AuthRepository {
     await FcmService.unregisterToken();
     await ref.read(authRepositoryProvider).signOut();
     if (context.mounted) {
-      context.go('/login');
+      context.go('/customer/home');
     }
   }
 

@@ -24,3 +24,8 @@ final roleStreamProvider = StreamProvider<String?>((ref) {
     .eq('id', userId)
     .map((rows) => rows.isEmpty ? null : rows.first['role'] as String?);
 });
+
+/// هل المستخدم زائر (غير مسجّل)؟
+final isGuestProvider = Provider<bool>((ref) {
+  return Supabase.instance.client.auth.currentUser == null;
+});

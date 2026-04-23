@@ -41,7 +41,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                       children: [
                         profileAsync.when(
                           data: (p) => Text(
-                            'أهلاً ${p?.fullName ?? ''} 👋',
+                            'أهلاً ${p?.fullName.isNotEmpty == true ? p!.fullName : 'بك'} 👋',
                             style: GoogleFonts.harmattan(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
