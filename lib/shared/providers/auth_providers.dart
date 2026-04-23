@@ -7,14 +7,20 @@ final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepository(),
 );
 
+final authStateProvider = StreamProvider<AuthState>((ref) {
+  return Supabase.instance.client.auth.onAuthStateChange;
+});
+
 final userProfileProvider = FutureProvider.autoDispose<UserProfile?>((
   ref,
 ) async {
+  ref.watch(authStateProvider);
   final repo = ref.read(authRepositoryProvider);
   return repo.getProfile();
 });
 
 final roleStreamProvider = StreamProvider<String?>((ref) {
+  ref.watch(authStateProvider);
   final userId = Supabase.instance.client.auth.currentUser?.id;
   if (userId == null) return Stream.value(null);
 
@@ -27,5 +33,6 @@ final roleStreamProvider = StreamProvider<String?>((ref) {
 
 /// هل المستخدم زائر (غير مسجّل)؟
 final isGuestProvider = Provider<bool>((ref) {
+  ref.watch(authStateProvider);
   return Supabase.instance.client.auth.currentUser == null;
 });
