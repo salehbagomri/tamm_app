@@ -12,6 +12,8 @@ import '../../../../core/widgets/tamm_text_field.dart';
 
 import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/models/product.dart';
+import '../../../../core/widgets/specs_editor.dart';
+import '../../../../core/constants/product_specs.dart';
 
 class ProductFormScreen extends ConsumerStatefulWidget {
   final String? productId;
@@ -33,6 +35,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   bool _isFeatured = false;
   bool _loading = false;
   bool _isEdit = false;
+  Map<String, dynamic> _specs = {};
 
   XFile? _selectedImage;
   String? _existingImageUrl;
@@ -59,7 +62,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
     _category = p.category;
     _requiresInstallation = p.requiresInstallation;
     _isFeatured = p.isFeatured;
+    _isFeatured = p.isFeatured;
     _existingImageUrl = p.imageUrl;
+    _specs = Map<String, dynamic>.from(p.specs);
     setState(() {});
   }
 
@@ -78,6 +83,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         'requires_installation': _requiresInstallation,
         'installation_price': _installPriceCtrl.text.isEmpty ? 0.0 : double.parse(_installPriceCtrl.text),
         'is_featured': _isFeatured,
+        'specs': _specs,
       };
 
       if (_selectedImage != null) {
@@ -114,6 +120,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 installationPrice: data['installation_price'] as double,
                 oldPrice: data['old_price'] as double?,
                 isFeatured: data['is_featured'] as bool,
+                specs: data['specs'] as Map<String, dynamic>,
               ),
             );
       }
@@ -228,7 +235,18 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                     child: Text('إكسسوارات'),
                   ),
                 ],
-                onChanged: (v) => setState(() => _category = v!),
+                onChanged: (v) {
+                  setState(() {
+                    _category = v!;
+                    // Initialize default specs for the new category if not existing
+                    final defaults = categoryDefaultSpecs[_category] ?? [];
+                    for (final key in defaults) {
+                      if (!_specs.containsKey(key)) {
+                        _specs[key] = '';
+                      }
+                    }
+                  });
+                },
               ),
               const SizedBox(height: 12),
               TammTextField(
@@ -284,6 +302,16 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               ],
               const SizedBox(height: 12),
               TammTextField(label: 'العلامة التجارية', controller: _brandCtrl),
+              const SizedBox(height: 16),
+              SpecsEditor(
+                initialSpecs: _specs,
+                category: _category,
+                onChanged: (specs) {
+                  setState(() {
+                    _specs = specs;
+                  });
+                },
+              ),
               const SizedBox(height: 16),
               SwitchListTile(
                 title: const Text('منتج مميز ⭐'),

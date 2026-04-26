@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/product_specs.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_loading.dart';
@@ -198,8 +199,8 @@ class ProductDetailScreen extends ConsumerWidget {
                       Text(
                         'المواصفات التقنية',
                         style: GoogleFonts.harmattan(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
                       ),
@@ -210,22 +211,33 @@ class ProductDetailScreen extends ConsumerWidget {
                           borderRadius: AppSpacing.radius,
                           border: Border.all(color: AppColors.border),
                         ),
+                        clipBehavior: Clip.hardEdge,
                         child: Column(
-                          children: p.specs.entries.map((e) {
-                            final isLast = p.specs.entries.last.key == e.key;
+                          children: p.specs.entries.toList().asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final e = entry.value;
+                            final isLast = index == p.specs.length - 1;
+                            final isEven = index % 2 == 0;
+                            final specName = specsTranslation[e.key] ?? e.key;
+                            final icon = specsIcons[e.key] ?? Icons.info_outline;
+
                             return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                               decoration: BoxDecoration(
+                                color: isEven ? AppColors.bgSurface : AppColors.bgSurface2,
                                 border: isLast ? null : const Border(bottom: BorderSide(color: AppColors.border)),
                               ),
                               child: Row(
                                 children: [
+                                  Icon(icon, size: 20, color: AppColors.bluePrimary),
+                                  const SizedBox(width: 12),
                                   Expanded(
                                     flex: 2,
                                     child: Text(
-                                      e.key,
+                                      specName,
                                       style: GoogleFonts.harmattan(
-                                        fontSize: 15,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
                                         color: AppColors.textSecond,
                                       ),
                                     ),
@@ -235,9 +247,9 @@ class ProductDetailScreen extends ConsumerWidget {
                                     child: Text(
                                       '${e.value}',
                                       style: GoogleFonts.harmattan(
-                                        fontSize: 15,
+                                        fontSize: 16,
                                         color: AppColors.textPrimary,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       textAlign: TextAlign.start,
                                     ),

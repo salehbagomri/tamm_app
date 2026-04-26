@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+
+const Map<String, String> specsTranslation = {
+  'type': 'النوع',
+  'capacity': 'السعة',
+  'power': 'الاستهلاك',
+  'energy_rating': 'تصنيف الطاقة',
+  'noise_level': 'مستوى الضوضاء',
+  'coverage_area': 'مساحة التغطية',
+  'refrigerant': 'نوع الغاز',
+  'voltage': 'الجهد',
+  'wattage': 'القدرة بالواط',
+  'efficiency': 'الكفاءة',
+  'dimensions': 'الأبعاد',
+  'weight': 'الوزن',
+  'warranty': 'الضمان',
+  'color': 'اللون',
+  'country_of_origin': 'بلد المنشأ',
+  'certifications': 'الشهادات',
+  'capacity_ah': 'السعة أمبير/ساعة',
+  'voltage_v': 'الجهد فولت',
+  'battery_type': 'نوع البطارية',
+  'cycle_life': 'عمر الدورات',
+  'inverter_type': 'نوع الإنفرتر',
+  'output_power': 'قدرة الإخراج',
+  'input_voltage': 'جهد الإدخال',
+  'output_voltage': 'جهد الإخراج',
+  'phases': 'الأطوار',
+};
+
+const Map<String, IconData> specsIcons = {
+  'type': Icons.category_outlined,
+  'capacity': Icons.speed_outlined,
+  'power': Icons.power_outlined,
+  'energy_rating': Icons.bolt_outlined,
+  'noise_level': Icons.volume_up_outlined,
+  'coverage_area': Icons.home_outlined,
+  'refrigerant': Icons.ac_unit_outlined,
+  'voltage': Icons.electrical_services_outlined,
+  'wattage': Icons.flash_on_outlined,
+  'efficiency': Icons.trending_up_outlined,
+  'dimensions': Icons.straighten_outlined,
+  'weight': Icons.fitness_center_outlined,
+  'warranty': Icons.verified_user_outlined,
+  'color': Icons.color_lens_outlined,
+  'country_of_origin': Icons.flag_outlined,
+  'certifications': Icons.workspace_premium_outlined,
+  'capacity_ah': Icons.battery_charging_full_outlined,
+  'voltage_v': Icons.battery_std_outlined,
+  'battery_type': Icons.battery_unknown_outlined,
+  'cycle_life': Icons.loop_outlined,
+  'inverter_type': Icons.settings_input_component_outlined,
+  'output_power': Icons.output_outlined,
+  'input_voltage': Icons.input_outlined,
+  'output_voltage': Icons.output_outlined,
+  'phases': Icons.waves_outlined,
+};
+
+const Map<String, List<String>> categoryDefaultSpecs = {
+  'ac': [
+    'type',
+    'capacity',
+    'energy_rating',
+    'coverage_area',
+    'noise_level',
+    'refrigerant',
+    'voltage',
+    'country_of_origin',
+    'warranty'
+  ],
+  'solar_panel': [
+    'wattage',
+    'efficiency',
+    'dimensions',
+    'weight',
+    'voltage',
+    'certifications',
+    'warranty',
+    'country_of_origin'
+  ],
+  'solar_battery': [
+    'capacity_ah',
+    'voltage_v',
+    'battery_type',
+    'cycle_life',
+    'dimensions',
+    'weight',
+    'warranty'
+  ],
+  'solar_inverter': [
+    'inverter_type',
+    'output_power',
+    'input_voltage',
+    'output_voltage',
+    'phases',
+    'efficiency',
+    'warranty'
+  ],
+  'accessory': [
+    'type',
+    'dimensions',
+    'weight',
+    'country_of_origin',
+    'warranty'
+  ],
+};
