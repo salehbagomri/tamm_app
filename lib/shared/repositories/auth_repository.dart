@@ -175,8 +175,8 @@ class AuthRepository {
   /// حذف الحساب
   Future<void> deleteAccount() async {
     await FcmService.unregisterToken();
-    await _client.functions.invoke('delete-user');
-    await signOut();
+    await _client.rpc('delete_user_account');
+    await _client.auth.signOut();
   }
 
   /// هل المستخدم مسجل الدخول
