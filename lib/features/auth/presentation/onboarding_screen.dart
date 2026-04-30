@@ -22,6 +22,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _nameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   bool _loading = false;
+  String? _phoneError;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -40,7 +41,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           .maybeSingle();
 
       if (exists != null) {
-        throw Exception('رقم الجوال مسجل بالفعل لحساب آخر');
+        setState(() => _phoneError = 'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر');
+        return;
       }
 
       await repo.completeProfile(
@@ -61,15 +63,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final errorMsg = e.toString().replaceAll('Exception: ', '');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            errorMsg,
-            style: GoogleFonts.harmattan(fontSize: 16),
-          ),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ));
+        final errorStr = e.toString();
+        if (errorStr.contains('23505') || errorStr.contains('unique') || errorStr.contains('profiles_phone_unique')) {
+          setState(() => _phoneError = 'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر');
+        } else {
+          final errorMsg = errorStr.replaceAll('Exception: ', '');
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              errorMsg,
+              style: GoogleFonts.harmattan(fontSize: 16),
+            ),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -160,7 +167,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     keyboardType: TextInputType.phone,
                     prefixText: '+967 ',
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (v) {
+                      if (_phoneError != null) {
+                        setState(() => _phoneError = null);
+                      }
+                    },
                     validator: (v) {
+                      if (_phoneError != null) return _phoneError;
                       if (v == null || v.trim().isEmpty) {
                         return 'رقم الجوال مطلوب';
                       }
@@ -174,6 +187,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       return null;
                     },
                   ),
+                  if (_phoneError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, right: 12.0),
+                      child: Text(
+                        _phoneError!,
+                        style: GoogleFonts.harmattan(
+                          fontSize: 13,
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 40),
                   TammButton(
                     label: 'ابدأ الآن',
