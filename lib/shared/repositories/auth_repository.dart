@@ -76,9 +76,19 @@ class AuthRepository {
     );
   }
 
-  /// إعادة تعيين كلمة المرور
+  /// إعادة تعيين كلمة المرور — يوجّه المستخدم إلى التطبيق عبر tamm://reset-password
   Future<void> resetPassword(String email) async {
-    await _client.auth.resetPasswordForEmail(email);
+    await _client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'tamm://reset-password',
+    );
+  }
+
+  /// تحديث كلمة المرور بعد التحقق من رابط الاستعادة
+  Future<void> updatePassword(String newPassword) async {
+    await _client.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
   }
 
   /// جلب بروفايل المستخدم
