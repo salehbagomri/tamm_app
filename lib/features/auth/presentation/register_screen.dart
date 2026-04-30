@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/tamm_app_bar.dart';
 import '../../../core/widgets/tamm_button.dart';
@@ -28,6 +29,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _loading = false;
   bool _obscurePass = true;
   bool _obscureConfirmPass = true;
+  String? _phoneError; // inline error under the phone field
 
   @override
   void dispose() {
@@ -52,21 +54,41 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    
+
     try {
       final repo = ref.read(authRepositoryProvider);
-      
-      // 1. Sign up with email
+      final phoneFormatted = '+967${_phoneCtrl.text.trim()}';
+
+      // ── Step 0: Pre-flight phone uniqueness check ──────────────────────────
+      // This MUST happen before signUpWithEmail so we never create an orphan
+      // auth account when the phone is already taken.
+      final phoneExists = await Supabase.instance.client
+          .from('profiles')
+          .select('id')
+          .eq('phone', phoneFormatted)
+          .maybeSingle();
+
+      if (phoneExists != null) {
+        setState(() => _phoneError =
+            'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر');
+        return; // inline widget will render; no account created
+      }
+
+      // ── Step 1: Create auth account ────────────────────────────────────────
       final response = await repo.signUpWithEmail(
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text,
       );
-      
+
       if (response.session == null) {
+        // Email confirmation required (Supabase project setting)
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('تم إنشاء الحساب. يرجى التحقق من بريدك الإلكتروني لتفعيل حسابك.', style: GoogleFonts.harmattan(fontSize: 16)),
+            content: Text(
+              'تم إنشاء الحساب. يرجى التحقق من بريدك الإلكتروني لتفعيل حسابك.',
+              style: GoogleFonts.harmattan(fontSize: 16),
+            ),
             backgroundColor: AppColors.success,
             duration: const Duration(seconds: 5),
           ),
@@ -74,24 +96,37 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         context.go('/login');
         return;
       }
-      
-      // 2. Complete profile
-      final phoneFormatted = '+967${_phoneCtrl.text.trim()}';
+
+      // ── Step 2: Complete profile ───────────────────────────────────────────
+      // Phone is guaranteed unique at this point; completeProfile should succeed.
       await repo.completeProfile(
         fullName: _nameCtrl.text.trim(),
         phone: phoneFormatted,
       );
-      
-      // 3. FCM Token
+
       await FcmService.registerToken();
-      
       if (!mounted) return;
       context.go('/customer/home');
-      
+
     } catch (e) {
       debugPrint('Registration error: $e');
       final msg = e.toString().toLowerCase();
-      if (msg.contains('already registered') || msg.contains('user_already_exists')) {
+
+      if (msg.contains('23505') ||
+          msg.contains('profiles_phone_unique') ||
+          (msg.contains('unique') && msg.contains('phone'))) {
+        // DB-level UNIQUE violation (e.g. race condition after pre-flight check).
+        // The auth account was already created → delete it (rollback).
+        setState(() => _phoneError =
+            'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر');
+        try {
+          await ref.read(authRepositoryProvider).deleteAccount();
+        } catch (_) {
+          // Best-effort cleanup; ignore secondary errors.
+        }
+      } else if (msg.contains('already registered') ||
+          msg.contains('user_already_exists') ||
+          msg.contains('already been registered')) {
         _showError('البريد الإلكتروني مسجل مسبقاً');
       } else {
         _showError('فشل إنشاء الحساب، تأكد من صحة البيانات.');
@@ -164,7 +199,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   keyboardType: TextInputType.phone,
                   prefixText: '+967 ',
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (v) {
+                    if (_phoneError != null) {
+                      setState(() => _phoneError = null);
+                    }
+                  },
                   validator: (v) {
+                    if (_phoneError != null) return _phoneError;
                     if (v == null || v.trim().isEmpty) return 'رقم الجوال مطلوب';
                     final digits = v.trim().replaceAll(RegExp(r'\D'), '');
                     if (!digits.startsWith('7')) return 'يجب أن يبدأ الرقم بـ 7';
@@ -172,6 +213,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     return null;
                   },
                 ),
+                if (_phoneError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, right: 12.0),
+                    child: Text(
+                      _phoneError!,
+                      style: GoogleFonts.harmattan(
+                        fontSize: 13,
+                        color: AppColors.error,
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 16),
                 
                 TammTextField(
