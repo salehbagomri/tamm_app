@@ -7,6 +7,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/technician_providers.dart';
+import '../../../../core/widgets/tamm_theme_selector.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechProfileScreen extends ConsumerStatefulWidget {
@@ -245,6 +246,8 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                     ],
                   ),
 
+                  const SizedBox(height: 16),
+                  const TammThemeSelector(),
                   const Spacer(),
                   TammButton(
                     label: 'تسجيل الخروج',

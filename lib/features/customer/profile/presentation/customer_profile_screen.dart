@@ -8,6 +8,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/responsive_wrapper.dart';
+import '../../../../core/widgets/tamm_theme_selector.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/repositories/auth_repository.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -36,6 +37,8 @@ class CustomerProfileScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   TammButton(label: 'إنشاء حساب', type: TammButtonType.secondary,
                     onPressed: () => context.push('/register')),
+                  const SizedBox(height: 32),
+                  const TammThemeSelector(),
                 ],
               ),
             ),
@@ -109,6 +112,8 @@ class CustomerProfileScreen extends ConsumerWidget {
                   label: AppStrings.myDevices,
                   onTap: () => context.push('/customer/devices'),
                 ),
+                const SizedBox(height: 10),
+                const TammThemeSelector(),
                 const Spacer(),
                 _ProfileItem(
                   icon: Icons.logout,

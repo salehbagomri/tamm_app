@@ -9,6 +9,7 @@ import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
+import '../../../../core/widgets/tamm_theme_selector.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -96,6 +97,8 @@ class _ManagerDashboardScreenState
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                const TammThemeSelector(),
                 const SizedBox(height: 20),
                 statsAsync.when(
                   data: (stats) {
