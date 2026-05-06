@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../shared/providers/technician_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechTasksScreen extends ConsumerStatefulWidget {
   const TechTasksScreen({super.key});
@@ -47,7 +47,7 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
   Widget build(BuildContext context) {
     final tasksAsync = ref.watch(myAssignmentsProvider);
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.pagePadding,
@@ -59,7 +59,7 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 20),
@@ -102,10 +102,10 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: isStarted
-                                            ? AppColors.warning.withValues(
+                                            ? context.colors.warning.withValues(
                                                 alpha: 0.15,
                                               )
-                                            : AppColors.bluePrimary.withValues(
+                                            : context.colors.bluePrimary.withValues(
                                                 alpha: 0.15,
                                               ),
                                         borderRadius: AppSpacing.radiusFull,
@@ -115,8 +115,8 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                         style: GoogleFonts.harmattan(
                                           fontSize: 12,
                                           color: isStarted
-                                              ? AppColors.warning
-                                              : AppColors.bluePrimary,
+                                              ? context.colors.warning
+                                              : context.colors.bluePrimary,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -125,7 +125,7 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                     Text(
                                       order['order_number'] ?? '',
                                       style: GoogleFonts.harmattan(
-                                        color: AppColors.textFaint,
+                                        color: context.colors.textFaint,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -137,16 +137,16 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                   style: GoogleFonts.harmattan(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
+                                    color: context.colors.textPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.location_on_outlined,
                                       size: 16,
-                                      color: AppColors.textSecond,
+                                      color: context.colors.textSecond,
                                     ),
                                     const SizedBox(width: 4),
                                     Expanded(
@@ -154,7 +154,7 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                         order['address'] ?? '',
                                         style: GoogleFonts.harmattan(
                                           fontSize: 14,
-                                          color: AppColors.textSecond,
+                                          color: context.colors.textSecond,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,

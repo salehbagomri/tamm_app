@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -11,6 +10,7 @@ import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/technician_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechTaskDetailScreen extends ConsumerStatefulWidget {
   final String assignmentId;
@@ -163,7 +163,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
     if (_completed) {
       return Scaffold(
-        backgroundColor: AppColors.bgPrimary,
+        backgroundColor: context.colors.bgPrimary,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -183,7 +183,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
       );
     }
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'تفاصيل المهمة'),
       body: SingleChildScrollView(
         padding: AppSpacing.pagePadding,
@@ -193,7 +193,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.bgSurface,
+                color: context.colors.bgSurface,
                 borderRadius: AppSpacing.radiusLg,
                 boxShadow: [
                   BoxShadow(
@@ -211,8 +211,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     children: [
                       Text(
                         'طلب #$orderNumber',
-                        style: const TextStyle(
-                          color: AppColors.bluePrimary,
+                        style: TextStyle(
+                          color: context.colors.bluePrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -223,16 +223,16 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: isStarted
-                              ? AppColors.warning.withValues(alpha: 0.2)
-                              : AppColors.bluePrimary.withValues(alpha: 0.2),
+                              ? context.colors.warning.withValues(alpha: 0.2)
+                              : context.colors.bluePrimary.withValues(alpha: 0.2),
                           borderRadius: AppSpacing.radiusSm,
                         ),
                         child: Text(
                           isStarted ? 'قيد التنفيذ' : 'جديدة',
                           style: TextStyle(
                             color: isStarted
-                                ? AppColors.warning
-                                : AppColors.bluePrimary,
+                                ? context.colors.warning
+                                : context.colors.bluePrimary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -243,9 +243,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                   const Divider(height: 24),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const CircleAvatar(
-                      backgroundColor: AppColors.bgPrimary,
-                      child: Icon(Icons.person, color: AppColors.blueDark),
+                    leading: CircleAvatar(
+                      backgroundColor: context.colors.bgPrimary,
+                      child: Icon(Icons.person, color: context.colors.blueDark),
                     ),
                     title: const Text(
                       'العميل',
@@ -258,8 +258,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         children: [
                           Text(
                             customerName,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
+                            style: TextStyle(
+                              color: context.colors.textPrimary,
                             ),
                           ),
                           if (customerPhone.isNotEmpty)
@@ -268,10 +268,10 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                               textDirection: TextDirection.ltr,
                             )
                           else
-                            const Text(
+                            Text(
                               'لا يوجد رقم هاتف مسجل',
                               style: TextStyle(
-                                color: AppColors.textSecond,
+                                color: context.colors.textSecond,
                                 fontSize: 12,
                               ),
                             ),
@@ -279,15 +279,15 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                       ),
                     ),
                     trailing: IconButton(
-                      icon: const Icon(Icons.call, color: AppColors.success),
+                      icon: Icon(Icons.call, color: context.colors.success),
                       onPressed: () => _makePhoneCall(customerPhone),
                     ),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const CircleAvatar(
-                      backgroundColor: AppColors.bgPrimary,
-                      child: Icon(Icons.location_on, color: AppColors.blueDark),
+                    leading: CircleAvatar(
+                      backgroundColor: context.colors.bgPrimary,
+                      child: Icon(Icons.location_on, color: context.colors.blueDark),
                     ),
                     title: const Text(
                       'العنوان',
@@ -306,13 +306,13 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.success.withValues(alpha: 0.15),
+                                color: context.colors.success.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Text(
+                              child: Text(
                                 '📍 موقع GPS متوفر',
                                 style: TextStyle(
-                                  color: AppColors.success,
+                                  color: context.colors.success,
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -325,8 +325,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                       icon: Icon(
                         hasCoordinates ? Icons.navigation : Icons.map,
                         color: hasCoordinates
-                            ? AppColors.success
-                            : AppColors.bluePrimary,
+                            ? context.colors.success
+                            : context.colors.bluePrimary,
                       ),
                       tooltip: hasCoordinates ? 'ابدأ الملاحة' : 'فتح الخرائط',
                       onPressed: () => _openMaps(
@@ -344,16 +344,16 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.bgSurface,
+                  color: context.colors.bgSurface,
                   borderRadius: AppSpacing.radiusLg,
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: context.colors.border),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.speaker_notes,
-                      color: AppColors.textSecond,
+                      color: context.colors.textSecond,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -361,17 +361,17 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'ملاحظات العميل:',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             notes,
-                            style: const TextStyle(color: AppColors.textSecond),
+                            style: TextStyle(color: context.colors.textSecond),
                           ),
                         ],
                       ),

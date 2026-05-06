@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../shared/repositories/auth_repository.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/technician_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechProfileScreen extends ConsumerStatefulWidget {
   const TechProfileScreen({super.key});
@@ -43,7 +43,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
   Widget build(BuildContext context) {
     final techProfileAsync = ref.watch(myTechnicianProfileProvider);
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.pagePadding,
@@ -65,18 +65,18 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                   if (profile['avatar_url'] != null && profile['avatar_url'].toString().isNotEmpty)
                     CircleAvatar(
                       radius: 40,
-                      backgroundColor: AppColors.blueDark,
+                      backgroundColor: context.colors.blueDark,
                       backgroundImage: CachedNetworkImageProvider(profile['avatar_url'].toString()),
                     )
                   else
                     CircleAvatar(
                       radius: 40,
-                      backgroundColor: AppColors.blueDark,
+                      backgroundColor: context.colors.blueDark,
                       child: Text(
                         fullName.isNotEmpty ? fullName[0] : '?',
                         style: GoogleFonts.harmattan(
                           fontSize: 32,
-                          color: AppColors.textPrimary,
+                          color: context.colors.textPrimary,
                         ),
                       ),
                     ),
@@ -86,14 +86,14 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                     style: GoogleFonts.harmattan(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   Text(
                     phone,
                     style: GoogleFonts.harmattan(
                       fontSize: 16,
-                      color: AppColors.textSecond,
+                      color: context.colors.textSecond,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -102,7 +102,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.bgSurface,
+                      color: context.colors.bgSurface,
                       borderRadius: AppSpacing.radiusLg,
                       boxShadow: [
                         BoxShadow(
@@ -122,7 +122,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                               'الحالة الحالية',
                               style: GoogleFonts.harmattan(
                                 fontSize: 16,
-                                color: AppColors.textSecond,
+                                color: context.colors.textSecond,
                               ),
                             ),
                             Text(
@@ -133,8 +133,8 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: isAvailable
-                                    ? AppColors.success
-                                    : AppColors.warning,
+                                    ? context.colors.success
+                                    : context.colors.warning,
                               ),
                             ),
                           ],
@@ -149,7 +149,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                               )
                             : Switch(
                                 value: isAvailable,
-                                activeThumbColor: AppColors.success,
+                                activeThumbColor: context.colors.success,
                                 onChanged: _toggleAvailability,
                               ),
                       ],
@@ -165,7 +165,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppColors.bgSurface,
+                            color: context.colors.bgSurface,
                             borderRadius: AppSpacing.radiusLg,
                             boxShadow: [
                               BoxShadow(
@@ -177,16 +177,16 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                           ),
                           child: Column(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.engineering_rounded,
-                                color: AppColors.bluePrimary,
+                                color: context.colors.bluePrimary,
                                 size: 32,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'التخصص',
                                 style: GoogleFonts.harmattan(
-                                  color: AppColors.textSecond,
+                                  color: context.colors.textSecond,
                                 ),
                               ),
                               Text(
@@ -194,7 +194,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                                 style: GoogleFonts.harmattan(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: context.colors.textPrimary,
                                 ),
                               ),
                             ],
@@ -206,7 +206,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppColors.bgSurface,
+                            color: context.colors.bgSurface,
                             borderRadius: AppSpacing.radiusLg,
                             boxShadow: [
                               BoxShadow(
@@ -218,16 +218,16 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                           ),
                           child: Column(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.task_alt_rounded,
-                                color: AppColors.success,
+                                color: context.colors.success,
                                 size: 32,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'المهام المنجزة',
                                 style: GoogleFonts.harmattan(
-                                  color: AppColors.textSecond,
+                                  color: context.colors.textSecond,
                                 ),
                               ),
                               Text(
@@ -235,7 +235,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                                 style: GoogleFonts.harmattan(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: context.colors.textPrimary,
                                 ),
                               ),
                             ],
