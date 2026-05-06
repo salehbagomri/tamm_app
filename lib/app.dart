@@ -7,6 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/presentation/reset_password_screen.dart'
     show passwordResetSignOutProvider;
+import 'shared/providers/theme_provider.dart';
 
 class TammApp extends ConsumerStatefulWidget {
   const TammApp({super.key});
@@ -92,11 +93,14 @@ class _TammAppState extends ConsumerState<TammApp> {
   @override
   Widget build(BuildContext context) {
     final router = ref.read(appRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'تمّ',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
       routerConfig: router,
       builder: (context, child) {
         return Directionality(
