@@ -88,7 +88,7 @@ class WelcomeScreen extends StatelessWidget {
                 onPressed: () async {
                   await _setSeenWelcome();
                   if (context.mounted) {
-                    context.go('/login');
+                    context.push('/login');
                   }
                 },
                 child: Text(
