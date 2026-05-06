@@ -462,15 +462,15 @@ class _QuickServiceCard extends StatelessWidget {
       child: Container(
         height: 90,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [context.colors.blueDark, context.colors.blueMid],
-          ),
+          color: context.colors.bgSurface,
+          border: Border.all(color: context.colors.border),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: Offset(0, 4))],
           borderRadius: AppSpacing.radius,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: context.colors.blueSky, size: 28),
+            Icon(icon, color: context.colors.bluePrimary, size: 28),
             const SizedBox(height: 6),
             Text(
               label,
