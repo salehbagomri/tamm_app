@@ -12,6 +12,7 @@ import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/models/order.dart';
 import '../../../customer/services/data/quote_repository.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 final managerQuotesProvider = FutureProvider.autoDispose<List<Order>>((ref) async {
   final repo = ref.watch(quoteRepositoryProvider);
@@ -67,15 +68,15 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with 
     final quotesAsync = ref.watch(managerQuotesProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: TammAppBar(
         title: 'طلبات عروض الأسعار',
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
-          labelColor: AppColors.bluePrimary,
-          unselectedLabelColor: AppColors.textSecond,
-          indicatorColor: AppColors.bluePrimary,
+          labelColor: context.colors.bluePrimary,
+          unselectedLabelColor: context.colors.textSecond,
+          indicatorColor: context.colors.bluePrimary,
           labelStyle: GoogleFonts.harmattan(fontWeight: FontWeight.w700, fontSize: 16),
           tabs: const [
             Tab(text: 'الكل'),
@@ -155,17 +156,17 @@ class _QuoteRequestCard extends StatelessWidget {
 
   const _QuoteRequestCard({required this.order, required this.onTap});
 
-  Color _getStatusColor(String? status) {
-    if (status == 'pending') return AppColors.warning;
-    if (status == 'sent') return AppColors.bluePrimary;
-    if (status == 'accepted') return AppColors.success;
-    if (status == 'rejected') return AppColors.error;
-    return AppColors.textSecond;
+  Color _getStatusColor(BuildContext context, String? status) {
+    if (status == 'pending') return context.colors.warning;
+    if (status == 'sent') return context.colors.bluePrimary;
+    if (status == 'accepted') return context.colors.success;
+    if (status == 'rejected') return context.colors.error;
+    return context.colors.textSecond;
   }
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _getStatusColor(order.quoteStatus);
+    final statusColor = _getStatusColor(context, order.quoteStatus);
     final needsAction = order.quoteStatus == 'pending' || order.quoteStatus == 'rejected';
 
     return TammCard(
@@ -183,7 +184,7 @@ class _QuoteRequestCard extends StatelessWidget {
                     style: GoogleFonts.harmattan(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textSecond,
+                      color: context.colors.textSecond,
                     ),
                   ),
                   Container(
@@ -206,7 +207,7 @@ class _QuoteRequestCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const Icon(Icons.person, size: 16, color: AppColors.bluePrimary),
+                  Icon(Icons.person, size: 16, color: context.colors.bluePrimary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -214,7 +215,7 @@ class _QuoteRequestCard extends StatelessWidget {
                       style: GoogleFonts.harmattan(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                   ),
@@ -223,14 +224,14 @@ class _QuoteRequestCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.location_on, size: 16, color: AppColors.textSecond),
+                  Icon(Icons.location_on, size: 16, color: context.colors.textSecond),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       order.address,
                       style: GoogleFonts.harmattan(
                         fontSize: 15,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -243,7 +244,7 @@ class _QuoteRequestCard extends StatelessWidget {
                 'منذ: ${_formatDate(order.createdAt)}',
                 style: GoogleFonts.harmattan(
                   fontSize: 14,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
               ),
             ],
@@ -254,8 +255,8 @@ class _QuoteRequestCard extends StatelessWidget {
               top: 0,
               child: Container(
                 padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: AppColors.error,
+                decoration: BoxDecoration(
+                  color: context.colors.error,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.priority_high, size: 12, color: Colors.white),

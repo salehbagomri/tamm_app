@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -14,6 +13,7 @@ import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/models/product.dart';
 import '../../../../core/widgets/specs_editor.dart';
 import '../../../../core/constants/product_specs.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ProductFormScreen extends ConsumerStatefulWidget {
   final String? productId;
@@ -136,7 +136,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: TammAppBar(title: _isEdit ? 'تعديل منتج' : 'إضافة منتج'),
       body: SingleChildScrollView(
         padding: AppSpacing.pagePadding,
@@ -158,9 +158,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   height: 180,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: AppColors.bgSurface2,
+                    color: context.colors.bgSurface2,
                     borderRadius: AppSpacing.radius,
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.colors.border),
                   ),
                   child: _selectedImage != null
                       ? ClipRRect(
@@ -186,18 +186,18 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                             fit: BoxFit.cover,
                           ),
                         )
-                      : const Column(
+                      : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
                               Icons.add_photo_alternate_outlined,
                               size: 40,
-                              color: AppColors.textSecond,
+                              color: context.colors.textSecond,
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               'اضغط لإضافة صورة',
-                              style: TextStyle(color: AppColors.textSecond),
+                              style: TextStyle(color: context.colors.textSecond),
                             ),
                           ],
                         ),
@@ -214,7 +214,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: _category,
-                dropdownColor: AppColors.bgSurface2,
+                dropdownColor: context.colors.bgSurface2,
                 decoration: const InputDecoration(labelText: 'الفئة'),
                 items: const [
                   DropdownMenuItem(value: 'ac', child: Text('مكيفات')),
@@ -270,28 +270,28 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.1),
+                    color: context.colors.success.withValues(alpha: 0.1),
                     borderRadius: AppSpacing.radius,
-                    border: Border.all(color: AppColors.success),
+                    border: Border.all(color: context.colors.success),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle, color: AppColors.success),
+                      Icon(Icons.check_circle, color: context.colors.success),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               '✅ هذا المنتج سيظهر كعرض خاص',
                               style: TextStyle(
-                                color: AppColors.success,
+                                color: context.colors.success,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
                               'الخصم: ${(((double.parse(_oldPriceCtrl.text) - double.parse(_priceCtrl.text)) / double.parse(_oldPriceCtrl.text)) * 100).round()}% | ~~${_oldPriceCtrl.text}~~ → ${_priceCtrl.text}',
-                              style: const TextStyle(color: AppColors.textSecond),
+                              style: TextStyle(color: context.colors.textSecond),
                             ),
                           ],
                         ),
@@ -318,7 +318,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 subtitle: const Text('يظهر في قسم "الأكثر طلباً" بالرئيسية'),
                 value: _isFeatured,
                 onChanged: (v) => setState(() => _isFeatured = v),
-                activeColor: AppColors.warning,
+                activeThumbColor: context.colors.warning,
                 contentPadding: EdgeInsets.zero,
               ),
               const SizedBox(height: 16),
@@ -326,7 +326,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 title: const Text('هذا المنتج يتطلب خدمة تركيب؟'),
                 value: _requiresInstallation,
                 onChanged: (v) => setState(() => _requiresInstallation = v ?? false),
-                activeColor: AppColors.bluePrimary,
+                activeColor: context.colors.bluePrimary,
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
               ),

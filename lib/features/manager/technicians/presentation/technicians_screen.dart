@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
@@ -9,6 +8,7 @@ import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechniciansScreen extends ConsumerStatefulWidget {
   const TechniciansScreen({super.key});
@@ -45,7 +45,7 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
   Widget build(BuildContext context) {
     final techsAsync = ref.watch(techniciansProvider);
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.pagePadding,
@@ -57,7 +57,7 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -87,14 +87,14 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                             child: Row(
                               children: [
                                 CircleAvatar(
-                                  backgroundColor: AppColors.blueDark,
+                                  backgroundColor: context.colors.blueDark,
                                   child: Text(
                                     p?['full_name']?.toString().isNotEmpty ==
                                             true
                                         ? p!['full_name'][0]
                                         : '?',
                                     style: GoogleFonts.harmattan(
-                                      color: AppColors.textPrimary,
+                                      color: context.colors.textPrimary,
                                     ),
                                   ),
                                 ),
@@ -108,21 +108,21 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                                         p?['full_name'] ?? '',
                                         style: GoogleFonts.harmattan(
                                           fontWeight: FontWeight.w600,
-                                          color: AppColors.textPrimary,
+                                          color: context.colors.textPrimary,
                                         ),
                                       ),
                                       Text(
                                         t['specialization'] ?? '',
                                         style: GoogleFonts.harmattan(
                                           fontSize: 14,
-                                          color: AppColors.textSecond,
+                                          color: context.colors.textSecond,
                                         ),
                                       ),
                                       Text(
                                         t['phone'] ?? '',
                                         style: GoogleFonts.harmattan(
                                           fontSize: 13,
-                                          color: AppColors.textFaint,
+                                          color: context.colors.textFaint,
                                           letterSpacing: 1,
                                         ),
                                       ),
@@ -136,10 +136,10 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: t['status'] == 'available'
-                                        ? AppColors.success.withValues(
+                                        ? context.colors.success.withValues(
                                             alpha: 0.15,
                                           )
-                                        : AppColors.warning.withValues(
+                                        : context.colors.warning.withValues(
                                             alpha: 0.15,
                                           ),
                                     borderRadius: AppSpacing.radiusFull,
@@ -151,8 +151,8 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                                     style: GoogleFonts.harmattan(
                                       fontSize: 12,
                                       color: t['status'] == 'available'
-                                          ? AppColors.success
-                                          : AppColors.warning,
+                                          ? context.colors.success
+                                          : context.colors.warning,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -174,7 +174,7 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.bluePrimary,
+        backgroundColor: context.colors.bluePrimary,
         icon: const Icon(Icons.person_add, color: Colors.white),
         label: Text(
           'إضافة فني',

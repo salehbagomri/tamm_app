@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class AddTechnicianScreen extends ConsumerStatefulWidget {
   const AddTechnicianScreen({super.key});
@@ -79,7 +79,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'إضافة فني جديد'),
       body: SingleChildScrollView(
         padding: AppSpacing.pagePadding,
@@ -91,7 +91,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
               style: GoogleFonts.harmattan(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -118,7 +118,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.zero,
-                          backgroundColor: AppColors.bluePrimary,
+                          backgroundColor: context.colors.bluePrimary,
                           shape: const RoundedRectangleBorder(
                             borderRadius: AppSpacing.radius,
                           ),
@@ -146,7 +146,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                 child: Text(
                   _errorMsg!,
                   style: GoogleFonts.harmattan(
-                    color: AppColors.error,
+                    color: context.colors.error,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -161,16 +161,16 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.bgSurface,
+                  color: context.colors.bgSurface,
                   borderRadius: AppSpacing.radius,
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: context.colors.border),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,7 +180,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                       style: GoogleFonts.harmattan(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -188,7 +188,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                       _foundProfile!['phone'] ?? '',
                       style: GoogleFonts.harmattan(
                         fontSize: 14,
-                        color: AppColors.textSecond,
+                        color: context.colors.textSecond,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -197,7 +197,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                       style: GoogleFonts.harmattan(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecond,
+                        color: context.colors.textSecond,
                       ),
                     ),
                     const SizedBox(height: 8),

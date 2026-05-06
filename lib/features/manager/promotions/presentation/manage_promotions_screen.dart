@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/promotion_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManagePromotionsScreen extends ConsumerWidget {
   const ManagePromotionsScreen({super.key});
@@ -17,16 +17,16 @@ class ManagePromotionsScreen extends ConsumerWidget {
     final promosAsync = ref.watch(allPromotionsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: AppBar(
         title: Text(
           'إدارة العروض (السلايدر)',
           style: GoogleFonts.harmattan(fontWeight: FontWeight.w700),
         ),
-        backgroundColor: AppColors.bgSurface,
+        backgroundColor: context.colors.bgSurface,
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.bluePrimary,
+        backgroundColor: context.colors.bluePrimary,
         child: const Icon(Icons.add),
         onPressed: () => context.push('/manager/promotion/form'),
       ),
@@ -41,7 +41,7 @@ class ManagePromotionsScreen extends ConsumerWidget {
                 style: GoogleFonts.harmattan(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -84,7 +84,7 @@ class ManagePromotionsScreen extends ConsumerWidget {
                                       p.title,
                                       style: GoogleFonts.harmattan(
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
+                                        color: context.colors.textPrimary,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -93,7 +93,7 @@ class ManagePromotionsScreen extends ConsumerWidget {
                                       p.subtitle,
                                       style: GoogleFonts.harmattan(
                                         fontSize: 14,
-                                        color: AppColors.textSecond,
+                                        color: context.colors.textSecond,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -110,7 +110,7 @@ class ManagePromotionsScreen extends ConsumerWidget {
                                   ref.invalidate(allPromotionsProvider);
                                   ref.invalidate(activePromotionsProvider);
                                 },
-                                activeColor: AppColors.success,
+                                activeThumbColor: context.colors.success,
                               ),
                             ],
                           ),

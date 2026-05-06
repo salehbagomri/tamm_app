@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ServiceFormScreen extends ConsumerStatefulWidget {
   final ServiceType? service;
@@ -112,15 +112,15 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: AppBar(
-        backgroundColor: AppColors.bgPrimary,
+        backgroundColor: context.colors.bgPrimary,
         title: Text(
           widget.service == null ? 'إضافة خدمة جديدة' : 'تعديل الخدمة',
           style: GoogleFonts.harmattan(
             fontSize: 24,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.colors.textPrimary,
           ),
         ),
         centerTitle: true,
@@ -144,15 +144,15 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                 'تصنيف الخدمة',
                 style: GoogleFonts.harmattan(
                   fontSize: 16,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
               ),
               const SizedBox(height: 8),
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.bgSurface,
+                  color: context.colors.bgSurface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: context.colors.border),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: DropdownButtonHideUnderline(
@@ -161,9 +161,9 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                     isExpanded: true,
                     style: GoogleFonts.harmattan(
                       fontSize: 18,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
-                    dropdownColor: AppColors.bgSurface,
+                    dropdownColor: context.colors.bgSurface,
                     items: _categories.entries
                         .map(
                           (e) => DropdownMenuItem(
@@ -193,12 +193,12 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                   'خدمة عرض سعر (بدون سعر ثابت)',
                   style: GoogleFonts.harmattan(
                     fontSize: 16,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 contentPadding: EdgeInsets.zero,
                 value: _isQuoteBased,
-                activeColor: AppColors.bluePrimary,
+                activeColor: context.colors.bluePrimary,
                 onChanged: (val) {
                   if (val != null) setState(() => _isQuoteBased = val);
                 },

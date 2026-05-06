@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -9,6 +8,7 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManagerOrderDetailScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -41,10 +41,10 @@ class _ManagerOrderDetailScreenState
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgSurface,
+        backgroundColor: context.colors.bgSurface,
         title: Text(
           'تعيين فني',
-          style: GoogleFonts.harmattan(color: AppColors.textPrimary),
+          style: GoogleFonts.harmattan(color: context.colors.textPrimary),
         ),
         content: Consumer(
           builder: (context, ref, child) {
@@ -63,13 +63,13 @@ class _ManagerOrderDetailScreenState
                       title: Text(
                         p?['full_name'] ?? '',
                         style: GoogleFonts.harmattan(
-                          color: AppColors.textPrimary,
+                          color: context.colors.textPrimary,
                         ),
                       ),
                       subtitle: Text(
                         t['specialization'] ?? '',
                         style: GoogleFonts.harmattan(
-                          color: AppColors.textSecond,
+                          color: context.colors.textSecond,
                           fontSize: 14,
                         ),
                       ),
@@ -80,8 +80,8 @@ class _ManagerOrderDetailScreenState
                         ),
                         decoration: BoxDecoration(
                           color: t['status'] == 'available'
-                              ? AppColors.success.withValues(alpha: 0.15)
-                              : AppColors.warning.withValues(alpha: 0.15),
+                              ? context.colors.success.withValues(alpha: 0.15)
+                              : context.colors.warning.withValues(alpha: 0.15),
                           borderRadius: AppSpacing.radiusFull,
                         ),
                         child: Text(
@@ -89,8 +89,8 @@ class _ManagerOrderDetailScreenState
                           style: GoogleFonts.harmattan(
                             fontSize: 12,
                             color: t['status'] == 'available'
-                                ? AppColors.success
-                                : AppColors.warning,
+                                ? context.colors.success
+                                : context.colors.warning,
                           ),
                         ),
                       ),
@@ -121,7 +121,7 @@ class _ManagerOrderDetailScreenState
   Widget build(BuildContext context) {
     final orderAsync = ref.watch(orderDetailProvider(widget.orderId));
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'تفاصيل الطلب'),
       body: orderAsync.when(
         data: (o) => SingleChildScrollView(
@@ -141,13 +141,13 @@ class _ManagerOrderDetailScreenState
                           style: GoogleFonts.harmattan(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color: context.colors.textPrimary,
                           ),
                         ),
                         Text(
                           o.statusLabel,
                           style: GoogleFonts.harmattan(
-                            color: AppColors.bluePrimary,
+                            color: context.colors.bluePrimary,
                           ),
                         ),
                       ],
@@ -155,13 +155,13 @@ class _ManagerOrderDetailScreenState
                     const SizedBox(height: 8),
                     Text(
                       'العنوان: ${o.address}',
-                      style: GoogleFonts.harmattan(color: AppColors.textSecond),
+                      style: GoogleFonts.harmattan(color: context.colors.textSecond),
                     ),
                     if (o.preferredDate != null)
                       Text(
                         'الموعد: ${o.preferredDate!.day}/${o.preferredDate!.month}',
                         style: GoogleFonts.harmattan(
-                          color: AppColors.textSecond,
+                          color: context.colors.textSecond,
                         ),
                       ),
                     if (o.notes != null && o.notes!.isNotEmpty)
@@ -170,7 +170,7 @@ class _ManagerOrderDetailScreenState
                         child: Text(
                           'ملاحظات العميل: ${o.notes}',
                           style: GoogleFonts.harmattan(
-                            color: AppColors.textSecond,
+                            color: context.colors.textSecond,
                           ),
                         ),
                       ),
@@ -181,7 +181,7 @@ class _ManagerOrderDetailScreenState
                         child: Text(
                           'تقرير الفني (${o.technicianName ?? 'غير معروف'}): ${o.technicianNotes}',
                           style: GoogleFonts.harmattan(
-                            color: AppColors.textPrimary,
+                            color: context.colors.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -190,7 +190,7 @@ class _ManagerOrderDetailScreenState
                     Text(
                       'المجموع: ${o.totalAmount.toInt()} ر.س',
                       style: GoogleFonts.harmattan(
-                        color: AppColors.blueSky,
+                        color: context.colors.blueSky,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

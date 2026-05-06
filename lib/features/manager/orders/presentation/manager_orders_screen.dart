@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/order_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManagerOrdersScreen extends ConsumerStatefulWidget {
   const ManagerOrdersScreen({super.key});
@@ -19,7 +19,7 @@ class ManagerOrdersScreen extends ConsumerStatefulWidget {
 
 class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
   String? _statusFilter;
-  final _filters = const {
+  final _filters = {
     null: 'الكل',
     'pending': 'معلق',
     'confirmed': 'مؤكد',
@@ -59,7 +59,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
   Widget build(BuildContext context) {
     final ordersAsync = ref.watch(allOrdersProvider(_statusFilter));
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +71,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
             ),
@@ -90,14 +90,14 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                         e.value,
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: sel ? Colors.white : AppColors.textSecond,
+                          color: sel ? Colors.white : context.colors.textSecond,
                         ),
                       ),
                       selected: sel,
-                      selectedColor: AppColors.bluePrimary,
-                      backgroundColor: AppColors.bgSurface,
+                      selectedColor: context.colors.bluePrimary,
+                      backgroundColor: context.colors.bgSurface,
                       side: BorderSide(
-                        color: sel ? AppColors.bluePrimary : AppColors.border,
+                        color: sel ? context.colors.bluePrimary : context.colors.border,
                       ),
                       onSelected: (_) => setState(() => _statusFilter = e.key),
                     ),
@@ -148,7 +148,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                       o.orderTypeLabel,
                                       style: GoogleFonts.harmattan(
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
+                                        color: context.colors.textPrimary,
                                       ),
                                     ),
                                   ),
@@ -158,7 +158,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.bluePrimary.withValues(
+                                      color: context.colors.bluePrimary.withValues(
                                         alpha: 0.15,
                                       ),
                                       borderRadius: AppSpacing.radiusFull,
@@ -167,7 +167,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                       o.statusLabel,
                                       style: GoogleFonts.harmattan(
                                         fontSize: 12,
-                                        color: AppColors.bluePrimary,
+                                        color: context.colors.bluePrimary,
                                       ),
                                     ),
                                   ),
@@ -178,7 +178,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                 '#${o.orderNumber}',
                                 style: GoogleFonts.harmattan(
                                   fontSize: 13,
-                                  color: AppColors.textSecond,
+                                  color: context.colors.textSecond,
                                 ),
                               ),
                               if (customer != null)
@@ -186,7 +186,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                   customer['full_name'] ?? '',
                                   style: GoogleFonts.harmattan(
                                     fontSize: 14,
-                                    color: AppColors.textSecond,
+                                    color: context.colors.textSecond,
                                   ),
                                 ),
                               Row(
@@ -198,7 +198,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                       o.address,
                                       style: GoogleFonts.harmattan(
                                         fontSize: 13,
-                                        color: AppColors.textFaint,
+                                        color: context.colors.textFaint,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -211,8 +211,8 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                         : '${o.totalAmount.toInt()} ر.س',
                                     style: GoogleFonts.harmattan(
                                       color: o.orderType == 'quote_request' && o.totalAmount == 0
-                                          ? AppColors.warning
-                                          : AppColors.blueSky,
+                                          ? context.colors.warning
+                                          : context.colors.blueSky,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),

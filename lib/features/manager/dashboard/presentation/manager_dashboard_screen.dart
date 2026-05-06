@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
@@ -12,6 +11,7 @@ import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManagerDashboardScreen extends ConsumerStatefulWidget {
   const ManagerDashboardScreen({super.key});
@@ -61,7 +61,7 @@ class _ManagerDashboardScreenState
     final statsAsync = ref.watch(dashboardStatsProvider);
     final ordersAsync = ref.watch(allOrdersProvider(null));
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: ResponsiveWrapper(
           child: RefreshIndicator(
@@ -83,7 +83,7 @@ class _ManagerDashboardScreenState
                       style: GoogleFonts.harmattan(
                         fontSize: 26,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     IconButton(
@@ -91,7 +91,7 @@ class _ManagerDashboardScreenState
                         await ref.read(authRepositoryProvider).signOut();
                         if (context.mounted) context.go('/customer/home');
                       },
-                      icon: const Icon(Icons.logout, color: AppColors.error),
+                      icon: Icon(Icons.logout, color: context.colors.error),
                       tooltip: 'تسجيل الخروج',
                     ),
                   ],
@@ -107,7 +107,7 @@ class _ManagerDashboardScreenState
                               child: _StatCard(
                                 label: 'معلق',
                                 value: '${stats['pending'] ?? 0}',
-                                color: AppColors.warning,
+                                color: context.colors.warning,
                                 icon: Icons.pending_actions,
                               ),
                             ),
@@ -116,7 +116,7 @@ class _ManagerDashboardScreenState
                               child: _StatCard(
                                 label: 'عروض تحتاج إجراء',
                                 value: '${stats['quotes_need_action'] ?? 0}',
-                                color: AppColors.error,
+                                color: context.colors.error,
                                 icon: Icons.request_quote,
                               ),
                             ),
@@ -129,7 +129,7 @@ class _ManagerDashboardScreenState
                               child: _StatCard(
                                 label: 'جاري التنفيذ',
                                 value: '${stats['in_progress'] ?? 0}',
-                                color: AppColors.blueLight,
+                                color: context.colors.blueLight,
                                 icon: Icons.engineering,
                               ),
                             ),
@@ -138,7 +138,7 @@ class _ManagerDashboardScreenState
                               child: _StatCard(
                                 label: 'مكتمل اليوم',
                                 value: '${stats['completed'] ?? 0}',
-                                color: AppColors.success,
+                                color: context.colors.success,
                                 icon: Icons.check_circle,
                               ),
                             ),
@@ -159,7 +159,7 @@ class _ManagerDashboardScreenState
                       style: GoogleFonts.harmattan(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     TextButton(
@@ -167,7 +167,7 @@ class _ManagerDashboardScreenState
                       child: Text(
                         'عرض الكل',
                         style: GoogleFonts.harmattan(
-                          color: AppColors.blueLight,
+                          color: context.colors.blueLight,
                         ),
                       ),
                     ),
@@ -201,14 +201,14 @@ class _ManagerDashboardScreenState
                                           o.orderTypeLabel,
                                           style: GoogleFonts.harmattan(
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
+                                            color: context.colors.textPrimary,
                                           ),
                                         ),
                                         Text(
                                           '#${o.orderNumber} • ${o.statusLabel}',
                                           style: GoogleFonts.harmattan(
                                             fontSize: 13,
-                                            color: AppColors.textSecond,
+                                            color: context.colors.textSecond,
                                           ),
                                         ),
                                       ],
@@ -220,8 +220,8 @@ class _ManagerDashboardScreenState
                                         : '${o.totalAmount.toInt()} ر.س',
                                     style: GoogleFonts.harmattan(
                                       color: o.orderType == 'quote_request' && o.totalAmount == 0
-                                          ? AppColors.warning
-                                          : AppColors.blueSky,
+                                          ? context.colors.warning
+                                          : context.colors.blueSky,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -261,7 +261,7 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: context.colors.bgSurface,
         borderRadius: AppSpacing.radius,
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
@@ -289,7 +289,7 @@ class _StatCard extends StatelessWidget {
               label,
               style: GoogleFonts.harmattan(
                 fontSize: 13,
-                color: AppColors.textSecond,
+                color: context.colors.textSecond,
               ),
             ),
           ),

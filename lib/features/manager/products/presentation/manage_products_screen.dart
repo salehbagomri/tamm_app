@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/product_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManageProductsScreen extends ConsumerWidget {
   const ManageProductsScreen({super.key});
@@ -15,9 +15,9 @@ class ManageProductsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final productsAsync = ref.watch(productsProvider(null));
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.bluePrimary,
+        backgroundColor: context.colors.bluePrimary,
         child: const Icon(Icons.add),
         onPressed: () => context.push('/manager/product/form'),
       ),
@@ -36,19 +36,19 @@ class ManageProductsScreen extends ConsumerWidget {
                       style: GoogleFonts.harmattan(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   TextButton.icon(
                     onPressed: () => context.push('/manager/promotions'),
-                    icon: const Icon(Icons.campaign, size: 18, color: AppColors.blueSky),
+                    icon: Icon(Icons.campaign, size: 18, color: context.colors.blueSky),
                     label: Text(
                       'العروض',
                       style: GoogleFonts.harmattan(
                         fontWeight: FontWeight.w600,
-                        color: AppColors.blueSky,
+                        color: context.colors.blueSky,
                       ),
                     ),
                   ),
@@ -79,8 +79,8 @@ class ManageProductsScreen extends ConsumerWidget {
                               Container(
                                 width: 50,
                                 height: 50,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.bgSurface2,
+                                decoration: BoxDecoration(
+                                  color: context.colors.bgSurface2,
                                   borderRadius: AppSpacing.radiusSm,
                                 ),
                                 child: p.imageUrl != null
@@ -91,9 +91,9 @@ class ManageProductsScreen extends ConsumerWidget {
                                           fit: BoxFit.cover,
                                         ),
                                       )
-                                    : const Icon(
+                                    : Icon(
                                         Icons.image,
-                                        color: AppColors.textFaint,
+                                        color: context.colors.textFaint,
                                       ),
                               ),
                               const SizedBox(width: 12),
@@ -105,14 +105,14 @@ class ManageProductsScreen extends ConsumerWidget {
                                       p.name,
                                       style: GoogleFonts.harmattan(
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
+                                        color: context.colors.textPrimary,
                                       ),
                                     ),
                                     Text(
                                       p.categoryLabel,
                                       style: GoogleFonts.harmattan(
                                         fontSize: 14,
-                                        color: AppColors.textSecond,
+                                        color: context.colors.textSecond,
                                       ),
                                     ),
                                     Row(
@@ -122,7 +122,7 @@ class ManageProductsScreen extends ConsumerWidget {
                                             margin: const EdgeInsets.only(left: 4),
                                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: AppColors.warning,
+                                              color: context.colors.warning,
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
@@ -138,7 +138,7 @@ class ManageProductsScreen extends ConsumerWidget {
                                           Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: AppColors.error,
+                                              color: context.colors.error,
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
@@ -163,7 +163,7 @@ class ManageProductsScreen extends ConsumerWidget {
                                       '${p.oldPrice!.toInt()}',
                                       style: GoogleFonts.harmattan(
                                         fontSize: 12,
-                                        color: AppColors.textSecond,
+                                        color: context.colors.textSecond,
                                         decoration: TextDecoration.lineThrough,
                                       ),
                                     ),
@@ -172,7 +172,7 @@ class ManageProductsScreen extends ConsumerWidget {
                                         ? '${p.price!.toInt()} ر.س'
                                         : 'عرض سعر',
                                     style: GoogleFonts.harmattan(
-                                      color: AppColors.blueSky,
+                                      color: context.colors.blueSky,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),

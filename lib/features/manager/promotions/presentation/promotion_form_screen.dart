@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/models/promotion.dart';
 import '../../../../shared/providers/promotion_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class PromotionFormScreen extends ConsumerStatefulWidget {
   final Promotion? promotion;
@@ -106,7 +106,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: TammAppBar(
         title: widget.promotion != null ? 'تعديل العرض' : 'إضافة عرض جديد',
       ),
@@ -179,8 +179,8 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _iconName,
-                dropdownColor: AppColors.bgSurface2,
+                initialValue: _iconName,
+                dropdownColor: context.colors.bgSurface2,
                 decoration: const InputDecoration(labelText: 'الأيقونة'),
                 items: Promotion.iconMap.keys.map((key) {
                   return DropdownMenuItem(
@@ -198,8 +198,8 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedGradient,
-                dropdownColor: AppColors.bgSurface2,
+                initialValue: _selectedGradient,
+                dropdownColor: context.colors.bgSurface2,
                 decoration: const InputDecoration(labelText: 'لون الخلفية'),
                 items: const [
                   DropdownMenuItem(value: 'blue_dark', child: Text('تصميم أزرق غامق (افتراضي)')),
@@ -213,8 +213,8 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _destination,
-                dropdownColor: AppColors.bgSurface2,
+                initialValue: _destination,
+                dropdownColor: context.colors.bgSurface2,
                 decoration: const InputDecoration(labelText: 'الوجهة عند الضغط'),
                 items: const [
                   DropdownMenuItem(value: '/customer/store', child: Text('المتجر')),
@@ -229,7 +229,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                 title: const Text('السلايدر نشط ويظهر للعملاء'),
                 value: _isActive,
                 onChanged: (v) => setState(() => _isActive = v),
-                activeColor: AppColors.bluePrimary,
+                activeThumbColor: context.colors.bluePrimary,
                 contentPadding: EdgeInsets.zero,
               ),
               if (widget.promotion != null) ...[
@@ -241,10 +241,10 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                     ref.invalidate(activePromotionsProvider);
                     if (context.mounted) context.pop();
                   },
-                  icon: const Icon(Icons.delete, color: AppColors.error),
-                  label: const Text('حذف هذا العرض', style: TextStyle(color: AppColors.error)),
+                  icon: Icon(Icons.delete, color: context.colors.error),
+                  label: Text('حذف هذا العرض', style: TextStyle(color: context.colors.error)),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.error),
+                    side: BorderSide(color: context.colors.error),
                   ),
                 ),
               ],

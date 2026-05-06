@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManageServicesScreen extends ConsumerWidget {
   const ManageServicesScreen({super.key});
@@ -17,15 +17,15 @@ class ManageServicesScreen extends ConsumerWidget {
     final servicesAsync = ref.watch(managerServicesProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: AppBar(
-        backgroundColor: AppColors.bgPrimary,
+        backgroundColor: context.colors.bgPrimary,
         title: Text(
           'إدارة الخدمات',
           style: GoogleFonts.harmattan(
             fontSize: 24,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.colors.textPrimary,
           ),
         ),
         centerTitle: true,
@@ -40,7 +40,7 @@ class ManageServicesScreen extends ConsumerWidget {
                   'لا توجد خدمات مضافة.',
                   style: GoogleFonts.harmattan(
                     fontSize: 20,
-                    color: AppColors.textSecond,
+                    color: context.colors.textSecond,
                   ),
                 ),
               );
@@ -68,7 +68,7 @@ class ManageServicesScreen extends ConsumerWidget {
                               style: GoogleFonts.harmattan(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: context.colors.textPrimary,
                                 decoration: !service.isActive
                                     ? TextDecoration.lineThrough
                                     : null,
@@ -79,7 +79,7 @@ class ManageServicesScreen extends ConsumerWidget {
                               '${service.basePrice?.toInt() ?? 0} ر.س',
                               style: GoogleFonts.harmattan(
                                 fontSize: 16,
-                                color: AppColors.bluePrimary,
+                                color: context.colors.bluePrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -89,7 +89,7 @@ class ManageServicesScreen extends ConsumerWidget {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.harmattan(
-                                  color: AppColors.textSecond,
+                                  color: context.colors.textSecond,
                                   fontSize: 14,
                                 ),
                               ),
@@ -100,7 +100,7 @@ class ManageServicesScreen extends ConsumerWidget {
                         children: [
                           Switch(
                             value: service.isActive,
-                            activeColor: AppColors.success,
+                            activeThumbColor: context.colors.success,
                             onChanged: (val) async {
                               await ref
                                   .read(serviceRepositoryProvider)
@@ -112,8 +112,8 @@ class ManageServicesScreen extends ConsumerWidget {
                             service.isActive ? 'مفعل' : 'مخفي',
                             style: GoogleFonts.harmattan(
                               color: service.isActive
-                                  ? AppColors.success
-                                  : AppColors.error,
+                                  ? context.colors.success
+                                  : context.colors.error,
                               fontSize: 12,
                             ),
                           ),
@@ -131,7 +131,7 @@ class ManageServicesScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/manager/service/form'),
-        backgroundColor: AppColors.bluePrimary,
+        backgroundColor: context.colors.bluePrimary,
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           'إضافة خدمة',

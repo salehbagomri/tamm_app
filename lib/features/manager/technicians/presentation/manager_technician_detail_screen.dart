@@ -9,6 +9,7 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManagerTechnicianDetailScreen extends ConsumerWidget {
   final String technicianId;
@@ -19,7 +20,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
     final asyncData = ref.watch(technicianDetailProvider(technicianId));
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'ملف الفني'),
       body: SafeArea(
         child: asyncData.when(
@@ -40,6 +41,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProfileHeader(
+                    context,
                     tech,
                     profile,
                     totalCompleted,
@@ -51,7 +53,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                     style: GoogleFonts.harmattan(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -67,7 +69,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                       itemCount: assignments.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (_, i) {
-                        return _buildAssignmentCard(assignments[i]);
+                        return _buildAssignmentCard(context, assignments[i]);
                       },
                     ),
                 ],
@@ -83,6 +85,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildProfileHeader(
+    BuildContext context,
     Map<String, dynamic> tech,
     Map<String, dynamic>? profile,
     int totalCompleted,
@@ -91,7 +94,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: context.colors.bgSurface,
         borderRadius: AppSpacing.radius,
         boxShadow: [
           BoxShadow(
@@ -105,7 +108,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundColor: AppColors.blueDark,
+            backgroundColor: context.colors.blueDark,
             child: Text(
               profile?['full_name']?.toString().isNotEmpty == true
                   ? profile!['full_name'][0]
@@ -123,14 +126,14 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
             style: GoogleFonts.harmattan(
               fontSize: 22,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
           ),
           Text(
             tech['specialization'] ?? '',
             style: GoogleFonts.harmattan(
               fontSize: 16,
-              color: AppColors.textSecond,
+              color: context.colors.textSecond,
             ),
           ),
           const SizedBox(height: 8),
@@ -138,8 +141,8 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
               color: tech['status'] == 'available'
-                  ? AppColors.success.withValues(alpha: 0.15)
-                  : AppColors.warning.withValues(alpha: 0.15),
+                  ? context.colors.success.withValues(alpha: 0.15)
+                  : context.colors.warning.withValues(alpha: 0.15),
               borderRadius: AppSpacing.radiusFull,
             ),
             child: Text(
@@ -149,8 +152,8 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
               style: GoogleFonts.harmattan(
                 fontSize: 14,
                 color: tech['status'] == 'available'
-                    ? AppColors.success
-                    : AppColors.warning,
+                    ? context.colors.success
+                    : context.colors.warning,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -160,17 +163,19 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: _buildStatBox(
+                  context,
                   'المهام المكتملة',
                   totalCompleted.toString(),
-                  AppColors.success,
+                  context.colors.success,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatBox(
+                  context,
                   'قيد التنفيذ',
                   currentPending.toString(),
-                  AppColors.warning,
+                  context.colors.warning,
                 ),
               ),
             ],
@@ -180,7 +185,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatBox(String label, String value, Color color) {
+  Widget _buildStatBox(BuildContext context, String label, String value, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
@@ -202,7 +207,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
             label,
             style: GoogleFonts.harmattan(
               fontSize: 14,
-              color: AppColors.textSecond,
+              color: context.colors.textSecond,
             ),
           ),
         ],
@@ -210,20 +215,20 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAssignmentCard(Map<String, dynamic> assignment) {
+  Widget _buildAssignmentCard(BuildContext context, Map<String, dynamic> assignment) {
     final order = assignment['orders'] as Map<String, dynamic>?;
     final date = DateTime.tryParse(assignment['created_at'] ?? '');
     final dateStr = date != null ? DateFormat('yyyy/MM/dd').format(date) : '';
 
     final st = assignment['status'];
-    Color statusColor = AppColors.textFaint;
+    Color statusColor = context.colors.textFaint;
     String statusLabel = 'قيد الانتظار';
 
     if (st == 'started') {
-      statusColor = AppColors.bluePrimary;
+      statusColor = context.colors.bluePrimary;
       statusLabel = 'جاري العمل';
     } else if (st == 'completed') {
-      statusColor = AppColors.success;
+      statusColor = context.colors.success;
       statusLabel = 'مكتملة';
     }
 
@@ -239,14 +244,14 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                 style: GoogleFonts.harmattan(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               Text(
                 dateStr,
                 style: GoogleFonts.harmattan(
                   fontSize: 12,
-                  color: AppColors.textFaint,
+                  color: context.colors.textFaint,
                 ),
               ),
             ],
@@ -256,7 +261,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
             order?['address'] ?? 'بدون عنوان',
             style: GoogleFonts.harmattan(
               fontSize: 16,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -274,10 +279,10 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                 ),
               ),
               if (assignment['notes'] != null)
-                const Icon(
+                Icon(
                   Icons.comment,
                   size: 16,
-                  color: AppColors.bluePrimary,
+                  color: context.colors.bluePrimary,
                 ),
             ],
           ),
