@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammLoading extends StatelessWidget {
   final String? message;
@@ -11,10 +12,10 @@ class TammLoading extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CircularProgressIndicator(color: AppColors.bluePrimary),
+          CircularProgressIndicator(color: context.colors.bluePrimary),
           if (message != null) ...[
             const SizedBox(height: 16),
-            Text(message!, style: const TextStyle(color: AppColors.textSecond)),
+            Text(message!, style: TextStyle(color: context.colors.textSecond)),
           ],
         ],
       ),

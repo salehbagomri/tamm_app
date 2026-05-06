@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -27,7 +28,7 @@ class TammAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: GoogleFonts.harmattan(
           fontSize: 20,
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
+          color: context.colors.textPrimary,
         ),
       ),
       automaticallyImplyLeading: showBack,

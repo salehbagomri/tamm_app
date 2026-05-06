@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../utils/responsive.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 /// Navigation item data shared between bottom nav and sidebar
 class NavItem {
@@ -34,7 +35,7 @@ class AdaptiveShell extends StatelessWidget {
 
     if (useSide) {
       return Scaffold(
-        backgroundColor: AppColors.bgPrimary,
+        backgroundColor: context.colors.bgPrimary,
         body: Directionality(
           textDirection: TextDirection.rtl,
           child: Row(
@@ -47,7 +48,7 @@ class AdaptiveShell extends StatelessWidget {
                 extended: isDesktop,
               ),
               // Divider
-              Container(width: 1, color: AppColors.border),
+              Container(width: 1, color: context.colors.border),
               // Content
               Expanded(child: child),
             ],
@@ -58,11 +59,11 @@ class AdaptiveShell extends StatelessWidget {
 
     // Mobile: bottom nav
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: child,
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.border)),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: context.colors.border)),
         ),
         child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
@@ -74,7 +75,7 @@ class AdaptiveShell extends StatelessWidget {
                         ? Badge(
                             isLabelVisible: true,
                             label: item.badge!,
-                            backgroundColor: AppColors.error,
+                            backgroundColor: context.colors.error,
                             child: Icon(item.icon),
                           )
                         : Icon(item.icon),
@@ -106,7 +107,7 @@ class _TammSidebar extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       width: extended ? 220 : 72,
-      color: AppColors.bgSurface,
+      color: context.colors.bgSurface,
       child: Column(
         children: [
           // Logo area
@@ -124,9 +125,9 @@ class _TammSidebar extends StatelessWidget {
                           width: 36,
                           height: 36,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(
+                          errorBuilder: (_, __, ___) => Icon(
                             Icons.ac_unit,
-                            color: AppColors.bluePrimary,
+                            color: context.colors.bluePrimary,
                             size: 28,
                           ),
                         ),
@@ -137,7 +138,7 @@ class _TammSidebar extends StatelessWidget {
                         style: GoogleFonts.harmattan(
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.colors.textPrimary,
                         ),
                       ),
                     ],
@@ -148,15 +149,15 @@ class _TammSidebar extends StatelessWidget {
                       width: 36,
                       height: 36,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(
+                      errorBuilder: (_, __, ___) => Icon(
                         Icons.ac_unit,
-                        color: AppColors.bluePrimary,
+                        color: context.colors.bluePrimary,
                         size: 28,
                       ),
                     ),
                   ),
           ),
-          const Divider(color: AppColors.border, height: 1),
+          Divider(color: context.colors.border, height: 1),
           const SizedBox(height: 8),
 
           // Nav items
@@ -184,7 +185,7 @@ class _TammSidebar extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.bluePrimary.withValues(alpha: 0.15)
+                              ? context.colors.bluePrimary.withValues(alpha: 0.15)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -195,8 +196,8 @@ class _TammSidebar extends StatelessWidget {
                                     item.icon,
                                     size: 22,
                                     color: isSelected
-                                        ? AppColors.blueLight
-                                        : AppColors.textSecond,
+                                        ? context.colors.blueLight
+                                        : context.colors.textSecond,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -208,8 +209,8 @@ class _TammSidebar extends StatelessWidget {
                                             ? FontWeight.w700
                                             : FontWeight.w500,
                                         color: isSelected
-                                            ? AppColors.blueLight
-                                            : AppColors.textSecond,
+                                            ? context.colors.blueLight
+                                            : context.colors.textSecond,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -220,7 +221,7 @@ class _TammSidebar extends StatelessWidget {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
-                                        color: AppColors.error,
+                                        color: context.colors.error,
                                         borderRadius:
                                             BorderRadius.circular(10),
                                       ),
@@ -234,21 +235,21 @@ class _TammSidebar extends StatelessWidget {
                                     ? Badge(
                                         isLabelVisible: true,
                                         label: item.badge!,
-                                        backgroundColor: AppColors.error,
+                                        backgroundColor: context.colors.error,
                                         child: Icon(
                                           item.icon,
                                           size: 24,
                                           color: isSelected
-                                              ? AppColors.blueLight
-                                              : AppColors.textSecond,
+                                              ? context.colors.blueLight
+                                              : context.colors.textSecond,
                                         ),
                                       )
                                     : Icon(
                                         item.icon,
                                         size: 24,
                                         color: isSelected
-                                            ? AppColors.blueLight
-                                            : AppColors.textSecond,
+                                            ? context.colors.blueLight
+                                            : context.colors.textSecond,
                                       ),
                               ),
                       ),

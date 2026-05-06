@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammCard extends StatelessWidget {
   final Widget child;
@@ -16,9 +17,9 @@ class TammCard extends StatelessWidget {
       child: Container(
         padding: padding ?? AppSpacing.cardPadding,
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: context.colors.bgSurface,
           borderRadius: AppSpacing.radius,
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.colors.border),
         ),
         child: child,
       ),

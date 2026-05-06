@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammEmptyState extends StatelessWidget {
   final IconData icon;
@@ -22,13 +23,13 @@ class TammEmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 64, color: AppColors.textFaint),
+          Icon(icon, size: 64, color: context.colors.textFaint),
           const SizedBox(height: 16),
           Text(
             message,
             style: GoogleFonts.harmattan(
               fontSize: 18,
-              color: AppColors.textSecond,
+              color: context.colors.textSecond,
             ),
             textAlign: TextAlign.center,
           ),
@@ -39,7 +40,7 @@ class TammEmptyState extends StatelessWidget {
               child: Text(
                 actionLabel!,
                 style: GoogleFonts.harmattan(
-                  color: AppColors.blueLight,
+                  color: context.colors.blueLight,
                   fontSize: 16,
                 ),
               ),

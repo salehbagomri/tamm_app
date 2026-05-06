@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammShimmer extends StatelessWidget {
   final double width;
@@ -18,8 +19,8 @@ class TammShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: AppColors.bgSurface,
-      highlightColor: AppColors.bgSurface2,
+      baseColor: context.colors.bgSurface,
+      highlightColor: context.colors.bgSurface2,
       child: Container(
         width: width,
         height: height,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_colors.dart';
 import '../../shared/providers/notification_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 /// يُستخدم في AppBar لعرض عدد الإشعارات غير المقروءة
 class TammNotificationBell extends ConsumerWidget {
@@ -16,9 +17,9 @@ class TammNotificationBell extends ConsumerWidget {
       onPressed: onTap,
       icon: Stack(
         children: [
-          const Icon(
+          Icon(
             Icons.notifications_outlined,
-            color: AppColors.textPrimary,
+            color: context.colors.textPrimary,
           ),
           if (count > 0)
             Positioned(
@@ -26,8 +27,8 @@ class TammNotificationBell extends ConsumerWidget {
               top: 0,
               child: Container(
                 padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: AppColors.error,
+                decoration: BoxDecoration(
+                  color: context.colors.error,
                   shape: BoxShape.circle,
                 ),
                 constraints: const BoxConstraints(minWidth: 16, minHeight: 16),

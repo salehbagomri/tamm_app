@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 enum TammButtonType { primary, secondary, danger }
 
@@ -29,11 +30,11 @@ class TammButton extends StatelessWidget {
 
     Color textColor;
     if (isSecondary) {
-      textColor = AppColors.bluePrimary;
+      textColor = context.colors.bluePrimary;
     } else if (isDanger) {
       textColor = Colors.white;
     } else {
-      textColor = AppColors.bgPrimary; // Primary button text color (usually dark)
+      textColor = context.colors.bgPrimary; // Primary button text color (usually dark)
     }
     
     // In original code, AppTextStyles.button was used for primary, and copyWith(color) for outlined.
@@ -49,7 +50,7 @@ class TammButton extends StatelessWidget {
             height: 22,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: isSecondary ? AppColors.bluePrimary : Colors.white,
+              color: isSecondary ? context.colors.bluePrimary : Colors.white,
             ),
           )
         : Row(
@@ -70,7 +71,7 @@ class TammButton extends StatelessWidget {
         child: OutlinedButton(
           onPressed: isLoading ? null : onPressed,
           style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: AppColors.bluePrimary),
+            side: BorderSide(color: context.colors.bluePrimary),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           child: child,
@@ -84,7 +85,7 @@ class TammButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDanger ? AppColors.error : AppColors.bluePrimary,
+          backgroundColor: isDanger ? context.colors.error : context.colors.bluePrimary,
           foregroundColor: textColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 0,

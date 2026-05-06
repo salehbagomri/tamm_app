@@ -4,6 +4,7 @@ import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../constants/product_specs.dart';
 import 'tamm_text_field.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class SpecsEditor extends StatefulWidget {
   final Map<String, dynamic> initialSpecs;
@@ -70,7 +71,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.bgSurface,
+        backgroundColor: context.colors.bgSurface,
         title: Text('إضافة مواصفة مخصصة', style: GoogleFonts.harmattan(fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -89,10 +90,10 @@ class _SpecsEditorState extends State<SpecsEditor> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('إلغاء', style: GoogleFonts.harmattan(color: AppColors.textSecond)),
+            child: Text('إلغاء', style: GoogleFonts.harmattan(color: context.colors.textSecond)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.bluePrimary),
+            style: ElevatedButton.styleFrom(backgroundColor: context.colors.bluePrimary),
             onPressed: () {
               if (keyCtrl.text.isNotEmpty && valCtrl.text.isNotEmpty) {
                 _addSpec(keyCtrl.text, valCtrl.text);
@@ -113,9 +114,9 @@ class _SpecsEditorState extends State<SpecsEditor> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.bgSurface2,
+        color: context.colors.bgSurface2,
         borderRadius: AppSpacing.radius,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -123,14 +124,14 @@ class _SpecsEditorState extends State<SpecsEditor> {
         children: [
           Row(
             children: [
-              const Icon(Icons.list_alt, color: AppColors.bluePrimary),
+              Icon(Icons.list_alt, color: context.colors.bluePrimary),
               const SizedBox(width: 8),
               Text(
                 'المواصفات التقنية',
                 style: GoogleFonts.harmattan(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
             ],
@@ -140,7 +141,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
           if (availableRecommendedKeys.isNotEmpty) ...[
             Text(
               'مواصفات مقترحة (اضغط للإضافة):',
-              style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.textSecond),
+              style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textSecond),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -149,8 +150,8 @@ class _SpecsEditorState extends State<SpecsEditor> {
               children: availableRecommendedKeys.map((key) {
                 return ActionChip(
                   label: Text(specsTranslation[key] ?? key, style: GoogleFonts.harmattan(fontSize: 13)),
-                  backgroundColor: AppColors.bgPrimary,
-                  side: const BorderSide(color: AppColors.border),
+                  backgroundColor: context.colors.bgPrimary,
+                  side: BorderSide(color: context.colors.border),
                   onPressed: () {
                     _addSpec(key, '');
                   },
@@ -163,7 +164,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
           if (_specs.isNotEmpty) ...[
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.colors.border),
                 borderRadius: AppSpacing.radius,
               ),
               child: Column(
@@ -172,7 +173,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                   return Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      border: isLast ? null : const Border(bottom: BorderSide(color: AppColors.border)),
+                      border: isLast ? null : Border(bottom: BorderSide(color: context.colors.border)),
                     ),
                     child: Row(
                       children: [
@@ -182,7 +183,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                             specsTranslation[e.key] ?? e.key,
                             style: GoogleFonts.harmattan(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                           ),
                         ),
@@ -193,7 +194,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                             style: GoogleFonts.harmattan(),
                             decoration: InputDecoration(
                               hintText: 'القيمة...',
-                              hintStyle: GoogleFonts.harmattan(color: AppColors.textFaint),
+                              hintStyle: GoogleFonts.harmattan(color: context.colors.textFaint),
                               border: const UnderlineInputBorder(),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                               isDense: true,
@@ -202,7 +203,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+                          icon: Icon(Icons.delete_outline, color: context.colors.error, size: 20),
                           onPressed: () => _removeSpec(e.key),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
@@ -222,8 +223,8 @@ class _SpecsEditorState extends State<SpecsEditor> {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     isExpanded: true,
-                    hint: Text('إضافة من القائمة...', style: GoogleFonts.harmattan(color: AppColors.bluePrimary)),
-                    icon: const Icon(Icons.add_circle_outline, color: AppColors.bluePrimary),
+                    hint: Text('إضافة من القائمة...', style: GoogleFonts.harmattan(color: context.colors.bluePrimary)),
+                    icon: Icon(Icons.add_circle_outline, color: context.colors.bluePrimary),
                     items: specsTranslation.entries
                         .where((e) => !_specs.containsKey(e.key))
                         .map((e) => DropdownMenuItem(
@@ -242,7 +243,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                 onPressed: _showAddCustomSpecDialog,
                 icon: const Icon(Icons.add, size: 18),
                 label: Text('مواصفة مخصصة', style: GoogleFonts.harmattan()),
-                style: TextButton.styleFrom(foregroundColor: AppColors.textSecond),
+                style: TextButton.styleFrom(foregroundColor: context.colors.textSecond),
               ),
             ],
           ),

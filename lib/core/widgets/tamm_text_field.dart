@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammTextField extends StatelessWidget {
   final String label;
@@ -46,7 +47,7 @@ class TammTextField extends StatelessWidget {
           style: GoogleFonts.harmattan(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecond,
+            color: context.colors.textSecond,
           ),
         ),
         const SizedBox(height: 6),
@@ -60,7 +61,7 @@ class TammTextField extends StatelessWidget {
           inputFormatters: inputFormatters,
           readOnly: readOnly,
           style: GoogleFonts.harmattan(
-            color: AppColors.textPrimary,
+            color: context.colors.textPrimary,
             fontSize: 16,
           ),
           decoration: InputDecoration(

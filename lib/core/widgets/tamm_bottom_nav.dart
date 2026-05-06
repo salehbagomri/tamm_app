@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -16,8 +17,8 @@ class TammBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: context.colors.border)),
       ),
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

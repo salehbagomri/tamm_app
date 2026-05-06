@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 /// شارة "تمّ ✓" — تُستخدم في شاشات التأكيد
 class TammSuccessBadge extends StatelessWidget {
@@ -17,13 +18,13 @@ class TammSuccessBadge extends StatelessWidget {
           height: 100,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.success.withValues(alpha: 0.15),
-            border: Border.all(color: AppColors.success, width: 3),
+            color: context.colors.success.withValues(alpha: 0.15),
+            border: Border.all(color: context.colors.success, width: 3),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.check_rounded,
             size: 56,
-            color: AppColors.success,
+            color: context.colors.success,
           ),
         ),
         const SizedBox(height: 24),
@@ -32,7 +33,7 @@ class TammSuccessBadge extends StatelessWidget {
           style: GoogleFonts.harmattan(
             fontSize: 36,
             fontWeight: FontWeight.w700,
-            color: AppColors.success,
+            color: context.colors.success,
           ),
         ),
       ],
