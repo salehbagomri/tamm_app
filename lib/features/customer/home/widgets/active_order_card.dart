@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../shared/providers/order_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ActiveOrderCard extends ConsumerWidget {
   const ActiveOrderCard({super.key});
@@ -22,12 +23,12 @@ class ActiveOrderCard extends ConsumerWidget {
           margin: const EdgeInsets.only(top: 24),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.bgSurface,
+            color: context.colors.bgSurface,
             borderRadius: AppSpacing.radiusLg,
-            border: Border.all(color: AppColors.bluePrimary.withOpacity(0.3)),
+            border: Border.all(color: context.colors.bluePrimary.withOpacity(0.3)),
             boxShadow: [
               BoxShadow(
-                color: AppColors.bluePrimary.withOpacity(0.1),
+                color: context.colors.bluePrimary.withOpacity(0.1),
                 blurRadius: 10,
                 spreadRadius: 1,
               ),
@@ -41,19 +42,19 @@ class ActiveOrderCard extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.electric_bolt, color: AppColors.blueSky),
+                      Icon(Icons.electric_bolt, color: context.colors.blueSky),
                       const SizedBox(width: 8),
                       Text(
                         'طلب نشط',
                         style: GoogleFonts.harmattan(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.blueSky,
+                          color: context.colors.blueSky,
                         ),
                       ),
                     ],
                   ),
-                  _buildStatusBadge(order.status, order.statusLabel),
+                  _buildStatusBadge(context, order.status, order.statusLabel),
                 ],
               ),
               const SizedBox(height: 12),
@@ -62,7 +63,7 @@ class ActiveOrderCard extends ConsumerWidget {
                 style: GoogleFonts.harmattan(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               if (order.notes != null && order.notes!.isNotEmpty) ...[
@@ -71,7 +72,7 @@ class ActiveOrderCard extends ConsumerWidget {
                   order.notes!,
                   style: GoogleFonts.harmattan(
                     fontSize: 14,
-                    color: AppColors.textSecond,
+                    color: context.colors.textSecond,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -81,13 +82,13 @@ class ActiveOrderCard extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.engineering, size: 16, color: AppColors.textSecond),
+                    Icon(Icons.engineering, size: 16, color: context.colors.textSecond),
                     const SizedBox(width: 4),
                     Text(
                       'الفني: ${order.technicianName}',
                       style: GoogleFonts.harmattan(
                         fontSize: 14,
-                        color: AppColors.textSecond,
+                        color: context.colors.textSecond,
                       ),
                     ),
                   ],
@@ -99,10 +100,10 @@ class ActiveOrderCard extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: () => context.push('/customer/order/${order.id}'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.bluePrimary.withOpacity(0.1),
-                    foregroundColor: AppColors.blueSky,
+                    backgroundColor: context.colors.bluePrimary.withOpacity(0.1),
+                    foregroundColor: context.colors.blueSky,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: AppSpacing.radiusSm,
                     ),
                   ),
@@ -124,29 +125,29 @@ class ActiveOrderCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusBadge(String status, String label) {
+  Widget _buildStatusBadge(BuildContext context, String status, String label) {
     Color color;
     switch (status) {
       case 'pending':
-        color = AppColors.textSecond;
+        color = context.colors.textSecond;
         break;
       case 'assigned':
-        color = AppColors.blueLight;
+        color = context.colors.blueLight;
         break;
       case 'on_the_way':
-        color = AppColors.warning;
+        color = context.colors.warning;
         break;
       case 'in_progress':
-        color = AppColors.bluePrimary;
+        color = context.colors.bluePrimary;
         break;
       case 'completed':
-        color = AppColors.success;
+        color = context.colors.success;
         break;
       case 'cancelled':
-        color = AppColors.error;
+        color = context.colors.error;
         break;
       default:
-        color = AppColors.textSecond;
+        color = context.colors.textSecond;
     }
 
     return Container(

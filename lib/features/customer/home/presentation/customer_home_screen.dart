@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/responsive_wrapper.dart';
@@ -12,6 +11,7 @@ import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/models/product.dart';
 import '../widgets/promo_slider.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class CustomerHomeScreen extends ConsumerWidget {
   const CustomerHomeScreen({super.key});
@@ -23,7 +23,7 @@ class CustomerHomeScreen extends ConsumerWidget {
     final dealsAsync = ref.watch(dealsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: ResponsiveWrapper(
           child: SingleChildScrollView(
@@ -45,7 +45,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                             style: GoogleFonts.harmattan(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -58,7 +58,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                           'كيف نقدر نخدمك اليوم؟',
                           style: GoogleFonts.harmattan(
                             fontSize: 16,
-                            color: AppColors.textSecond,
+                            color: context.colors.textSecond,
                           ),
                         ),
                       ],
@@ -97,17 +97,17 @@ class CustomerHomeScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: AppColors.bgSurface,
+                    color: context.colors.bgSurface,
                     borderRadius: AppSpacing.radius,
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.colors.border),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.search, color: AppColors.textSecond),
+                      Icon(Icons.search, color: context.colors.textSecond),
                       const SizedBox(width: 8),
                       Text(
                         'ابحث عن منتجات، مكيفات، ألواح...',
-                        style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textSecond),
+                        style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond),
                       ),
                     ],
                   ),
@@ -127,7 +127,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                 style: GoogleFonts.harmattan(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -169,14 +169,14 @@ class CustomerHomeScreen extends ConsumerWidget {
                     style: GoogleFonts.harmattan(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   TextButton(
                     onPressed: () => context.push('/customer/store'),
                     child: Text(
                       'عرض الكل',
-                      style: GoogleFonts.harmattan(color: AppColors.blueLight),
+                      style: GoogleFonts.harmattan(color: context.colors.blueLight),
                     ),
                   ),
                 ],
@@ -204,14 +204,14 @@ class CustomerHomeScreen extends ConsumerWidget {
                             style: GoogleFonts.harmattan(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                           ),
                           TextButton(
                             onPressed: () => context.push('/customer/store'),
                             child: Text(
                               'تصفح العروض',
-                              style: GoogleFonts.harmattan(color: AppColors.blueLight),
+                              style: GoogleFonts.harmattan(color: context.colors.blueLight),
                             ),
                           ),
                         ],
@@ -252,9 +252,9 @@ class CustomerHomeScreen extends ConsumerWidget {
               width: 160,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.bgSurface,
+                color: context.colors.bgSurface,
                 borderRadius: AppSpacing.radius,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.colors.border),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,8 +264,8 @@ class CustomerHomeScreen extends ConsumerWidget {
                       children: [
                         Container(
                           width: double.infinity,
-                          decoration: const BoxDecoration(
-                            color: AppColors.bgSurface2,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgSurface2,
                             borderRadius: AppSpacing.radiusSm,
                           ),
                           child: p.imageUrl != null
@@ -275,22 +275,22 @@ class CustomerHomeScreen extends ConsumerWidget {
                                     imageUrl: p.imageUrl!,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
-                                    placeholder: (context, url) => TammShimmer(
+                                    placeholder: (context, url) => const TammShimmer(
                                       width: double.infinity,
                                       height: double.infinity,
                                       borderRadius: AppSpacing.radiusSm,
                                     ),
-                                    errorWidget: (context, url, err) => const Icon(
+                                    errorWidget: (context, url, err) => Icon(
                                       Icons.image,
-                                      color: AppColors.textFaint,
+                                      color: context.colors.textFaint,
                                       size: 40,
                                     ),
                                   ),
                                 )
-                              : const Center(
+                              : Center(
                                   child: Icon(
                                     Icons.image,
-                                    color: AppColors.textFaint,
+                                    color: context.colors.textFaint,
                                     size: 40,
                                   ),
                                 ),
@@ -302,7 +302,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: AppColors.warning,
+                                color: context.colors.warning,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -322,7 +322,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: AppColors.error,
+                                color: context.colors.error,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -344,7 +344,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     style: GoogleFonts.harmattan(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -356,7 +356,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                         p.price != null ? '${p.price!.toInt()}' : 'السعر غير محدد',
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: AppColors.blueSky,
+                          color: context.colors.blueSky,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -366,7 +366,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                           'ر.س',
                           style: GoogleFonts.harmattan(
                             fontSize: 10,
-                            color: AppColors.blueSky,
+                            color: context.colors.blueSky,
                           ),
                         ),
                       ],
@@ -376,7 +376,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                           '${p.oldPrice!.toInt()}',
                           style: GoogleFonts.harmattan(
                             fontSize: 12,
-                            color: AppColors.textSecond,
+                            color: context.colors.textSecond,
                             decoration: TextDecoration.lineThrough,
                           ),
                         ),
@@ -427,16 +427,16 @@ class _HeaderIcon extends StatelessWidget {
       child: Badge(
         isLabelVisible: badgeCount > 0,
         label: Text('$badgeCount'),
-        backgroundColor: AppColors.error,
+        backgroundColor: context.colors.error,
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: AppColors.bluePrimary.withValues(alpha: 0.1),
+            color: context.colors.bluePrimary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(
             icon,
-            color: AppColors.blueSky,
+            color: context.colors.blueSky,
             size: 24,
           ),
         ),
@@ -461,23 +461,23 @@ class _QuickServiceCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 90,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.blueDark, AppColors.blueMid],
+            colors: [context.colors.blueDark, context.colors.blueMid],
           ),
           borderRadius: AppSpacing.radius,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: AppColors.blueSky, size: 28),
+            Icon(icon, color: context.colors.blueSky, size: 28),
             const SizedBox(height: 6),
             Text(
               label,
               style: GoogleFonts.harmattan(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
           ],

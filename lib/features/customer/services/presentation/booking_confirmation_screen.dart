@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/providers/order_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class BookingConfirmationScreen extends ConsumerWidget {
   final String orderId;
@@ -21,7 +21,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
     final orderAsync = ref.watch(orderDetailProvider(orderId));
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'تأكيد الحجز'),
       body: orderAsync.when(
         data: (order) {
@@ -40,12 +40,12 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.1),
+                    color: context.colors.success.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.check_circle_rounded,
-                    color: AppColors.success,
+                    color: context.colors.success,
                     size: 80,
                   ),
                 ),
@@ -57,7 +57,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   style: GoogleFonts.harmattan(
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 
@@ -68,7 +68,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   style: GoogleFonts.harmattan(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecond,
+                    color: context.colors.textSecond,
                   ),
                 ),
                 
@@ -82,18 +82,18 @@ class BookingConfirmationScreen extends ConsumerWidget {
                         title: 'الخدمة المختارة',
                         value: serviceName, // Optionally show 'order.items.first.service_type_id' resolved, but we skip it here
                       ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Divider(color: AppColors.border),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Divider(color: context.colors.border),
                       ),
                       if (order.scheduledPeriod != null) ...[
                         _SummaryRow(
                           title: 'الموعد',
                           value: '${order.preferredDate != null ? "${order.preferredDate!.day}/${order.preferredDate!.month} — " : ""}${order.scheduledPeriod} ${order.scheduledHour ?? ''}',
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          child: Divider(color: AppColors.border),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Divider(color: context.colors.border),
                         ),
                       ],
                       _SummaryRow(
@@ -111,7 +111,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.harmattan(
                     fontSize: 18,
-                    color: AppColors.bluePrimary,
+                    color: context.colors.bluePrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -159,7 +159,7 @@ class _SummaryRow extends StatelessWidget {
             title,
             style: GoogleFonts.harmattan(
               fontSize: 16,
-              color: AppColors.textSecond,
+              color: context.colors.textSecond,
             ),
           ),
         ),
@@ -170,7 +170,7 @@ class _SummaryRow extends StatelessWidget {
             style: GoogleFonts.harmattan(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
             textAlign: TextAlign.end,
           ),

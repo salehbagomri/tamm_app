@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class AppointmentDisplayCard extends StatelessWidget {
   final DateTime date;
@@ -24,21 +24,21 @@ class AppointmentDisplayCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
-        border: Border.all(color: AppColors.bluePrimary.withValues(alpha: 0.3)),
+        border: Border.all(color: context.colors.bluePrimary.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.bluePrimary.withValues(alpha: 0.1),
+              color: context.colors.bluePrimary.withValues(alpha: 0.1),
               borderRadius: AppSpacing.radiusSm,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.calendar_today,
-              color: AppColors.bluePrimary,
+              color: context.colors.bluePrimary,
               size: 24,
             ),
           ),
@@ -51,7 +51,7 @@ class AppointmentDisplayCard extends StatelessWidget {
                   'موعدك المختار',
                   style: GoogleFonts.harmattan(
                     fontSize: 14,
-                    color: AppColors.textSecond,
+                    color: context.colors.textSecond,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -60,7 +60,7 @@ class AppointmentDisplayCard extends StatelessWidget {
                   style: GoogleFonts.harmattan(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
               ],

@@ -8,6 +8,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../shared/models/order.dart';
 import '../../../../shared/providers/order_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class RecentOrders extends ConsumerWidget {
   const RecentOrders({super.key});
@@ -27,7 +28,7 @@ class RecentOrders extends ConsumerWidget {
               style: GoogleFonts.harmattan(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
             if (recentOrdersAsync.valueOrNull?.isNotEmpty ?? false)
@@ -38,7 +39,7 @@ class RecentOrders extends ConsumerWidget {
                   style: GoogleFonts.harmattan(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.blueSky,
+                    color: context.colors.blueSky,
                   ),
                 ),
               ),
@@ -65,16 +66,16 @@ class RecentOrders extends ConsumerWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
       ),
       child: Column(
         children: [
-          const Icon(
+          Icon(
             Icons.receipt_long_outlined,
             size: 48,
-            color: AppColors.textFaint,
+            color: context.colors.textFaint,
           ),
           const SizedBox(height: 16),
           Text(
@@ -82,7 +83,7 @@ class RecentOrders extends ConsumerWidget {
             style: GoogleFonts.harmattan(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -91,7 +92,7 @@ class RecentOrders extends ConsumerWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.harmattan(
               fontSize: 14,
-              color: AppColors.textSecond,
+              color: context.colors.textSecond,
             ),
           ),
           const SizedBox(height: 16),
@@ -124,19 +125,19 @@ class RecentOrders extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: context.colors.bgSurface,
           borderRadius: AppSpacing.radiusSm,
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.colors.border),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.bluePrimary.withOpacity(0.1),
+                color: context.colors.bluePrimary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppColors.blueSky),
+              child: Icon(icon, color: context.colors.blueSky),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -151,10 +152,10 @@ class RecentOrders extends ConsumerWidget {
                         style: GoogleFonts.harmattan(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.colors.textPrimary,
                         ),
                       ),
-                      _buildStatusLabel(order.status, order.statusLabel),
+                      _buildStatusLabel(context, order.status, order.statusLabel),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -164,18 +165,18 @@ class RecentOrders extends ConsumerWidget {
                         '#${order.orderNumber}',
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: AppColors.textSecond,
+                          color: context.colors.textSecond,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Icon(Icons.circle, size: 4, color: AppColors.textFaint),
+                      Icon(Icons.circle, size: 4, color: context.colors.textFaint),
                       const SizedBox(width: 12),
                       Text(
                         dateFormat.format(order.createdAt),
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: AppColors.textSecond,
+                          color: context.colors.textSecond,
                         ),
                       ),
                     ],
@@ -189,29 +190,29 @@ class RecentOrders extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusLabel(String status, String label) {
+  Widget _buildStatusLabel(BuildContext context, String status, String label) {
     Color color;
     switch (status) {
       case 'pending':
-        color = AppColors.textSecond;
+        color = context.colors.textSecond;
         break;
       case 'assigned':
-        color = AppColors.blueLight;
+        color = context.colors.blueLight;
         break;
       case 'on_the_way':
-        color = AppColors.warning;
+        color = context.colors.warning;
         break;
       case 'in_progress':
-        color = AppColors.bluePrimary;
+        color = context.colors.bluePrimary;
         break;
       case 'completed':
-        color = AppColors.success;
+        color = context.colors.success;
         break;
       case 'cancelled':
-        color = AppColors.error;
+        color = context.colors.error;
         break;
       default:
-        color = AppColors.textSecond;
+        color = context.colors.textSecond;
     }
 
     return Text(

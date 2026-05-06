@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -11,6 +10,7 @@ import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/service_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ServicesScreen extends ConsumerStatefulWidget {
   final String? initialCategory;
@@ -23,7 +23,7 @@ class ServicesScreen extends ConsumerStatefulWidget {
 class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   String? _selectedCategory;
 
-  final _categories = const {
+  final _categories = {
     null: 'الكل',
     'ac_install': 'تركيب مكيف',
     'ac_repair': 'صيانة مكيف',
@@ -55,7 +55,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
     final servicesAsync = ref.watch(serviceTypesProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: ResponsiveWrapper(
           child: Column(
@@ -68,7 +68,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
             ),
@@ -86,16 +86,16 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                         e.value,
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: selected ? Colors.white : AppColors.textSecond,
+                          color: selected ? Colors.white : context.colors.textSecond,
                         ),
                       ),
                       selected: selected,
-                      selectedColor: AppColors.bluePrimary,
-                      backgroundColor: AppColors.bgSurface,
+                      selectedColor: context.colors.bluePrimary,
+                      backgroundColor: context.colors.bgSurface,
                       side: BorderSide(
                         color: selected
-                            ? AppColors.bluePrimary
-                            : AppColors.border,
+                            ? context.colors.bluePrimary
+                            : context.colors.border,
                       ),
                       onSelected: (_) =>
                           setState(() => _selectedCategory = e.key),
@@ -137,14 +137,14 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                               width: 50,
                               height: 50,
                               decoration: BoxDecoration(
-                                color: AppColors.bluePrimary.withValues(
+                                color: context.colors.bluePrimary.withValues(
                                   alpha: 0.15,
                                 ),
                                 borderRadius: AppSpacing.radiusSm,
                               ),
                               child: Icon(
                                 _getIcon(s.iconName),
-                                color: AppColors.bluePrimary,
+                                color: context.colors.bluePrimary,
                                 size: 26,
                               ),
                             ),
@@ -158,7 +158,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                                     style: GoogleFonts.harmattan(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.textPrimary,
+                                      color: context.colors.textPrimary,
                                     ),
                                   ),
                                   if (s.description != null)
@@ -166,7 +166,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                                       s.description!,
                                       style: GoogleFonts.harmattan(
                                         fontSize: 13,
-                                        color: AppColors.textSecond,
+                                        color: context.colors.textSecond,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -181,7 +181,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                               style: GoogleFonts.harmattan(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.blueSky,
+                                color: context.colors.blueSky,
                               ),
                             ),
                           ],
@@ -202,7 +202,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('حدث خطأ أثناء تحميل الخدمات', style: GoogleFonts.harmattan(fontSize: 18, color: AppColors.textPrimary)),
+                        Text('حدث خطأ أثناء تحميل الخدمات', style: GoogleFonts.harmattan(fontSize: 18, color: context.colors.textPrimary)),
                         const SizedBox(height: 16),
                         TammButton(
                           label: 'حاول مجدداً',

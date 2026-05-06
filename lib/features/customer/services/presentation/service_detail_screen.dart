@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -11,6 +10,7 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/service_providers.dart';
 import '../../../../core/utils/auth_guard.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ServiceDetailScreen extends ConsumerWidget {
   final String serviceTypeId;
@@ -23,7 +23,7 @@ class ServiceDetailScreen extends ConsumerWidget {
     final serviceAsync = ref.watch(serviceDetailProvider(serviceTypeId));
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'تفاصيل الخدمة'),
       body: serviceAsync.when(
         data: (service) => _buildBody(context, ref, service),
@@ -36,7 +36,7 @@ class ServiceDetailScreen extends ConsumerWidget {
                 'حدث خطأ في جلب تفاصيل الخدمة',
                 style: GoogleFonts.harmattan(
                   fontSize: 18,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -66,13 +66,13 @@ class ServiceDetailScreen extends ConsumerWidget {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: AppColors.bluePrimary.withValues(alpha: 0.1),
+                      color: context.colors.bluePrimary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       _getIconForCategory(service.category),
                       size: 50,
-                      color: AppColors.bluePrimary,
+                      color: context.colors.bluePrimary,
                     ),
                   ),
                 ),
@@ -84,7 +84,7 @@ class ServiceDetailScreen extends ConsumerWidget {
                   style: GoogleFonts.harmattan(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -97,18 +97,18 @@ class ServiceDetailScreen extends ConsumerWidget {
                       style: GoogleFonts.harmattan(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.blueSky,
+                        color: context.colors.blueSky,
                       ),
                     ),
                     if (service.estimatedDuration != null) ...[
                       const Spacer(),
-                      const Icon(Icons.timer_outlined, size: 16, color: AppColors.textSecond),
+                      Icon(Icons.timer_outlined, size: 16, color: context.colors.textSecond),
                       const SizedBox(width: 4),
                       Text(
                         service.estimatedDuration!,
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: AppColors.textSecond,
+                          color: context.colors.textSecond,
                         ),
                       ),
                     ]
@@ -123,7 +123,7 @@ class ServiceDetailScreen extends ConsumerWidget {
                     style: GoogleFonts.harmattan(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -131,7 +131,7 @@ class ServiceDetailScreen extends ConsumerWidget {
                     service.description!,
                     style: GoogleFonts.harmattan(
                       fontSize: 16,
-                      color: AppColors.textSecond,
+                      color: context.colors.textSecond,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -144,16 +144,16 @@ class ServiceDetailScreen extends ConsumerWidget {
                     style: GoogleFonts.harmattan(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.bgSurface,
+                      color: context.colors.bgSurface,
                       borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: context.colors.border),
                     ),
                     child: Column(
                       children: service.includes.map((item) => Padding(
@@ -161,14 +161,14 @@ class ServiceDetailScreen extends ConsumerWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.check_circle, size: 20, color: AppColors.success),
+                            Icon(Icons.check_circle, size: 20, color: context.colors.success),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 item,
                                 style: GoogleFonts.harmattan(
                                   fontSize: 16,
-                                  color: AppColors.textPrimary,
+                                  color: context.colors.textPrimary,
                                 ),
                               ),
                             ),
@@ -188,9 +188,9 @@ class ServiceDetailScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.bgSurface,
-            border: const Border(
-              top: BorderSide(color: AppColors.border),
+            color: context.colors.bgSurface,
+            border: Border(
+              top: BorderSide(color: context.colors.border),
             ),
             boxShadow: [
               BoxShadow(

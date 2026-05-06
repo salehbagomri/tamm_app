@@ -18,6 +18,7 @@ import '../../../../shared/providers/order_providers.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/auth_guard.dart';
 import 'buy_install_sheet.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class StoreScreen extends ConsumerStatefulWidget {
   const StoreScreen({super.key});
@@ -29,7 +30,7 @@ class StoreScreen extends ConsumerStatefulWidget {
 class _StoreScreenState extends ConsumerState<StoreScreen> {
   final TextEditingController _searchCtrl = TextEditingController();
 
-  final _categories = const {
+  final _categories = {
     null: 'الكل',
     'deals': 'العروض',
     'ac': 'مكيفات',
@@ -60,7 +61,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
   void _showFilterSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.bgSurface,
+      backgroundColor: context.colors.bgSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -75,7 +76,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     final filter = ref.watch(storeFilterProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: ResponsiveWrapper(
           child: Column(
@@ -91,7 +92,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     style: GoogleFonts.harmattan(
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   Consumer(
@@ -101,8 +102,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                         icon: Badge(
                           isLabelVisible: count > 0,
                           label: Text('$count'),
-                          backgroundColor: AppColors.error,
-                          child: const Icon(Icons.shopping_cart_outlined, color: AppColors.textPrimary),
+                          backgroundColor: context.colors.error,
+                          child: Icon(Icons.shopping_cart_outlined, color: context.colors.textPrimary),
                         ),
                         onPressed: () => context.push('/customer/cart'),
                       );
@@ -119,29 +120,29 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   Expanded(
                     child: TextField(
                       controller: _searchCtrl,
-                      style: GoogleFonts.harmattan(color: AppColors.textPrimary),
+                      style: GoogleFonts.harmattan(color: context.colors.textPrimary),
                       decoration: InputDecoration(
                         hintText: 'ابحث عن منتج أو ماركة...',
-                        hintStyle: GoogleFonts.harmattan(color: AppColors.textSecond),
-                        prefixIcon: const Icon(Icons.search, color: AppColors.textSecond),
+                        hintStyle: GoogleFonts.harmattan(color: context.colors.textSecond),
+                        prefixIcon: Icon(Icons.search, color: context.colors.textSecond),
                         filled: true,
-                        fillColor: AppColors.bgSurface,
+                        fillColor: context.colors.bgSurface,
                         contentPadding: const EdgeInsets.symmetric(vertical: 0),
                         border: OutlineInputBorder(
                           borderRadius: AppSpacing.radius,
-                          borderSide: const BorderSide(color: AppColors.border),
+                          borderSide: BorderSide(color: context.colors.border),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: AppSpacing.radius,
-                          borderSide: const BorderSide(color: AppColors.border),
+                          borderSide: BorderSide(color: context.colors.border),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: AppSpacing.radius,
-                          borderSide: const BorderSide(color: AppColors.bluePrimary),
+                          borderSide: BorderSide(color: context.colors.bluePrimary),
                         ),
                         suffixIcon: filter.searchQuery.isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.clear, color: AppColors.textSecond),
+                                icon: Icon(Icons.clear, color: context.colors.textSecond),
                                 onPressed: () {
                                   _searchCtrl.clear();
                                   ref.read(storeFilterProvider.notifier).update(
@@ -161,20 +162,20 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   const SizedBox(width: 8),
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.bgSurface,
+                      color: context.colors.bgSurface,
                       borderRadius: AppSpacing.radius,
                       border: Border.all(
                         color: (filter.sort != ProductSort.none || filter.dealsOnly || filter.featuredOnly)
-                            ? AppColors.bluePrimary
-                            : AppColors.border,
+                            ? context.colors.bluePrimary
+                            : context.colors.border,
                       ),
                     ),
                     child: IconButton(
                       icon: Icon(
                         Icons.tune, 
                         color: (filter.sort != ProductSort.none || filter.dealsOnly || filter.featuredOnly)
-                            ? AppColors.bluePrimary
-                            : AppColors.textSecond,
+                            ? context.colors.bluePrimary
+                            : context.colors.textSecond,
                       ),
                       onPressed: _showFilterSheet,
                     ),
@@ -201,14 +202,14 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                         '${e.value} ($count)',
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: isSelected ? Colors.white : AppColors.textSecond,
+                          color: isSelected ? Colors.white : context.colors.textSecond,
                         ),
                       ),
                       selected: isSelected,
-                      selectedColor: AppColors.bluePrimary,
-                      backgroundColor: AppColors.bgSurface,
+                      selectedColor: context.colors.bluePrimary,
+                      backgroundColor: context.colors.bgSurface,
                       side: BorderSide(
-                        color: isSelected ? AppColors.bluePrimary : AppColors.border,
+                        color: isSelected ? context.colors.bluePrimary : context.colors.border,
                       ),
                       onSelected: (_) {
                         ref.read(storeFilterProvider.notifier).update(
@@ -227,15 +228,15 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   '${products.length} نتيجة',
                   style: GoogleFonts.harmattan(
                     fontSize: 14,
-                    color: AppColors.textSecond,
+                    color: context.colors.textSecond,
                   ),
                 )
               ).valueOrNull ?? const SizedBox.shrink(),
             ),
             Expanded(
               child: RefreshIndicator(
-                color: AppColors.bluePrimary,
-                backgroundColor: AppColors.bgSurface,
+                color: context.colors.bluePrimary,
+                backgroundColor: context.colors.bgSurface,
                 onRefresh: () async {
                   ref.invalidate(allProductsProvider);
                   await ref.read(allProductsProvider.future);
@@ -271,9 +272,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           onTap: () => context.push('/customer/product/${p.id}'),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: AppColors.bgSurface,
+                              color: context.colors.bgSurface,
                               borderRadius: AppSpacing.radius,
-                              border: Border.all(color: AppColors.border),
+                              border: Border.all(color: context.colors.border),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.2),
@@ -291,9 +292,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                     children: [
                                       Container(
                                         width: double.infinity,
-                                        decoration: const BoxDecoration(
-                                          color: AppColors.bgSurface2,
-                                          borderRadius: BorderRadius.vertical(top: Radius.circular(11)),
+                                        decoration: BoxDecoration(
+                                          color: context.colors.bgSurface2,
+                                          borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
                                         ),
                                         child: p.imageUrl != null
                                             ? ClipRRect(
@@ -306,10 +307,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                     height: double.infinity,
                                                     borderRadius: BorderRadius.circular(0),
                                                   ),
-                                                  errorWidget: (context, url, error) => const Icon(Icons.image, color: AppColors.textFaint, size: 40),
+                                                  errorWidget: (context, url, error) => Icon(Icons.image, color: context.colors.textFaint, size: 40),
                                                 ),
                                               )
-                                            : const Center(child: Icon(Icons.image, color: AppColors.textFaint, size: 40)),
+                                            : Center(child: Icon(Icons.image, color: context.colors.textFaint, size: 40)),
                                       ),
                                       // Badges
                                       if (p.isFeatured && !p.hasDiscount)
@@ -319,7 +320,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: AppColors.warning,
+                                              color: context.colors.warning,
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
@@ -335,7 +336,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: AppColors.error,
+                                              color: context.colors.error,
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
@@ -357,7 +358,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                         if (p.brand != null)
                                           Text(
                                             p.brand!,
-                                            style: GoogleFonts.harmattan(fontSize: 12, color: AppColors.textSecond, height: 1),
+                                            style: GoogleFonts.harmattan(fontSize: 12, color: context.colors.textSecond, height: 1),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -366,7 +367,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                           style: GoogleFonts.harmattan(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
+                                            color: context.colors.textPrimary,
                                             height: 1.2,
                                           ),
                                           maxLines: 2,
@@ -386,7 +387,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                       '${p.oldPrice!.toInt()}',
                                                       style: GoogleFonts.harmattan(
                                                         fontSize: 12,
-                                                        color: AppColors.textSecond,
+                                                        color: context.colors.textSecond,
                                                         decoration: TextDecoration.lineThrough,
                                                         height: 1,
                                                       ),
@@ -395,7 +396,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                     p.price != null ? '${p.price!.toInt()} ر.س' : 'غير محدد',
                                                     style: GoogleFonts.harmattan(
                                                       fontSize: 16,
-                                                      color: AppColors.blueSky,
+                                                      color: context.colors.blueSky,
                                                       fontWeight: FontWeight.w700,
                                                       height: 1.1,
                                                     ),
@@ -410,10 +411,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                 child: Container(
                                                   padding: const EdgeInsets.all(6),
                                                   decoration: BoxDecoration(
-                                                    color: AppColors.bluePrimary.withValues(alpha: 0.1),
+                                                    color: context.colors.bluePrimary.withValues(alpha: 0.1),
                                                     borderRadius: BorderRadius.circular(8),
                                                   ),
-                                                  child: const Icon(Icons.add_shopping_cart, size: 20, color: AppColors.blueSky),
+                                                  child: Icon(Icons.add_shopping_cart, size: 20, color: context.colors.blueSky),
                                                 ),
                                               ),
                                           ],
@@ -474,7 +475,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 Text('تم الإضافة: ${p.name}', style: GoogleFonts.harmattan()),
               ],
             ),
-            backgroundColor: AppColors.success,
+            backgroundColor: context.colors.success,
             duration: const Duration(seconds: 2),
             action: SnackBarAction(
               label: 'عرض السلة',
@@ -488,7 +489,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تعذرت الإضافة: $e'), backgroundColor: AppColors.error));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تعذرت الإضافة: $e'), backgroundColor: context.colors.error));
       }
     }
   }
@@ -503,9 +504,9 @@ class _FilterSheet extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: AppColors.bgSurface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         child: SingleChildScrollView(
@@ -521,11 +522,11 @@ class _FilterSheet extends ConsumerWidget {
                     style: GoogleFonts.harmattan(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: AppColors.textSecond),
+                    icon: Icon(Icons.close, color: context.colors.textSecond),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -536,7 +537,7 @@ class _FilterSheet extends ConsumerWidget {
                 style: GoogleFonts.harmattan(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
               ),
               const SizedBox(height: 8),
@@ -544,9 +545,9 @@ class _FilterSheet extends ConsumerWidget {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _buildSortChip(ref, filter, 'الافتراضي', ProductSort.none),
-                  _buildSortChip(ref, filter, 'الأقل سعراً', ProductSort.priceAsc),
-                  _buildSortChip(ref, filter, 'الأعلى سعراً', ProductSort.priceDesc),
+                  _buildSortChip(context, ref, filter, 'الافتراضي', ProductSort.none),
+                  _buildSortChip(context, ref, filter, 'الأقل سعراً', ProductSort.priceAsc),
+                  _buildSortChip(context, ref, filter, 'الأعلى سعراً', ProductSort.priceDesc),
                 ],
               ),
               const SizedBox(height: 24),
@@ -555,14 +556,14 @@ class _FilterSheet extends ConsumerWidget {
                 style: GoogleFonts.harmattan(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
               ),
               const SizedBox(height: 8),
               CheckboxListTile(
-                title: Text('عروض وتخفيضات 🏷️', style: GoogleFonts.harmattan(color: AppColors.textPrimary)),
+                title: Text('عروض وتخفيضات 🏷️', style: GoogleFonts.harmattan(color: context.colors.textPrimary)),
                 value: filter.dealsOnly,
-                activeColor: AppColors.bluePrimary,
+                activeColor: context.colors.bluePrimary,
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
                 onChanged: (val) {
@@ -570,9 +571,9 @@ class _FilterSheet extends ConsumerWidget {
                 },
               ),
               CheckboxListTile(
-                title: Text('منتجات مميزة ⭐', style: GoogleFonts.harmattan(color: AppColors.textPrimary)),
+                title: Text('منتجات مميزة ⭐', style: GoogleFonts.harmattan(color: context.colors.textPrimary)),
                 value: filter.featuredOnly,
-                activeColor: AppColors.bluePrimary,
+                activeColor: context.colors.bluePrimary,
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
                 onChanged: (val) {
@@ -594,14 +595,14 @@ class _FilterSheet extends ConsumerWidget {
     );
   }
 
-  Widget _buildSortChip(WidgetRef ref, StoreFilterState filter, String label, ProductSort sort) {
+  Widget _buildSortChip(BuildContext context, WidgetRef ref, StoreFilterState filter, String label, ProductSort sort) {
     final isSelected = filter.sort == sort;
     return ChoiceChip(
-      label: Text(label, style: GoogleFonts.harmattan(color: isSelected ? Colors.white : AppColors.textSecond)),
+      label: Text(label, style: GoogleFonts.harmattan(color: isSelected ? Colors.white : context.colors.textSecond)),
       selected: isSelected,
-      selectedColor: AppColors.bluePrimary,
-      backgroundColor: AppColors.bgSurface2,
-      side: BorderSide(color: isSelected ? AppColors.bluePrimary : AppColors.border),
+      selectedColor: context.colors.bluePrimary,
+      backgroundColor: context.colors.bgSurface2,
+      side: BorderSide(color: isSelected ? context.colors.bluePrimary : context.colors.border),
       onSelected: (_) {
         ref.read(storeFilterProvider.notifier).update((s) => s.copyWith(sort: sort));
       },

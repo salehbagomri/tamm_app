@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class MyDevicesScreen extends ConsumerStatefulWidget {
   const MyDevicesScreen({super.key});
@@ -48,10 +48,10 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgSurface,
+        backgroundColor: context.colors.bgSurface,
         title: Text(
           'إضافة جهاز',
-          style: GoogleFonts.harmattan(color: AppColors.textPrimary),
+          style: GoogleFonts.harmattan(color: context.colors.textPrimary),
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -59,7 +59,7 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
             children: [
               DropdownButtonFormField<String>(
                 initialValue: type,
-                dropdownColor: AppColors.bgSurface2,
+                dropdownColor: context.colors.bgSurface2,
                 items: const [
                   DropdownMenuItem(value: 'ac_split', child: Text('سبليت')),
                   DropdownMenuItem(value: 'ac_window', child: Text('شباك')),
@@ -109,7 +109,7 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: TammAppBar(
         title: 'أجهزتي',
         actions: [
@@ -136,7 +136,7 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
                         d['device_type'].toString().contains('solar')
                             ? Icons.solar_power
                             : Icons.ac_unit,
-                        color: AppColors.bluePrimary,
+                        color: context.colors.bluePrimary,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -147,23 +147,23 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
                               d['brand'] ?? d['device_type'],
                               style: GoogleFonts.harmattan(
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                color: context.colors.textPrimary,
                               ),
                             ),
                             Text(
                               d['location_in_home'] ?? '',
                               style: GoogleFonts.harmattan(
                                 fontSize: 14,
-                                color: AppColors.textSecond,
+                                color: context.colors.textSecond,
                               ),
                             ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.delete_outline,
-                          color: AppColors.error,
+                          color: context.colors.error,
                           size: 20,
                         ),
                         onPressed: () async {

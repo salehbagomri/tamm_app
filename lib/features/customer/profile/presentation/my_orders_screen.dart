@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/order_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class MyOrdersScreen extends ConsumerWidget {
   const MyOrdersScreen({super.key});
@@ -16,7 +16,7 @@ class MyOrdersScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(myOrdersProvider);
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'طلباتي'),
       body: ordersAsync.when(
         data: (orders) {
@@ -46,7 +46,7 @@ class MyOrdersScreen extends ConsumerWidget {
                             style: GoogleFonts.harmattan(
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
-                              color: AppColors.textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -54,7 +54,7 @@ class MyOrdersScreen extends ConsumerWidget {
                             '#${o.orderNumber}',
                             style: GoogleFonts.harmattan(
                               fontSize: 13,
-                              color: AppColors.textSecond,
+                              color: context.colors.textSecond,
                             ),
                           ),
                         ],
@@ -69,8 +69,8 @@ class MyOrdersScreen extends ConsumerWidget {
                               : '${o.totalAmount.toInt()} ر.س',
                           style: GoogleFonts.harmattan(
                             color: o.orderType == 'quote_request' && o.totalAmount == 0
-                                ? AppColors.warning
-                                : AppColors.blueSky,
+                                ? context.colors.warning
+                                : context.colors.blueSky,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -78,7 +78,7 @@ class MyOrdersScreen extends ConsumerWidget {
                           o.statusLabel,
                           style: GoogleFonts.harmattan(
                             fontSize: 12,
-                            color: AppColors.textSecond,
+                            color: context.colors.textSecond,
                           ),
                         ),
                       ],

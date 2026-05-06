@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../shared/models/promotion.dart';
 import '../../../../shared/providers/promotion_providers.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class PromoSlider extends ConsumerStatefulWidget {
   const PromoSlider({super.key});
@@ -22,8 +22,8 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
   Timer? _timer;
   
   // Fallback constant promos in case of error or empty
-  final List<Promotion> _fallbackPromos = const [
-    Promotion(
+  final List<Promotion> _fallbackPromos = [
+    const Promotion(
       id: 'fallback_1',
       title: 'اشترِ وركّب في طلب واحد',
       subtitle: 'اختر مكيفك وحدد موعد التركيب',
@@ -126,8 +126,8 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
                 height: 8,
                 decoration: BoxDecoration(
                   color: _currentPage == index
-                      ? AppColors.blueSky
-                      : AppColors.border,
+                      ? context.colors.blueSky
+                      : context.colors.border,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),

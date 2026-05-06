@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class BuyInstallBanner extends StatelessWidget {
   const BuyInstallBanner({super.key});
@@ -16,15 +16,15 @@ class BuyInstallBanner extends StatelessWidget {
         margin: const EdgeInsets.only(top: 24),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.blueDark, AppColors.blueMid],
+          gradient: LinearGradient(
+            colors: [context.colors.blueDark, context.colors.blueMid],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: AppSpacing.radiusLg,
           boxShadow: [
             BoxShadow(
-              color: AppColors.bluePrimary.withOpacity(0.2),
+              color: context.colors.bluePrimary.withOpacity(0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -38,7 +38,7 @@ class BuyInstallBanner extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.handyman, color: AppColors.blueSky, size: 20),
+                      Icon(Icons.handyman, color: context.colors.blueSky, size: 20),
                       const SizedBox(width: 8),
                       Text(
                         'اشترِ وركّب في طلب واحد',
@@ -55,7 +55,7 @@ class BuyInstallBanner extends StatelessWidget {
                     'اختر مكيفك وحدد موعد التركيب والفني يصل إليك في نفس اليوم.',
                     style: GoogleFonts.harmattan(
                       fontSize: 14,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                       height: 1.3,
                     ),
                   ),

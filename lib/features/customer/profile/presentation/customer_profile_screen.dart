@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
@@ -11,6 +10,7 @@ import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/repositories/auth_repository.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class CustomerProfileScreen extends ConsumerWidget {
   const CustomerProfileScreen({super.key});
@@ -19,7 +19,7 @@ class CustomerProfileScreen extends ConsumerWidget {
     final isGuest = ref.watch(isGuestProvider);
     if (isGuest) {
       return Scaffold(
-        backgroundColor: AppColors.bgPrimary,
+        backgroundColor: context.colors.bgPrimary,
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -27,10 +27,10 @@ class CustomerProfileScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.person_outline, size: 80, color: AppColors.textFaint),
+                  Icon(Icons.person_outline, size: 80, color: context.colors.textFaint),
                   const SizedBox(height: 16),
                   Text('سجّل دخولك لإدارة حسابك',
-                    style: GoogleFonts.harmattan(fontSize: 20, color: AppColors.textPrimary)),
+                    style: GoogleFonts.harmattan(fontSize: 20, color: context.colors.textPrimary)),
                   const SizedBox(height: 24),
                   TammButton(label: 'تسجيل الدخول', onPressed: () => context.push('/login')),
                   const SizedBox(height: 12),
@@ -46,7 +46,7 @@ class CustomerProfileScreen extends ConsumerWidget {
 
     final profileAsync = ref.watch(userProfileProvider);
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: ResponsiveWrapper(
           child: Padding(
@@ -58,18 +58,18 @@ class CustomerProfileScreen extends ConsumerWidget {
                 if (p?.avatarUrl != null && p!.avatarUrl!.isNotEmpty)
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: AppColors.blueDark,
+                    backgroundColor: context.colors.blueDark,
                     backgroundImage: CachedNetworkImageProvider(p.avatarUrl!),
                   )
                 else
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: AppColors.blueDark,
+                    backgroundColor: context.colors.blueDark,
                     child: Text(
                       p?.fullName.isNotEmpty == true ? p!.fullName[0] : '?',
                       style: GoogleFonts.harmattan(
                         fontSize: 32,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                   ),
@@ -79,14 +79,14 @@ class CustomerProfileScreen extends ConsumerWidget {
                   style: GoogleFonts.harmattan(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 Text(
                   p?.phone ?? '',
                   style: GoogleFonts.harmattan(
                     fontSize: 16,
-                    color: AppColors.textSecond,
+                    color: context.colors.textSecond,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -138,23 +138,23 @@ class CustomerProfileScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.bgSurface,
+        backgroundColor: context.colors.bgSurface,
         title: Text(
           'حذف الحساب نهائياً',
-          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold, color: AppColors.error),
+          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold, color: context.colors.error),
         ),
         content: Text(
           'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء وسيتم مسح كافة البيانات المرتبطة بك.',
-          style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textPrimary),
+          style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('إلغاء', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textSecond)),
+            child: Text('إلغاء', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            style: ElevatedButton.styleFrom(backgroundColor: context.colors.error),
             child: Text('حذف حسابي', style: GoogleFonts.harmattan(fontSize: 16, color: Colors.white)),
           ),
         ],
@@ -170,7 +170,7 @@ class CustomerProfileScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('تم حذف حسابك', style: GoogleFonts.harmattan()),
-            backgroundColor: AppColors.success,
+            backgroundColor: context.colors.success,
           ),
         );
         context.go('/customer/home');
@@ -200,17 +200,17 @@ class _ProfileItem extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, color: AppColors.bluePrimary, size: 22),
+          Icon(icon, color: context.colors.bluePrimary, size: 22),
           const SizedBox(width: 12),
           Text(
             label,
             style: GoogleFonts.harmattan(
               fontSize: 16,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
           ),
           const Spacer(),
-          const Icon(Icons.chevron_left, color: AppColors.textFaint, size: 20),
+          Icon(Icons.chevron_left, color: context.colors.textFaint, size: 20),
         ],
       ),
     );

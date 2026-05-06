@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/service_type.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ServiceSummaryCard extends StatelessWidget {
   final ServiceType service;
@@ -10,7 +11,7 @@ class ServiceSummaryCard extends StatelessWidget {
   final String period;
   final String? hour;
 
-  const ServiceSummaryCard({
+  ServiceSummaryCard({
     super.key,
     required this.service,
     required this.locationText,
@@ -23,17 +24,17 @@ class ServiceSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
-        border: const Border(
-          top: BorderSide(color: AppColors.border),
+        color: context.colors.bgSurface,
+        border: Border(
+          top: BorderSide(color: context.colors.border),
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
-            offset: const Offset(0, -5),
+            offset: Offset(0, -5),
           ),
         ],
       ),
@@ -46,25 +47,25 @@ class ServiceSummaryCard extends StatelessWidget {
             style: GoogleFonts.harmattan(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _SummaryRow(
             icon: Icons.miscellaneous_services,
             title: service.name,
             value: service.basePrice != null 
                 ? '${service.basePrice!.toInt()} ر.س' 
                 : 'يُحدد لاحقاً',
-            valueColor: AppColors.blueSky,
+            valueColor: context.colors.blueSky,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           _SummaryRow(
             icon: Icons.calendar_today,
             title: 'الموعد',
             value: '$period ${hour ?? ''}',
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           _SummaryRow(
             icon: Icons.location_on,
             title: 'الموقع',
@@ -80,13 +81,13 @@ class _SummaryRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final String value;
-  final Color valueColor;
+  final Color? valueColor;
 
-  const _SummaryRow({
+  _SummaryRow({
     required this.icon,
     required this.title,
     required this.value,
-    this.valueColor = AppColors.textPrimary,
+    this.valueColor,
   });
 
   @override
@@ -94,23 +95,23 @@ class _SummaryRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: AppColors.textSecond),
-        const SizedBox(width: 8),
+        Icon(icon, size: 16, color: context.colors.textSecond),
+        SizedBox(width: 8),
         Text(
           title,
           style: GoogleFonts.harmattan(
             fontSize: 14,
-            color: AppColors.textSecond,
+            color: context.colors.textSecond,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: Text(
             value,
             style: GoogleFonts.harmattan(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: valueColor,
+              color: valueColor ?? context.colors.textPrimary,
             ),
             textAlign: TextAlign.end,
             maxLines: 1,

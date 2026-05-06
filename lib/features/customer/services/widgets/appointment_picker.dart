@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class AppointmentPicker extends StatefulWidget {
   final DateTime? initialDate;
@@ -70,7 +70,7 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
           style: GoogleFonts.harmattan(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: context.colors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -96,10 +96,10 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                 child: Container(
                   width: 65,
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.bluePrimary : AppColors.bgSurface,
+                    color: isSelected ? context.colors.bluePrimary : context.colors.bgSurface,
                     borderRadius: AppSpacing.radiusLg,
                     border: Border.all(
-                      color: isSelected ? AppColors.bluePrimary : AppColors.border,
+                      color: isSelected ? context.colors.bluePrimary : context.colors.border,
                     ),
                   ),
                   child: Column(
@@ -109,7 +109,7 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                         dayName.substring(0, dayName.length > 4 ? 4 : dayName.length),
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: isSelected ? Colors.white : AppColors.textSecond,
+                          color: isSelected ? Colors.white : context.colors.textSecond,
                         ),
                       ),
                       Text(
@@ -117,7 +117,7 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                         style: GoogleFonts.harmattan(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: isSelected ? Colors.white : AppColors.textPrimary,
+                          color: isSelected ? Colors.white : context.colors.textPrimary,
                         ),
                       ),
                     ],
@@ -136,7 +136,7 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
             style: GoogleFonts.harmattan(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -158,10 +158,10 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.bluePrimary : AppColors.bgSurface,
+                      color: isSelected ? context.colors.bluePrimary : context.colors.bgSurface,
                       borderRadius: AppSpacing.radiusSm,
                       border: Border.all(
-                        color: isSelected ? AppColors.bluePrimary : AppColors.border,
+                        color: isSelected ? context.colors.bluePrimary : context.colors.border,
                       ),
                     ),
                     child: Column(
@@ -171,14 +171,14 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                           style: GoogleFonts.harmattan(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: isSelected ? Colors.white : AppColors.textPrimary,
+                            color: isSelected ? Colors.white : context.colors.textPrimary,
                           ),
                         ),
                         Text(
                           _periodTimes[period]!,
                           style: GoogleFonts.harmattan(
                             fontSize: 12,
-                            color: isSelected ? Colors.white70 : AppColors.textSecond,
+                            color: isSelected ? Colors.white70 : context.colors.textSecond,
                           ),
                         ),
                       ],
@@ -200,14 +200,14 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                 style: GoogleFonts.harmattan(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               Text(
                 '(اختياري)',
                 style: GoogleFonts.harmattan(
                   fontSize: 14,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
               ),
             ],
@@ -229,10 +229,10 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                   width: (MediaQuery.of(context).size.width - 48 - 24) / 4, // 4 columns with padding
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.bluePrimary : AppColors.bgSurface,
+                    color: isSelected ? context.colors.bluePrimary : context.colors.bgSurface,
                     borderRadius: AppSpacing.radiusSm,
                     border: Border.all(
-                      color: isSelected ? AppColors.bluePrimary : AppColors.border,
+                      color: isSelected ? context.colors.bluePrimary : context.colors.border,
                     ),
                   ),
                   alignment: Alignment.center,
@@ -241,7 +241,7 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                     style: GoogleFonts.harmattan(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      color: isSelected ? Colors.white : context.colors.textPrimary,
                     ),
                   ),
                 ),

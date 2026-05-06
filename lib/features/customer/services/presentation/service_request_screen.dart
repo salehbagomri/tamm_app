@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -17,6 +16,7 @@ import '../../../../shared/providers/service_providers.dart';
 import '../widgets/appointment_display_card.dart';
 import '../widgets/appointment_picker.dart';
 import '../widgets/service_summary_card.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ServiceRequestScreen extends ConsumerStatefulWidget {
   final String serviceTypeId;
@@ -167,7 +167,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
     final serviceAsync = ref.watch(serviceDetailProvider(widget.serviceTypeId));
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'طلب خدمة'),
       body: serviceAsync.when(
         data: (service) => _buildBody(context, service),
@@ -209,7 +209,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   style: GoogleFonts.harmattan(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -219,13 +219,13 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.bluePrimary.withValues(alpha: 0.1),
+                          color: context.colors.bluePrimary.withValues(alpha: 0.1),
                           borderRadius: AppSpacing.radiusSm,
                         ),
                         child: Icon(
                           service.category.contains('ac_') ? Icons.ac_unit : 
                           service.category.contains('solar') ? Icons.solar_power : Icons.miscellaneous_services,
-                          color: AppColors.bluePrimary,
+                          color: context.colors.bluePrimary,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -238,7 +238,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                               style: GoogleFonts.harmattan(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: context.colors.textPrimary,
                               ),
                             ),
                             Text(
@@ -247,7 +247,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                                   : 'يُحدد لاحقاً',
                               style: GoogleFonts.harmattan(
                                 fontSize: 16,
-                                color: AppColors.blueSky,
+                                color: context.colors.blueSky,
                               ),
                             ),
                           ],
@@ -264,7 +264,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   style: GoogleFonts.harmattan(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -272,13 +272,13 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _locationPicked
-                        ? AppColors.success.withValues(alpha: 0.1)
-                        : AppColors.bgSurface,
+                        ? context.colors.success.withValues(alpha: 0.1)
+                        : context.colors.bgSurface,
                     borderRadius: AppSpacing.radiusLg,
                     border: Border.all(
                       color: _locationPicked
-                          ? AppColors.success
-                          : AppColors.border,
+                          ? context.colors.success
+                          : context.colors.border,
                     ),
                   ),
                   child: InkWell(
@@ -290,8 +290,8 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: _locationPicked
-                                ? AppColors.success
-                                : AppColors.bluePrimary,
+                                ? context.colors.success
+                                : context.colors.bluePrimary,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: _isLoadingLocation
@@ -323,8 +323,8 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   color: _locationPicked
-                                      ? AppColors.success
-                                      : AppColors.textPrimary,
+                                      ? context.colors.success
+                                      : context.colors.textPrimary,
                                 ),
                               ),
                               Text(
@@ -333,7 +333,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                                     : 'اضغط لإرسال موقعك الدقيق للفني',
                                 style: GoogleFonts.harmattan(
                                   fontSize: 12,
-                                  color: AppColors.textSecond,
+                                  color: context.colors.textSecond,
                                 ),
                               ),
                             ],
@@ -341,7 +341,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                         ),
                         if (_locationPicked)
                           IconButton(
-                            icon: const Icon(Icons.refresh, color: AppColors.textSecond),
+                            icon: Icon(Icons.refresh, color: context.colors.textSecond),
                             onPressed: _pickLocation,
                             tooltip: 'تحديث الموقع',
                           ),
@@ -365,7 +365,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   style: GoogleFonts.harmattan(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -396,9 +396,9 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.bgSurface,
+                      color: context.colors.bgSurface,
                       borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: context.colors.border),
                     ),
                     child: AppointmentPicker(
                       initialDate: _selectedDate,
@@ -420,7 +420,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   style: GoogleFonts.harmattan(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -448,7 +448,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                 hour: _selectedHour,
               ),
               Container(
-                color: AppColors.bgSurface,
+                color: context.colors.bgSurface,
                 padding: EdgeInsets.only(
                   left: 24,
                   right: 24,
@@ -472,8 +472,8 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
               top: 16,
             ),
             decoration: BoxDecoration(
-              color: AppColors.bgSurface,
-              border: const Border(top: BorderSide(color: AppColors.border)),
+              color: context.colors.bgSurface,
+              border: Border(top: BorderSide(color: context.colors.border)),
             ),
             child: TammButton(
               label: 'أكمل البيانات المطلوبة لحجز الخدمة',

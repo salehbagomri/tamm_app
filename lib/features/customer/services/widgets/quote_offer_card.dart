@@ -6,30 +6,31 @@ import 'package:intl/intl.dart' hide TextDirection;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../shared/models/order.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class QuoteOfferCard extends StatelessWidget {
   final Order order;
 
-  const QuoteOfferCard({super.key, required this.order});
+  QuoteOfferCard({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
     if (order.quotePrice == null || order.quoteDetails == null) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
-        border: Border.all(color: AppColors.bluePrimary, width: 2),
+        border: Border.all(color: context.colors.bluePrimary, width: 2),
         boxShadow: [
           BoxShadow(
-            color: AppColors.bluePrimary.withValues(alpha: 0.1),
+            color: context.colors.bluePrimary.withValues(alpha: 0.1),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -39,14 +40,14 @@ class QuoteOfferCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.bluePrimary.withValues(alpha: 0.1),
+                  color: context.colors.bluePrimary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.local_offer, color: AppColors.bluePrimary),
+                child: Icon(Icons.local_offer, color: context.colors.bluePrimary),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +57,7 @@ class QuoteOfferCard extends StatelessWidget {
                       style: GoogleFonts.harmattan(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     if (order.quoteSentAt != null)
@@ -64,7 +65,7 @@ class QuoteOfferCard extends StatelessWidget {
                         'مُرسل: ${DateFormat('yyyy/MM/dd HH:mm').format(order.quoteSentAt!)}',
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: AppColors.textSecond,
+                          color: context.colors.textSecond,
                         ),
                       ),
                   ],
@@ -72,19 +73,19 @@ class QuoteOfferCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           
           // Price
           _BuildInfoRow(
             icon: Icons.payments_outlined,
             title: 'السعر الإجمالي',
             value: '${order.quotePrice!.toInt()} ر.س',
-            valueColor: AppColors.blueSky,
+            valueColor: context.colors.blueSky,
             isBold: true,
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
-            child: Divider(color: AppColors.border),
+            child: Divider(color: context.colors.border),
           ),
           
           // Duration
@@ -94,9 +95,9 @@ class QuoteOfferCard extends StatelessWidget {
               title: 'مدة التنفيذ التقديرية',
               value: order.quoteDuration!,
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(color: AppColors.border),
+              child: Divider(color: context.colors.border),
             ),
           ],
 
@@ -104,8 +105,8 @@ class QuoteOfferCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.description_outlined, size: 20, color: AppColors.textSecond),
-              const SizedBox(width: 12),
+              Icon(Icons.description_outlined, size: 20, color: context.colors.textSecond),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,16 +115,16 @@ class QuoteOfferCard extends StatelessWidget {
                       'تفاصيل العرض',
                       style: GoogleFonts.harmattan(
                         fontSize: 16,
-                        color: AppColors.textSecond,
+                        color: context.colors.textSecond,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       order.quoteDetails!,
                       style: GoogleFonts.harmattan(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                         height: 1.5,
                       ),
                     ),
@@ -135,9 +136,9 @@ class QuoteOfferCard extends StatelessWidget {
 
           // Attachment
           if (order.quoteAttachmentUrl != null) ...[
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(color: AppColors.border),
+              child: Divider(color: context.colors.border),
             ),
             InkWell(
               onTap: () async {
@@ -148,23 +149,23 @@ class QuoteOfferCard extends StatelessWidget {
               },
               borderRadius: AppSpacing.radiusSm,
               child: Container(
-                padding: const EdgeInsets.all(14),
+                padding: EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.bluePrimary.withValues(alpha: 0.05),
+                  color: context.colors.bluePrimary.withValues(alpha: 0.05),
                   borderRadius: AppSpacing.radiusSm,
-                  border: Border.all(color: AppColors.bluePrimary.withValues(alpha: 0.2)),
+                  border: Border.all(color: context.colors.bluePrimary.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.bluePrimary.withValues(alpha: 0.1),
+                        color: context.colors.bluePrimary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.file_present, color: AppColors.bluePrimary, size: 20),
+                      child: Icon(Icons.file_present, color: context.colors.bluePrimary, size: 20),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,20 +175,20 @@ class QuoteOfferCard extends StatelessWidget {
                             style: GoogleFonts.harmattan(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                           ),
                           Text(
                             'اضغط لعرض الملف',
                             style: GoogleFonts.harmattan(
                               fontSize: 13,
-                              color: AppColors.bluePrimary,
+                              color: context.colors.bluePrimary,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(Icons.open_in_new, color: AppColors.bluePrimary, size: 20),
+                    Icon(Icons.open_in_new, color: context.colors.bluePrimary, size: 20),
                   ],
                 ),
               ),
@@ -203,14 +204,14 @@ class _BuildInfoRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final String value;
-  final Color valueColor;
+  final Color? valueColor;
   final bool isBold;
 
-  const _BuildInfoRow({
+  _BuildInfoRow({
     required this.icon,
     required this.title,
     required this.value,
-    this.valueColor = AppColors.textPrimary,
+    this.valueColor,
     this.isBold = false,
   });
 
@@ -218,22 +219,22 @@ class _BuildInfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: AppColors.textSecond),
-        const SizedBox(width: 12),
+        Icon(icon, size: 20, color: context.colors.textSecond),
+        SizedBox(width: 12),
         Text(
           title,
           style: GoogleFonts.harmattan(
             fontSize: 16,
-            color: AppColors.textSecond,
+            color: context.colors.textSecond,
           ),
         ),
-        const Spacer(),
+        Spacer(),
         Text(
           value,
           style: GoogleFonts.harmattan(
             fontSize: isBold ? 22 : 16,
             fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
-            color: valueColor,
+            color: valueColor ?? context.colors.textPrimary,
           ),
         ),
       ],

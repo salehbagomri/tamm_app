@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -13,6 +12,7 @@ import '../../../../shared/providers/order_providers.dart';
 import '../../../../core/utils/auth_guard.dart';
 import '../../services/widgets/appointment_picker.dart';
 import '../../services/widgets/appointment_display_card.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
@@ -146,7 +146,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'إتمام الطلب'),
       body: SingleChildScrollView(
         padding: AppSpacing.pagePadding,
@@ -163,13 +163,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: _locationPicked
-                      ? AppColors.success.withValues(alpha: 0.1)
-                      : AppColors.bgSurface,
+                      ? context.colors.success.withValues(alpha: 0.1)
+                      : context.colors.bgSurface,
                   borderRadius: AppSpacing.radiusLg,
                   border: Border.all(
                     color: _locationPicked
-                        ? AppColors.success
-                        : AppColors.border,
+                        ? context.colors.success
+                        : context.colors.border,
                   ),
                 ),
                 child: InkWell(
@@ -181,8 +181,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         height: 44,
                         decoration: BoxDecoration(
                           color: _locationPicked
-                              ? AppColors.success
-                              : AppColors.bluePrimary,
+                              ? context.colors.success
+                              : context.colors.bluePrimary,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: _locationLoading
@@ -213,8 +213,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: _locationPicked
-                                    ? AppColors.success
-                                    : AppColors.textPrimary,
+                                    ? context.colors.success
+                                    : context.colors.textPrimary,
                               ),
                             ),
                             Text(
@@ -223,7 +223,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                   : 'اضغط لإرسال موقعك الدقيق للفني',
                               style: GoogleFonts.harmattan(
                                 fontSize: 12,
-                                color: AppColors.textSecond,
+                                color: context.colors.textSecond,
                               ),
                             ),
                           ],
@@ -231,7 +231,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       ),
                       if (_locationPicked)
                         IconButton(
-                          icon: const Icon(Icons.refresh, color: AppColors.textSecond),
+                          icon: Icon(Icons.refresh, color: context.colors.textSecond),
                           onPressed: _pickLocation,
                           tooltip: 'تحديث الموقع',
                         ),
@@ -254,7 +254,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -274,11 +274,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         _selectedHour = null;
                       });
                     },
-                    icon: const Icon(Icons.edit, size: 16, color: AppColors.bluePrimary),
+                    icon: Icon(Icons.edit, size: 16, color: context.colors.bluePrimary),
                     label: Text(
                       'تعديل الموعد',
                       style: GoogleFonts.harmattan(
-                        color: AppColors.bluePrimary,
+                        color: context.colors.bluePrimary,
                         fontSize: 16,
                       ),
                     ),
@@ -288,9 +288,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.bgSurface,
+                    color: context.colors.bgSurface,
                     borderRadius: AppSpacing.radiusLg,
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.colors.border),
                   ),
                   child: AppointmentPicker(
                     initialDate: _selectedDate,
@@ -314,14 +314,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               const SizedBox(height: 24),
               Row(
                 children: [
-                  const Icon(Icons.money, color: AppColors.bluePrimary),
+                  Icon(Icons.money, color: context.colors.bluePrimary),
                   const SizedBox(width: 8),
                   Text(
                     'طريقة الدفع: كاش عند الاستلام',
                     style: GoogleFonts.harmattan(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                 ],
@@ -347,9 +347,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: context.colors.bgSurface,
         borderRadius: AppSpacing.radius,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,7 +359,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             style: GoogleFonts.harmattan(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
           ),
           const SizedBox(height: 12),
@@ -397,13 +397,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.handyman, size: 14, color: AppColors.bluePrimary),
+                                Icon(Icons.handyman, size: 14, color: context.colors.bluePrimary),
                                 const SizedBox(width: 4),
                                 Text(
                                   'خدمة التركيب',
                                   style: GoogleFonts.harmattan(
                                     fontSize: 14,
-                                    color: AppColors.bluePrimary,
+                                    color: context.colors.bluePrimary,
                                   ),
                                 ),
                               ],
@@ -412,7 +412,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                               '+ ${item.product.installationPrice.toInt()} ر.س',
                               style: GoogleFonts.harmattan(
                                 fontSize: 14,
-                                color: AppColors.textSecond,
+                                color: context.colors.textSecond,
                               ),
                             ),
                           ],
@@ -434,7 +434,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
               ),
               Text(
@@ -442,7 +442,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.blueSky,
+                  color: context.colors.blueSky,
                 ),
               ),
             ],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class BuyInstallSheet extends StatelessWidget {
   const BuyInstallSheet({super.key});
@@ -11,9 +11,9 @@ class BuyInstallSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: AppColors.bgSurface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -24,7 +24,7 @@ class BuyInstallSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.border,
+                color: context.colors.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -35,12 +35,12 @@ class BuyInstallSheet extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.bluePrimary.withOpacity(0.15),
+                  color: context.colors.bluePrimary.withOpacity(0.15),
                   borderRadius: AppSpacing.radius,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.handyman_outlined,
-                  color: AppColors.bluePrimary,
+                  color: context.colors.bluePrimary,
                   size: 28,
                 ),
               ),
@@ -54,14 +54,14 @@ class BuyInstallSheet extends StatelessWidget {
                       style: GoogleFonts.harmattan(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     Text(
                       'متوفر فنيين للتركيب الفوري بإحترافية عالية',
                       style: GoogleFonts.harmattan(
                         fontSize: 14,
-                        color: AppColors.textSecond,
+                        color: context.colors.textSecond,
                       ),
                     ),
                   ],

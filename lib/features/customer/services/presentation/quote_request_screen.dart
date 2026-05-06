@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -15,6 +14,7 @@ import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/service_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../shared/providers/order_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 class QuoteRequestScreen extends ConsumerStatefulWidget {
   final String serviceTypeId;
   const QuoteRequestScreen({super.key, required this.serviceTypeId});
@@ -130,11 +130,11 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(Icons.check_circle, color: AppColors.success),
-                SizedBox(width: 8),
-                Text('تم الإرسال بنجاح'),
+                Icon(Icons.check_circle, color: context.colors.success),
+                const SizedBox(width: 8),
+                const Text('تم الإرسال بنجاح'),
               ],
             ),
             content: const Text('لقد استلمنا طلب العرض الخاص بك. سيقوم فريقنا بمراجعته وإرسال تفاصيل السعر قريباً.'),
@@ -175,7 +175,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
     final user = Supabase.instance.client.auth.currentUser;
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'طلب عرض سعر'),
       body: serviceAsync.when(
         data: (service) => Column(
@@ -193,13 +193,13 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.bluePrimary.withValues(alpha: 0.1),
+                              color: context.colors.bluePrimary.withValues(alpha: 0.1),
                               borderRadius: AppSpacing.radiusSm,
                             ),
                             child: Icon(
                               service.category.contains('ac_') ? Icons.ac_unit : 
                               service.category.contains('solar') ? Icons.solar_power : Icons.miscellaneous_services,
-                              color: AppColors.bluePrimary,
+                              color: context.colors.bluePrimary,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -212,14 +212,14 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                   style: GoogleFonts.harmattan(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
+                                    color: context.colors.textPrimary,
                                   ),
                                 ),
                                 Text(
                                   'تتطلب الخدمة معاينة أو تقييم لتقديم السعر',
                                   style: GoogleFonts.harmattan(
                                     fontSize: 14,
-                                    color: AppColors.textSecond,
+                                    color: context.colors.textSecond,
                                   ),
                                 ),
                               ],
@@ -236,7 +236,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       style: GoogleFonts.harmattan(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -255,7 +255,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       style: GoogleFonts.harmattan(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -263,13 +263,13 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: _locationPicked
-                            ? AppColors.success.withValues(alpha: 0.1)
-                            : AppColors.bgSurface,
+                            ? context.colors.success.withValues(alpha: 0.1)
+                            : context.colors.bgSurface,
                         borderRadius: AppSpacing.radiusLg,
                         border: Border.all(
                           color: _locationPicked
-                              ? AppColors.success
-                              : AppColors.border,
+                              ? context.colors.success
+                              : context.colors.border,
                         ),
                       ),
                       child: InkWell(
@@ -281,8 +281,8 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 color: _locationPicked
-                                    ? AppColors.success
-                                    : AppColors.bluePrimary,
+                                    ? context.colors.success
+                                    : context.colors.bluePrimary,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: _isLoadingLocation
@@ -314,8 +314,8 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
                                       color: _locationPicked
-                                          ? AppColors.success
-                                          : AppColors.textPrimary,
+                                          ? context.colors.success
+                                          : context.colors.textPrimary,
                                     ),
                                   ),
                                   Text(
@@ -324,7 +324,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                         : 'اضغط لإرسال موقعك الدقيق للفني',
                                     style: GoogleFonts.harmattan(
                                       fontSize: 12,
-                                      color: AppColors.textSecond,
+                                      color: context.colors.textSecond,
                                     ),
                                   ),
                                 ],
@@ -332,7 +332,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                             ),
                             if (_locationPicked)
                               IconButton(
-                                icon: const Icon(Icons.refresh, color: AppColors.textSecond),
+                                icon: Icon(Icons.refresh, color: context.colors.textSecond),
                                 onPressed: _pickLocation,
                                 tooltip: 'تحديث الموقع',
                               ),
@@ -356,7 +356,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       style: GoogleFonts.harmattan(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -384,8 +384,8 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.bgSurface,
-                border: const Border(top: BorderSide(color: AppColors.border)),
+                color: context.colors.bgSurface,
+                border: Border(top: BorderSide(color: context.colors.border)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.1),

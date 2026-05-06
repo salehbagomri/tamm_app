@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_success_badge.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ServiceSuccessScreen extends StatelessWidget {
   const ServiceSuccessScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 48),
@@ -18,9 +18,9 @@ class ServiceSuccessScreen extends StatelessWidget {
             children: [
               const TammSuccessBadge(message: 'تمّ الحجز ✓'),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'سيتم التواصل معك لتأكيد الموعد',
-                style: TextStyle(color: AppColors.textSecond, fontSize: 16),
+                style: TextStyle(color: context.colors.textSecond, fontSize: 16),
               ),
               const SizedBox(height: 32),
               TammButton(

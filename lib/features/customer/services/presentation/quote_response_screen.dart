@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -11,6 +10,7 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../data/quote_repository.dart';
 import '../widgets/quote_offer_card.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class QuoteResponseScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -91,7 +91,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('تأكيد الرفض', style: TextStyle(color: AppColors.error)),
+            child: Text('تأكيد الرفض', style: TextStyle(color: context.colors.error)),
           ),
         ],
       ),
@@ -140,7 +140,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
     final orderAsync = ref.watch(orderDetailProvider(widget.orderId));
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'رد على عرض السعر'),
       body: orderAsync.when(
         data: (order) {
@@ -160,7 +160,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
                          style: GoogleFonts.harmattan(
                            fontSize: 18,
                            fontWeight: FontWeight.w700,
-                           color: AppColors.textPrimary,
+                           color: context.colors.textPrimary,
                          ),
                       ),
                       const SizedBox(height: 12),
@@ -168,15 +168,15 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.bgSurface,
+                          color: context.colors.bgSurface,
                           borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: context.colors.border),
                         ),
                         child: Text(
                           order.notes ?? 'لا توجد ملاحظات من طرفك.',
                           style: GoogleFonts.harmattan(
                             fontSize: 16,
-                            color: AppColors.textSecond,
+                            color: context.colors.textSecond,
                             height: 1.5,
                           ),
                         ),
@@ -190,8 +190,8 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppColors.bgSurface,
-                    border: const Border(top: BorderSide(color: AppColors.border)),
+                    color: context.colors.bgSurface,
+                    border: Border(top: BorderSide(color: context.colors.border)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),
