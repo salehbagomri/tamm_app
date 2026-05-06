@@ -10,6 +10,7 @@ import '../../../core/widgets/tamm_button.dart';
 import '../../../core/widgets/tamm_text_field.dart';
 import '../../../shared/providers/auth_providers.dart';
 import '../../../core/services/fcm_service.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -46,7 +47,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: GoogleFonts.harmattan(fontSize: 16)),
-        backgroundColor: AppColors.error,
+        backgroundColor: context.colors.error,
       ),
     );
   }
@@ -89,7 +90,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               'تم إنشاء الحساب. يرجى التحقق من بريدك الإلكتروني لتفعيل حسابك.',
               style: GoogleFonts.harmattan(fontSize: 16),
             ),
-            backgroundColor: AppColors.success,
+            backgroundColor: context.colors.success,
             duration: const Duration(seconds: 5),
           ),
         );
@@ -139,7 +140,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'إنشاء حساب'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -154,7 +155,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   style: GoogleFonts.harmattan(
                     fontSize: 26,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -162,7 +163,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   'قم بإنشاء حسابك لتتمكن من طلب الخدمات والمنتجات بكل سهولة',
                   style: GoogleFonts.harmattan(
                     fontSize: 16,
-                    color: AppColors.textSecond,
+                    color: context.colors.textSecond,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -220,7 +221,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       _phoneError!,
                       style: GoogleFonts.harmattan(
                         fontSize: 13,
-                        color: AppColors.error,
+                        color: context.colors.error,
                       ),
                     ),
                   ),
@@ -232,7 +233,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _passCtrl,
                   obscureText: _obscurePass,
                   suffix: IconButton(
-                    icon: Icon(_obscurePass ? Icons.visibility_off : Icons.visibility, color: AppColors.textSecond),
+                    icon: Icon(_obscurePass ? Icons.visibility_off : Icons.visibility, color: context.colors.textSecond),
                     onPressed: () => setState(() => _obscurePass = !_obscurePass),
                   ),
                   validator: (v) {
@@ -249,7 +250,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _confirmPassCtrl,
                   obscureText: _obscureConfirmPass,
                   suffix: IconButton(
-                    icon: Icon(_obscureConfirmPass ? Icons.visibility_off : Icons.visibility, color: AppColors.textSecond),
+                    icon: Icon(_obscureConfirmPass ? Icons.visibility_off : Icons.visibility, color: context.colors.textSecond),
                     onPressed: () => setState(() => _obscureConfirmPass = !_obscureConfirmPass),
                   ),
                   validator: (v) {
@@ -272,7 +273,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     onPressed: () => context.pop(),
                     child: Text(
                       'لديك حساب بالفعل؟ سجّل دخولك',
-                      style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.blueSky),
+                      style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.blueSky),
                     ),
                   ),
                 ),

@@ -9,6 +9,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../shared/providers/auth_providers.dart';
 import '../../../shared/providers/order_providers.dart';
 import '../../../core/services/fcm_service.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -127,7 +128,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           message,
           style: GoogleFonts.harmattan(fontSize: 16),
         ),
-        backgroundColor: AppColors.error,
+        backgroundColor: context.colors.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -136,13 +137,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: context.canPop()
             ? IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                icon: Icon(Icons.arrow_back, color: context.colors.textPrimary),
                 onPressed: () => context.pop(),
               )
             : null,
@@ -162,7 +163,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.bluePrimary.withValues(alpha: 0.4),
+                      color: context.colors.bluePrimary.withValues(alpha: 0.4),
                       blurRadius: 30,
                       spreadRadius: 5,
                     ),
@@ -183,7 +184,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: GoogleFonts.harmattan(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
@@ -191,7 +192,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 'سجّل دخولك للاستمتاع بكافة المميزات',
                 style: GoogleFonts.harmattan(
                   fontSize: 16,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -246,12 +247,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  const Expanded(child: Divider(color: AppColors.textFaint, thickness: 0.5)),
+                  Expanded(child: Divider(color: context.colors.textFaint, thickness: 0.5)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('أو', style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.textFaint)),
+                    child: Text('أو', style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textFaint)),
                   ),
-                  const Expanded(child: Divider(color: AppColors.textFaint, thickness: 0.5)),
+                  Expanded(child: Divider(color: context.colors.textFaint, thickness: 0.5)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -260,12 +261,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               TextField(
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: TextStyle(color: context.colors.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'البريد الإلكتروني',
-                  hintStyle: GoogleFonts.harmattan(color: AppColors.textFaint),
+                  hintStyle: GoogleFonts.harmattan(color: context.colors.textFaint),
                   filled: true,
-                  fillColor: AppColors.bgSurface,
+                  fillColor: context.colors.bgSurface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -277,12 +278,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               TextField(
                 controller: _passCtrl,
                 obscureText: _obscure,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: TextStyle(color: context.colors.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'كلمة المرور',
-                  hintStyle: GoogleFonts.harmattan(color: AppColors.textFaint),
+                  hintStyle: GoogleFonts.harmattan(color: context.colors.textFaint),
                   filled: true,
-                  fillColor: AppColors.bgSurface,
+                  fillColor: context.colors.bgSurface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -291,7 +292,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscure ? Icons.visibility_off : Icons.visibility,
-                      color: AppColors.textSecond,
+                      color: context.colors.textSecond,
                     ),
                     onPressed: () {
                       setState(() {
@@ -308,7 +309,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: ElevatedButton(
                   onPressed: _loading ? null : _signInWithEmail,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.bluePrimary,
+                    backgroundColor: context.colors.bluePrimary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -333,14 +334,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: () => context.push('/register'),
                     child: Text(
                       'ليس لديك حساب؟ أنشئ حساباً',
-                      style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.blueSky),
+                      style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.blueSky),
                     ),
                   ),
                   TextButton(
                     onPressed: () => context.push('/forgot-password'),
                     child: Text(
                       'نسيت كلمة المرور؟',
-                      style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.textSecond),
+                      style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textSecond),
                     ),
                   ),
                 ],

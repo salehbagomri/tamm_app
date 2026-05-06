@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/providers/auth_providers.dart';
 import '../../../core/services/fcm_service.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -97,7 +98,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Scaffold(
-        backgroundColor: AppColors.bgPrimary,
+        backgroundColor: context.colors.bgPrimary,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -107,14 +108,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [AppColors.bluePrimary, AppColors.blueLight],
+                  gradient: LinearGradient(
+                    colors: [context.colors.bluePrimary, context.colors.blueLight],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.bluePrimary.withValues(alpha: 0.4),
+                      color: context.colors.bluePrimary.withValues(alpha: 0.4),
                       blurRadius: 30,
                       spreadRadius: 5,
                     ),
@@ -136,7 +137,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 'خدمات التكييف والطاقة الشمسية',
                 style: GoogleFonts.harmattan(
                   fontSize: 18,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
               ),
               const SizedBox(height: 48),
@@ -156,8 +157,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           child: Container(
                             width: 10,
                             height: 10,
-                            decoration: const BoxDecoration(
-                              color: AppColors.bluePrimary,
+                            decoration: BoxDecoration(
+                              color: context.colors.bluePrimary,
                               shape: BoxShape.circle,
                             ),
                           ),

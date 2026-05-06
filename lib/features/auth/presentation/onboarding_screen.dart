@@ -9,6 +9,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/widgets/tamm_button.dart';
 import '../../../core/widgets/tamm_text_field.dart';
 import '../../../shared/providers/auth_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -73,7 +74,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               errorMsg,
               style: GoogleFonts.harmattan(fontSize: 16),
             ),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
           ));
         }
@@ -88,7 +89,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: AppColors.bgPrimary,
+        backgroundColor: context.colors.bgPrimary,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: AppSpacing.pagePadding,
@@ -102,10 +103,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     child: Container(
                       width: 80,
                       height: 80,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
-                          colors: [AppColors.bluePrimary, AppColors.blueLight],
+                          colors: [context.colors.bluePrimary, context.colors.blueLight],
                         ),
                       ),
                       child: Center(
@@ -127,7 +128,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       style: GoogleFonts.harmattan(
                         fontSize: 26,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                   ),
@@ -137,7 +138,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       'نحتاج بعض المعلومات لإكمال حسابك',
                       style: GoogleFonts.harmattan(
                         fontSize: 16,
-                        color: AppColors.textSecond,
+                        color: context.colors.textSecond,
                       ),
                     ),
                   ),
@@ -194,7 +195,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         _phoneError!,
                         style: GoogleFonts.harmattan(
                           fontSize: 13,
-                          color: AppColors.error,
+                          color: context.colors.error,
                         ),
                       ),
                     ),

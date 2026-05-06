@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/widgets/tamm_button.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -17,7 +18,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.pagePadding,
@@ -30,14 +31,14 @@ class WelcomeScreen extends StatelessWidget {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [AppColors.bluePrimary, AppColors.blueLight],
+                  gradient: LinearGradient(
+                    colors: [context.colors.bluePrimary, context.colors.blueLight],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.bluePrimary.withValues(alpha: 0.4),
+                      color: context.colors.bluePrimary.withValues(alpha: 0.4),
                       blurRadius: 30,
                       spreadRadius: 5,
                     ),
@@ -60,7 +61,7 @@ class WelcomeScreen extends StatelessWidget {
                 style: GoogleFonts.harmattan(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -69,7 +70,7 @@ class WelcomeScreen extends StatelessWidget {
                 'تصفّح منتجاتنا وخدماتنا بكل سهولة',
                 style: GoogleFonts.harmattan(
                   fontSize: 16,
-                  color: AppColors.textSecond,
+                  color: context.colors.textSecond,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -96,7 +97,7 @@ class WelcomeScreen extends StatelessWidget {
                   style: GoogleFonts.harmattan(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.blueSky,
+                    color: context.colors.blueSky,
                   ),
                 ),
               ),

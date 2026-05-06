@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/tamm_button.dart';
 import '../../../shared/providers/auth_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 /// Shown when the user taps the password-reset deep link in their email.
 /// The Supabase session is already established (passwordRecovery event fired).
@@ -55,7 +56,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             'تم تغيير كلمة المرور بنجاح! يرجى تسجيل الدخول مجدداً.',
             style: GoogleFonts.harmattan(fontSize: 16),
           ),
-          backgroundColor: AppColors.success,
+          backgroundColor: context.colors.success,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -68,7 +69,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               'حدث خطأ أثناء تغيير كلمة المرور، حاول مجدداً.',
               style: GoogleFonts.harmattan(fontSize: 16),
             ),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -81,7 +82,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -98,12 +99,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     height: 80,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [AppColors.bluePrimary, AppColors.blueLight],
+                      gradient: LinearGradient(
+                        colors: [context.colors.bluePrimary, context.colors.blueLight],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.bluePrimary.withValues(alpha: 0.35),
+                          color: context.colors.bluePrimary.withValues(alpha: 0.35),
                           blurRadius: 24,
                           spreadRadius: 4,
                         ),
@@ -122,7 +123,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   style: GoogleFonts.harmattan(
                     fontSize: 26,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -130,7 +131,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   'أدخل كلمة المرور الجديدة وتأكيدها لإتمام إعادة التعيين.',
                   style: GoogleFonts.harmattan(
                     fontSize: 16,
-                    color: AppColors.textSecond,
+                    color: context.colors.textSecond,
                   ),
                 ),
                 const SizedBox(height: 36),
@@ -140,24 +141,24 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   controller: _passCtrl,
                   obscureText: _obscurePass,
                   style: GoogleFonts.harmattan(
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                     fontSize: 17,
                   ),
                   decoration: InputDecoration(
                     labelText: 'كلمة المرور الجديدة',
                     labelStyle: GoogleFonts.harmattan(
-                      color: AppColors.textSecond,
+                      color: context.colors.textSecond,
                     ),
                     filled: true,
-                    fillColor: AppColors.bgSurface,
+                    fillColor: context.colors.bgSurface,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.bluePrimary,
+                      borderSide: BorderSide(
+                        color: context.colors.bluePrimary,
                         width: 1.5,
                       ),
                     ),
@@ -170,7 +171,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         _obscurePass
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
-                        color: AppColors.textSecond,
+                        color: context.colors.textSecond,
                       ),
                       onPressed: () =>
                           setState(() => _obscurePass = !_obscurePass),
@@ -193,24 +194,24 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   controller: _confirmCtrl,
                   obscureText: _obscureConfirm,
                   style: GoogleFonts.harmattan(
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                     fontSize: 17,
                   ),
                   decoration: InputDecoration(
                     labelText: 'تأكيد كلمة المرور',
                     labelStyle: GoogleFonts.harmattan(
-                      color: AppColors.textSecond,
+                      color: context.colors.textSecond,
                     ),
                     filled: true,
-                    fillColor: AppColors.bgSurface,
+                    fillColor: context.colors.bgSurface,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.bluePrimary,
+                      borderSide: BorderSide(
+                        color: context.colors.bluePrimary,
                         width: 1.5,
                       ),
                     ),
@@ -223,7 +224,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         _obscureConfirm
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
-                        color: AppColors.textSecond,
+                        color: context.colors.textSecond,
                       ),
                       onPressed: () =>
                           setState(() => _obscureConfirm = !_obscureConfirm),
