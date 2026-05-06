@@ -9,7 +9,7 @@ final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((r
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   static const _themeKey = 'tamm_theme_mode';
 
-  ThemeModeNotifier() : super(ThemeMode.dark) {
+  ThemeModeNotifier() : super(ThemeMode.system) {
     _loadTheme();
   }
 
@@ -19,8 +19,8 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     if (themeIndex != null) {
       state = ThemeMode.values[themeIndex];
     } else {
-      // Default to dark mode if not set
-      state = ThemeMode.dark;
+      // Default to system mode if not set
+      state = ThemeMode.system;
     }
   }
 
