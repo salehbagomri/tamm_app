@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../constants/app_colors.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 /// يتحقق من تسجيل الدخول. إذا Guest → يعرض Bottom Sheet ويُرجع false.
 Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
@@ -11,7 +11,7 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
 
   await showModalBottomSheet(
     context: context,
-    backgroundColor: AppColors.bgSurface,
+    backgroundColor: context.colors.bgSurface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
@@ -24,24 +24,24 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
             Container(
               width: 40, height: 4,
               decoration: BoxDecoration(
-                color: AppColors.textFaint,
+                color: context.colors.textFaint,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 20),
-            const Icon(Icons.lock_outline, color: AppColors.blueSky, size: 48),
+            Icon(Icons.lock_outline, color: context.colors.blueSky, size: 48),
             const SizedBox(height: 16),
             Text(
               'سجّل دخولك للمتابعة',
               style: GoogleFonts.harmattan(
                 fontSize: 22, fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'تحتاج تسجيل الدخول للإضافة للسلة وإتمام الطلبات',
-              style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.textSecond),
+              style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textSecond),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -53,7 +53,7 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
                   context.push('/login');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.bluePrimary,
+                  backgroundColor: context.colors.bluePrimary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: Text('تسجيل الدخول',
@@ -64,7 +64,7 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
               child: Text('لاحقاً',
-                style: GoogleFonts.harmattan(fontSize: 14, color: AppColors.textSecond)),
+                style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textSecond)),
             ),
           ],
         ),

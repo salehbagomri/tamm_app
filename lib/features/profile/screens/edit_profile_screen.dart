@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/models/user_profile.dart';
 import '../../../../shared/providers/auth_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -112,7 +112,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('تم حفظ التعديلات بنجاح', style: GoogleFonts.harmattan(fontSize: 16)),
-          backgroundColor: AppColors.success,
+          backgroundColor: context.colors.success,
         )
       );
       
@@ -123,7 +123,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMsg, style: GoogleFonts.harmattan(fontSize: 16)),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.colors.error,
           )
         );
       }
@@ -142,15 +142,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: context.colors.bgPrimary,
       appBar: AppBar(
-        backgroundColor: AppColors.bgPrimary,
+        backgroundColor: context.colors.bgPrimary,
         title: Text(
           'تعديل الحساب',
           style: AppTextStyles.h2,
         ),
         centerTitle: true,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: context.colors.textPrimary),
       ),
       body: _loading && _currentProfile == null
           ? const Center(child: CircularProgressIndicator())
@@ -163,7 +163,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: AppColors.bgSurface,
+                        color: context.colors.bgSurface,
                         borderRadius: AppSpacing.radiusLg,
                         boxShadow: [
                           BoxShadow(
@@ -215,7 +215,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         onPressed: _saveProfile,
                       )
                     else
-                      TammButton(
+                      const TammButton(
                         label: 'حفظ التعديلات',
                         type: TammButtonType.secondary,
                         onPressed: null,

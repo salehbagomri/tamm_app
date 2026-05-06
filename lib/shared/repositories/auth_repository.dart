@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/services/fcm_service.dart';
 import '../providers/auth_providers.dart';
 import '../models/user_profile.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class AuthRepository {
   final SupabaseClient _client = Supabase.instance.client;
@@ -149,23 +149,23 @@ class AuthRepository {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.bgSurface,
+        backgroundColor: context.colors.bgSurface,
         title: Text(
           'تسجيل الخروج',
-          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold, color: context.colors.textPrimary),
         ),
         content: Text(
           'هل أنت متأكد أنك تريد تسجيل الخروج؟',
-          style: GoogleFonts.harmattan(fontSize: 18, color: AppColors.textPrimary),
+          style: GoogleFonts.harmattan(fontSize: 18, color: context.colors.textPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('إلغاء', style: GoogleFonts.harmattan(fontSize: 16, color: AppColors.textSecond)),
+            child: Text('إلغاء', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.bluePrimary),
+            style: ElevatedButton.styleFrom(backgroundColor: context.colors.bluePrimary),
             child: Text('تأكيد', style: GoogleFonts.harmattan(fontSize: 16)),
           ),
         ],
