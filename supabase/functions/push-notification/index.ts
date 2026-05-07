@@ -61,7 +61,15 @@ async function getAccessToken(): Promise<string> {
 }
 
 // === Send FCM to a user ===
-async function sendToUser(userId: string, title: string, body: string) {
+// notificationType: the notification category (e.g. 'on_the_way', 'quote_sent')
+// referenceId: order_id for customer/manager, assignment_id for technician
+async function sendToUser(
+  userId: string,
+  title: string,
+  body: string,
+  notificationType: string = "general",
+  referenceId: string | null = null,
+) {
   const { data: tokens } = await supabase
     .from("device_tokens")
     .select("fcm_token")
@@ -70,6 +78,12 @@ async function sendToUser(userId: string, title: string, body: string) {
   if (!tokens || tokens.length === 0) return;
 
   const accessToken = await getAccessToken();
+
+  // Build data payload for deep linking
+  const dataPayload: Record<string, string> = {
+    notification_type: notificationType,
+  };
+  if (referenceId) dataPayload.order_id = referenceId;
 
   for (const { fcm_token } of tokens) {
     try {
@@ -85,6 +99,7 @@ async function sendToUser(userId: string, title: string, body: string) {
             message: {
               token: fcm_token,
               notification: { title, body },
+              data: dataPayload,
               android: {
                 priority: "high",
                 notification: { sound: "default", channel_id: "tamm_notifications" },
@@ -98,18 +113,24 @@ async function sendToUser(userId: string, title: string, body: string) {
     }
   }
 
-  // Save in-app notification
+  // Save in-app notification with routing fields
   await supabase.from("notifications").insert({
     user_id: userId,
     title,
     body,
-    type: "push",
     is_read: false,
+    notification_type: notificationType,
+    order_id: referenceId,
   });
 }
 
 // === Send to all managers ===
-async function sendToManagers(title: string, body: string) {
+async function sendToManagers(
+  title: string,
+  body: string,
+  notificationType: string = "general",
+  referenceId: string | null = null,
+) {
   const { data: managers } = await supabase
     .from("profiles")
     .select("id")
@@ -117,7 +138,7 @@ async function sendToManagers(title: string, body: string) {
 
   if (!managers) return;
   for (const m of managers) {
-    await sendToUser(m.id, title, body);
+    await sendToUser(m.id, title, body, notificationType, referenceId);
   }
 }
 
@@ -127,17 +148,97 @@ Deno.serve(async (req) => {
     const payload = await req.json();
     const { type, table, record, old_record } = payload;
 
-    // New order
+    // ─── NEW ORDER ─────────────────────────────────────────────────────
     if (table === "orders" && type === "INSERT") {
       const orderNumber = record.order_number || "";
-      await sendToManagers("🔔 طلب جديد", `طلب خدمة جديد #${orderNumber}`);
+      await sendToManagers(
+        "🔔 طلب جديد",
+        `طلب خدمة جديد #${orderNumber}`,
+        "new_order",
+        record.id,
+      );
     }
 
-    // Assignment created
+    // ─── ORDER STATUS / QUOTE STATUS UPDATED ───────────────────────────
+    if (table === "orders" && type === "UPDATE") {
+      const newStatus = record.status;
+      const oldStatus = old_record?.status;
+      const newQuoteStatus = record.quote_status;
+      const oldQuoteStatus = old_record?.quote_status;
+      const orderId = record.id;
+      const orderNumber = record.order_number || "";
+      const customerId = record.user_id || record.customer_id;
+
+      // ── Status changes ──
+      if (newStatus !== oldStatus && customerId) {
+        if (newStatus === "on_the_way") {
+          await sendToUser(
+            customerId,
+            "🚗 الفني في الطريق",
+            "سيصل الفني إليك قريباً، كن جاهزاً",
+            "on_the_way",
+            orderId,
+          );
+        }
+
+        if (newStatus === "in_progress") {
+          await sendToUser(
+            customerId,
+            "🔧 بدأ الفني العمل",
+            "يعمل الفني الآن على طلبك",
+            "in_progress",
+            orderId,
+          );
+        }
+
+        if (newStatus === "completed") {
+          await sendToUser(
+            customerId,
+            "✅ اكتمل طلبك",
+            "تم إنجاز طلبك بنجاح. شاركنا تقييمك",
+            "completed",
+            orderId,
+          );
+          await sendToManagers(
+            "📋 طلب مكتمل",
+            `تم إنجاز الطلب #${orderNumber}`,
+            "completed",
+            orderId,
+          );
+        }
+      }
+
+      // ── Quote status changes ──
+      if (newQuoteStatus !== oldQuoteStatus) {
+        // quote sent to customer
+        if (newQuoteStatus === "sent" && customerId) {
+          await sendToUser(
+            customerId,
+            "📋 عرض سعر جديد",
+            "لديك عرض سعر بانتظارك، اضغط للمراجعة",
+            "quote_sent",
+            orderId,
+          );
+        }
+
+        // Customer responded (accepted or rejected) → notify managers
+        if (newQuoteStatus === "accepted" || newQuoteStatus === "rejected") {
+          const decision = newQuoteStatus === "accepted" ? "قَبِل ✅" : "رفض ❌";
+          await sendToManagers(
+            `العميل ${decision} العرض`,
+            `قرار العميل بشأن عرض الطلب #${orderNumber}`,
+            "quote_responded",
+            orderId,
+          );
+        }
+      }
+    }
+
+    // ─── ASSIGNMENT CREATED ────────────────────────────────────────────
     if (table === "assignments" && type === "INSERT") {
       const { data: order } = await supabase
         .from("orders")
-        .select("customer_id, order_number")
+        .select("user_id, customer_id, order_number")
         .eq("id", record.order_id)
         .single();
 
@@ -147,15 +248,31 @@ Deno.serve(async (req) => {
         .eq("id", record.technician_id)
         .single();
 
+      // Notify technician — referenceId = assignment_id (used for deep link)
       if (tech) {
-        await sendToUser(tech.profile_id, "👷 مهمة جديدة", "تم تعيينك لمهمة جديدة");
+        await sendToUser(
+          tech.profile_id,
+          "👷 مهمة جديدة",
+          "تم تعيينك لمهمة جديدة",
+          "new_assignment",
+          record.id, // assignment_id for deep linking to /technician/task/:id
+        );
       }
+
+      // Notify customer — referenceId = order_id
       if (order) {
-        await sendToUser(order.customer_id, "🔧 تم التعيين", `تم تعيين فني لطلبك #${order.order_number}`);
+        const customerId = order.user_id || order.customer_id;
+        await sendToUser(
+          customerId,
+          "🔧 تم التعيين",
+          `تم تعيين فني لطلبك #${order.order_number}`,
+          "assigned",
+          record.order_id,
+        );
       }
     }
 
-    // Assignment status updated
+    // ─── ASSIGNMENT STATUS UPDATED ─────────────────────────────────────
     if (table === "assignments" && type === "UPDATE") {
       const newStatus = record.status;
       const oldStatus = old_record?.status;
@@ -163,17 +280,36 @@ Deno.serve(async (req) => {
       if (newStatus !== oldStatus) {
         const { data: order } = await supabase
           .from("orders")
-          .select("customer_id, order_number")
+          .select("user_id, customer_id, order_number")
           .eq("id", record.order_id)
           .single();
 
         if (newStatus === "started" && order) {
-          await sendToUser(order.customer_id, "🚀 بدأ العمل", "الفني بدأ العمل على طلبك");
+          const customerId = order.user_id || order.customer_id;
+          await sendToUser(
+            customerId,
+            "🚀 بدأ العمل",
+            "الفني بدأ العمل على طلبك",
+            "in_progress",
+            record.order_id,
+          );
         }
 
         if (newStatus === "completed" && order) {
-          await sendToUser(order.customer_id, "✅ تمّ الإنجاز", `تم إنجاز طلبك #${order.order_number}`);
-          await sendToManagers("✅ مهمة مكتملة", `تم إنجاز الطلب #${order.order_number}`);
+          const customerId = order.user_id || order.customer_id;
+          await sendToUser(
+            customerId,
+            "✅ تمّ الإنجاز",
+            `تم إنجاز طلبك #${order.order_number}`,
+            "completed",
+            record.order_id,
+          );
+          await sendToManagers(
+            "✅ مهمة مكتملة",
+            `تم إنجاز الطلب #${order.order_number}`,
+            "completed",
+            record.order_id,
+          );
         }
       }
     }

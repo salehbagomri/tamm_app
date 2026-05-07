@@ -7,7 +7,7 @@ class NotificationRepository {
     final userId = _client.auth.currentUser!.id;
     return await _client
         .from('notifications')
-        .select()
+        .select('id, user_id, title, body, is_read, created_at, notification_type, order_id')
         .eq('user_id', userId)
         .order('created_at', ascending: false)
         .limit(50);

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../firebase_options.dart';
@@ -15,6 +16,30 @@ class FcmService {
   static final _messaging = FirebaseMessaging.instance;
   static final _localNotifications = FlutterLocalNotificationsPlugin();
   static final _client = Supabase.instance.client;
+
+  /// Navigation callback: يُضبط من app.dart بعد إنشاء الـ router
+  static Function(String route)? _navigationCallback;
+
+  /// InApp banner callback: يُضبط من app.dart
+  static Function({
+    required String title,
+    required String body,
+    String? orderId,
+    String? notificationType,
+  })? _bannerCallback;
+
+  static void setNavigationCallback(Function(String route) cb) {
+    _navigationCallback = cb;
+  }
+
+  static void setBannerCallback(Function({
+    required String title,
+    required String body,
+    String? orderId,
+    String? notificationType,
+  }) cb) {
+    _bannerCallback = cb;
+  }
 
   /// يُستدعى مرة واحدة في main()
   static Future<void> initialize() async {
@@ -33,7 +58,7 @@ class FcmService {
     // --- Mobile only ---
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-    // إعداد Local Notifications (للإشعارات أثناء استخدام التطبيق)
+    // إعداد Local Notifications
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     await _localNotifications.initialize(
@@ -52,26 +77,84 @@ class FcmService {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    // عرض الإشعارات أثناء استخدام التطبيق (foreground)
+    // ── Foreground: عرض InAppBanner بدلاً من Local Notification ──────
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
-      if (notification != null) {
-        _localNotifications.show(
-          id: notification.hashCode,
-          title: notification.title,
-          body: notification.body,
-          notificationDetails: const NotificationDetails(
-            android: AndroidNotificationDetails(
-              'tamm_notifications',
-              'إشعارات تمّ',
-              importance: Importance.high,
-              priority: Priority.high,
-              icon: '@mipmap/ic_launcher',
-            ),
-          ),
-        );
-      }
+      if (notification == null) return;
+      final data = message.data;
+      _bannerCallback?.call(
+        title: notification.title ?? '',
+        body: notification.body ?? '',
+        orderId: data['order_id'],
+        notificationType: data['notification_type'],
+      );
     });
+
+    // ── Background → foreground (user tapped notification) ────────────
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      _handleMessageNavigation(message);
+    });
+
+    // ── Terminated (app was closed) ───────────────────────────────────
+    final initialMessage = await _messaging.getInitialMessage();
+    if (initialMessage != null) {
+      // تأخير للتأكد من جهوزية الـ widget tree
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleMessageNavigation(initialMessage);
+      });
+    }
+  }
+
+  /// يُوجّه المستخدم للمسار المناسب بناءً على payload الإشعار ودور المستخدم
+  static Future<void> _handleMessageNavigation(RemoteMessage message) async {
+    final data = message.data;
+    final orderId = data['order_id'] as String?;
+    final notificationType = data['notification_type'] as String?;
+
+    if (orderId == null || _navigationCallback == null) return;
+
+    // جلب دور المستخدم مباشرة من Supabase
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return;
+
+    String role = 'customer';
+    try {
+      final res = await _client
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .single();
+      role = res['role'] as String? ?? 'customer';
+    } catch (_) {
+      // استخدم الافتراضي
+    }
+
+    final route = _buildRoute(notificationType, orderId, role);
+    if (route != null) _navigationCallback!(route);
+  }
+
+  /// بناء المسار حسب نوع الإشعار والدور
+  static String? _buildRoute(
+      String? type, String orderId, String role) {
+    if (type == 'new_assignment') {
+      return '/technician/task/$orderId';
+    }
+
+    switch (role) {
+      case 'manager':
+        if (type == 'quote_sent' || type == 'quote_responded') {
+          return '/manager/quote/$orderId';
+        }
+        return '/manager/order/$orderId';
+      case 'technician':
+        return '/technician/task/$orderId';
+      case 'customer':
+      default:
+        if (type == 'quote_sent') {
+          return '/customer/quote-response/$orderId';
+        }
+        return '/customer/order/$orderId';
+    }
   }
 
   /// يُستدعى بعد تسجيل الدخول — يحفظ FCM Token في قاعدة البيانات

@@ -5,9 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'core/services/fcm_service.dart';
+import 'core/widgets/in_app_notification_banner.dart';
 import 'features/auth/presentation/reset_password_screen.dart'
     show passwordResetSignOutProvider;
 import 'shared/providers/theme_provider.dart';
+
 
 class TammApp extends ConsumerStatefulWidget {
   const TammApp({super.key});
@@ -51,6 +54,24 @@ class _TammAppState extends ConsumerState<TammApp> {
 
     // ── Deep link listener ───────────────────────────────────────────────────
     _initDeepLinks();
+
+    // ── FcmService callbacks ─────────────────────────────────────────────────
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final router = ref.read(appRouterProvider);
+      FcmService.setNavigationCallback((route) => router.push(route));
+      FcmService.setBannerCallback((
+          {required String title,
+          required String body,
+          String? orderId,
+          String? notificationType}) {
+        ref.read(inAppNotificationProvider.notifier).show(
+          title: title,
+          body: body,
+          orderId: orderId,
+          notificationType: notificationType,
+        );
+      });
+    });
   }
 
   Future<void> _initDeepLinks() async {
@@ -105,7 +126,12 @@ class _TammAppState extends ConsumerState<TammApp> {
       builder: (context, child) {
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: child!,
+          child: Stack(
+            children: [
+              child!,
+              const InAppNotificationBanner(),
+            ],
+          ),
         );
       },
     );

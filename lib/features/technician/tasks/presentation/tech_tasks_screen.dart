@@ -9,6 +9,7 @@ import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../shared/providers/technician_providers.dart';
+import '../../../../core/widgets/tamm_notification_bell.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechTasksScreen extends ConsumerStatefulWidget {
@@ -54,13 +55,19 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                AppStrings.todayTasks,
-                style: GoogleFonts.harmattan(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppStrings.todayTasks,
+                    style: GoogleFonts.harmattan(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
+                  const TammNotificationBell(),
+                ],
               ),
               const SizedBox(height: 20),
               Expanded(

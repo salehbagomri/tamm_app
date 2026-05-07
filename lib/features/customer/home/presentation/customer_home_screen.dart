@@ -11,6 +11,7 @@ import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/models/product.dart';
 import '../widgets/promo_slider.dart';
+import '../../../../core/widgets/tamm_notification_bell.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class CustomerHomeScreen extends ConsumerWidget {
@@ -67,7 +68,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-
+                        const TammNotificationBell(),
                         _HeaderIcon(
                           icon: Icons.receipt_long_outlined,
                           onTap: () => context.push('/customer/orders'),

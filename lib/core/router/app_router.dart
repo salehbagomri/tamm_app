@@ -56,6 +56,9 @@ import '../../features/technician/tasks/presentation/tech_tasks_screen.dart';
 import '../../features/technician/tasks/presentation/tech_task_detail_screen.dart';
 import '../../features/technician/profile/presentation/tech_profile_screen.dart';
 
+// Notifications
+import '../../features/notifications/presentation/notifications_screen.dart';
+
 // Navigator keys — prevent duplicate page key assertions
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _customerShellKey = GlobalKey<NavigatorState>(debugLabel: 'customerShell');
@@ -78,6 +81,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
       GoRoute(path: '/forgot-password', builder: (_, __) => const ForgotPasswordScreen()),
       GoRoute(path: '/reset-password', builder: (_, __) => const ResetPasswordScreen()),
+
+      // ========== NOTIFICATIONS (shared) ==========
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/notifications',
+        builder: (_, __) => const NotificationsScreen(),
+      ),
 
       // ========== CUSTOMER ==========
       ShellRoute(

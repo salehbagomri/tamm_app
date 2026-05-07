@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../constants/app_colors.dart';
+import 'package:go_router/go_router.dart';
 import '../../shared/providers/notification_providers.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 /// يُستخدم في AppBar لعرض عدد الإشعارات غير المقروءة
+/// يوجّه لشاشة الإشعارات عند الضغط عليه
 class TammNotificationBell extends ConsumerWidget {
-  final VoidCallback onTap;
-  const TammNotificationBell({super.key, required this.onTap});
+  const TammNotificationBell({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final count = ref.watch(unreadCountProvider);
 
     return IconButton(
-      onPressed: onTap,
+      onPressed: () => context.push('/notifications'),
+      tooltip: 'الإشعارات',
       icon: Stack(
         children: [
           Icon(
@@ -33,7 +34,7 @@ class TammNotificationBell extends ConsumerWidget {
                 ),
                 constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                 child: Text(
-                  '$count',
+                  count > 99 ? '99+' : '$count',
                   style: const TextStyle(color: Colors.white, fontSize: 10),
                   textAlign: TextAlign.center,
                 ),
