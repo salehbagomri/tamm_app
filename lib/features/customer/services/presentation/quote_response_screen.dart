@@ -7,6 +7,8 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_loading.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../data/quote_repository.dart';
 import '../widgets/quote_offer_card.dart';
@@ -54,7 +56,15 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('حدث خطأ: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            e is AppException ? e.message : 'حدث خطأ في قبول العرض',
+            style: GoogleFonts.harmattan(fontSize: 15),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -127,7 +137,15 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('حدث خطأ: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              e is AppException ? e.message : 'حدث خطأ في رفض العرض',
+              style: GoogleFonts.harmattan(fontSize: 15),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
+          ));
         }
       } finally {
         if (mounted) setState(() => _isSaving = false);
@@ -221,7 +239,10 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
           );
         },
         loading: () => const TammLoading(),
-        error: (e, _) => Center(child: Text('حدث خطأ: $e')),
+        error: (e, _) => ErrorStateWidget(
+          message: e is AppException ? e.message : 'حدث خطأ في تحميل العرض',
+          onRetry: () => ref.invalidate(orderDetailProvider(widget.orderId)),
+        ),
       ),
     );
   }

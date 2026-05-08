@@ -7,6 +7,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/providers/service_providers.dart';
 import '../../../../shared/models/product.dart';
@@ -117,7 +119,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      error: (e, _) => ErrorStateWidget(
+        message: e is AppException ? e.message : 'حدث خطأ في تحميل الاقتراحات',
+        onRetry: () => ref.invalidate(featuredProductsProvider),
+      ),
     );
   }
 
@@ -182,11 +187,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+          error: (e, _) => ErrorStateWidget(
+            message: e is AppException ? e.message : 'حدث خطأ في البحث عن الخدمات',
+            onRetry: () => ref.invalidate(serviceTypesProvider),
+          ),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      error: (e, _) => ErrorStateWidget(
+        message: e is AppException ? e.message : 'حدث خطأ في البحث عن المنتجات',
+        onRetry: () => ref.invalidate(allProductsProvider),
+      ),
     );
   }
 }

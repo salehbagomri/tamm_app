@@ -9,6 +9,8 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/models/order.dart';
 import '../../../../shared/providers/order_providers.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -58,15 +60,18 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       body: orderAsync.when(
         data: (o) => _buildBody(context, o),
         loading: () => const TammLoading(),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (e, _) => ErrorStateWidget(
+          message: e is AppException ? e.message : 'حدث خطأ في تحميل الطلب',
+          onRetry: () => ref.invalidate(orderDetailProvider(widget.orderId)),
+        ),
       ),
     );
   }
 
   Widget _buildBody(BuildContext context, Order o) {
-    final isQuotePhase = o.orderType == 'quote_request' && 
+    final isQuotePhase = o.orderType == 'quote_request' &&
         (o.status == 'pending' || o.status == 'confirmed');
-    final isExecutionPhase = o.orderType == 'quote_request' && 
+    final isExecutionPhase = o.orderType == 'quote_request' &&
         ['assigned', 'on_the_way', 'in_progress', 'completed'].contains(o.status);
 
     return Column(

@@ -12,6 +12,8 @@ import '../../../../shared/providers/order_providers.dart';
 import '../../../../core/utils/auth_guard.dart';
 import '../../services/widgets/appointment_picker.dart';
 import '../../services/widgets/appointment_display_card.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
@@ -46,7 +48,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           permission == LocationPermission.deniedForever) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('يجب السماح بالوصول للموقع')),
+            const SnackBar(
+              content: Text('يجب السماح بالوصول للموقع'),
+              behavior: SnackBarBehavior.floating,
+            ),
           );
         }
         return;
@@ -67,7 +72,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('تعذر تحديد الموقع: $e')),
+          SnackBar(
+            content: Text('تعذر تحديد الموقع: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     } finally {
@@ -81,7 +89,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     if (_selectedDate == null || _selectedPeriod == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('الرجاء تحديد موعد')),
+          const SnackBar(
+            content: Text('الرجاء تحديد موعد'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
       return;
@@ -90,13 +101,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     try {
       final cartAsync = ref.read(cartProvider);
       final notifier = ref.read(cartProvider.notifier);
-      
+
       final items = cartAsync.maybeWhen(
         data: (cart) => cart.map<Map<String, dynamic>>((c) => {
           'item_type': 'product',
           'product_id': c.product.id,
           'quantity': c.quantity,
-          // If installation is included for this product, add its price to the unit price for the order item record
           'unit_price': (c.product.price ?? 0) + (c.includeInstallation ? c.product.installationPrice : 0),
           'total_price': c.total,
         }).toList(),
@@ -106,13 +116,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       if (items.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('السلة فارغة')),
+            const SnackBar(
+              content: Text('السلة فارغة'),
+              behavior: SnackBarBehavior.floating,
+            ),
           );
         }
         return;
       }
 
-      // Check if any item in the cart includes installation
       final hasInstallation = cartAsync.maybeWhen(
         data: (cart) => cart.any((c) => c.includeInstallation),
         orElse: () => false,
@@ -137,10 +149,27 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       await notifier.clear();
       if (mounted) context.go('/customer/order-success/$orderId');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            e is AppException ? e.message : 'حدث خطأ في إتمام الطلب',
+            style: GoogleFonts.harmattan(fontSize: 15),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _addressCtrl.dispose();
+    _notesCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -326,7 +355,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   ),
                 ],
               ),
-              // We removed the old _includeInstall checkbox because it's now handled per-product in the cart
               const SizedBox(height: 24),
               TammButton(
                 label: AppStrings.confirm,
@@ -423,7 +451,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               )).toList(),
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Text('Error: $e'),
+            error: (e, _) => ErrorStateWidget(
+              message: e is AppException ? e.message : 'حدث خطأ في تحميل السلة',
+              onRetry: () => ref.invalidate(cartProvider),
+            ),
           ),
           const Divider(height: 24),
           Row(
@@ -450,12 +481,5 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _addressCtrl.dispose();
-    _notesCtrl.dispose();
-    super.dispose();
   }
 }

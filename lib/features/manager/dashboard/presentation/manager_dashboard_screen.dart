@@ -11,6 +11,8 @@ import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../core/widgets/tamm_theme_selector.dart';
 import '../../../../core/widgets/tamm_notification_bell.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -164,7 +166,10 @@ class _ManagerDashboardScreenState
                     );
                   },
                   loading: () => const TammLoading(),
-                  error: (e, _) => Text('$e'),
+                  error: (e, _) => ErrorStateWidget(
+                    message: e is AppException ? e.message : 'حدث خطأ في تحميل الإحصائيات',
+                    onRetry: () => ref.invalidate(dashboardStatsProvider),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -249,7 +254,10 @@ class _ManagerDashboardScreenState
                         .toList(),
                   ),
                   loading: () => const TammLoading(),
-                  error: (e, _) => Text('$e'),
+                  error: (e, _) => ErrorStateWidget(
+                    message: e is AppException ? e.message : 'حدث خطأ في تحميل الطلبات',
+                    onRetry: () => ref.invalidate(allOrdersProvider(null)),
+                  ),
                 ),
               ],
             ),

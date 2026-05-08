@@ -20,6 +20,8 @@ import '../../../../shared/providers/manager_providers.dart';
 import '../../../customer/services/data/quote_repository.dart';
 import 'manager_quotes_screen.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 
 class ManagerQuoteDetailScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -239,6 +241,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
               SnackBar(
                 content: const Text('تعذر رفع المرفق، سيتم إرسال العرض بدون مرفق'),
                 backgroundColor: context.colors.warning,
+                behavior: SnackBarBehavior.floating,
               ),
             );
           }
@@ -294,7 +297,15 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('حدث خطأ: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            e is AppException ? e.message : 'حدث خطأ في إرسال العرض',
+            style: GoogleFonts.harmattan(fontSize: 15),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -319,7 +330,10 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
       body: orderAsync.when(
         data: (order) => _buildBody(order),
         loading: () => const TammLoading(),
-        error: (err, stack) => Center(child: Text('حدث خطأ: $err')),
+        error: (err, stack) => ErrorStateWidget(
+          message: err is AppException ? err.message : 'حدث خطأ في تحميل تفاصيل الطلب',
+          onRetry: () => ref.invalidate(orderDetailProvider(widget.orderId)),
+        ),
       ),
     );
   }

@@ -8,6 +8,8 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManagerOrderDetailScreen extends ConsumerStatefulWidget {
@@ -31,7 +33,17 @@ class _ManagerOrderDetailScreenState
       ref.invalidate(orderDetailProvider(widget.orderId));
       ref.invalidate(allOrdersProvider(null));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            e is AppException ? e.message : 'حدث خطأ غير متوقع',
+            style: GoogleFonts.harmattan(fontSize: 15),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -109,7 +121,10 @@ class _ManagerOrderDetailScreenState
                 ),
               ),
               loading: () => const TammLoading(),
-              error: (e, _) => Text('$e'),
+              error: (e, _) => ErrorStateWidget(
+                message: e is AppException ? e.message : 'حدث خطأ في تحميل الفنيين',
+                onRetry: () => ref.invalidate(techniciansProvider),
+              ),
             );
           },
         ),
@@ -226,7 +241,10 @@ class _ManagerOrderDetailScreenState
           ),
         ),
         loading: () => const TammLoading(),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (e, _) => ErrorStateWidget(
+          message: e is AppException ? e.message : 'حدث خطأ في تحميل الطلب',
+          onRetry: () => ref.invalidate(orderDetailProvider(widget.orderId)),
+        ),
       ),
     );
   }

@@ -12,6 +12,8 @@ import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/models/product.dart';
 import '../widgets/promo_slider.dart';
 import '../../../../core/widgets/tamm_notification_bell.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class CustomerHomeScreen extends ConsumerWidget {
@@ -189,7 +191,10 @@ class CustomerHomeScreen extends ConsumerWidget {
               featuredAsync.when(
                 data: (products) => _buildProductList(context, products),
                 loading: () => _buildShimmerList(),
-                error: (e, _) => Text('$e'),
+                error: (e, _) => ErrorStateWidget(
+                  message: e is AppException ? e.message : 'حدث خطأ في تحميل المنتجات',
+                  onRetry: () => ref.invalidate(featuredProductsProvider),
+                ),
               ),
               const SizedBox(height: 32),
 
