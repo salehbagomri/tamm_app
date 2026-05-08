@@ -16,6 +16,8 @@ import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/models/cart_item.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/auth_guard.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'buy_install_sheet.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
@@ -26,7 +28,6 @@ class ProductDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productAsync = ref.watch(productDetailProvider(productId));
-
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
       appBar: TammAppBar(
@@ -53,249 +54,159 @@ class ProductDetailScreen extends ConsumerWidget {
         ],
       ),
       body: productAsync.when(
-        data: (p) => SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    height: 300,
-                    width: double.infinity,
-                    color: context.colors.bgSurface2,
-                    child: p.imageUrl != null
-                        ? CachedNetworkImage(
-                            imageUrl: p.imageUrl!,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => TammShimmer(
-                              width: double.infinity,
-                              height: double.infinity,
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            errorWidget: (context, url, error) => Icon(
-                              Icons.image,
-                              size: 80,
-                              color: context.colors.textFaint,
-                            ),
-                          )
-                        : Center(
-                            child: Icon(
-                              Icons.image,
-                              size: 80,
-                              color: context.colors.textFaint,
-                            ),
-                          ),
-                  ),
-                  if (p.isFeatured && !p.hasDiscount)
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: context.colors.warning,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          'مميز ⭐',
-                          style: GoogleFonts.harmattan(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  if (p.hasDiscount)
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: context.colors.error,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          'عرض خاص: خصم ${p.discountPercentage}% 🏷️',
-                          style: GoogleFonts.harmattan(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              Padding(
-                padding: AppSpacing.pagePadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    if (p.brand != null)
-                      Text(
-                        p.brand!,
-                        style: GoogleFonts.harmattan(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: context.colors.textSecond,
-                        ),
-                      ),
-                    Text(
-                      p.name,
-                      style: GoogleFonts.harmattan(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          p.price != null ? '${p.price!.toInt()} ر.س' : 'السعر غير محدد',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                            color: context.colors.blueSky,
-                            height: 1,
-                          ),
-                        ),
-                        if (p.hasDiscount) ...[
-                          const SizedBox(width: 8),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: Text(
-                              '${p.oldPrice!.toInt()}',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 18,
-                                color: context.colors.textSecond,
-                                decoration: TextDecoration.lineThrough,
-                                height: 1,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    if (p.description != null) ...[
-                      const SizedBox(height: 24),
-                      Text(
-                        'وصف المنتج',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: context.colors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        p.description!,
-                        style: GoogleFonts.harmattan(
-                          fontSize: 16,
-                          color: context.colors.textSecond,
-                          height: 1.6,
-                        ),
-                      ),
-                    ],
-                    if (p.specs.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      Text(
-                        'المواصفات التقنية',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: context.colors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: context.colors.bgSurface,
-                          borderRadius: AppSpacing.radius,
-                          border: Border.all(color: context.colors.border),
-                        ),
-                        clipBehavior: Clip.hardEdge,
-                        child: Column(
-                          children: p.specs.entries.toList().asMap().entries.map((entry) {
-                            final index = entry.key;
-                            final e = entry.value;
-                            final isLast = index == p.specs.length - 1;
-                            final isEven = index % 2 == 0;
-                            final specName = specsTranslation[e.key] ?? e.key;
-                            final icon = specsIcons[e.key] ?? Icons.info_outline;
+        data: (p) => _buildBody(context, ref, p),
+        loading: () => const TammLoading(),
+        error: (e, _) => ErrorStateWidget(
+          message: e is AppException ? e.message : 'حدث خطأ في تحميل المنتج',
+          onRetry: () => ref.invalidate(productDetailProvider(productId)),
+        ),
+      ),
+    );
+  }
 
-                            return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              decoration: BoxDecoration(
-                                color: isEven ? context.colors.bgSurface : context.colors.bgSurface2,
-                                border: isLast ? null : Border(bottom: BorderSide(color: context.colors.border)),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(icon, size: 20, color: context.colors.bluePrimary),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      specName,
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: context.colors.textSecond,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      '${e.value}',
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 16,
-                                        color: context.colors.textPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+  Widget _buildBody(BuildContext context, WidgetRef ref, Product p) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              Container(
+                height: 300,
+                width: double.infinity,
+                color: context.colors.bgSurface2,
+                child: p.imageUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: p.imageUrl!,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => TammShimmer(
+                          width: double.infinity,
+                          height: double.infinity,
+                          borderRadius: BorderRadius.circular(0),
                         ),
-                      ),
-                    ],
-                    const SizedBox(height: 32),
-                    if (p.price != null)
-                      TammButton(
-                        label: p.requiresInstallation ? 'اشترِ وركّب / أضف للسلة' : AppStrings.addToCart,
-                        icon: Icons.shopping_cart_outlined,
-                        onPressed: () => _addToCart(context, ref, p),
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.image, size: 80, color: context.colors.textFaint),
                       )
-                    else
-                      TammButton(
-                        label: 'تواصل معنا للسعر',
-                        icon: Icons.chat_outlined,
-                        type: TammButtonType.secondary,
-                        onPressed: () => context.push('/customer/services'),
-                      ),
-                    const SizedBox(height: 40),
-                    // Related Products Section
-                    _RelatedProducts(currentProductId: p.id, category: p.category),
-                    const SizedBox(height: 32),
-                  ],
-                ),
+                    : Center(child: Icon(Icons.image, size: 80, color: context.colors.textFaint)),
               ),
+              if (p.isFeatured && !p.hasDiscount)
+                Positioned(
+                  top: 16, right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: context.colors.warning, borderRadius: BorderRadius.circular(6)),
+                    child: Text('مميز ⭐', style: GoogleFonts.harmattan(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+                  ),
+                ),
+              if (p.hasDiscount)
+                Positioned(
+                  top: 16, right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: context.colors.error, borderRadius: BorderRadius.circular(6)),
+                    child: Text('عرض خاص: خصم ${p.discountPercentage}% 🏷️',
+                        style: GoogleFonts.harmattan(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+                  ),
+                ),
             ],
           ),
-        ),
-        loading: () => const TammLoading(),
-        error: (e, _) => Center(child: Text('$e')),
+          Padding(
+            padding: AppSpacing.pagePadding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                if (p.brand != null)
+                  Text(p.brand!, style: GoogleFonts.harmattan(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.textSecond)),
+                Text(p.name, style: GoogleFonts.harmattan(fontSize: 26, fontWeight: FontWeight.w700, color: context.colors.textPrimary, height: 1.2)),
+                const SizedBox(height: 12),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      p.price != null ? '${p.price!.toInt()} ر.س' : 'السعر غير محدد',
+                      style: GoogleFonts.harmattan(fontSize: 28, fontWeight: FontWeight.w700, color: context.colors.blueSky, height: 1),
+                    ),
+                    if (p.hasDiscount) ...[
+                      const SizedBox(width: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text('${p.oldPrice!.toInt()}',
+                            style: GoogleFonts.harmattan(fontSize: 18, color: context.colors.textSecond, decoration: TextDecoration.lineThrough, height: 1)),
+                      ),
+                    ],
+                  ],
+                ),
+                if (p.description != null) ...[
+                  const SizedBox(height: 24),
+                  Text('وصف المنتج', style: GoogleFonts.harmattan(fontSize: 18, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
+                  const SizedBox(height: 4),
+                  Text(p.description!, style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond, height: 1.6)),
+                ],
+                if (p.specs.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  Text('المواصفات التقنية', style: GoogleFonts.harmattan(fontSize: 20, fontWeight: FontWeight.bold, color: context.colors.textPrimary)),
+                  const SizedBox(height: 12),
+                  Container(
+                    decoration: BoxDecoration(color: context.colors.bgSurface, borderRadius: AppSpacing.radius, border: Border.all(color: context.colors.border)),
+                    clipBehavior: Clip.hardEdge,
+                    child: Column(
+                      children: p.specs.entries.toList().asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final spec = entry.value;
+                        final isLast = index == p.specs.length - 1;
+                        final isEven = index % 2 == 0;
+                        final specName = specsTranslation[spec.key] ?? spec.key;
+                        final icon = specsIcons[spec.key] ?? Icons.info_outline;
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            color: isEven ? context.colors.bgSurface : context.colors.bgSurface2,
+                            border: isLast ? null : Border(bottom: BorderSide(color: context.colors.border)),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(icon, size: 20, color: context.colors.bluePrimary),
+                              const SizedBox(width: 12),
+                              Expanded(flex: 2, child: Text(specName, style: GoogleFonts.harmattan(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.textSecond))),
+                              Expanded(flex: 3, child: Text('${spec.value}', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textPrimary, fontWeight: FontWeight.bold), textAlign: TextAlign.start)),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 32),
+                if (p.price != null)
+                  TammButton(
+                    label: p.requiresInstallation ? 'اشترِ وركّب / أضف للسلة' : AppStrings.addToCart,
+                    icon: Icons.shopping_cart_outlined,
+                    onPressed: () => _addToCart(context, ref, p),
+                  )
+                else
+                  TammButton(
+                    label: 'تواصل معنا للسعر',
+                    icon: Icons.chat_outlined,
+                    type: TammButtonType.secondary,
+                    onPressed: () => context.push('/customer/services'),
+                  ),
+                const SizedBox(height: 40),
+                _RelatedProducts(currentProductId: p.id, category: p.category),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Future<void> _addToCart(BuildContext context, WidgetRef ref, Product p) async {
     if (!await requireAuth(context, ref)) return;
-
     bool wantsInstallation = false;
     if (p.requiresInstallation) {
+      if (!context.mounted) return;
       final result = await showModalBottomSheet<bool>(
         context: context,
         isScrollControlled: true,
@@ -305,42 +216,35 @@ class ProductDetailScreen extends ConsumerWidget {
       if (result == null) return;
       wantsInstallation = result;
     }
-
     try {
       final cartNotifier = ref.read(cartProvider.notifier);
-      await cartNotifier.addItem(CartItem(
-        product: p,
-        includeInstallation: wantsInstallation,
-      ));
-      
+      await cartNotifier.addItem(CartItem(product: p, includeInstallation: wantsInstallation));
       if (context.mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Text('تم الإضافة: ${p.name}', style: GoogleFonts.harmattan()),
-              ],
-            ),
-            backgroundColor: context.colors.success,
-            duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: 'عرض السلة',
-              textColor: Colors.white,
-              onPressed: () {
-                ref.read(appRouterProvider).push('/customer/cart');
-              },
-            ),
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Row(children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 8),
+            Text('تم الإضافة: ${p.name}', style: GoogleFonts.harmattan()),
+          ]),
+          backgroundColor: context.colors.success,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'عرض السلة',
+            textColor: Colors.white,
+            onPressed: () => ref.read(appRouterProvider).push('/customer/cart'),
           ),
-        );
+        ));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('تعذرت الإضافة للسلة: $e'), backgroundColor: context.colors.error),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e is AppException ? e.message : 'تعذرت الإضافة للسلة', style: GoogleFonts.harmattan(fontSize: 15)),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ));
       }
     }
   }
@@ -349,32 +253,19 @@ class ProductDetailScreen extends ConsumerWidget {
 class _RelatedProducts extends ConsumerWidget {
   final String currentProductId;
   final String category;
-
   const _RelatedProducts({required this.currentProductId, required this.category});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // We use productsProvider with category to get related items
     final relatedAsync = ref.watch(productsProvider(category));
-
     return relatedAsync.when(
       data: (products) {
-        // Filter out the current product and take top 4
         final related = products.where((p) => p.id != currentProductId).take(4).toList();
-        
         if (related.isEmpty) return const SizedBox.shrink();
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'منتجات مشابهة',
-              style: GoogleFonts.harmattan(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-              ),
-            ),
+            Text('منتجات مشابهة', style: GoogleFonts.harmattan(fontSize: 20, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
             const SizedBox(height: 16),
             SizedBox(
               height: 220,
@@ -388,81 +279,33 @@ class _RelatedProducts extends ConsumerWidget {
                     onTap: () => context.push('/customer/product/${rp.id}'),
                     child: Container(
                       width: 150,
-                      decoration: BoxDecoration(
-                        color: context.colors.bgSurface,
-                        borderRadius: AppSpacing.radius,
-                        border: Border.all(color: context.colors.border),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 5,
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: context.colors.bgSurface2,
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
-                              ),
-                              child: rp.imageUrl != null
-                                  ? ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
-                                      child: CachedNetworkImage(
-                                        imageUrl: rp.imageUrl!,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) => TammShimmer(
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          borderRadius: BorderRadius.circular(0),
-                                        ),
-                                        errorWidget: (context, url, err) => Icon(Icons.image, color: context.colors.textFaint),
-                                      ),
-                                    )
-                                  : Center(child: Icon(Icons.image, color: context.colors.textFaint)),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    rp.name,
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: context.colors.textPrimary,
-                                      height: 1.2,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const Spacer(),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        rp.price != null ? '${rp.price!.toInt()}' : 'غير محدد',
-                                        style: GoogleFonts.harmattan(
-                                          fontSize: 14,
-                                          color: context.colors.blueSky,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      if (rp.price != null)
-                                        Text(
-                                          ' ر.س',
-                                          style: GoogleFonts.harmattan(fontSize: 10, color: context.colors.blueSky),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      decoration: BoxDecoration(color: context.colors.bgSurface, borderRadius: AppSpacing.radius, border: Border.all(color: context.colors.border)),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Expanded(flex: 5, child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(color: context.colors.bgSurface2, borderRadius: const BorderRadius.vertical(top: Radius.circular(11))),
+                          child: rp.imageUrl != null
+                              ? ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
+                                  child: CachedNetworkImage(
+                                    imageUrl: rp.imageUrl!, fit: BoxFit.cover,
+                                    placeholder: (context, url) => TammShimmer(width: double.infinity, height: double.infinity, borderRadius: BorderRadius.circular(0)),
+                                    errorWidget: (context, url, err) => Icon(Icons.image, color: context.colors.textFaint),
+                                  ))
+                              : Center(child: Icon(Icons.image, color: context.colors.textFaint)),
+                        )),
+                        Expanded(flex: 4, child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(rp.name, style: GoogleFonts.harmattan(fontSize: 13, fontWeight: FontWeight.w600, color: context.colors.textPrimary, height: 1.2), maxLines: 2, overflow: TextOverflow.ellipsis),
+                            const Spacer(),
+                            Row(children: [
+                              Text(rp.price != null ? '${rp.price!.toInt()}' : 'غير محدد', style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.blueSky, fontWeight: FontWeight.w700)),
+                              if (rp.price != null) Text(' ر.س', style: GoogleFonts.harmattan(fontSize: 10, color: context.colors.blueSky)),
+                            ]),
+                          ]),
+                        )),
+                      ]),
                     ),
                   );
                 },
@@ -476,4 +319,3 @@ class _RelatedProducts extends ConsumerWidget {
     );
   }
 }
-
