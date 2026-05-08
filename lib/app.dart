@@ -10,6 +10,7 @@ import 'core/widgets/in_app_notification_banner.dart';
 import 'features/auth/presentation/reset_password_screen.dart'
     show passwordResetSignOutProvider;
 import 'shared/providers/theme_provider.dart';
+import 'shared/providers/notification_providers.dart';
 
 
 class TammApp extends ConsumerStatefulWidget {
@@ -28,13 +29,18 @@ class _TammAppState extends ConsumerState<TammApp> {
   void initState() {
     super.initState();
 
-    // ── Auth state listener ──────────────────────────────────────────────────
+    // ── Auth state listener ─────────────────────────────────────────────────
     _authSubscription =
         Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       final router = ref.read(appRouterProvider);
 
       switch (data.event) {
+        case AuthChangeEvent.signedIn:
+          // أعد تهيئة الإشعارات للمستخدم الجديد فور تسجيل الدخول
+          ref.invalidate(notificationsProvider);
         case AuthChangeEvent.signedOut:
+          // أعد تهيئة الإشعارات لمسح بيانات المستخدم السابق
+          ref.invalidate(notificationsProvider);
           // During a password-reset flow the screen calls signOut() and then
           // navigates to /login itself — don't override that navigation.
           final isPasswordReset =
