@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 import '../../core/services/fcm_service.dart';
+import '../../core/errors/error_mapper.dart';
+import '../../core/errors/app_exception.dart';
 import '../providers/auth_providers.dart';
 import '../models/user_profile.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -27,31 +29,38 @@ class AuthRepository {
 
   /// تسجيل الدخول بحساب Google
   Future<AuthResponse?> signInWithGoogle() async {
-    if (kIsWeb) {
-      // Web: استخدام Supabase OAuth redirect flow
-      await _client.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: 'https://tamm-app-8c990.web.app',
+    try {
+      if (kIsWeb) {
+        // Web: استخدام Supabase OAuth redirect flow
+        await _client.auth.signInWithOAuth(
+          OAuthProvider.google,
+          redirectTo: 'https://tamm-app-8c990.web.app',
+        );
+        // OAuth redirect — لن يصل لهنا لأن الصفحة ستتحول
+        return null;
+      }
+
+      // Mobile: استخدام google_sign_in + ID token
+      await _ensureGoogleInitialized();
+
+      final GoogleSignInAccount account =
+          await GoogleSignIn.instance.authenticate();
+
+      final idToken = account.authentication.idToken;
+      if (idToken == null) {
+        throw const AuthException(
+          message: 'فشل في الحصول على رمز المصادقة من Google',
+        );
+      }
+
+      return await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
       );
-      // OAuth redirect — لن يصل لهنا لأن الصفحة ستتحول
-      return null;
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ErrorMapper.from(e);
     }
-
-    // Mobile: استخدام google_sign_in + ID token
-    await _ensureGoogleInitialized();
-
-    final GoogleSignInAccount account = await GoogleSignIn.instance
-        .authenticate();
-
-    final idToken = account.authentication.idToken;
-    if (idToken == null) {
-      throw Exception('فشل في الحصول على رمز المصادقة من Google');
-    }
-
-    return await _client.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: idToken,
-    );
   }
 
   /// تسجيل الدخول بالبريد وكلمة المرور
@@ -59,10 +68,14 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    return await _client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      return await _client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   /// إنشاء حساب جديد بالبريد
@@ -70,42 +83,59 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    return await _client.auth.signUp(
-      email: email,
-      password: password,
-    );
+    try {
+      return await _client.auth.signUp(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   /// إعادة تعيين كلمة المرور — يوجّه المستخدم إلى التطبيق عبر tamm://reset-password
   Future<void> resetPassword(String email) async {
-    await _client.auth.resetPasswordForEmail(
-      email,
-      redirectTo: 'tamm://reset-password',
-    );
+    try {
+      await _client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'tamm://reset-password',
+      );
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   /// تحديث كلمة المرور بعد التحقق من رابط الاستعادة
   Future<void> updatePassword(String newPassword) async {
-    await _client.auth.updateUser(
-      UserAttributes(password: newPassword),
-    );
+    try {
+      await _client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   /// جلب بروفايل المستخدم
   Future<UserProfile?> getProfile() async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) return null;
+    try {
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) return null;
 
-    final data = await _client
-        .from('profiles')
-        .select()
-        .eq('id', userId)
-        .maybeSingle();
-    if (data == null) return null;
-    return UserProfile.fromMap(data);
+      final data = await _client
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+      if (data == null) return null;
+      return UserProfile.fromMap(data);
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   /// هل البروفايل مكتمل؟
+  /// يعتمد على bubble up من getProfile — لا try/catch إضافي مطلوب
   Future<bool> isProfileComplete() async {
     final profile = await getProfile();
     return profile?.isComplete ?? false;
@@ -116,56 +146,82 @@ class AuthRepository {
     required String fullName,
     required String phone,
   }) async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) throw Exception('المستخدم غير مسجل');
+    try {
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) throw const AuthException();
 
-    await _client
-        .from('profiles')
-        .update({
-          'full_name': fullName,
-          'phone': phone,
-          'is_complete': true,
-          'updated_at': DateTime.now().toIso8601String(),
-        })
-        .eq('id', userId);
+      await _client
+          .from('profiles')
+          .update({
+            'full_name': fullName,
+            'phone': phone,
+            'is_complete': true,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', userId);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ErrorMapper.from(e);
+    }
   }
 
   /// تحديث بيانات البروفايل
   Future<void> updateProfile(UserProfile profile) async {
-    await _client.from('profiles').update(profile.toMap()).eq('id', profile.id);
+    try {
+      await _client
+          .from('profiles')
+          .update(profile.toMap())
+          .eq('id', profile.id);
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
-  /// تسجيل الخروج
+  /// تسجيل الخروج — معالجة صامتة (الأخطاء لا تُرمى للمستخدم)
   Future<void> signOut() async {
     try {
       await _ensureGoogleInitialized();
       await GoogleSignIn.instance.signOut();
-    } catch (_) {}
-    await _client.auth.signOut();
+    } catch (_) {
+      // تجاهل أخطاء Google signOut — لا تمنع signOut من Supabase
+    }
+    try {
+      await _client.auth.signOut();
+    } catch (e) {
+      debugPrint('[AuthRepository] signOut error: $e');
+      // لا rethrow — المستخدم يُعامَل كخارج بنجاح
+    }
   }
 
-  /// تسجيل الخروج مع تأكيد (UI)
-  static Future<void> confirmSignOut(BuildContext context, WidgetRef ref) async {
+  /// تسجيل الخروج مع تأكيد (UI logic — لا تعديل)
+  static Future<void> confirmSignOut(
+      BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.bgSurface,
         title: Text(
           'تسجيل الخروج',
-          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold, color: context.colors.textPrimary),
+          style: GoogleFonts.harmattan(
+              fontWeight: FontWeight.bold,
+              color: context.colors.textPrimary),
         ),
         content: Text(
           'هل أنت متأكد أنك تريد تسجيل الخروج؟',
-          style: GoogleFonts.harmattan(fontSize: 18, color: context.colors.textPrimary),
+          style: GoogleFonts.harmattan(
+              fontSize: 18, color: context.colors.textPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('إلغاء', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond)),
+            child: Text('إلغاء',
+                style: GoogleFonts.harmattan(
+                    fontSize: 16, color: context.colors.textSecond)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: context.colors.bluePrimary),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: context.colors.bluePrimary),
             child: Text('تأكيد', style: GoogleFonts.harmattan(fontSize: 16)),
           ),
         ],
@@ -184,9 +240,13 @@ class AuthRepository {
 
   /// حذف الحساب
   Future<void> deleteAccount() async {
-    await FcmService.unregisterToken();
-    await _client.rpc('delete_user_account');
-    await _client.auth.signOut();
+    try {
+      await FcmService.unregisterToken();
+      await _client.rpc('delete_user_account');
+      await _client.auth.signOut();
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   /// هل المستخدم مسجل الدخول

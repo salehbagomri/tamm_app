@@ -1,41 +1,55 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/order.dart';
+import '../../core/errors/error_mapper.dart';
+import '../../core/errors/app_exception.dart';
 
 class OrderRepository {
   final _client = Supabase.instance.client;
 
   Future<List<Order>> getMyOrders() async {
-    final userId = _client.auth.currentUser!.id;
-    final data = await _client
-        .from('orders')
-        .select(
-          '*, order_items(*), assignments(technician_notes, technicians(profiles(full_name)))',
-        )
-        .eq('customer_id', userId)
-        .order('created_at', ascending: false);
-    return data.map((e) => Order.fromMap(e)).toList();
+    try {
+      final userId = _client.auth.currentUser!.id;
+      final data = await _client
+          .from('orders')
+          .select(
+            '*, order_items(*), assignments(technician_notes, technicians(profiles(full_name)))',
+          )
+          .eq('customer_id', userId)
+          .order('created_at', ascending: false);
+      return data.map((e) => Order.fromMap(e)).toList();
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   Future<List<Order>> getAllOrders({String? status}) async {
-    var query = _client
-        .from('orders')
-        .select(
-          '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_notes, technicians(profiles(full_name)))',
-        );
-    if (status != null) query = query.eq('status', status);
-    final data = await query.order('created_at', ascending: false);
-    return data.map((e) => Order.fromMap(e)).toList();
+    try {
+      var query = _client
+          .from('orders')
+          .select(
+            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_notes, technicians(profiles(full_name)))',
+          );
+      if (status != null) query = query.eq('status', status);
+      final data = await query.order('created_at', ascending: false);
+      return data.map((e) => Order.fromMap(e)).toList();
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   Future<Order> getOrder(String id) async {
-    final data = await _client
-        .from('orders')
-        .select(
-          '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_notes, technicians(profiles(full_name)))',
-        )
-        .eq('id', id)
-        .single();
-    return Order.fromMap(data);
+    try {
+      final data = await _client
+          .from('orders')
+          .select(
+            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_notes, technicians(profiles(full_name)))',
+          )
+          .eq('id', id)
+          .single();
+      return Order.fromMap(data);
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
   Future<String> createOrder({
@@ -53,54 +67,85 @@ class OrderRepository {
     double? longitude,
     required List<Map<String, dynamic>> items,
   }) async {
-    final userId = _client.auth.currentUser!.id;
-    final orderData = await _client
-        .from('orders')
-        .insert({
-          'customer_id': userId,
-          'order_type': orderType,
-          'total_amount': total,
-          'address': address,
-          'preferred_date': preferredDate?.toIso8601String().split('T')[0],
-          'preferred_time_slot': timeSlot,
-          'notes': notes,
-          'include_installation': includeInstall,
-          'scheduled_period': scheduledPeriod,
-          'scheduled_hour': scheduledHour,
-          'quote_status': quoteStatus,
-          if (latitude != null) 'latitude': latitude,
-          if (longitude != null) 'longitude': longitude,
-        })
-        .select()
-        .single();
+    try {
+      final userId = _client.auth.currentUser!.id;
+      final orderData = await _client
+          .from('orders')
+          .insert({
+            'customer_id': userId,
+            'order_type': orderType,
+            'total_amount': total,
+            'address': address,
+            'preferred_date': preferredDate?.toIso8601String().split('T')[0],
+            'preferred_time_slot': timeSlot,
+            'notes': notes,
+            'include_installation': includeInstall,
+            'scheduled_period': scheduledPeriod,
+            'scheduled_hour': scheduledHour,
+            'quote_status': quoteStatus,
+            if (latitude != null) 'latitude': latitude,
+            if (longitude != null) 'longitude': longitude,
+          })
+          .select()
+          .single();
 
-    final orderId = orderData['id'] as String;
-    for (final item in items) {
-      item['order_id'] = orderId;
-      await _client.from('order_items').insert(item);
+      final orderId = orderData['id'] as String;
+
+      // إدخال عناصر الطلب — try/catch مستقل برسالة مخصصة
+      try {
+        for (final item in items) {
+          item['order_id'] = orderId;
+          await _client.from('order_items').insert(item);
+        }
+      } catch (e) {
+        throw const ServerException(
+          message: 'فشل في إتمام الطلب، يرجى المحاولة مجدداً',
+        );
+      }
+
+      return orderId;
+    } catch (e) {
+      // لا تُغلِّف AppException مرة أخرى
+      if (e is AppException) rethrow;
+      throw ErrorMapper.from(e);
     }
-    return orderId;
   }
 
   Future<void> updateOrderStatus(String id, String status) async {
-    await _client.from('orders').update({'status': status}).eq('id', id);
+    try {
+      await _client.from('orders').update({'status': status}).eq('id', id);
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
   }
 
-  Future<void> updateQuoteStatus(String orderId, String status, {String? rejectionReason}) async {
-    final updates = <String, dynamic>{
-      'quote_status': status,
-      'quote_responded_at': DateTime.now().toIso8601String(),
-    };
-    if (status == 'accepted') {
-      final order = await _client.from('orders').select('quote_price').eq('id', orderId).single();
-      final price = (order['quote_price'] as num?)?.toDouble() ?? 0;
-      updates['status'] = 'confirmed';
-      updates['total_amount'] = price;
-    } else if (status == 'rejected') {
-      if (rejectionReason != null) {
-        updates['rejection_reason'] = rejectionReason;
+  Future<void> updateQuoteStatus(
+    String orderId,
+    String status, {
+    String? rejectionReason,
+  }) async {
+    try {
+      final updates = <String, dynamic>{
+        'quote_status': status,
+        'quote_responded_at': DateTime.now().toIso8601String(),
+      };
+      if (status == 'accepted') {
+        final order = await _client
+            .from('orders')
+            .select('quote_price')
+            .eq('id', orderId)
+            .single();
+        final price = (order['quote_price'] as num?)?.toDouble() ?? 0;
+        updates['status'] = 'confirmed';
+        updates['total_amount'] = price;
+      } else if (status == 'rejected') {
+        if (rejectionReason != null) {
+          updates['rejection_reason'] = rejectionReason;
+        }
       }
+      await _client.from('orders').update(updates).eq('id', orderId);
+    } catch (e) {
+      throw ErrorMapper.from(e);
     }
-    await _client.from('orders').update(updates).eq('id', orderId);
   }
 }
