@@ -21,6 +21,12 @@ class NotificationNotifier
   StreamSubscription? _subscription;
 
   NotificationNotifier(this._repo) : super(const AsyncValue.loading()) {
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) {
+      // ضيف — لا توجد إشعارات
+      state = const AsyncValue.data([]);
+      return;
+    }
     _load();
     _listenRealtime();
   }
