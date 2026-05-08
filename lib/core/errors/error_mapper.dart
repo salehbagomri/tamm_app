@@ -1,3 +1,4 @@
+import 'dart:async' show TimeoutException;
 import 'package:supabase_flutter/supabase_flutter.dart'
     as supabase show AuthException, PostgrestException;
 import 'app_exception.dart';
@@ -33,7 +34,14 @@ abstract final class ErrorMapper {
       return const AuthException();
     }
 
-    // ── 3. فحص رسالة الخطأ (بدون dart:io) ───────────────────────────────────
+    // ── 3. TimeoutException (انتهى وقت الاتصال) ─────────────────────────────
+    if (error is TimeoutException) {
+      return const NetworkException(
+        message: 'انتهى وقت الاتصال، تحقق من الشبكة وأعد المحاولة',
+      );
+    }
+
+    // ── 4. فحص رسالة الخطأ (بدون dart:io) ───────────────────────────────────
     final message = error.toString().toLowerCase();
     const networkKeywords = [
       'network',
