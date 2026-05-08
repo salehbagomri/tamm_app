@@ -22,6 +22,7 @@ class CustomerHomeScreen extends ConsumerWidget {
     final profileAsync = ref.watch(userProfileProvider);
     final featuredAsync = ref.watch(featuredProductsProvider);
     final dealsAsync = ref.watch(dealsProvider);
+    final isGuest = ref.watch(isGuestProvider);
 
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
@@ -69,21 +70,23 @@ class CustomerHomeScreen extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                         const TammNotificationBell(),
-                        _HeaderIcon(
-                          icon: Icons.receipt_long_outlined,
-                          onTap: () => context.push('/customer/orders'),
-                        ),
-                        const SizedBox(width: 8),
-                        Consumer(
-                          builder: (context, ref, child) {
-                            final count = ref.watch(cartCountProvider);
-                            return _HeaderIcon(
-                              icon: Icons.shopping_cart_outlined,
-                              badgeCount: count,
-                              onTap: () => context.push('/customer/cart'),
-                            );
-                          },
-                        ),
+                        if (!isGuest) ...[
+                          _HeaderIcon(
+                            icon: Icons.receipt_long_outlined,
+                            onTap: () => context.push('/customer/orders'),
+                          ),
+                          const SizedBox(width: 8),
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final count = ref.watch(cartCountProvider);
+                              return _HeaderIcon(
+                                icon: Icons.shopping_cart_outlined,
+                                badgeCount: count,
+                                onTap: () => context.push('/customer/cart'),
+                              );
+                            },
+                          ),
+                        ],
                     ],
                   )
                 ],
@@ -465,7 +468,7 @@ class _QuickServiceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.colors.bgSurface,
           border: Border.all(color: context.colors.border),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: Offset(0, 4))],
+          boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 10, offset: Offset(0, 4))],
           borderRadius: AppSpacing.radius,
         ),
         child: Column(

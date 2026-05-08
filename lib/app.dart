@@ -11,6 +11,7 @@ import 'features/auth/presentation/reset_password_screen.dart'
     show passwordResetSignOutProvider;
 import 'shared/providers/theme_provider.dart';
 import 'shared/providers/notification_providers.dart';
+import 'shared/providers/order_providers.dart';
 
 
 class TammApp extends ConsumerStatefulWidget {
@@ -36,11 +37,13 @@ class _TammAppState extends ConsumerState<TammApp> {
 
       switch (data.event) {
         case AuthChangeEvent.signedIn:
-          // أعد تهيئة الإشعارات للمستخدم الجديد فور تسجيل الدخول
+          // أعد تهيئة الإشعارات والسلة للمستخدم الجديد
           ref.invalidate(notificationsProvider);
+          ref.invalidate(cartProvider);
         case AuthChangeEvent.signedOut:
-          // أعد تهيئة الإشعارات لمسح بيانات المستخدم السابق
+          // امسح بيانات الجلسة المنتهية: إشعارات + سلة
           ref.invalidate(notificationsProvider);
+          ref.invalidate(cartProvider);
           // During a password-reset flow the screen calls signOut() and then
           // navigates to /login itself — don't override that navigation.
           final isPasswordReset =
