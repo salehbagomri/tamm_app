@@ -10,6 +10,8 @@ import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../shared/providers/order_providers.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class CartScreen extends ConsumerWidget {
@@ -276,12 +278,11 @@ class CartScreen extends ConsumerWidget {
             borderRadius: AppSpacing.radius,
           ),
         ),
-        error: (e, _) => TammEmptyState(
-          icon: Icons.error_outline,
-          message: 'حدث خطأ أثناء تحميل السلة: $e',
+        error: (e, _) => ErrorStateWidget(
+          message: e is AppException ? e.message : 'حدث خطأ في تحميل السلة',
+          onRetry: () => ref.refresh(cartProvider),
         ),
       ),
     );
   }
 }
-

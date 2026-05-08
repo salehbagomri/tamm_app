@@ -13,7 +13,7 @@ Future<void> main() async {
   await Supabase.initialize(
     url: Env.supabaseUrl,
     anonKey: Env.supabaseAnonKey,
-    httpClient: TammHttpClient(timeout: const Duration(seconds: 10)),
+    httpClient: TammHttpClient(timeout: const Duration(seconds: 5)),
   );
   await FcmService.initialize();
   runApp(const ProviderScope(child: TammApp()));

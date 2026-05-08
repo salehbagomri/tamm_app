@@ -193,7 +193,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                 loading: () => _buildShimmerList(),
                 error: (e, _) => ErrorStateWidget(
                   message: e is AppException ? e.message : 'حدث خطأ في تحميل المنتجات',
-                  onRetry: () => ref.invalidate(featuredProductsProvider),
+                  onRetry: () => ref.refresh(featuredProductsProvider),
                 ),
               ),
               const SizedBox(height: 32),

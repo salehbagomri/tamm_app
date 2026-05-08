@@ -11,6 +11,8 @@ import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../core/widgets/tamm_theme_selector.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/repositories/auth_repository.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class CustomerProfileScreen extends ConsumerWidget {
@@ -131,7 +133,10 @@ class CustomerProfileScreen extends ConsumerWidget {
               ],
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text('$e')),
+            error: (e, _) => ErrorStateWidget(
+              message: e is AppException ? e.message : 'حدث خطأ في تحميل بيانات الحساب',
+              onRetry: () => ref.refresh(userProfileProvider),
+            ),
           ),
         ),
         ),
@@ -182,9 +187,14 @@ class CustomerProfileScreen extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ أثناء الحذف: $e', style: GoogleFonts.harmattan())),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              e is AppException ? e.message : 'حدث خطأ أثناء الحذف',
+              style: GoogleFonts.harmattan(fontSize: 15),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+          ));
       }
     }
   }
