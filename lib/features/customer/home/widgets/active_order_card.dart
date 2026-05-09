@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../shared/providers/order_providers.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
@@ -20,17 +19,17 @@ class ActiveOrderCard extends ConsumerWidget {
 
         return Container(
           width: double.infinity,
-          margin: const EdgeInsets.only(top: 24),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(top: AppSpacing.lg),
+          padding: AppSpacing.cardPadding,
           decoration: BoxDecoration(
             color: context.colors.bgSurface,
             borderRadius: AppSpacing.radiusLg,
             border: Border.all(
-              color: context.colors.bluePrimary.withOpacity(0.3),
+              color: context.colors.bluePrimary.withValues(alpha: 0.3),
             ),
             boxShadow: [
               BoxShadow(
-                color: context.colors.bluePrimary.withOpacity(0.1),
+                color: context.colors.bluePrimary.withValues(alpha: 0.1),
                 blurRadius: 10,
                 spreadRadius: 1,
               ),
@@ -45,62 +44,50 @@ class ActiveOrderCard extends ConsumerWidget {
                   Row(
                     children: [
                       Icon(Icons.electric_bolt, color: context.colors.blueSky),
-                      const SizedBox(width: 8),
+                      AppSpacing.hGapSm,
                       Text(
                         'طلب نشط',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: context.colors.blueSky,
-                        ),
+                        style: AppTextStyles.body(
+                          context.colors.blueSky,
+                        ).copyWith(fontWeight: AppTextStyles.bold),
                       ),
                     ],
                   ),
                   _buildStatusBadge(context, order.status, order.statusLabel),
                 ],
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               Text(
                 'رقم الطلب: #${order.orderNumber}',
-                style: GoogleFonts.harmattan(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.cardTitle(context.colors.textPrimary),
               ),
               if (order.notes != null && order.notes!.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                AppSpacing.gapXs,
                 Text(
                   order.notes!,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 14,
-                    color: context.colors.textSecond,
-                  ),
+                  style: AppTextStyles.bodySmall(context.colors.textSecond),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
               if (order.technicianName != null) ...[
-                const SizedBox(height: 8),
+                AppSpacing.gapSm,
                 Row(
                   children: [
                     Icon(
                       Icons.engineering,
-                      size: 16,
+                      size: AppSpacing.iconSm,
                       color: context.colors.textSecond,
                     ),
-                    const SizedBox(width: 4),
+                    AppSpacing.hGapXs,
                     Text(
                       'الفني: ${order.technicianName}',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textSecond),
                     ),
                   ],
                 ),
               ],
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -117,10 +104,7 @@ class ActiveOrderCard extends ConsumerWidget {
                   ),
                   child: Text(
                     'تفاصيل الطلب',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: AppTextStyles.button(context.colors.blueSky),
                   ),
                 ),
               ),
@@ -159,19 +143,20 @@ class ActiveOrderCard extends ConsumerWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm2,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(100),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
         label,
-        style: GoogleFonts.harmattan(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
+        style: AppTextStyles.caption(
+          color,
+        ).copyWith(fontWeight: AppTextStyles.semiBold),
       ),
     );
   }

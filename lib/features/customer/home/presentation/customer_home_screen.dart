@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/providers/product_providers.dart';
@@ -46,10 +46,8 @@ class CustomerHomeScreen extends ConsumerWidget {
                           profileAsync.when(
                             data: (p) => Text(
                               'أهلاً ${p?.fullName.isNotEmpty == true ? p!.fullName : 'بك'} 👋',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700,
-                                color: context.colors.textPrimary,
+                              style: AppTextStyles.h3(
+                                context.colors.textPrimary,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -57,12 +55,11 @@ class CustomerHomeScreen extends ConsumerWidget {
                             loading: () => const SizedBox.shrink(),
                             error: (_, __) => const SizedBox.shrink(),
                           ),
-                          const SizedBox(height: 4),
+                          AppSpacing.gapXs,
                           Text(
                             'كيف نقدر نخدمك اليوم؟',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              color: context.colors.textSecond,
+                            style: AppTextStyles.body(
+                              context.colors.textSecond,
                             ),
                           ),
                         ],
@@ -73,12 +70,12 @@ class CustomerHomeScreen extends ConsumerWidget {
                       children: [
                         const TammNotificationBell(),
                         if (!isGuest) ...[
-                          const SizedBox(width: 8),
+                          AppSpacing.hGapSm,
                           _HeaderIcon(
                             icon: Icons.receipt_long_outlined,
                             onTap: () => context.push('/customer/orders'),
                           ),
-                          const SizedBox(width: 8),
+                          AppSpacing.hGapSm,
                           Consumer(
                             builder: (context, ref, child) {
                               final count = ref.watch(cartCountProvider);
@@ -94,7 +91,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                AppSpacing.gapLg,
 
                 // 2. Search Bar
                 GestureDetector(
@@ -103,8 +100,8 @@ class CustomerHomeScreen extends ConsumerWidget {
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm2,
                     ),
                     decoration: BoxDecoration(
                       color: context.colors.bgSurface,
@@ -114,34 +111,27 @@ class CustomerHomeScreen extends ConsumerWidget {
                     child: Row(
                       children: [
                         Icon(Icons.search, color: context.colors.textSecond),
-                        const SizedBox(width: 8),
+                        AppSpacing.hGapSm,
                         Text(
                           'ابحث عن منتجات، مكيفات، ألواح...',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 16,
-                            color: context.colors.textSecond,
-                          ),
+                          style: AppTextStyles.body(context.colors.textSecond),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                AppSpacing.gapLg,
 
                 // 4. Promo Slider
                 const PromoSlider(),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 // 5. Quick Services (3 Cards)
                 Text(
                   'خدمات سريعة',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.sectionTitle(context.colors.textPrimary),
                 ),
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
                 Row(
                   children: [
                     Expanded(
@@ -153,7 +143,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    AppSpacing.hGapSm2,
                     Expanded(
                       child: _QuickServiceCard(
                         icon: Icons.build,
@@ -163,7 +153,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    AppSpacing.hGapSm2,
                     Expanded(
                       child: _QuickServiceCard(
                         icon: Icons.support_agent,
@@ -175,7 +165,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 // 6. Most Popular (Featured Products)
                 Row(
@@ -183,10 +173,8 @@ class CustomerHomeScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'الأكثر طلباً 🔥',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: context.colors.textPrimary,
+                      style: AppTextStyles.sectionTitle(
+                        context.colors.textPrimary,
                       ),
                     ),
                     TextButton(
@@ -194,14 +182,12 @@ class CustomerHomeScreen extends ConsumerWidget {
                           context.push('/customer/catalog/best_sellers'),
                       child: Text(
                         'عرض الكل',
-                        style: GoogleFonts.harmattan(
-                          color: context.colors.blueLight,
-                        ),
+                        style: AppTextStyles.body(context.colors.blueLight),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
                 featuredAsync.when(
                   data: (products) => _buildProductList(context, products),
                   loading: () => _buildShimmerList(),
@@ -212,7 +198,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     onRetry: () => ref.refresh(featuredProductsProvider),
                   ),
                 ),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 // 7. Special Deals
                 dealsAsync.when(
@@ -226,10 +212,8 @@ class CustomerHomeScreen extends ConsumerWidget {
                           children: [
                             Text(
                               'عروض وأسعار مميزة 🏷️',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: context.colors.textPrimary,
+                              style: AppTextStyles.sectionTitle(
+                                context.colors.textPrimary,
                               ),
                             ),
                             TextButton(
@@ -237,16 +221,16 @@ class CustomerHomeScreen extends ConsumerWidget {
                                   context.push('/customer/catalog/deals'),
                               child: Text(
                                 'تصفح العروض',
-                                style: GoogleFonts.harmattan(
-                                  color: context.colors.blueLight,
+                                style: AppTextStyles.body(
+                                  context.colors.blueLight,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        AppSpacing.gapSm2,
                         _buildProductList(context, deals),
-                        const SizedBox(height: 32),
+                        AppSpacing.gapXl,
                       ],
                     );
                   },
@@ -269,14 +253,14 @@ class CustomerHomeScreen extends ConsumerWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: products.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => AppSpacing.hGapSm2,
         itemBuilder: (_, i) {
           final p = products[i];
           return GestureDetector(
             onTap: () => context.push('/customer/product/${p.id}'),
             child: Container(
               width: 160,
-              padding: const EdgeInsets.all(12),
+              padding: AppSpacing.cardPaddingSm,
               decoration: BoxDecoration(
                 color: context.colors.bgSurface,
                 borderRadius: AppSpacing.radius,
@@ -333,15 +317,13 @@ class CustomerHomeScreen extends ConsumerWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: context.colors.warning,
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: AppSpacing.radiusXs,
                               ),
                               child: Text(
                                 'مميز',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
+                                style: AppTextStyles.badge(
+                                  Colors.white,
+                                ).copyWith(fontWeight: AppTextStyles.bold),
                               ),
                             ),
                           ),
@@ -356,64 +338,53 @@ class CustomerHomeScreen extends ConsumerWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: context.colors.error,
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: AppSpacing.radiusXs,
                               ),
                               child: Text(
                                 'خصم ${p.discountPercentage}%',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
+                                style: AppTextStyles.badge(
+                                  Colors.white,
+                                ).copyWith(fontWeight: AppTextStyles.bold),
                               ),
                             ),
                           ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.gapSm,
                   Text(
                     p.name,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.bodySmall(
+                      context.colors.textPrimary,
+                    ).copyWith(fontWeight: AppTextStyles.semiBold),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  AppSpacing.gapXs,
                   Row(
                     children: [
                       Text(
                         p.price != null
                             ? '${p.price!.toInt()}'
                             : 'السعر غير محدد',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 14,
-                          color: context.colors.blueSky,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: AppTextStyles.bodySmall(
+                          context.colors.blueSky,
+                        ).copyWith(fontWeight: AppTextStyles.bold),
                       ),
                       if (p.price != null) ...[
-                        const SizedBox(width: 4),
+                        AppSpacing.hGapXs,
                         Text(
                           'ر.س',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 10,
-                            color: context.colors.blueSky,
-                          ),
+                          style: AppTextStyles.badge(context.colors.blueSky),
                         ),
                       ],
                       if (p.hasDiscount) ...[
-                        const SizedBox(width: 6),
+                        AppSpacing.hGapXs,
                         Text(
                           '${p.oldPrice!.toInt()}',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 12,
-                            color: context.colors.textSecond,
-                            decoration: TextDecoration.lineThrough,
-                          ),
+                          style: AppTextStyles.caption(
+                            context.colors.textSecond,
+                          ).copyWith(decoration: TextDecoration.lineThrough),
                         ),
                       ],
                     ],
@@ -433,11 +404,11 @@ class CustomerHomeScreen extends ConsumerWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: 3,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => AppSpacing.hGapSm2,
         itemBuilder: (_, __) => TammShimmer(
           width: 160,
           height: 200,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppSpacing.radius,
         ),
       ),
     );
@@ -464,12 +435,16 @@ class _HeaderIcon extends StatelessWidget {
         label: Text('$badgeCount'),
         backgroundColor: context.colors.error,
         child: Container(
-          padding: const EdgeInsets.all(10),
+          padding: AppSpacing.iconCirclePadding,
           decoration: BoxDecoration(
             color: context.colors.bluePrimary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: context.colors.blueSky, size: 24),
+          child: Icon(
+            icon,
+            color: context.colors.blueSky,
+            size: AppSpacing.iconMd,
+          ),
         ),
       ),
     );
@@ -507,15 +482,17 @@ class _QuickServiceCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: context.colors.bluePrimary, size: 28),
-            const SizedBox(height: 6),
+            Icon(
+              icon,
+              color: context.colors.bluePrimary,
+              size: AppSpacing.iconLg,
+            ),
+            AppSpacing.gapXs,
             Text(
               label,
-              style: GoogleFonts.harmattan(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: context.colors.textPrimary,
-              ),
+              style: AppTextStyles.bodySmall(
+                context.colors.textPrimary,
+              ).copyWith(fontWeight: AppTextStyles.semiBold),
             ),
           ],
         ),

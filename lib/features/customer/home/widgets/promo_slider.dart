@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../shared/models/promotion.dart';
 import '../../../../shared/providers/promotion_providers.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
@@ -86,7 +86,7 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
       loading: () => const TammShimmer(
         height: 160,
         width: double.infinity,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderRadius: AppSpacing.radiusLg,
       ),
       error: (_, __) => _buildSlider(context, _fallbackPromos),
     );
@@ -114,21 +114,21 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
           ),
         ),
         if (promos.length > 1) ...[
-          const SizedBox(height: 12),
+          AppSpacing.gapSm2,
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               promos.length,
               (index) => AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                margin: const EdgeInsets.symmetric(horizontal: 4),
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
                 width: _currentPage == index ? 24 : 8,
                 height: 8,
                 decoration: BoxDecoration(
                   color: _currentPage == index
                       ? context.colors.blueSky
                       : context.colors.border,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: AppSpacing.radiusXs,
                 ),
               ),
             ),
@@ -142,8 +142,8 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
     return GestureDetector(
       onTap: () => context.push(promo.destination),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+        padding: AppSpacing.cardPadding,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: promo.gradientColors,
@@ -153,7 +153,7 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
           borderRadius: AppSpacing.radiusLg,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -168,31 +168,30 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
                 children: [
                   Text(
                     promo.title,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
+                    style: AppTextStyles.sectionTitle(Colors.white),
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.gapSm,
                   Text(
                     promo.subtitle,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                    style: AppTextStyles.body(
+                      Colors.white.withValues(alpha: 0.9),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            AppSpacing.hGapMd,
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: AppSpacing.cardPadding,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: Icon(promo.icon, color: Colors.white, size: 32),
+              child: Icon(
+                promo.icon,
+                color: Colors.white,
+                size: AppSpacing.iconXl,
+              ),
             ),
           ],
         ),

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../shared/models/order.dart';
 import '../../../../shared/providers/order_providers.dart';
@@ -27,27 +26,21 @@ class RecentOrders extends ConsumerWidget {
           children: [
             Text(
               'أحدث الطلبات',
-              style: GoogleFonts.harmattan(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-              ),
+              style: AppTextStyles.sectionTitle(context.colors.textPrimary),
             ),
             if (recentOrdersAsync.valueOrNull?.isNotEmpty ?? false)
               TextButton(
                 onPressed: () => context.push('/customer/orders'),
                 child: Text(
                   'كل الطلبات',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: context.colors.blueSky,
-                  ),
+                  style: AppTextStyles.body(
+                    context.colors.blueSky,
+                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
               ),
           ],
         ),
-        const SizedBox(height: 12),
+        AppSpacing.gapSm2,
         recentOrdersAsync.when(
           data: (orders) {
             if (orders.isEmpty) return _buildEmptyState(context);
@@ -82,25 +75,18 @@ class RecentOrders extends ConsumerWidget {
             size: 48,
             color: context.colors.textFaint,
           ),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
           Text(
             'لا توجد طلبات سابقة',
-            style: GoogleFonts.harmattan(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: context.colors.textPrimary,
-            ),
+            style: AppTextStyles.cardTitle(context.colors.textPrimary),
           ),
-          const SizedBox(height: 8),
+          AppSpacing.gapSm,
           Text(
             'تصفح خدماتنا ومنتجاتنا لتبدأ طلبك الأول',
             textAlign: TextAlign.center,
-            style: GoogleFonts.harmattan(
-              fontSize: 14,
-              color: context.colors.textSecond,
-            ),
+            style: AppTextStyles.bodySmall(context.colors.textSecond),
           ),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
           SizedBox(
             width: 150,
             child: TammButton(
@@ -132,7 +118,7 @@ class RecentOrders extends ConsumerWidget {
       borderRadius: AppSpacing.radiusSm,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         decoration: BoxDecoration(
           color: context.colors.bgSurface,
           borderRadius: AppSpacing.radiusSm,
@@ -141,14 +127,14 @@ class RecentOrders extends ConsumerWidget {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: AppSpacing.cardPaddingSm,
               decoration: BoxDecoration(
-                color: context.colors.bluePrimary.withOpacity(0.1),
+                color: context.colors.bluePrimary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: context.colors.blueSky),
             ),
-            const SizedBox(width: 16),
+            AppSpacing.hGapMd,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,11 +144,9 @@ class RecentOrders extends ConsumerWidget {
                     children: [
                       Text(
                         title,
-                        style: GoogleFonts.harmattan(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: context.colors.textPrimary,
-                        ),
+                        style: AppTextStyles.body(
+                          context.colors.textPrimary,
+                        ).copyWith(fontWeight: AppTextStyles.bold),
                       ),
                       _buildStatusLabel(
                         context,
@@ -171,29 +155,26 @@ class RecentOrders extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  AppSpacing.gapXs,
                   Row(
                     children: [
                       Text(
                         '#${order.orderNumber}',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 14,
-                          color: context.colors.textSecond,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: AppTextStyles.bodySmall(
+                          context.colors.textSecond,
+                        ).copyWith(fontWeight: AppTextStyles.bold),
                       ),
-                      const SizedBox(width: 12),
+                      AppSpacing.hGapSm2,
                       Icon(
                         Icons.circle,
                         size: 4,
                         color: context.colors.textFaint,
                       ),
-                      const SizedBox(width: 12),
+                      AppSpacing.hGapSm2,
                       Text(
                         dateFormat.format(order.createdAt),
-                        style: GoogleFonts.harmattan(
-                          fontSize: 14,
-                          color: context.colors.textSecond,
+                        style: AppTextStyles.bodySmall(
+                          context.colors.textSecond,
                         ),
                       ),
                     ],
@@ -234,11 +215,9 @@ class RecentOrders extends ConsumerWidget {
 
     return Text(
       label,
-      style: GoogleFonts.harmattan(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
+      style: AppTextStyles.bodySmall(
+        color,
+      ).copyWith(fontWeight: AppTextStyles.semiBold),
     );
   }
 
