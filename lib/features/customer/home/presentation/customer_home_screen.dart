@@ -190,7 +190,8 @@ class CustomerHomeScreen extends ConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.push('/customer/store'),
+                      onPressed: () =>
+                          context.push('/customer/catalog/best_sellers'),
                       child: Text(
                         'عرض الكل',
                         style: GoogleFonts.harmattan(
@@ -232,7 +233,8 @@ class CustomerHomeScreen extends ConsumerWidget {
                               ),
                             ),
                             TextButton(
-                              onPressed: () => context.push('/customer/store'),
+                              onPressed: () =>
+                                  context.push('/customer/catalog/deals'),
                               child: Text(
                                 'تصفح العروض',
                                 style: GoogleFonts.harmattan(

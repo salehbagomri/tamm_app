@@ -16,6 +16,7 @@ import '../../features/customer/customer_shell.dart';
 import '../../features/customer/home/presentation/customer_home_screen.dart';
 import '../../features/customer/search/presentation/search_screen.dart';
 import '../../features/customer/store/presentation/store_screen.dart';
+import '../../features/customer/store/presentation/product_catalog_screen.dart';
 import '../../features/customer/store/presentation/product_detail_screen.dart';
 import '../../features/customer/store/presentation/cart_screen.dart';
 import '../../features/customer/store/presentation/checkout_screen.dart';
@@ -61,7 +62,9 @@ import '../../features/notifications/presentation/notifications_screen.dart';
 
 // Navigator keys — prevent duplicate page key assertions
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
-final _customerShellKey = GlobalKey<NavigatorState>(debugLabel: 'customerShell');
+final _customerShellKey = GlobalKey<NavigatorState>(
+  debugLabel: 'customerShell',
+);
 final _managerShellKey = GlobalKey<NavigatorState>(debugLabel: 'managerShell');
 final _technicianShellKey = GlobalKey<NavigatorState>(debugLabel: 'techShell');
 
@@ -79,8 +82,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/welcome', builder: (_, __) => const WelcomeScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
-      GoRoute(path: '/forgot-password', builder: (_, __) => const ForgotPasswordScreen()),
-      GoRoute(path: '/reset-password', builder: (_, __) => const ResetPasswordScreen()),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (_, __) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password',
+        builder: (_, __) => const ResetPasswordScreen(),
+      ),
 
       // ========== NOTIFICATIONS (shared) ==========
       GoRoute(
@@ -122,6 +131,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
+        path: '/customer/catalog/:filter',
+        builder: (_, state) {
+          final filterStr = state.pathParameters['filter']!;
+          final filter = filterStr == 'deals'
+              ? CatalogFilter.deals
+              : CatalogFilter.bestSellers;
+          return ProductCatalogScreen(filter: filter);
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/product/:id',
         builder: (_, state) =>
             ProductDetailScreen(productId: state.pathParameters['id']!),
@@ -139,9 +159,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/order-success/:id',
-        builder: (_, state) => OrderSuccessScreen(
-          orderId: state.pathParameters['id']!,
-        ),
+        builder: (_, state) =>
+            OrderSuccessScreen(orderId: state.pathParameters['id']!),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
@@ -158,23 +177,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/booking-confirmation/:id',
-        builder: (_, state) => BookingConfirmationScreen(
-          orderId: state.pathParameters['id']!,
-        ),
+        builder: (_, state) =>
+            BookingConfirmationScreen(orderId: state.pathParameters['id']!),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/quote-request/:id',
-        builder: (_, state) => QuoteRequestScreen(
-          serviceTypeId: state.pathParameters['id']!,
-        ),
+        builder: (_, state) =>
+            QuoteRequestScreen(serviceTypeId: state.pathParameters['id']!),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/quote-response/:id',
-        builder: (_, state) => QuoteResponseScreen(
-          orderId: state.pathParameters['id']!,
-        ),
+        builder: (_, state) =>
+            QuoteResponseScreen(orderId: state.pathParameters['id']!),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
@@ -235,16 +251,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/manager/order/:id',
-        builder: (_, state) => ManagerOrderDetailScreen(
-          orderId: state.pathParameters['id']!,
-        ),
+        builder: (_, state) =>
+            ManagerOrderDetailScreen(orderId: state.pathParameters['id']!),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/manager/quote/:id',
-        builder: (_, state) => ManagerQuoteDetailScreen(
-          orderId: state.pathParameters['id']!,
-        ),
+        builder: (_, state) =>
+            ManagerQuoteDetailScreen(orderId: state.pathParameters['id']!),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
