@@ -1,6 +1,6 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
@@ -48,16 +48,14 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                     totalCompleted,
                     currentPending,
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                   Text(
                     'سجل المهام (${assignments.length})',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
+                    style: AppTextStyles.sectionTitle(
+                      context.colors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                   if (assignments.isEmpty)
                     const TammEmptyState(
                       icon: Icons.assignment,
@@ -68,7 +66,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: assignments.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, __) => AppSpacing.gapSm2,
                       itemBuilder: (_, i) {
                         return _buildAssignmentCard(context, assignments[i]);
                       },
@@ -98,7 +96,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
     int currentPending,
   ) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(AppSpacing.radiusXlValue),
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radius,
@@ -119,30 +117,19 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
               profile?['full_name']?.toString().isNotEmpty == true
                   ? profile!['full_name'][0]
                   : '?',
-              style: GoogleFonts.harmattan(
-                fontSize: 32,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyles.body(context.colors.textPrimary),
             ),
           ),
-          const SizedBox(height: 12),
+          AppSpacing.gapSm2,
           Text(
             profile?['full_name'] ?? 'بدون اسم',
-            style: GoogleFonts.harmattan(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: context.colors.textPrimary,
-            ),
+            style: AppTextStyles.body(context.colors.textPrimary),
           ),
           Text(
             tech['specialization'] ?? '',
-            style: GoogleFonts.harmattan(
-              fontSize: 16,
-              color: context.colors.textSecond,
-            ),
+            style: AppTextStyles.body(context.colors.textSecond),
           ),
-          const SizedBox(height: 8),
+          AppSpacing.gapSm,
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
@@ -155,16 +142,14 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
               tech['status'] == 'available'
                   ? 'الفني متاح حالياً'
                   : 'الفني مشغول بمهمة',
-              style: GoogleFonts.harmattan(
-                fontSize: 14,
-                color: tech['status'] == 'available'
+              style: AppTextStyles.bodySmall(
+                tech['status'] == 'available'
                     ? context.colors.success
                     : context.colors.warning,
-                fontWeight: FontWeight.w700,
-              ),
+              ).copyWith(fontWeight: AppTextStyles.bold),
             ),
           ),
-          const SizedBox(height: 24),
+          AppSpacing.gapLg,
           Row(
             children: [
               Expanded(
@@ -175,7 +160,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                   context.colors.success,
                 ),
               ),
-              const SizedBox(width: 12),
+              AppSpacing.hGapSm2,
               Expanded(
                 child: _buildStatBox(
                   context,
@@ -206,20 +191,10 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          Text(
-            value,
-            style: GoogleFonts.harmattan(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
+          Text(value, style: AppTextStyles.body(context.colors.textPrimary)),
           Text(
             label,
-            style: GoogleFonts.harmattan(
-              fontSize: 14,
-              color: context.colors.textSecond,
-            ),
+            style: AppTextStyles.bodySmall(context.colors.textSecond),
           ),
         ],
       ),
@@ -255,42 +230,32 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
             children: [
               Text(
                 'رقم الطلب: #${order?['id'].toString().substring(0, 5) ?? '...'}',
-                style: GoogleFonts.harmattan(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.bodySmall(
+                  context.colors.textPrimary,
+                ).copyWith(fontWeight: AppTextStyles.bold),
               ),
               Text(
                 dateStr,
-                style: GoogleFonts.harmattan(
-                  fontSize: 12,
-                  color: context.colors.textFaint,
-                ),
+                style: AppTextStyles.caption(context.colors.textFaint),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          AppSpacing.gapSm,
           Text(
             order?['address'] ?? 'بدون عنوان',
-            style: GoogleFonts.harmattan(
-              fontSize: 16,
-              color: context.colors.textPrimary,
-            ),
+            style: AppTextStyles.body(context.colors.textPrimary),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
+          AppSpacing.gapSm,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 statusLabel,
-                style: GoogleFonts.harmattan(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: statusColor,
-                ),
+                style: AppTextStyles.bodySmall(
+                  statusColor,
+                ).copyWith(fontWeight: AppTextStyles.bold),
               ),
               if (assignment['notes'] != null)
                 Icon(

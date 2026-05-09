@@ -1,6 +1,6 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
@@ -56,13 +56,9 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
             children: [
               Text(
                 'إدارة الفنيين',
-                style: GoogleFonts.harmattan(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.body(context.colors.textPrimary),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Expanded(
                 child: techsAsync.when(
                   data: (techs) {
@@ -95,12 +91,12 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                                             true
                                         ? p!['full_name'][0]
                                         : '?',
-                                    style: GoogleFonts.harmattan(
-                                      color: context.colors.textPrimary,
+                                    style: AppTextStyles.body(
+                                      context.colors.textPrimary,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
+                                AppSpacing.hGapSm2,
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -108,24 +104,20 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                                     children: [
                                       Text(
                                         p?['full_name'] ?? '',
-                                        style: GoogleFonts.harmattan(
-                                          fontWeight: FontWeight.w600,
-                                          color: context.colors.textPrimary,
+                                        style: AppTextStyles.body(
+                                          context.colors.textPrimary,
                                         ),
                                       ),
                                       Text(
                                         t['specialization'] ?? '',
-                                        style: GoogleFonts.harmattan(
-                                          fontSize: 14,
-                                          color: context.colors.textSecond,
+                                        style: AppTextStyles.bodySmall(
+                                          context.colors.textSecond,
                                         ),
                                       ),
                                       Text(
                                         t['phone'] ?? '',
-                                        style: GoogleFonts.harmattan(
-                                          fontSize: 13,
-                                          color: context.colors.textFaint,
-                                          letterSpacing: 1,
+                                        style: AppTextStyles.body(
+                                          context.colors.textPrimary,
                                         ),
                                       ),
                                     ],
@@ -150,12 +142,8 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                                     t['status'] == 'available'
                                         ? 'متاح'
                                         : 'مشغول',
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 12,
-                                      color: t['status'] == 'available'
-                                          ? context.colors.success
-                                          : context.colors.warning,
-                                      fontWeight: FontWeight.w600,
+                                    style: AppTextStyles.body(
+                                      context.colors.textPrimary,
                                     ),
                                   ),
                                 ),
@@ -184,10 +172,7 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
         icon: const Icon(Icons.person_add, color: Colors.white),
         label: Text(
           'إضافة فني',
-          style: GoogleFonts.harmattan(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         onPressed: () async {
           await context.push('/manager/add-technician');

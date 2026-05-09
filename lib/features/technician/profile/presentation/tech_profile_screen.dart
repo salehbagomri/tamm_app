@@ -1,6 +1,6 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../shared/repositories/auth_repository.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -80,33 +80,23 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                       backgroundColor: context.colors.blueDark,
                       child: Text(
                         fullName.isNotEmpty ? fullName[0] : '?',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 32,
-                          color: context.colors.textPrimary,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                     ),
-                  const SizedBox(height: 12),
+                  AppSpacing.gapSm2,
                   Text(
                     fullName,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(context.colors.textPrimary),
                   ),
                   Text(
                     phone,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      color: context.colors.textSecond,
-                    ),
+                    style: AppTextStyles.body(context.colors.textSecond),
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
 
                   // Status Toggle Card
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: AppSpacing.cardPadding,
                     decoration: BoxDecoration(
                       color: context.colors.bgSurface,
                       borderRadius: AppSpacing.radiusLg,
@@ -126,21 +116,16 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                           children: [
                             Text(
                               'الحالة الحالية',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 16,
-                                color: context.colors.textSecond,
+                              style: AppTextStyles.body(
+                                context.colors.textSecond,
                               ),
                             ),
                             Text(
                               isAvailable
                                   ? 'متاح لاستلام المهام'
                                   : 'غير متاح حالياً',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: isAvailable
-                                    ? context.colors.success
-                                    : context.colors.warning,
+                              style: AppTextStyles.body(
+                                context.colors.textPrimary,
                               ),
                             ),
                           ],
@@ -162,14 +147,14 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
 
                   // Stats Card
                   Row(
                     children: [
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: AppSpacing.cardPadding,
                           decoration: BoxDecoration(
                             color: context.colors.bgSurface,
                             borderRadius: AppSpacing.radiusLg,
@@ -188,29 +173,27 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                                 color: context.colors.bluePrimary,
                                 size: 32,
                               ),
-                              const SizedBox(height: 8),
+                              AppSpacing.gapSm,
                               Text(
                                 'التخصص',
-                                style: GoogleFonts.harmattan(
-                                  color: context.colors.textSecond,
+                                style: AppTextStyles.body(
+                                  context.colors.textSecond,
                                 ),
                               ),
                               Text(
                                 specialization,
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: context.colors.textPrimary,
+                                style: AppTextStyles.body(
+                                  context.colors.textPrimary,
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      AppSpacing.hGapMd,
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: AppSpacing.cardPadding,
                           decoration: BoxDecoration(
                             color: context.colors.bgSurface,
                             borderRadius: AppSpacing.radiusLg,
@@ -229,19 +212,17 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                                 color: context.colors.success,
                                 size: 32,
                               ),
-                              const SizedBox(height: 8),
+                              AppSpacing.gapSm,
                               Text(
                                 'المهام المنجزة',
-                                style: GoogleFonts.harmattan(
-                                  color: context.colors.textSecond,
+                                style: AppTextStyles.body(
+                                  context.colors.textSecond,
                                 ),
                               ),
                               Text(
                                 completedCount.toString(),
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: context.colors.textPrimary,
+                                style: AppTextStyles.body(
+                                  context.colors.textPrimary,
                                 ),
                               ),
                             ],
@@ -251,7 +232,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                   const TammThemeSelector(),
                   const Spacer(),
                   TammButton(
@@ -261,7 +242,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                     onPressed: () =>
                         AuthRepository.confirmSignOut(context, ref),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                 ],
               );
             },

@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -88,13 +88,9 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
           children: [
             Text(
               'البحث عن مستخدم',
-              style: GoogleFonts.harmattan(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-              ),
+              style: AppTextStyles.cardTitle(context.colors.textPrimary),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapMd,
             Form(
               key: _formKey,
               child: Row(
@@ -109,7 +105,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                       validator: (v) => v == null || v.isEmpty ? 'مطلوب' : null,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  AppSpacing.hGapSm,
                   Padding(
                     padding: const EdgeInsets.only(top: 28.0),
                     child: SizedBox(
@@ -145,28 +141,20 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                 padding: const EdgeInsets.only(top: 16),
                 child: Text(
                   _errorMsg!,
-                  style: GoogleFonts.harmattan(
-                    color: context.colors.error,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
               ),
             if (_foundProfile != null) ...[
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               const Divider(),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Text(
                 'المستخدم المطابق:',
-                style: GoogleFonts.harmattan(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.cardTitle(context.colors.textPrimary),
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: AppSpacing.cardPadding,
                 decoration: BoxDecoration(
                   color: context.colors.bgSurface,
                   borderRadius: AppSpacing.radius,
@@ -177,41 +165,41 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                   children: [
                     Text(
                       _foundProfile!['full_name'] ?? 'بدون اسم',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
+                      style: AppTextStyles.cardTitle(
+                        context.colors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    AppSpacing.gapXs,
                     Text(
                       _foundProfile!['phone'] ?? '',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textSecond),
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.gapMd,
                     Text(
                       'التخصص',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(
+                        context.colors.textSecond,
+                      ).copyWith(fontWeight: AppTextStyles.bold),
                     ),
-                    const SizedBox(height: 8),
+                    AppSpacing.gapSm,
                     SegmentedButton<String>(
                       segments: [
                         ButtonSegment(
                           value: 'مكيفات',
-                          label: Text('مكيفات', style: GoogleFonts.harmattan()),
+                          label: Text(
+                            'مكيفات',
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
+                            ),
+                          ),
                         ),
                         ButtonSegment(
                           value: 'طاقة شمسية',
                           label: Text(
                             'طاقة شمسية',
-                            style: GoogleFonts.harmattan(),
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
+                            ),
                           ),
                         ),
                       ],
@@ -219,7 +207,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                       onSelectionChanged: (s) =>
                           setState(() => _specialization = s.first),
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.gapLg,
                     TammButton(
                       label: 'ترقية إلى فني',
                       isLoading: _isPromoting,

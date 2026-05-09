@@ -1,6 +1,6 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -38,7 +38,7 @@ class _ManagerOrderDetailScreenState
           SnackBar(
             content: Text(
               e is AppException ? e.message : 'حدث خطأ غير متوقع',
-              style: GoogleFonts.harmattan(fontSize: 15),
+              style: AppTextStyles.bodySmall(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
@@ -58,7 +58,7 @@ class _ManagerOrderDetailScreenState
         backgroundColor: context.colors.bgSurface,
         title: Text(
           'تعيين فني',
-          style: GoogleFonts.harmattan(color: context.colors.textPrimary),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         content: Consumer(
           builder: (context, ref, child) {
@@ -76,16 +76,11 @@ class _ManagerOrderDetailScreenState
                     return ListTile(
                       title: Text(
                         p?['full_name'] ?? '',
-                        style: GoogleFonts.harmattan(
-                          color: context.colors.textPrimary,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                       subtitle: Text(
                         t['specialization'] ?? '',
-                        style: GoogleFonts.harmattan(
-                          color: context.colors.textSecond,
-                          fontSize: 14,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                       trailing: Container(
                         padding: const EdgeInsets.symmetric(
@@ -100,9 +95,8 @@ class _ManagerOrderDetailScreenState
                         ),
                         child: Text(
                           t['status'] == 'available' ? 'متاح' : 'مشغول',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 12,
-                            color: t['status'] == 'available'
+                          style: AppTextStyles.caption(
+                            t['status'] == 'available'
                                 ? context.colors.success
                                 : context.colors.warning,
                           ),
@@ -157,42 +151,32 @@ class _ManagerOrderDetailScreenState
                       children: [
                         Text(
                           o.orderNumber,
-                          style: GoogleFonts.harmattan(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: context.colors.textPrimary,
+                          style: AppTextStyles.sectionTitle(
+                            context.colors.textPrimary,
                           ),
                         ),
                         Text(
                           o.statusLabel,
-                          style: GoogleFonts.harmattan(
-                            color: context.colors.bluePrimary,
-                          ),
+                          style: AppTextStyles.body(context.colors.bluePrimary),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    AppSpacing.gapSm,
                     Text(
                       'العنوان: ${o.address}',
-                      style: GoogleFonts.harmattan(
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.body(context.colors.textSecond),
                     ),
                     if (o.preferredDate != null)
                       Text(
                         'الموعد: ${o.preferredDate!.day}/${o.preferredDate!.month}',
-                        style: GoogleFonts.harmattan(
-                          color: context.colors.textSecond,
-                        ),
+                        style: AppTextStyles.body(context.colors.textSecond),
                       ),
                     if (o.notes != null && o.notes!.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           'ملاحظات العميل: ${o.notes}',
-                          style: GoogleFonts.harmattan(
-                            color: context.colors.textSecond,
-                          ),
+                          style: AppTextStyles.body(context.colors.textSecond),
                         ),
                       ),
                     if (o.technicianNotes != null &&
@@ -201,31 +185,24 @@ class _ManagerOrderDetailScreenState
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           'تقرير الفني (${o.technicianName ?? 'غير معروف'}): ${o.technicianNotes}',
-                          style: GoogleFonts.harmattan(
-                            color: context.colors.textPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                       ),
                     Text(
                       'المجموع: ${o.totalAmount.toInt()} ر.س',
-                      style: GoogleFonts.harmattan(
-                        color: context.colors.blueSky,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               if (o.status == 'pending') ...[
                 TammButton(
                   label: 'تأكيد الطلب',
                   isLoading: _loading,
                   onPressed: () => _updateStatus('confirmed'),
                 ),
-                const SizedBox(height: 8),
+                AppSpacing.gapSm,
               ],
               if (o.status == 'confirmed') ...[
                 TammButton(
@@ -233,7 +210,7 @@ class _ManagerOrderDetailScreenState
                   icon: Icons.engineering,
                   onPressed: _showAssignDialog,
                 ),
-                const SizedBox(height: 8),
+                AppSpacing.gapSm,
               ],
               if (o.status != 'completed' && o.status != 'cancelled') ...[
                 TammButton(

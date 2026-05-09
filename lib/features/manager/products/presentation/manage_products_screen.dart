@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
@@ -35,14 +35,10 @@ class ManageProductsScreen extends ConsumerWidget {
                   Flexible(
                     child: Text(
                       'إدارة المنتجات',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                      ),
+                      style: AppTextStyles.h3(context.colors.textPrimary),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  AppSpacing.hGapSm,
                   TextButton.icon(
                     onPressed: () => context.push('/manager/promotions'),
                     icon: Icon(
@@ -52,15 +48,12 @@ class ManageProductsScreen extends ConsumerWidget {
                     ),
                     label: Text(
                       'العروض',
-                      style: GoogleFonts.harmattan(
-                        fontWeight: FontWeight.w600,
-                        color: context.colors.blueSky,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Expanded(
                 child: productsAsync.when(
                   data: (products) {
@@ -102,23 +95,21 @@ class ManageProductsScreen extends ConsumerWidget {
                                         color: context.colors.textFaint,
                                       ),
                               ),
-                              const SizedBox(width: 12),
+                              AppSpacing.hGapSm2,
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       p.name,
-                                      style: GoogleFonts.harmattan(
-                                        fontWeight: FontWeight.w600,
-                                        color: context.colors.textPrimary,
+                                      style: AppTextStyles.body(
+                                        context.colors.textPrimary,
                                       ),
                                     ),
                                     Text(
                                       p.categoryLabel,
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 14,
-                                        color: context.colors.textSecond,
+                                      style: AppTextStyles.bodySmall(
+                                        context.colors.textSecond,
                                       ),
                                     ),
                                     Row(
@@ -134,16 +125,17 @@ class ManageProductsScreen extends ConsumerWidget {
                                             ),
                                             decoration: BoxDecoration(
                                               color: context.colors.warning,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              borderRadius: AppSpacing.radiusXs,
                                             ),
                                             child: Text(
                                               'مميز ⭐',
-                                              style: GoogleFonts.harmattan(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.white,
-                                              ),
+                                              style:
+                                                  AppTextStyles.badge(
+                                                    Colors.white,
+                                                  ).copyWith(
+                                                    fontWeight:
+                                                        AppTextStyles.bold,
+                                                  ),
                                             ),
                                           ),
                                         if (p.hasDiscount)
@@ -154,16 +146,17 @@ class ManageProductsScreen extends ConsumerWidget {
                                             ),
                                             decoration: BoxDecoration(
                                               color: context.colors.error,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              borderRadius: AppSpacing.radiusXs,
                                             ),
                                             child: Text(
                                               'خصم ${p.discountPercentage}%',
-                                              style: GoogleFonts.harmattan(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.white,
-                                              ),
+                                              style:
+                                                  AppTextStyles.badge(
+                                                    Colors.white,
+                                                  ).copyWith(
+                                                    fontWeight:
+                                                        AppTextStyles.bold,
+                                                  ),
                                             ),
                                           ),
                                       ],
@@ -177,19 +170,20 @@ class ManageProductsScreen extends ConsumerWidget {
                                   if (p.hasDiscount)
                                     Text(
                                       '${p.oldPrice!.toInt()}',
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 12,
-                                        color: context.colors.textSecond,
-                                        decoration: TextDecoration.lineThrough,
-                                      ),
+                                      style:
+                                          AppTextStyles.caption(
+                                            context.colors.textSecond,
+                                          ).copyWith(
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                          ),
                                     ),
                                   Text(
                                     p.price != null
                                         ? '${p.price!.toInt()} ر.س'
                                         : 'عرض سعر',
-                                    style: GoogleFonts.harmattan(
-                                      color: context.colors.blueSky,
-                                      fontWeight: FontWeight.w700,
+                                    style: AppTextStyles.body(
+                                      context.colors.textPrimary,
                                     ),
                                   ),
                                 ],

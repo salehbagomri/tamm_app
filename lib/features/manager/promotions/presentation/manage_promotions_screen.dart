@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
@@ -23,7 +23,7 @@ class ManagePromotionsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           'إدارة العروض (السلايدر)',
-          style: GoogleFonts.harmattan(fontWeight: FontWeight.w700),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         backgroundColor: context.colors.bgSurface,
       ),
@@ -40,13 +40,9 @@ class ManagePromotionsScreen extends ConsumerWidget {
             children: [
               Text(
                 'الترتيب الحالي للعروض',
-                style: GoogleFonts.harmattan(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.cardTitle(context.colors.textPrimary),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Expanded(
                 child: promosAsync.when(
                   data: (promos) {
@@ -77,25 +73,23 @@ class ManagePromotionsScreen extends ConsumerWidget {
                                 ),
                                 child: Icon(p.icon, color: Colors.white),
                               ),
-                              const SizedBox(width: 12),
+                              AppSpacing.hGapSm2,
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       p.title,
-                                      style: GoogleFonts.harmattan(
-                                        fontWeight: FontWeight.w600,
-                                        color: context.colors.textPrimary,
+                                      style: AppTextStyles.body(
+                                        context.colors.textPrimary,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
                                       p.subtitle,
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 14,
-                                        color: context.colors.textSecond,
+                                      style: AppTextStyles.bodySmall(
+                                        context.colors.textSecond,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,

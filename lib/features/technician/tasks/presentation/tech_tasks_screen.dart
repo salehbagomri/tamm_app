@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -62,11 +62,7 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                 children: [
                   Text(
                     AppStrings.todayTasks,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(context.colors.textPrimary),
                   ),
                   const TammNotificationBell(),
                 ],
@@ -120,21 +116,16 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                       ),
                                       child: Text(
                                         isStarted ? 'جاري التنفيذ' : 'جديدة',
-                                        style: GoogleFonts.harmattan(
-                                          fontSize: 12,
-                                          color: isStarted
-                                              ? context.colors.warning
-                                              : context.colors.bluePrimary,
-                                          fontWeight: FontWeight.w600,
+                                        style: AppTextStyles.body(
+                                          context.colors.textPrimary,
                                         ),
                                       ),
                                     ),
                                     const Spacer(),
                                     Text(
                                       order['order_number'] ?? '',
-                                      style: GoogleFonts.harmattan(
-                                        color: context.colors.textFaint,
-                                        fontSize: 14,
+                                      style: AppTextStyles.body(
+                                        context.colors.textPrimary,
                                       ),
                                     ),
                                   ],
@@ -142,13 +133,11 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                 const SizedBox(height: 10),
                                 Text(
                                   customer?['full_name'] ?? '',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: context.colors.textPrimary,
+                                  style: AppTextStyles.cardTitle(
+                                    context.colors.textPrimary,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                AppSpacing.gapXs,
                                 Row(
                                   children: [
                                     Icon(
@@ -156,13 +145,12 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                       size: 16,
                                       color: context.colors.textSecond,
                                     ),
-                                    const SizedBox(width: 4),
+                                    AppSpacing.hGapXs,
                                     Expanded(
                                       child: Text(
                                         order['address'] ?? '',
-                                        style: GoogleFonts.harmattan(
-                                          fontSize: 14,
-                                          color: context.colors.textSecond,
+                                        style: AppTextStyles.bodySmall(
+                                          context.colors.textSecond,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,

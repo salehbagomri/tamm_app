@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
@@ -24,11 +24,7 @@ class ManageServicesScreen extends ConsumerWidget {
         backgroundColor: context.colors.bgPrimary,
         title: Text(
           'إدارة الخدمات',
-          style: GoogleFonts.harmattan(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(context.colors.textPrimary),
         ),
         centerTitle: true,
       ),
@@ -40,17 +36,14 @@ class ManageServicesScreen extends ConsumerWidget {
               return Center(
                 child: Text(
                   'لا توجد خدمات مضافة.',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 20,
-                    color: context.colors.textSecond,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
               );
             }
             return ListView.separated(
               padding: AppSpacing.pagePadding,
               itemCount: services.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, __) => AppSpacing.gapSm2,
               itemBuilder: (context, index) {
                 final service = services[index] as ServiceType;
                 return TammCard(
@@ -67,22 +60,15 @@ class ManageServicesScreen extends ConsumerWidget {
                           children: [
                             Text(
                               service.name,
-                              style: GoogleFonts.harmattan(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: context.colors.textPrimary,
-                                decoration: !service.isActive
-                                    ? TextDecoration.lineThrough
-                                    : null,
+                              style: AppTextStyles.body(
+                                context.colors.textPrimary,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            AppSpacing.gapXs,
                             Text(
                               '${service.basePrice?.toInt() ?? 0} ر.س',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 16,
-                                color: context.colors.bluePrimary,
-                                fontWeight: FontWeight.w600,
+                              style: AppTextStyles.body(
+                                context.colors.textPrimary,
                               ),
                             ),
                             if (service.description != null)
@@ -90,9 +76,8 @@ class ManageServicesScreen extends ConsumerWidget {
                                 service.description!,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.harmattan(
-                                  color: context.colors.textSecond,
-                                  fontSize: 14,
+                                style: AppTextStyles.body(
+                                  context.colors.textPrimary,
                                 ),
                               ),
                           ],
@@ -112,11 +97,8 @@ class ManageServicesScreen extends ConsumerWidget {
                           ),
                           Text(
                             service.isActive ? 'مفعل' : 'مخفي',
-                            style: GoogleFonts.harmattan(
-                              color: service.isActive
-                                  ? context.colors.success
-                                  : context.colors.error,
-                              fontSize: 12,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                         ],
@@ -140,11 +122,7 @@ class ManageServicesScreen extends ConsumerWidget {
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           'إضافة خدمة',
-          style: GoogleFonts.harmattan(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            color: Colors.white,
-          ),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
       ),
     );

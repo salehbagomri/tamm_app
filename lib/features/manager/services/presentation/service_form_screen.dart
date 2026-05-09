@@ -1,7 +1,8 @@
+import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
@@ -123,11 +124,7 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
         backgroundColor: context.colors.bgPrimary,
         title: Text(
           widget.service == null ? 'إضافة خدمة جديدة' : 'تعديل الخدمة',
-          style: GoogleFonts.harmattan(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(context.colors.textPrimary),
         ),
         centerTitle: true,
       ),
@@ -145,19 +142,16 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                 validator: (val) =>
                     val == null || val.isEmpty ? 'حقل مطلوب' : null,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Text(
                 'تصنيف الخدمة',
-                style: GoogleFonts.harmattan(
-                  fontSize: 16,
-                  color: context.colors.textSecond,
-                ),
+                style: AppTextStyles.body(context.colors.textSecond),
               ),
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               Container(
                 decoration: BoxDecoration(
                   color: context.colors.bgSurface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppSpacing.radius,
                   border: Border.all(color: context.colors.border),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -165,10 +159,7 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                   child: DropdownButton<String>(
                     value: _category,
                     isExpanded: true,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 18,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(context.colors.textPrimary),
                     dropdownColor: context.colors.bgSurface,
                     items: _categories.entries
                         .map(
@@ -184,7 +175,7 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               TammTextField(
                 label: 'السعر الأساسي (ريال)',
                 hint: '0',
@@ -195,14 +186,11 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                     ? 'حقل مطلوب للسعر الثابت'
                     : null,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               CheckboxListTile(
                 title: Text(
                   'خدمة عرض سعر (بدون سعر ثابت)',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
                 contentPadding: EdgeInsets.zero,
                 value: _isQuoteBased,
@@ -211,27 +199,27 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                   if (val != null) setState(() => _isQuoteBased = val);
                 },
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               TammTextField(
                 label: 'قائمة ما تشمله الخدمة (سطر لكل عنصر)',
                 hint: 'شامل الفك\nشامل الفريون...',
                 controller: _includesCtrl,
                 maxLines: 4,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               TammTextField(
                 label: 'مدة التنفيذ التقديرية',
                 hint: 'مثال: ٢-٤ ساعات',
                 controller: _durationCtrl,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               TammTextField(
                 label: 'وصف الخدمة',
                 hint: 'وصف قصير للخدمة...',
                 controller: _descCtrl,
                 maxLines: 4,
               ),
-              const SizedBox(height: 32),
+              AppSpacing.gapXl,
               TammButton(
                 label: widget.service == null ? 'إضافة' : 'حفظ التعديلات',
                 isLoading: _loading,

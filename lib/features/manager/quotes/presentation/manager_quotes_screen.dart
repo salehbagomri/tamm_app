@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/errors/app_exception.dart';
@@ -82,10 +82,7 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen>
           labelColor: context.colors.bluePrimary,
           unselectedLabelColor: context.colors.textSecond,
           indicatorColor: context.colors.bluePrimary,
-          labelStyle: GoogleFonts.harmattan(
-            fontWeight: FontWeight.w700,
-            fontSize: 16,
-          ),
+          labelStyle: AppTextStyles.body(context.colors.textPrimary),
           tabs: const [
             Tab(text: 'الكل'),
             Tab(text: 'معلقة'),
@@ -154,7 +151,7 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen>
       child: ListView.separated(
         padding: AppSpacing.pagePadding,
         itemCount: quotes.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, __) => AppSpacing.gapSm2,
         itemBuilder: (context, index) {
           final order = quotes[index];
           return _QuoteRequestCard(
@@ -203,11 +200,9 @@ class _QuoteRequestCard extends StatelessWidget {
                 children: [
                   Text(
                     'رقم الطلب: ${order.orderNumber}',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textSecond,
-                    ),
+                    style: AppTextStyles.bodySmall(
+                      context.colors.textSecond,
+                    ).copyWith(fontWeight: AppTextStyles.bold),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -220,16 +215,14 @@ class _QuoteRequestCard extends StatelessWidget {
                     ),
                     child: Text(
                       order.quoteStatusLabel,
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: statusColor,
-                      ),
+                      style: AppTextStyles.bodySmall(
+                        statusColor,
+                      ).copyWith(fontWeight: AppTextStyles.bold),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               Row(
                 children: [
                   Icon(
@@ -237,20 +230,18 @@ class _QuoteRequestCard extends StatelessWidget {
                     size: 16,
                     color: context.colors.bluePrimary,
                   ),
-                  const SizedBox(width: 8),
+                  AppSpacing.hGapSm,
                   Expanded(
                     child: Text(
                       order.customerProfile?['full_name'] ?? 'عميل',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(
+                        context.colors.textPrimary,
+                      ).copyWith(fontWeight: AppTextStyles.bold),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               Row(
                 children: [
                   Icon(
@@ -258,27 +249,21 @@ class _QuoteRequestCard extends StatelessWidget {
                     size: 16,
                     color: context.colors.textSecond,
                   ),
-                  const SizedBox(width: 8),
+                  AppSpacing.hGapSm,
                   Expanded(
                     child: Text(
                       order.address,
-                      style: GoogleFonts.harmattan(
-                        fontSize: 15,
-                        color: context.colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               Text(
                 'منذ: ${_formatDate(order.createdAt)}',
-                style: GoogleFonts.harmattan(
-                  fontSize: 14,
-                  color: context.colors.textSecond,
-                ),
+                style: AppTextStyles.bodySmall(context.colors.textSecond),
               ),
             ],
           ),

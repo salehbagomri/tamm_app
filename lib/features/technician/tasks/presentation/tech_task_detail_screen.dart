@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -169,7 +169,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const TammSuccessBadge(message: 'تمّ الإنجاز ✓'),
-              const SizedBox(height: 32),
+              AppSpacing.gapXl,
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 48),
                 child: TammButton(
@@ -191,7 +191,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: AppSpacing.cardPadding,
               decoration: BoxDecoration(
                 color: context.colors.bgSurface,
                 borderRadius: AppSpacing.radiusLg,
@@ -312,7 +312,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                                 color: context.colors.success.withValues(
                                   alpha: 0.15,
                                 ),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: AppSpacing.radiusSm,
                               ),
                               child: Text(
                                 '📍 موقع GPS متوفر',
@@ -341,10 +341,10 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapMd,
             if (notes != null && notes.isNotEmpty) ...[
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: AppSpacing.cardPadding,
                 decoration: BoxDecoration(
                   color: context.colors.bgSurface,
                   borderRadius: AppSpacing.radiusLg,
@@ -358,7 +358,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                       color: context.colors.textSecond,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    AppSpacing.hGapSm,
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,7 +370,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                               color: context.colors.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          AppSpacing.gapXs,
                           Text(
                             notes,
                             style: TextStyle(color: context.colors.textSecond),
@@ -381,7 +381,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
             ],
             TammTextField(
               controller: _notesCtrl,
@@ -389,7 +389,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               hint: 'اكتب تفاصيل وإصلاحات المهمة هنا...',
               maxLines: 4,
             ),
-            const SizedBox(height: 24),
+            AppSpacing.gapLg,
             Row(
               children: [
                 Expanded(
@@ -400,7 +400,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     onPressed: () => _updateStatus('started', order['id']),
                   ),
                 ),
-                const SizedBox(width: 12),
+                AppSpacing.hGapSm2,
                 Expanded(
                   child: TammButton(
                     label: AppStrings.endTask,
@@ -410,7 +410,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapMd,
           ],
         ),
       ),

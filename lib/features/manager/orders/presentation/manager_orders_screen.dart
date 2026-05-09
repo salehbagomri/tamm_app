@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
@@ -70,14 +70,10 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Text(
                 'إدارة الطلبات',
-                style: GoogleFonts.harmattan(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.body(context.colors.textPrimary),
               ),
             ),
-            const SizedBox(height: 12),
+            AppSpacing.gapSm2,
             SizedBox(
               height: 40,
               child: ListView(
@@ -90,9 +86,8 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                     child: ChoiceChip(
                       label: Text(
                         e.value,
-                        style: GoogleFonts.harmattan(
-                          fontSize: 14,
-                          color: sel ? Colors.white : context.colors.textSecond,
+                        style: AppTextStyles.bodySmall(
+                          sel ? Colors.white : context.colors.textSecond,
                         ),
                       ),
                       selected: sel,
@@ -109,7 +104,7 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                 }).toList(),
               ),
             ),
-            const SizedBox(height: 12),
+            AppSpacing.gapSm2,
             Expanded(
               child: ordersAsync.when(
                 data: (orders) {
@@ -150,9 +145,8 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                   Expanded(
                                     child: Text(
                                       o.orderTypeLabel,
-                                      style: GoogleFonts.harmattan(
-                                        fontWeight: FontWeight.w600,
-                                        color: context.colors.textPrimary,
+                                      style: AppTextStyles.body(
+                                        context.colors.textPrimary,
                                       ),
                                     ),
                                   ),
@@ -168,28 +162,25 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                     ),
                                     child: Text(
                                       o.statusLabel,
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 12,
-                                        color: context.colors.bluePrimary,
+                                      style: AppTextStyles.caption(
+                                        context.colors.bluePrimary,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
+                              AppSpacing.gapXs,
                               Text(
                                 '#${o.orderNumber}',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 13,
-                                  color: context.colors.textSecond,
+                                style: AppTextStyles.body(
+                                  context.colors.textPrimary,
                                 ),
                               ),
                               if (customer != null)
                                 Text(
                                   customer['full_name'] ?? '',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 14,
-                                    color: context.colors.textSecond,
+                                  style: AppTextStyles.bodySmall(
+                                    context.colors.textSecond,
                                   ),
                                 ),
                               Row(
@@ -199,27 +190,21 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                   Expanded(
                                     child: Text(
                                       o.address,
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 13,
-                                        color: context.colors.textFaint,
+                                      style: AppTextStyles.body(
+                                        context.colors.textPrimary,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  AppSpacing.hGapSm,
                                   Text(
                                     o.orderType == 'quote_request' &&
                                             o.totalAmount == 0
                                         ? o.statusLabel
                                         : '${o.totalAmount.toInt()} ر.س',
-                                    style: GoogleFonts.harmattan(
-                                      color:
-                                          o.orderType == 'quote_request' &&
-                                              o.totalAmount == 0
-                                          ? context.colors.warning
-                                          : context.colors.blueSky,
-                                      fontWeight: FontWeight.w700,
+                                    style: AppTextStyles.body(
+                                      context.colors.textPrimary,
                                     ),
                                   ),
                                 ],

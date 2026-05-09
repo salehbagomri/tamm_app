@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -126,7 +126,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
               Container(
                 height: 120,
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(AppSpacing.radiusXlValue),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -186,21 +186,21 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               TammTextField(
                 label: 'العنوان الرئيسي',
                 controller: _titleCtrl,
                 validator: (v) => v == null || v.isEmpty ? 'مطلوب' : null,
                 onChanged: (_) => setState(() {}),
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               TammTextField(
                 label: 'النص الفرعي',
                 controller: _subtitleCtrl,
                 validator: (v) => v == null || v.isEmpty ? 'مطلوب' : null,
                 onChanged: (_) => setState(() {}),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               DropdownButtonFormField<String>(
                 initialValue: _iconName,
                 dropdownColor: context.colors.bgSurface2,
@@ -211,7 +211,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                     child: Row(
                       children: [
                         Icon(Promotion.iconMap[key], size: 20),
-                        const SizedBox(width: 12),
+                        AppSpacing.hGapSm2,
                         Text(key),
                       ],
                     ),
@@ -219,7 +219,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                 }).toList(),
                 onChanged: (v) => setState(() => _iconName = v!),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               DropdownButtonFormField<String>(
                 initialValue: _selectedGradient,
                 dropdownColor: context.colors.bgSurface2,
@@ -252,7 +252,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                 ],
                 onChanged: (v) => setState(() => _selectedGradient = v!),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               DropdownButtonFormField<String>(
                 initialValue: _destination,
                 dropdownColor: context.colors.bgSurface2,
@@ -279,7 +279,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                 ],
                 onChanged: (v) => setState(() => _destination = v!),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               SwitchListTile(
                 title: const Text('السلايدر نشط ويظهر للعملاء'),
                 value: _isActive,
@@ -288,7 +288,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                 contentPadding: EdgeInsets.zero,
               ),
               if (widget.promotion != null) ...[
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
                 OutlinedButton.icon(
                   onPressed: () async {
                     await ref
@@ -308,7 +308,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                   ),
                 ),
               ],
-              const SizedBox(height: 32),
+              AppSpacing.gapXl,
               TammButton(
                 label: widget.promotion != null ? 'حفظ التعديلات' : 'إضافة',
                 isLoading: _loading,

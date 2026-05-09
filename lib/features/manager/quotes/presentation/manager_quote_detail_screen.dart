@@ -1,9 +1,9 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -97,16 +97,12 @@ class _ManagerQuoteDetailScreenState
           children: [
             Text(
               'إرفاق ملف',
-              style: GoogleFonts.harmattan(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-              ),
+              style: AppTextStyles.sectionTitle(context.colors.textPrimary),
             ),
             const SizedBox(height: 20),
             ListTile(
               leading: Container(
-                padding: const EdgeInsets.all(10),
+                padding: AppSpacing.iconCirclePadding,
                 decoration: BoxDecoration(
                   color: context.colors.bluePrimary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -118,16 +114,13 @@ class _ManagerQuoteDetailScreenState
               ),
               title: Text(
                 'اختر صورة من المعرض',
-                style: GoogleFonts.harmattan(
-                  fontSize: 16,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.body(context.colors.textPrimary),
               ),
               onTap: () => Navigator.pop(ctx, 'gallery'),
             ),
             ListTile(
               leading: Container(
-                padding: const EdgeInsets.all(10),
+                padding: AppSpacing.iconCirclePadding,
                 decoration: BoxDecoration(
                   color: context.colors.success.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -136,16 +129,13 @@ class _ManagerQuoteDetailScreenState
               ),
               title: Text(
                 'التقط صورة',
-                style: GoogleFonts.harmattan(
-                  fontSize: 16,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.body(context.colors.textPrimary),
               ),
               onTap: () => Navigator.pop(ctx, 'camera'),
             ),
             ListTile(
               leading: Container(
-                padding: const EdgeInsets.all(10),
+                padding: AppSpacing.iconCirclePadding,
                 decoration: BoxDecoration(
                   color: context.colors.warning.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -154,14 +144,11 @@ class _ManagerQuoteDetailScreenState
               ),
               title: Text(
                 'اختر ملف PDF',
-                style: GoogleFonts.harmattan(
-                  fontSize: 16,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.body(context.colors.textPrimary),
               ),
               onTap: () => Navigator.pop(ctx, 'file'),
             ),
-            const SizedBox(height: 8),
+            AppSpacing.gapSm,
           ],
         ),
       ),
@@ -311,7 +298,7 @@ class _ManagerQuoteDetailScreenState
             title: Row(
               children: [
                 Icon(Icons.check_circle, color: context.colors.success),
-                const SizedBox(width: 8),
+                AppSpacing.hGapSm,
                 const Text('تم الإرسال بنجاح'),
               ],
             ),
@@ -336,7 +323,7 @@ class _ManagerQuoteDetailScreenState
           SnackBar(
             content: Text(
               e is AppException ? e.message : 'حدث خطأ في إرسال العرض',
-              style: GoogleFonts.harmattan(fontSize: 15),
+              style: AppTextStyles.bodySmall(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
@@ -393,7 +380,7 @@ class _ManagerQuoteDetailScreenState
                 // Customer info
                 if (order.customerProfile != null) ...[
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: AppSpacing.cardPadding,
                     decoration: BoxDecoration(
                       color: context.colors.bluePrimary.withValues(alpha: 0.05),
                       borderRadius: AppSpacing.radiusLg,
@@ -406,7 +393,7 @@ class _ManagerQuoteDetailScreenState
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: AppSpacing.iconCirclePadding,
                           decoration: BoxDecoration(
                             color: context.colors.bluePrimary.withValues(
                               alpha: 0.1,
@@ -418,25 +405,22 @@ class _ManagerQuoteDetailScreenState
                             color: context.colors.bluePrimary,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        AppSpacing.hGapSm2,
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 order.customerProfile!['full_name'] ?? 'عميل',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: context.colors.textPrimary,
-                                ),
+                                style: AppTextStyles.body(
+                                  context.colors.textPrimary,
+                                ).copyWith(fontWeight: AppTextStyles.bold),
                               ),
                               if (order.customerProfile!['phone'] != null)
                                 Text(
                                   order.customerProfile!['phone'],
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 14,
-                                    color: context.colors.textSecond,
+                                  style: AppTextStyles.bodySmall(
+                                    context.colors.textSecond,
                                   ),
                                 ),
                             ],
@@ -470,15 +454,11 @@ class _ManagerQuoteDetailScreenState
                 // 1. Customer Request Details
                 Text(
                   'تفاصيل الطلب',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.sectionTitle(context.colors.textPrimary),
                 ),
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: AppSpacing.cardPadding,
                   decoration: BoxDecoration(
                     color: context.colors.bgSurface,
                     borderRadius: AppSpacing.radiusLg,
@@ -491,25 +471,19 @@ class _ManagerQuoteDetailScreenState
                         title: 'رقم الطلب',
                         value: '#${order.orderNumber}',
                       ),
-                      const SizedBox(height: 8),
+                      AppSpacing.gapSm,
                       _DetailRow(title: 'الحالة', value: order.statusLabel),
                       Divider(height: 24, color: context.colors.border),
                       Text(
                         'وصف الاحتياج:',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: context.colors.textSecond,
-                        ),
+                        style: AppTextStyles.body(
+                          context.colors.textSecond,
+                        ).copyWith(fontWeight: AppTextStyles.bold),
                       ),
-                      const SizedBox(height: 8),
+                      AppSpacing.gapSm,
                       Text(
                         order.notes ?? 'لا يوجد وصف',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 16,
-                          color: context.colors.textPrimary,
-                          height: 1.5,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                       Divider(height: 24, color: context.colors.border),
                       Row(
@@ -519,13 +493,12 @@ class _ManagerQuoteDetailScreenState
                             size: 20,
                             color: context.colors.bluePrimary,
                           ),
-                          const SizedBox(width: 8),
+                          AppSpacing.hGapSm,
                           Expanded(
                             child: Text(
                               order.address,
-                              style: GoogleFonts.harmattan(
-                                fontSize: 16,
-                                color: context.colors.textPrimary,
+                              style: AppTextStyles.body(
+                                context.colors.textPrimary,
                               ),
                             ),
                           ),
@@ -534,25 +507,21 @@ class _ManagerQuoteDetailScreenState
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 // 2. Manager Response Form or Display Sent Details
                 Text(
                   showForm
                       ? (isRejected ? 'تقديم عرض جديد' : 'تقديم عرض السعر')
                       : 'العرض المُرسل',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.sectionTitle(context.colors.textPrimary),
                 ),
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
 
                 if (showForm) ...[
                   if (isRejected && order.rejectionReason != null) ...[
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: AppSpacing.cardPadding,
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
                         color: context.colors.error.withValues(alpha: 0.08),
@@ -567,23 +536,20 @@ class _ManagerQuoteDetailScreenState
                           Row(
                             children: [
                               Icon(Icons.feedback, color: context.colors.error),
-                              const SizedBox(width: 8),
+                              AppSpacing.hGapSm,
                               Text(
                                 'سبب الرفض من العميل:',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: context.colors.error,
-                                ),
+                                style: AppTextStyles.body(
+                                  context.colors.error,
+                                ).copyWith(fontWeight: AppTextStyles.bold),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
+                          AppSpacing.gapSm,
                           Text(
                             order.rejectionReason!,
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              color: context.colors.textPrimary,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                         ],
@@ -598,7 +564,7 @@ class _ManagerQuoteDetailScreenState
                     keyboardType: TextInputType.number,
                     onChanged: (val) => setState(() {}),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                   TammTextField(
                     label: 'تفاصيل العرض وما يشمله',
                     hint: 'يشمل التركيب والمواد الأساسية والضمان...',
@@ -606,7 +572,7 @@ class _ManagerQuoteDetailScreenState
                     maxLines: 4,
                     onChanged: (val) => setState(() {}),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                   TammTextField(
                     label: 'مدة التنفيذ التقديرية (اختياري)',
                     hint: 'مثال: ٣ أيام عمل',
@@ -617,13 +583,11 @@ class _ManagerQuoteDetailScreenState
                   // Attachment Section
                   Text(
                     'إرفاق ملف (اختياري)',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: context.colors.textSecond,
-                    ),
+                    style: AppTextStyles.body(
+                      context.colors.textSecond,
+                    ).copyWith(fontWeight: AppTextStyles.bold),
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.gapSm,
                   if (_attachedBytes != null) ...[
                     Container(
                       padding: const EdgeInsets.all(14),
@@ -642,26 +606,23 @@ class _ManagerQuoteDetailScreenState
                                 : Icons.image,
                             color: context.colors.success,
                           ),
-                          const SizedBox(width: 12),
+                          AppSpacing.hGapSm2,
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   _attachedFileName ?? 'ملف مرفق',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: context.colors.textPrimary,
-                                  ),
+                                  style: AppTextStyles.bodySmall(
+                                    context.colors.textPrimary,
+                                  ).copyWith(fontWeight: AppTextStyles.bold),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   'جاهز للإرسال',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 12,
-                                    color: context.colors.success,
+                                  style: AppTextStyles.caption(
+                                    context.colors.success,
                                   ),
                                 ),
                               ],
@@ -687,11 +648,7 @@ class _ManagerQuoteDetailScreenState
                       ),
                       label: Text(
                         'إرفاق صورة العرض أو PDF',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 16,
-                          color: context.colors.bluePrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
@@ -712,7 +669,7 @@ class _ManagerQuoteDetailScreenState
                 ] else ...[
                   // Read-only Display for Sent/Accepted/Rejected
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: AppSpacing.cardPadding,
                     decoration: BoxDecoration(
                       color: context.colors.bgSurface,
                       borderRadius: AppSpacing.radiusLg,
@@ -735,20 +692,14 @@ class _ManagerQuoteDetailScreenState
                         Divider(height: 24, color: context.colors.border),
                         Text(
                           'تفاصيل العرض:',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: context.colors.textSecond,
-                          ),
+                          style: AppTextStyles.body(
+                            context.colors.textSecond,
+                          ).copyWith(fontWeight: AppTextStyles.bold),
                         ),
-                        const SizedBox(height: 8),
+                        AppSpacing.gapSm,
                         Text(
                           order.quoteDetails ?? '',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 16,
-                            color: context.colors.textPrimary,
-                            height: 1.5,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                         // Show attachment if exists
                         if (order.quoteAttachmentUrl != null) ...[
@@ -760,13 +711,11 @@ class _ManagerQuoteDetailScreenState
                                 size: 18,
                                 color: context.colors.bluePrimary,
                               ),
-                              const SizedBox(width: 8),
+                              AppSpacing.hGapSm,
                               Text(
                                 'مرفق مع العرض',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 16,
-                                  color: context.colors.bluePrimary,
-                                  fontWeight: FontWeight.w600,
+                                style: AppTextStyles.body(
+                                  context.colors.textPrimary,
                                 ),
                               ),
                             ],
@@ -777,18 +726,15 @@ class _ManagerQuoteDetailScreenState
                           Divider(height: 24, color: context.colors.border),
                           Text(
                             'سبب الرفض من العميل:',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: context.colors.error,
-                            ),
+                            style: AppTextStyles.body(
+                              context.colors.error,
+                            ).copyWith(fontWeight: AppTextStyles.bold),
                           ),
-                          const SizedBox(height: 8),
+                          AppSpacing.gapSm,
                           Text(
                             order.rejectionReason!,
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              color: context.colors.textPrimary,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                         ],
@@ -796,18 +742,18 @@ class _ManagerQuoteDetailScreenState
                     ),
                   ),
                 ],
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 // 3. Timeline
                 _buildTimeline(order),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 // Accepted status card
                 if (order.quoteStatus == 'accepted') ...[
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
+                    padding: AppSpacing.cardPadding,
                     decoration: BoxDecoration(
                       color: context.colors.success.withValues(alpha: 0.08),
                       borderRadius: AppSpacing.radiusLg,
@@ -822,24 +768,21 @@ class _ManagerQuoteDetailScreenState
                           color: context.colors.success,
                           size: 32,
                         ),
-                        const SizedBox(width: 16),
+                        AppSpacing.hGapMd,
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'العميل وافق على العرض ✓',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: context.colors.success,
-                                ),
+                                style: AppTextStyles.body(
+                                  context.colors.success,
+                                ).copyWith(fontWeight: AppTextStyles.bold),
                               ),
                               Text(
                                 'يمكنك الآن تعيين فني لتنفيذ الطلب',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 14,
-                                  color: context.colors.textSecond,
+                                style: AppTextStyles.bodySmall(
+                                  context.colors.textSecond,
                                 ),
                               ),
                             ],
@@ -852,10 +795,10 @@ class _ManagerQuoteDetailScreenState
 
                 // Rejected status card
                 if (order.quoteStatus == 'rejected') ...[
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
+                    padding: AppSpacing.cardPadding,
                     decoration: BoxDecoration(
                       color: context.colors.error.withValues(alpha: 0.08),
                       borderRadius: AppSpacing.radiusLg,
@@ -870,15 +813,13 @@ class _ManagerQuoteDetailScreenState
                           color: context.colors.error,
                           size: 32,
                         ),
-                        const SizedBox(width: 16),
+                        AppSpacing.hGapMd,
                         Expanded(
                           child: Text(
                             'العميل رفض العرض',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: context.colors.error,
-                            ),
+                            style: AppTextStyles.body(
+                              context.colors.error,
+                            ).copyWith(fontWeight: AppTextStyles.bold),
                           ),
                         ),
                       ],
@@ -956,13 +897,9 @@ class _ManagerQuoteDetailScreenState
       children: [
         Text(
           'التسلسل الزمني:',
-          style: GoogleFonts.harmattan(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.cardTitle(context.colors.textPrimary),
         ),
-        const SizedBox(height: 12),
+        AppSpacing.gapSm2,
         _TimelineItem(
           title: 'الطلب مبدئي',
           content: 'تم رفع الطلب من العميل',
@@ -1002,11 +939,7 @@ class _ManagerQuoteDetailScreenState
         backgroundColor: context.colors.bgSurface,
         title: Text(
           'تعيين فني',
-          style: GoogleFonts.harmattan(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.sectionTitle(context.colors.textPrimary),
         ),
         content: Consumer(
           builder: (context, ref, child) {
@@ -1024,16 +957,11 @@ class _ManagerQuoteDetailScreenState
                     return ListTile(
                       title: Text(
                         p?['full_name'] ?? '',
-                        style: GoogleFonts.harmattan(
-                          color: context.colors.textPrimary,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                       subtitle: Text(
                         t['specialization'] ?? '',
-                        style: GoogleFonts.harmattan(
-                          color: context.colors.textSecond,
-                          fontSize: 14,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                       trailing: Container(
                         padding: const EdgeInsets.symmetric(
@@ -1048,9 +976,8 @@ class _ManagerQuoteDetailScreenState
                         ),
                         child: Text(
                           t['status'] == 'available' ? 'متاح' : 'مشغول',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 12,
-                            color: t['status'] == 'available'
+                          style: AppTextStyles.caption(
+                            t['status'] == 'available'
                                 ? context.colors.success
                                 : context.colors.warning,
                           ),
@@ -1156,21 +1083,8 @@ class _DetailRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: GoogleFonts.harmattan(
-            fontSize: 16,
-            color: context.colors.textSecond,
-          ),
-        ),
-        Text(
-          value,
-          style: GoogleFonts.harmattan(
-            fontSize: isBoldValue ? 20 : 16,
-            fontWeight: isBoldValue ? FontWeight.w700 : FontWeight.w600,
-            color: valueColor ?? context.colors.textPrimary,
-          ),
-        ),
+        Text(title, style: AppTextStyles.body(context.colors.textSecond)),
+        Text(value, style: AppTextStyles.body(context.colors.textPrimary)),
       ],
     );
   }
@@ -1222,40 +1136,32 @@ class _TimelineItem extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(width: 12),
+        AppSpacing.hGapSm2,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: GoogleFonts.harmattan(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: color ?? context.colors.textPrimary,
-                ),
+                style: AppTextStyles.body(
+                  color ?? context.colors.textPrimary,
+                ).copyWith(fontWeight: AppTextStyles.bold),
               ),
               Row(
                 children: [
                   Expanded(
                     child: Text(
                       content,
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textSecond),
                     ),
                   ),
                   Text(
                     DateFormat('yyyy/MM/dd HH:mm').format(time),
-                    style: GoogleFonts.harmattan(
-                      fontSize: 12,
-                      color: context.colors.textSecond,
-                    ),
+                    style: AppTextStyles.caption(context.colors.textSecond),
                   ),
                 ],
               ),
-              if (!isLast) const SizedBox(height: 16),
+              if (!isLast) AppSpacing.gapMd,
             ],
           ),
         ),

@@ -1,7 +1,7 @@
+﻿import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
@@ -9,7 +9,6 @@ import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
-import '../../../../core/widgets/tamm_theme_selector.dart';
 import '../../../../core/widgets/tamm_notification_bell.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
@@ -84,11 +83,7 @@ class _ManagerDashboardScreenState
                     children: [
                       Text(
                         'لوحة التحكم',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          color: context.colors.textPrimary,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                       Row(
                         mainAxisSize: MainAxisSize.min,
@@ -99,7 +94,10 @@ class _ManagerDashboardScreenState
                               await ref.read(authRepositoryProvider).signOut();
                               if (context.mounted) context.go('/customer/home');
                             },
-                            icon: Icon(Icons.logout, color: context.colors.error),
+                            icon: Icon(
+                              Icons.logout,
+                              color: context.colors.error,
+                            ),
                             tooltip: 'تسجيل الخروج',
                           ),
                         ],
@@ -120,7 +118,7 @@ class _ManagerDashboardScreenState
                                   icon: Icons.pending_actions,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              AppSpacing.hGapSm2,
                               Expanded(
                                 child: _StatCard(
                                   label: 'عروض تحتاج إجراء',
@@ -131,7 +129,7 @@ class _ManagerDashboardScreenState
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
+                          AppSpacing.gapSm2,
                           Row(
                             children: [
                               Expanded(
@@ -142,7 +140,7 @@ class _ManagerDashboardScreenState
                                   icon: Icons.engineering,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              AppSpacing.hGapSm2,
                               Expanded(
                                 child: _StatCard(
                                   label: 'مكتمل اليوم',
@@ -164,25 +162,21 @@ class _ManagerDashboardScreenState
                       onRetry: () => ref.invalidate(dashboardStatsProvider),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'آخر الطلبات',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: context.colors.textPrimary,
+                        style: AppTextStyles.sectionTitle(
+                          context.colors.textPrimary,
                         ),
                       ),
                       TextButton(
                         onPressed: () => context.go('/manager/orders'),
                         child: Text(
                           'عرض الكل',
-                          style: GoogleFonts.harmattan(
-                            color: context.colors.blueLight,
-                          ),
+                          style: AppTextStyles.body(context.colors.blueLight),
                         ),
                       ),
                     ],
@@ -213,16 +207,14 @@ class _ManagerDashboardScreenState
                                         children: [
                                           Text(
                                             o.orderTypeLabel,
-                                            style: GoogleFonts.harmattan(
-                                              fontWeight: FontWeight.w600,
-                                              color: context.colors.textPrimary,
+                                            style: AppTextStyles.body(
+                                              context.colors.textPrimary,
                                             ),
                                           ),
                                           Text(
                                             '#${o.orderNumber} • ${o.statusLabel}',
-                                            style: GoogleFonts.harmattan(
-                                              fontSize: 13,
-                                              color: context.colors.textSecond,
+                                            style: AppTextStyles.body(
+                                              context.colors.textPrimary,
                                             ),
                                           ),
                                         ],
@@ -233,13 +225,8 @@ class _ManagerDashboardScreenState
                                               o.totalAmount == 0
                                           ? o.statusLabel
                                           : '${o.totalAmount.toInt()} ر.س',
-                                      style: GoogleFonts.harmattan(
-                                        color:
-                                            o.orderType == 'quote_request' &&
-                                                o.totalAmount == 0
-                                            ? context.colors.warning
-                                            : context.colors.blueSky,
-                                        fontWeight: FontWeight.w700,
+                                      style: AppTextStyles.body(
+                                        context.colors.textPrimary,
                                       ),
                                     ),
                                   ],
@@ -293,26 +280,19 @@ class _StatCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: color, size: 22),
-          const SizedBox(height: 6),
+          AppSpacing.gapXs,
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               value,
-              style: GoogleFonts.harmattan(
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
+              style: AppTextStyles.body(context.colors.textPrimary),
             ),
           ),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               label,
-              style: GoogleFonts.harmattan(
-                fontSize: 13,
-                color: context.colors.textSecond,
-              ),
+              style: AppTextStyles.body(context.colors.textPrimary),
             ),
           ),
         ],

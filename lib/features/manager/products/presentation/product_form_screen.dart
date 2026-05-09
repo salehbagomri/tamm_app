@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+﻿import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -202,7 +202,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                               size: 40,
                               color: context.colors.textSecond,
                             ),
-                            const SizedBox(height: 8),
+                            AppSpacing.gapSm,
                             Text(
                               'اضغط لإضافة صورة',
                               style: TextStyle(
@@ -213,15 +213,15 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         ),
                 ),
               ),
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               TammTextField(
                 label: 'اسم المنتج',
                 controller: _nameCtrl,
                 validator: (v) => v == null || v.isEmpty ? 'مطلوب' : null,
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               TammTextField(label: 'الوصف', controller: _descCtrl, maxLines: 3),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               DropdownButtonFormField<String>(
                 initialValue: _category,
                 dropdownColor: context.colors.bgSurface2,
@@ -258,14 +258,14 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               TammTextField(
                 label: 'السعر الحالي (اتركه فارغ لطلب عرض سعر)',
                 controller: _priceCtrl,
                 keyboardType: TextInputType.number,
                 onChanged: (_) => setState(() {}),
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               TammTextField(
                 label: 'السعر قبل الخصم (اختياري، يظهر كعرض)',
                 controller: _oldPriceCtrl,
@@ -276,9 +276,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   _priceCtrl.text.isNotEmpty &&
                   (double.tryParse(_oldPriceCtrl.text) ?? 0) >
                       (double.tryParse(_priceCtrl.text) ?? 0)) ...[
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: AppSpacing.cardPaddingSm,
                   decoration: BoxDecoration(
                     color: context.colors.success.withValues(alpha: 0.1),
                     borderRadius: AppSpacing.radius,
@@ -287,7 +287,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   child: Row(
                     children: [
                       Icon(Icons.check_circle, color: context.colors.success),
-                      const SizedBox(width: 8),
+                      AppSpacing.hGapSm,
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,9 +312,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   ),
                 ),
               ],
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               TammTextField(label: 'العلامة التجارية', controller: _brandCtrl),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               SpecsEditor(
                 initialSpecs: _specs,
                 category: _category,
@@ -324,7 +324,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               SwitchListTile(
                 title: const Text('منتج مميز ⭐'),
                 subtitle: const Text('يظهر في قسم "الأكثر طلباً" بالرئيسية'),
@@ -333,7 +333,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 activeThumbColor: context.colors.warning,
                 contentPadding: EdgeInsets.zero,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               CheckboxListTile(
                 title: const Text('هذا المنتج يتطلب خدمة تركيب؟'),
                 value: _requiresInstallation,
@@ -344,14 +344,14 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                 controlAffinity: ListTileControlAffinity.leading,
               ),
               if (_requiresInstallation) ...[
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
                 TammTextField(
                   label: 'سعر توصيل وتركيب المنتج (ريال)',
                   controller: _installPriceCtrl,
                   keyboardType: TextInputType.number,
                 ),
               ],
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               TammButton(
                 label: _isEdit ? 'حفظ التعديلات' : 'إضافة',
                 isLoading: _loading,
