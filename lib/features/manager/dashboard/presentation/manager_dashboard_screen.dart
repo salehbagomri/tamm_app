@@ -90,28 +90,19 @@ class _ManagerDashboardScreenState
                           color: context.colors.textPrimary,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () async {
-                          await ref.read(authRepositoryProvider).signOut();
-                          if (context.mounted) context.go('/customer/home');
-                        },
-                        icon: Icon(Icons.logout, color: context.colors.error),
-                        tooltip: 'تسجيل الخروج',
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const TammNotificationBell(),
-                      IconButton(
-                        onPressed: () async {
-                          await ref.read(authRepositoryProvider).signOut();
-                          if (context.mounted) context.go('/customer/home');
-                        },
-                        icon: Icon(Icons.logout, color: context.colors.error),
-                        tooltip: 'تسجيل الخروج',
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const TammNotificationBell(),
+                          IconButton(
+                            onPressed: () async {
+                              await ref.read(authRepositoryProvider).signOut();
+                              if (context.mounted) context.go('/customer/home');
+                            },
+                            icon: Icon(Icons.logout, color: context.colors.error),
+                            tooltip: 'تسجيل الخروج',
+                          ),
+                        ],
                       ),
                     ],
                   ),
