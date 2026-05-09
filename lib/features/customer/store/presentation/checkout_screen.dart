@@ -103,13 +103,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       final notifier = ref.read(cartProvider.notifier);
 
       final items = cartAsync.maybeWhen(
-        data: (cart) => cart.map<Map<String, dynamic>>((c) => {
-          'item_type': 'product',
-          'product_id': c.product.id,
-          'quantity': c.quantity,
-          'unit_price': (c.product.price ?? 0) + (c.includeInstallation ? c.product.installationPrice : 0),
-          'total_price': c.total,
-        }).toList(),
+        data: (cart) => cart
+            .map<Map<String, dynamic>>(
+              (c) => {
+                'item_type': 'product',
+                'product_id': c.product.id,
+                'quantity': c.quantity,
+                'unit_price':
+                    (c.product.price ?? 0) +
+                    (c.includeInstallation ? c.product.installationPrice : 0),
+                'total_price': c.total,
+              },
+            )
+            .toList(),
         orElse: () => <Map<String, dynamic>>[],
       );
 
@@ -150,15 +156,17 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       if (mounted) context.go('/customer/order-success/$orderId');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            e is AppException ? e.message : 'حدث خطأ في إتمام الطلب',
-            style: GoogleFonts.harmattan(fontSize: 15),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is AppException ? e.message : 'حدث خطأ في إتمام الطلب',
+              style: GoogleFonts.harmattan(fontSize: 15),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
           ),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-        ));
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -260,7 +268,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       ),
                       if (_locationPicked)
                         IconButton(
-                          icon: Icon(Icons.refresh, color: context.colors.textSecond),
+                          icon: Icon(
+                            Icons.refresh,
+                            color: context.colors.textSecond,
+                          ),
                           onPressed: _pickLocation,
                           tooltip: 'تحديث الموقع',
                         ),
@@ -303,7 +314,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         _selectedHour = null;
                       });
                     },
-                    icon: Icon(Icons.edit, size: 16, color: context.colors.bluePrimary),
+                    icon: Icon(
+                      Icons.edit,
+                      size: 16,
+                      color: context.colors.bluePrimary,
+                    ),
                     label: Text(
                       'تعديل الموعد',
                       style: GoogleFonts.harmattan(
@@ -393,62 +408,71 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           const SizedBox(height: 12),
           cartAsync.when(
             data: (cart) => Column(
-              children: cart.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${item.quantity}x ${item.product.name}',
-                            style: GoogleFonts.harmattan(fontSize: 16),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Text(
-                          '${((item.product.price ?? 0) * item.quantity).toInt()} ر.س',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (item.includeInstallation)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4, right: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.handyman, size: 14, color: context.colors.bluePrimary),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'خدمة التركيب',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 14,
-                                    color: context.colors.bluePrimary,
-                                  ),
+              children: cart
+                  .map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${item.quantity}x ${item.product.name}',
+                                  style: GoogleFonts.harmattan(fontSize: 16),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ],
-                            ),
-                            Text(
-                              '+ ${item.product.installationPrice.toInt()} ر.س',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 14,
-                                color: context.colors.textSecond,
+                              ),
+                              Text(
+                                '${((item.product.price ?? 0) * item.quantity).toInt()} ر.س',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (item.includeInstallation)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4, right: 16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.handyman,
+                                        size: 14,
+                                        color: context.colors.bluePrimary,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'خدمة التركيب',
+                                        style: GoogleFonts.harmattan(
+                                          fontSize: 14,
+                                          color: context.colors.bluePrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    '+ ${item.product.installationPrice.toInt()} ر.س',
+                                    style: GoogleFonts.harmattan(
+                                      fontSize: 14,
+                                      color: context.colors.textSecond,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                        ],
                       ),
-                  ],
-                ),
-              )).toList(),
+                    ),
+                  )
+                  .toList(),
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => ErrorStateWidget(

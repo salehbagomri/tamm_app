@@ -70,7 +70,9 @@ class MyOrdersScreen extends ConsumerWidget {
                               ? o.statusLabel
                               : '${o.totalAmount.toInt()} ر.س',
                           style: GoogleFonts.harmattan(
-                            color: o.orderType == 'quote_request' && o.totalAmount == 0
+                            color:
+                                o.orderType == 'quote_request' &&
+                                    o.totalAmount == 0
                                 ? context.colors.warning
                                 : context.colors.blueSky,
                             fontWeight: FontWeight.w700,

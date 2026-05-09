@@ -20,7 +20,10 @@ class ServiceSuccessScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'سيتم التواصل معك لتأكيد الموعد',
-                style: TextStyle(color: context.colors.textSecond, fontSize: 16),
+                style: TextStyle(
+                  color: context.colors.textSecond,
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 32),
               TammButton(

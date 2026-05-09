@@ -23,7 +23,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
-  
+
   bool _loading = false;
   UserProfile? _currentProfile;
   bool _hasChanges = false;
@@ -43,7 +43,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       setState(() {
         _currentProfile = profile;
         _nameCtrl.text = profile.fullName;
-        
+
         // Remove '+967' prefix for display in input field
         String phoneStr = profile.phone;
         if (phoneStr.startsWith('+967')) {
@@ -60,14 +60,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   void _checkForChanges() {
     if (_currentProfile == null) return;
-    
-    final currentPhoneRaw = _currentProfile!.phone.startsWith('+967') 
-        ? _currentProfile!.phone.substring(4) 
+
+    final currentPhoneRaw = _currentProfile!.phone.startsWith('+967')
+        ? _currentProfile!.phone.substring(4)
         : _currentProfile!.phone;
-        
-    final newHasChanges = _nameCtrl.text.trim() != _currentProfile!.fullName ||
+
+    final newHasChanges =
+        _nameCtrl.text.trim() != _currentProfile!.fullName ||
         _phoneCtrl.text.trim() != currentPhoneRaw;
-        
+
     if (newHasChanges != _hasChanges) {
       setState(() {
         _hasChanges = newHasChanges;
@@ -77,17 +78,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _loading = true);
-    
+
     try {
       final repo = ref.read(authRepositoryProvider);
       final currentUserId = repo.currentUserId;
       final phoneFormatted = '+967${_phoneCtrl.text.trim()}';
-      
+
       // Check phone uniqueness if phone changed
-      if (_phoneCtrl.text.trim() != (_currentProfile?.phone.replaceFirst('+967', '') ?? '')) {
-         final exists = await Supabase.instance.client
+      if (_phoneCtrl.text.trim() !=
+          (_currentProfile?.phone.replaceFirst('+967', '') ?? '')) {
+        final exists = await Supabase.instance.client
             .from('profiles')
             .select('id')
             .eq('phone', phoneFormatted)
@@ -105,17 +107,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       );
 
       await repo.updateProfile(updatedProfile);
-      
+
       if (!mounted) return;
       ref.invalidate(userProfileProvider);
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('تم حفظ التعديلات بنجاح', style: GoogleFonts.harmattan(fontSize: 16)),
+          content: Text(
+            'تم حفظ التعديلات بنجاح',
+            style: GoogleFonts.harmattan(fontSize: 16),
+          ),
           backgroundColor: context.colors.success,
-        )
+        ),
       );
-      
+
       context.pop();
     } catch (e) {
       if (mounted) {
@@ -124,7 +129,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           SnackBar(
             content: Text(errorMsg, style: GoogleFonts.harmattan(fontSize: 16)),
             backgroundColor: context.colors.error,
-          )
+          ),
         );
       }
     } finally {
@@ -145,10 +150,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       backgroundColor: context.colors.bgPrimary,
       appBar: AppBar(
         backgroundColor: context.colors.bgPrimary,
-        title: Text(
-          'تعديل الحساب',
-          style: AppTextStyles.h2,
-        ),
+        title: Text('تعديل الحساب', style: AppTextStyles.h2),
         centerTitle: true,
         iconTheme: IconThemeData(color: context.colors.textPrimary),
       ),
@@ -180,9 +182,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             controller: _nameCtrl,
                             prefix: const Icon(Icons.person_outline),
                             validator: (v) {
-                              if (v == null || v.trim().isEmpty) return 'الاسم الكامل مطلوب';
-                              if (v.trim().length < 3) return 'الاسم يجب أن يكون 3 أحرف على الأقل';
-                              if (RegExp(r'[0-9!@#%^&*(),.?":{}|<>]').hasMatch(v)) {
+                              if (v == null || v.trim().isEmpty)
+                                return 'الاسم الكامل مطلوب';
+                              if (v.trim().length < 3)
+                                return 'الاسم يجب أن يكون 3 أحرف على الأقل';
+                              if (RegExp(
+                                r'[0-9!@#%^&*(),.?":{}|<>]',
+                              ).hasMatch(v)) {
                                 return 'الاسم يجب أن يحتوي على أحرف فقط';
                               }
                               return null;
@@ -195,12 +201,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             keyboardType: TextInputType.phone,
                             prefixText: '+967 ',
                             prefix: const Icon(Icons.phone_outlined),
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             validator: (v) {
-                              if (v == null || v.trim().isEmpty) return 'رقم الجوال مطلوب';
-                              final digits = v.trim().replaceAll(RegExp(r'\D'), '');
-                              if (!digits.startsWith('7')) return 'يجب أن يبدأ الرقم بـ 7';
-                              if (digits.length < 9 || digits.length > 10) return 'رقم الجوال غير صحيح';
+                              if (v == null || v.trim().isEmpty)
+                                return 'رقم الجوال مطلوب';
+                              final digits = v.trim().replaceAll(
+                                RegExp(r'\D'),
+                                '',
+                              );
+                              if (!digits.startsWith('7'))
+                                return 'يجب أن يبدأ الرقم بـ 7';
+                              if (digits.length < 9 || digits.length > 10)
+                                return 'رقم الجوال غير صحيح';
                               return null;
                             },
                           ),

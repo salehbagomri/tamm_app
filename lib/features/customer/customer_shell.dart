@@ -59,36 +59,43 @@ class CustomerShell extends ConsumerWidget {
         action = SnackBarAction(
           textColor: Colors.white,
           label: 'إعادة',
-          onPressed: () =>
-              ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
         );
       }
 
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          duration: const Duration(seconds: 4),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(12),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline_rounded,
-                  color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  next.message,
-                  style: GoogleFonts.harmattan(
-                      color: Colors.white, fontSize: 16),
+        ..showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 4),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.white,
+                  size: 20,
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    next.message,
+                    style: GoogleFonts.harmattan(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            action: action,
           ),
-          action: action,
-        ));
+        );
     });
 
     final cartCount = ref.watch(cartCountProvider);
@@ -117,26 +124,19 @@ class CustomerShell extends ConsumerWidget {
         }
       },
       items: [
-        const NavItem(
-          icon: Icons.home_rounded,
-          label: AppStrings.home,
-        ),
+        const NavItem(icon: Icons.home_rounded, label: AppStrings.home),
         NavItem(
           icon: Icons.store_rounded,
           label: AppStrings.store,
           badge: cartCount > 0
-              ? Text('$cartCount',
-                  style: const TextStyle(fontSize: 10, color: Colors.white))
+              ? Text(
+                  '$cartCount',
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
+                )
               : null,
         ),
-        const NavItem(
-          icon: Icons.build_rounded,
-          label: AppStrings.services,
-        ),
-        const NavItem(
-          icon: Icons.person_rounded,
-          label: AppStrings.profile,
-        ),
+        const NavItem(icon: Icons.build_rounded, label: AppStrings.services),
+        const NavItem(icon: Icons.person_rounded, label: AppStrings.profile),
       ],
       child: child,
     );

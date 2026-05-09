@@ -58,7 +58,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
     _priceCtrl.text = p.price?.toString() ?? '';
     _oldPriceCtrl.text = p.oldPrice?.toString() ?? '';
     _brandCtrl.text = p.brand ?? '';
-    _installPriceCtrl.text = p.installationPrice > 0 ? p.installationPrice.toString() : '';
+    _installPriceCtrl.text = p.installationPrice > 0
+        ? p.installationPrice.toString()
+        : '';
     _category = p.category;
     _requiresInstallation = p.requiresInstallation;
     _isFeatured = p.isFeatured;
@@ -78,10 +80,14 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         'category': _category,
         'brand': _brandCtrl.text.isEmpty ? null : _brandCtrl.text,
         'price': _priceCtrl.text.isEmpty ? null : double.parse(_priceCtrl.text),
-        'old_price': _oldPriceCtrl.text.isEmpty ? null : double.parse(_oldPriceCtrl.text),
+        'old_price': _oldPriceCtrl.text.isEmpty
+            ? null
+            : double.parse(_oldPriceCtrl.text),
         'is_price_on_request': _priceCtrl.text.isEmpty,
         'requires_installation': _requiresInstallation,
-        'installation_price': _installPriceCtrl.text.isEmpty ? 0.0 : double.parse(_installPriceCtrl.text),
+        'installation_price': _installPriceCtrl.text.isEmpty
+            ? 0.0
+            : double.parse(_installPriceCtrl.text),
         'is_featured': _isFeatured,
         'specs': _specs,
       };
@@ -174,7 +180,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                                   fit: BoxFit.cover,
                                 );
                               }
-                              return const Center(child: CircularProgressIndicator());
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
                             },
                           ),
                         )
@@ -197,7 +205,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                             const SizedBox(height: 8),
                             Text(
                               'اضغط لإضافة صورة',
-                              style: TextStyle(color: context.colors.textSecond),
+                              style: TextStyle(
+                                color: context.colors.textSecond,
+                              ),
                             ),
                           ],
                         ),
@@ -291,7 +301,9 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                             ),
                             Text(
                               'الخصم: ${(((double.parse(_oldPriceCtrl.text) - double.parse(_priceCtrl.text)) / double.parse(_oldPriceCtrl.text)) * 100).round()}% | ~~${_oldPriceCtrl.text}~~ → ${_priceCtrl.text}',
-                              style: TextStyle(color: context.colors.textSecond),
+                              style: TextStyle(
+                                color: context.colors.textSecond,
+                              ),
                             ),
                           ],
                         ),
@@ -325,7 +337,8 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               CheckboxListTile(
                 title: const Text('هذا المنتج يتطلب خدمة تركيب؟'),
                 value: _requiresInstallation,
-                onChanged: (v) => setState(() => _requiresInstallation = v ?? false),
+                onChanged: (v) =>
+                    setState(() => _requiresInstallation = v ?? false),
                 activeColor: context.colors.bluePrimary,
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,

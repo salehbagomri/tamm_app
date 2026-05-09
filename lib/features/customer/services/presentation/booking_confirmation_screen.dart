@@ -9,6 +9,8 @@ import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/providers/order_providers.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class BookingConfirmationScreen extends ConsumerWidget {
@@ -25,17 +27,20 @@ class BookingConfirmationScreen extends ConsumerWidget {
       appBar: const TammAppBar(title: 'تأكيد الحجز'),
       body: orderAsync.when(
         data: (order) {
-          final serviceName = order.items.isNotEmpty 
-              ? order.items.first.itemType // It would be better to get the actual service name, but itemType is a fallback
+          final serviceName = order.items.isNotEmpty
+              ? order
+                    .items
+                    .first
+                    .itemType // It would be better to get the actual service name, but itemType is a fallback
               : 'الخدمة';
-          
+
           return SingleChildScrollView(
             padding: AppSpacing.pagePadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 32),
-                
+
                 // Success Badge
                 Container(
                   padding: const EdgeInsets.all(24),
@@ -49,9 +54,9 @@ class BookingConfirmationScreen extends ConsumerWidget {
                     size: 80,
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 Text(
                   'تمّ حجزك بنجاح!',
                   style: GoogleFonts.harmattan(
@@ -60,9 +65,9 @@ class BookingConfirmationScreen extends ConsumerWidget {
                     color: context.colors.textPrimary,
                   ),
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'رقم الطلب: ${order.orderNumber}',
                   style: GoogleFonts.harmattan(
@@ -71,16 +76,17 @@ class BookingConfirmationScreen extends ConsumerWidget {
                     color: context.colors.textSecond,
                   ),
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Summary Card
                 TammCard(
                   child: Column(
                     children: [
                       _SummaryRow(
                         title: 'الخدمة المختارة',
-                        value: serviceName, // Optionally show 'order.items.first.service_type_id' resolved, but we skip it here
+                        value:
+                            serviceName, // Optionally show 'order.items.first.service_type_id' resolved, but we skip it here
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -89,23 +95,21 @@ class BookingConfirmationScreen extends ConsumerWidget {
                       if (order.scheduledPeriod != null) ...[
                         _SummaryRow(
                           title: 'الموعد',
-                          value: '${order.preferredDate != null ? "${order.preferredDate!.day}/${order.preferredDate!.month} — " : ""}${order.scheduledPeriod} ${order.scheduledHour ?? ''}',
+                          value:
+                              '${order.preferredDate != null ? "${order.preferredDate!.day}/${order.preferredDate!.month} — " : ""}${order.scheduledPeriod} ${order.scheduledHour ?? ''}',
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Divider(color: context.colors.border),
                         ),
                       ],
-                      _SummaryRow(
-                        title: 'الموقع',
-                        value: order.address,
-                      ),
+                      _SummaryRow(title: 'الموقع', value: order.address),
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 Text(
                   'سيتواصل معك الفني قريباً لتأكيد الموعد.',
                   textAlign: TextAlign.center,
@@ -115,17 +119,17 @@ class BookingConfirmationScreen extends ConsumerWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                
+
                 const SizedBox(height: 48),
-                
+
                 TammButton(
                   label: 'تتبع الطلب',
                   icon: Icons.local_shipping_outlined,
                   onPressed: () => context.push('/customer/order/$orderId'),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 TammButton(
                   label: 'العودة للرئيسية',
                   type: TammButtonType.secondary,
@@ -136,7 +140,12 @@ class BookingConfirmationScreen extends ConsumerWidget {
           );
         },
         loading: () => const TammLoading(),
-        error: (e, _) => Center(child: Text('حدث خطأ: $e')),
+        error: (e, _) => ErrorStateWidget(
+          message: e is AppException
+              ? e.message
+              : 'حدث خطأ في تحميل بيانات الحجز',
+          onRetry: () => ref.invalidate(orderDetailProvider(orderId)),
+        ),
       ),
     );
   }

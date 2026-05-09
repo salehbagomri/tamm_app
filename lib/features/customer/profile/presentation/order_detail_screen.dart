@@ -35,7 +35,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'orders',
-          filter: PostgresChangeFilter(type: PostgresChangeFilterType.eq, column: 'id', value: widget.orderId),
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'id',
+            value: widget.orderId,
+          ),
           callback: (_) {
             ref.invalidate(orderDetailProvider(widget.orderId));
           },
@@ -69,10 +73,17 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   }
 
   Widget _buildBody(BuildContext context, Order o) {
-    final isQuotePhase = o.orderType == 'quote_request' &&
+    final isQuotePhase =
+        o.orderType == 'quote_request' &&
         (o.status == 'pending' || o.status == 'confirmed');
-    final isExecutionPhase = o.orderType == 'quote_request' &&
-        ['assigned', 'on_the_way', 'in_progress', 'completed'].contains(o.status);
+    final isExecutionPhase =
+        o.orderType == 'quote_request' &&
+        [
+          'assigned',
+          'on_the_way',
+          'in_progress',
+          'completed',
+        ].contains(o.status);
 
     return Column(
       children: [
@@ -135,16 +146,28 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       if (o.preferredDate != null)
                         _InfoRow(
                           icon: Icons.calendar_today,
-                          text: '${o.preferredDate!.day}/${o.preferredDate!.month}/${o.preferredDate!.year}',
+                          text:
+                              '${o.preferredDate!.day}/${o.preferredDate!.month}/${o.preferredDate!.year}',
                         ),
                       if (o.scheduledPeriod != null)
-                        _InfoRow(icon: Icons.access_time, text: '${o.scheduledPeriod!} ${o.scheduledHour ?? ''}'),
+                        _InfoRow(
+                          icon: Icons.access_time,
+                          text:
+                              '${o.scheduledPeriod!} ${o.scheduledHour ?? ''}',
+                        ),
                       if (o.notes != null && o.notes!.isNotEmpty)
                         _InfoRow(icon: Icons.note, text: o.notes!),
                       if (o.technicianName != null)
-                        _InfoRow(icon: Icons.engineering, text: 'الفني: ${o.technicianName!}'),
-                      if (o.technicianNotes != null && o.technicianNotes!.isNotEmpty)
-                        _InfoRow(icon: Icons.fact_check, text: 'تقرير الفني: ${o.technicianNotes!}'),
+                        _InfoRow(
+                          icon: Icons.engineering,
+                          text: 'الفني: ${o.technicianName!}',
+                        ),
+                      if (o.technicianNotes != null &&
+                          o.technicianNotes!.isNotEmpty)
+                        _InfoRow(
+                          icon: Icons.fact_check,
+                          text: 'تقرير الفني: ${o.technicianNotes!}',
+                        ),
                     ],
                   ),
                 ),
@@ -164,11 +187,19 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                           ],
                         ),
                         borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(color: context.colors.bluePrimary.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: context.colors.bluePrimary.withValues(
+                            alpha: 0.3,
+                          ),
+                        ),
                       ),
                       child: Column(
                         children: [
-                          Icon(Icons.local_offer, color: context.colors.bluePrimary, size: 36),
+                          Icon(
+                            Icons.local_offer,
+                            color: context.colors.bluePrimary,
+                            size: 36,
+                          ),
                           const SizedBox(height: 8),
                           Text(
                             'تم استلام عرض السعر!',
@@ -191,7 +222,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                           TammButton(
                             label: 'عرض التفاصيل والرد',
                             icon: Icons.reply,
-                            onPressed: () => context.push('/customer/quote-response/${o.id}'),
+                            onPressed: () => context.push(
+                              '/customer/quote-response/${o.id}',
+                            ),
                           ),
                         ],
                       ),
@@ -204,11 +237,17 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       decoration: BoxDecoration(
                         color: context.colors.warning.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(color: context.colors.warning.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: context.colors.warning.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.hourglass_top, color: context.colors.warning, size: 32),
+                          Icon(
+                            Icons.hourglass_top,
+                            color: context.colors.warning,
+                            size: 32,
+                          ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(
@@ -243,11 +282,17 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       decoration: BoxDecoration(
                         color: context.colors.success.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(color: context.colors.success.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: context.colors.success.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle, color: context.colors.success, size: 32),
+                          Icon(
+                            Icons.check_circle,
+                            color: context.colors.success,
+                            size: 32,
+                          ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(
@@ -282,11 +327,17 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       decoration: BoxDecoration(
                         color: context.colors.error.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(color: context.colors.error.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: context.colors.error.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.cancel, color: context.colors.error, size: 32),
+                          Icon(
+                            Icons.cancel,
+                            color: context.colors.error,
+                            size: 32,
+                          ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(
@@ -317,7 +368,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   ],
                 ],
 
-                if (isExecutionPhase || (o.orderType != 'quote_request' && ['assigned', 'on_the_way', 'in_progress', 'completed'].contains(o.status))) ...[
+                if (isExecutionPhase ||
+                    (o.orderType != 'quote_request' &&
+                        [
+                          'assigned',
+                          'on_the_way',
+                          'in_progress',
+                          'completed',
+                        ].contains(o.status))) ...[
                   _buildProgressBar(o),
                   const SizedBox(height: 16),
                 ],
@@ -362,7 +420,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 const SizedBox(height: 12),
 
                 // Total
-                if (o.totalAmount > 0 || (o.orderType == 'quote_request' && o.quotePrice != null))
+                if (o.totalAmount > 0 ||
+                    (o.orderType == 'quote_request' && o.quotePrice != null))
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -443,7 +502,12 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     );
   }
 
-  Widget _buildProgressStep(String label, bool active, {bool isFirst = false, bool isLast = false}) {
+  Widget _buildProgressStep(
+    String label,
+    bool active, {
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
     return Column(
       children: [
         Container(
@@ -457,14 +521,18 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
               width: 2,
             ),
           ),
-          child: active ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
+          child: active
+              ? const Icon(Icons.check, size: 16, color: Colors.white)
+              : null,
         ),
         const SizedBox(height: 8),
         Text(
           label,
           style: GoogleFonts.harmattan(
             fontSize: 12,
-            color: active ? context.colors.textPrimary : context.colors.textSecond,
+            color: active
+                ? context.colors.textPrimary
+                : context.colors.textSecond,
             fontWeight: active ? FontWeight.w700 : FontWeight.w400,
           ),
         ),

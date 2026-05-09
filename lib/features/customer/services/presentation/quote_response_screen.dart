@@ -20,7 +20,8 @@ class QuoteResponseScreen extends ConsumerStatefulWidget {
   const QuoteResponseScreen({super.key, required this.orderId});
 
   @override
-  ConsumerState<QuoteResponseScreen> createState() => _QuoteResponseScreenState();
+  ConsumerState<QuoteResponseScreen> createState() =>
+      _QuoteResponseScreenState();
 }
 
 class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
@@ -31,40 +32,46 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
     try {
       final repo = ref.read(quoteRepositoryProvider);
       await repo.acceptQuote(widget.orderId);
-      
+
       ref.invalidate(orderDetailProvider(widget.orderId));
       ref.invalidate(myOrdersProvider);
-      
+
       if (mounted) {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: const Text('تم قبول العرض'),
-            content: const Text('تم تأكيد طلبك بنجاح. سنتواصل معك لترتيب موعد التنفيذ قريباً.'),
+            content: const Text(
+              'تم تأكيد طلبك بنجاح. سنتواصل معك لترتيب موعد التنفيذ قريباً.',
+            ),
             actions: [
               TammButton(
                 label: 'حسناً',
                 onPressed: () {
                   Navigator.pop(context); // Close dialog
-                  context.pushReplacement('/customer/order/${widget.orderId}'); // Go back to order details showing confirmed status
+                  context.pushReplacement(
+                    '/customer/order/${widget.orderId}',
+                  ); // Go back to order details showing confirmed status
                 },
-              )
+              ),
             ],
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            e is AppException ? e.message : 'حدث خطأ في قبول العرض',
-            style: GoogleFonts.harmattan(fontSize: 15),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is AppException ? e.message : 'حدث خطأ في قبول العرض',
+              style: GoogleFonts.harmattan(fontSize: 15),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
           ),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-        ));
+        );
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -73,7 +80,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
 
   Future<void> _rejectQuote() async {
     final reasonController = TextEditingController();
-    
+
     final shouldReject = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -101,7 +108,10 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('تأكيد الرفض', style: TextStyle(color: context.colors.error)),
+            child: Text(
+              'تأكيد الرفض',
+              style: TextStyle(color: context.colors.error),
+            ),
           ),
         ],
       ),
@@ -111,41 +121,50 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
       setState(() => _isSaving = true);
       try {
         final repo = ref.read(quoteRepositoryProvider);
-        await repo.rejectQuote(widget.orderId, reason: reasonController.text.trim());
-        
+        await repo.rejectQuote(
+          widget.orderId,
+          reason: reasonController.text.trim(),
+        );
+
         ref.invalidate(orderDetailProvider(widget.orderId));
         ref.invalidate(myOrdersProvider);
-        
+
         if (mounted) {
           showDialog(
             context: context,
             barrierDismissible: false,
             builder: (context) => AlertDialog(
               title: const Text('تم إرسال الرفض'),
-              content: const Text('تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.'),
+              content: const Text(
+                'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
+              ),
               actions: [
                 TammButton(
                   label: 'حسناً',
                   onPressed: () {
                     Navigator.pop(context); // Close dialog
-                    context.pushReplacement('/customer/order/${widget.orderId}');
+                    context.pushReplacement(
+                      '/customer/order/${widget.orderId}',
+                    );
                   },
-                )
+                ),
               ],
             ),
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              e is AppException ? e.message : 'حدث خطأ في رفض العرض',
-              style: GoogleFonts.harmattan(fontSize: 15),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                e is AppException ? e.message : 'حدث خطأ في رفض العرض',
+                style: GoogleFonts.harmattan(fontSize: 15),
+              ),
+              backgroundColor: context.colors.error,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 4),
             ),
-            backgroundColor: context.colors.error,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 4),
-          ));
+          );
         }
       } finally {
         if (mounted) setState(() => _isSaving = false);
@@ -172,17 +191,17 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
                     children: [
                       QuoteOfferCard(order: order),
                       const SizedBox(height: 32),
-                      
+
                       Text(
-                         'تفاصيل طلبك الأصلي',
-                         style: GoogleFonts.harmattan(
-                           fontSize: 18,
-                           fontWeight: FontWeight.w700,
-                           color: context.colors.textPrimary,
-                         ),
+                        'تفاصيل طلبك الأصلي',
+                        style: GoogleFonts.harmattan(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: context.colors.textPrimary,
+                        ),
                       ),
                       const SizedBox(height: 12),
-                      
+
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -203,13 +222,15 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
                   ),
                 ),
               ),
-              
+
               if (order.quoteStatus == 'sent')
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: context.colors.bgSurface,
-                    border: Border(top: BorderSide(color: context.colors.border)),
+                    border: Border(
+                      top: BorderSide(color: context.colors.border),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),

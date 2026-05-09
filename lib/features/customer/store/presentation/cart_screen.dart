@@ -37,14 +37,17 @@ class CartScreen extends ConsumerWidget {
           // Calculate totals
           double originalTotal = 0.0;
           double finalTotal = notifier.total;
-          
+
           for (final item in cart) {
-            final double basePrice = item.product.oldPrice ?? item.product.price ?? 0;
+            final double basePrice =
+                item.product.oldPrice ?? item.product.price ?? 0;
             final double baseTotal = basePrice * item.quantity;
-            final double installTotal = item.includeInstallation ? (item.product.installationPrice * item.quantity) : 0;
+            final double installTotal = item.includeInstallation
+                ? (item.product.installationPrice * item.quantity)
+                : 0;
             originalTotal += baseTotal + installTotal;
           }
-          
+
           final double savings = originalTotal - finalTotal;
 
           return Column(
@@ -66,7 +69,10 @@ class CartScreen extends ConsumerWidget {
                           borderRadius: AppSpacing.radius,
                         ),
                         alignment: Alignment.centerRight,
-                        child: const Icon(Icons.delete_outline, color: Colors.white),
+                        child: const Icon(
+                          Icons.delete_outline,
+                          color: Colors.white,
+                        ),
                       ),
                       onDismissed: (direction) {
                         notifier.removeItem(item.product.id);
@@ -92,23 +98,31 @@ class CartScreen extends ConsumerWidget {
                                   ? CachedNetworkImage(
                                       imageUrl: item.product.imageUrl!,
                                       fit: BoxFit.cover,
-                                      imageBuilder: (context, imageProvider) => Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: AppSpacing.radiusSm,
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.cover,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: AppSpacing.radiusSm,
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                      placeholder: (context, url) =>
+                                          const TammShimmer(
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            borderRadius: AppSpacing.radiusSm,
+                                          ),
+                                      errorWidget: (context, url, err) => Icon(
+                                        Icons.image,
+                                        color: context.colors.textFaint,
                                       ),
-                                      placeholder: (context, url) => const TammShimmer(
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                        borderRadius: AppSpacing.radiusSm,
-                                      ),
-                                      errorWidget: (context, url, err) => Icon(Icons.image, color: context.colors.textFaint),
                                     )
-                                  : Icon(Icons.image, color: context.colors.textFaint),
+                                  : Icon(
+                                      Icons.image,
+                                      color: context.colors.textFaint,
+                                    ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -135,7 +149,8 @@ class CartScreen extends ConsumerWidget {
                                           style: GoogleFonts.harmattan(
                                             fontSize: 13,
                                             color: context.colors.textSecond,
-                                            decoration: TextDecoration.lineThrough,
+                                            decoration:
+                                                TextDecoration.lineThrough,
                                           ),
                                         ),
                                         const SizedBox(width: 4),
@@ -163,11 +178,18 @@ class CartScreen extends ConsumerWidget {
                                       padding: const EdgeInsets.only(top: 4),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.handyman, size: 14, color: context.colors.bluePrimary),
+                                          Icon(
+                                            Icons.handyman,
+                                            size: 14,
+                                            color: context.colors.bluePrimary,
+                                          ),
                                           const SizedBox(width: 4),
                                           Text(
                                             'تركيب (+${(item.product.installationPrice * item.quantity).toInt()})',
-                                            style: GoogleFonts.harmattan(fontSize: 13, color: context.colors.bluePrimary),
+                                            style: GoogleFonts.harmattan(
+                                              fontSize: 13,
+                                              color: context.colors.bluePrimary,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -180,9 +202,19 @@ class CartScreen extends ConsumerWidget {
                               children: [
                                 IconButton(
                                   padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                  icon: Icon(Icons.add_circle_outline, color: context.colors.bluePrimary, size: 24),
-                                  onPressed: () => notifier.updateQuantity(item.product.id, item.quantity + 1),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 32,
+                                    minHeight: 32,
+                                  ),
+                                  icon: Icon(
+                                    Icons.add_circle_outline,
+                                    color: context.colors.bluePrimary,
+                                    size: 24,
+                                  ),
+                                  onPressed: () => notifier.updateQuantity(
+                                    item.product.id,
+                                    item.quantity + 1,
+                                  ),
                                 ),
                                 Text(
                                   '${item.quantity}',
@@ -194,9 +226,19 @@ class CartScreen extends ConsumerWidget {
                                 ),
                                 IconButton(
                                   padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                  icon: Icon(Icons.remove_circle_outline, color: context.colors.textSecond, size: 24),
-                                  onPressed: () => notifier.updateQuantity(item.product.id, item.quantity - 1),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 32,
+                                    minHeight: 32,
+                                  ),
+                                  icon: Icon(
+                                    Icons.remove_circle_outline,
+                                    color: context.colors.textSecond,
+                                    size: 24,
+                                  ),
+                                  onPressed: () => notifier.updateQuantity(
+                                    item.product.id,
+                                    item.quantity - 1,
+                                  ),
                                 ),
                               ],
                             ),
@@ -211,9 +253,15 @@ class CartScreen extends ConsumerWidget {
                 padding: AppSpacing.pagePadding,
                 decoration: BoxDecoration(
                   color: context.colors.bgSurface,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
+                  ),
                   boxShadow: const [
-                    BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -4)),
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, -4),
+                    ),
                   ],
                 ),
                 child: Column(
@@ -222,16 +270,43 @@ class CartScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('المجموع الأصلي', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond)),
-                          Text('${originalTotal.toInt()} ر.س', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond, decoration: TextDecoration.lineThrough)),
+                          Text(
+                            'المجموع الأصلي',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 16,
+                              color: context.colors.textSecond,
+                            ),
+                          ),
+                          Text(
+                            '${originalTotal.toInt()} ر.س',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 16,
+                              color: context.colors.textSecond,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('إجمالي التوفير', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.success, fontWeight: FontWeight.w600)),
-                          Text('-${savings.toInt()} ر.س', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.success, fontWeight: FontWeight.w700)),
+                          Text(
+                            'إجمالي التوفير',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 16,
+                              color: context.colors.success,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            '-${savings.toInt()} ر.س',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 16,
+                              color: context.colors.success,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ],
                       ),
                       Padding(
@@ -245,11 +320,20 @@ class CartScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'المبلغ الإجمالي',
-                          style: GoogleFonts.harmattan(fontSize: 18, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                          style: GoogleFonts.harmattan(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: context.colors.textPrimary,
+                          ),
                         ),
                         Text(
                           '${finalTotal.toInt()} ر.س',
-                          style: GoogleFonts.harmattan(fontSize: 26, fontWeight: FontWeight.w700, color: context.colors.blueSky, height: 1),
+                          style: GoogleFonts.harmattan(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
+                            color: context.colors.blueSky,
+                            height: 1,
+                          ),
                         ),
                       ],
                     ),

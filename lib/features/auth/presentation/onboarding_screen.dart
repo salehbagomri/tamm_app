@@ -31,7 +31,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     try {
       final repo = ref.read(authRepositoryProvider);
       final currentUserId = repo.currentUserId;
-      
+
       // التاكد من عدم تكرار الرقم
       final phoneFormatted = '+967${_phoneCtrl.text.trim()}';
       final exists = await Supabase.instance.client
@@ -42,7 +42,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           .maybeSingle();
 
       if (exists != null) {
-        setState(() => _phoneError = 'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر');
+        setState(
+          () => _phoneError = 'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر',
+        );
         return;
       }
 
@@ -65,18 +67,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     } catch (e) {
       if (mounted) {
         final errorStr = e.toString();
-        if (errorStr.contains('23505') || errorStr.contains('unique') || errorStr.contains('profiles_phone_unique')) {
-          setState(() => _phoneError = 'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر');
+        if (errorStr.contains('23505') ||
+            errorStr.contains('unique') ||
+            errorStr.contains('profiles_phone_unique')) {
+          setState(
+            () => _phoneError = 'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر',
+          );
         } else {
           final errorMsg = errorStr.replaceAll('Exception: ', '');
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              errorMsg,
-              style: GoogleFonts.harmattan(fontSize: 16),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                errorMsg,
+                style: GoogleFonts.harmattan(fontSize: 16),
+              ),
+              backgroundColor: context.colors.error,
+              behavior: SnackBarBehavior.floating,
             ),
-            backgroundColor: context.colors.error,
-            behavior: SnackBarBehavior.floating,
-          ));
+          );
         }
       }
     } finally {
@@ -106,7 +114,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
-                          colors: [context.colors.bluePrimary, context.colors.blueLight],
+                          colors: [
+                            context.colors.bluePrimary,
+                            context.colors.blueLight,
+                          ],
                         ),
                       ),
                       child: Center(

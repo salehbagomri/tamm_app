@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_loading.dart';
@@ -77,8 +78,13 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
             );
           },
           loading: () => const TammLoading(),
-          error: (e, _) =>
-              TammEmptyState(icon: Icons.error_outline, message: 'حدث خطأ: $e'),
+          error: (e, _) => ErrorStateWidget(
+            message: e is AppException
+                ? e.message
+                : 'حدث خطأ في تحميل بيانات الفني',
+            onRetry: () =>
+                ref.invalidate(technicianDetailProvider(technicianId)),
+          ),
         ),
       ),
     );
@@ -185,7 +191,12 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatBox(BuildContext context, String label, String value, Color color) {
+  Widget _buildStatBox(
+    BuildContext context,
+    String label,
+    String value,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
@@ -215,7 +226,10 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAssignmentCard(BuildContext context, Map<String, dynamic> assignment) {
+  Widget _buildAssignmentCard(
+    BuildContext context,
+    Map<String, dynamic> assignment,
+  ) {
     final order = assignment['orders'] as Map<String, dynamic>?;
     final date = DateTime.tryParse(assignment['created_at'] ?? '');
     final dateStr = date != null ? DateFormat('yyyy/MM/dd').format(date) : '';

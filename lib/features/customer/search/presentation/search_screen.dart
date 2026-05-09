@@ -62,7 +62,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         title: TextField(
           controller: _searchCtrl,
           autofocus: true,
-          style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textPrimary),
+          style: GoogleFonts.harmattan(
+            fontSize: 16,
+            color: context.colors.textPrimary,
+          ),
           decoration: InputDecoration(
             hintText: 'ابحث عن منتج أو خدمة...',
             hintStyle: GoogleFonts.harmattan(color: context.colors.textSecond),
@@ -107,14 +110,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            ...suggestions.map((p) => ListTile(
-                  leading: Icon(Icons.trending_up, color: context.colors.textSecond),
-                  title: Text(
-                    p.name,
-                    style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textPrimary),
+            ...suggestions.map(
+              (p) => ListTile(
+                leading: Icon(
+                  Icons.trending_up,
+                  color: context.colors.textSecond,
+                ),
+                title: Text(
+                  p.name,
+                  style: GoogleFonts.harmattan(
+                    fontSize: 16,
+                    color: context.colors.textPrimary,
                   ),
-                  onTap: () => context.push('/customer/product/${p.id}'),
-                )),
+                ),
+                onTap: () => context.push('/customer/product/${p.id}'),
+              ),
+            ),
           ],
         );
       },
@@ -167,7 +178,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...filteredProducts.map((p) => _ProductSearchResultItem(product: p)),
+                  ...filteredProducts.map(
+                    (p) => _ProductSearchResultItem(product: p),
+                  ),
                   const SizedBox(height: 24),
                 ],
                 if (filteredServices.isNotEmpty) ...[
@@ -180,7 +193,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...filteredServices.map((s) => _ServiceSearchResultItem(service: s)),
+                  ...filteredServices.map(
+                    (s) => _ServiceSearchResultItem(service: s),
+                  ),
                   const SizedBox(height: 24),
                 ],
               ],
@@ -188,7 +203,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => ErrorStateWidget(
-            message: e is AppException ? e.message : 'حدث خطأ في البحث عن الخدمات',
+            message: e is AppException
+                ? e.message
+                : 'حدث خطأ في البحث عن الخدمات',
             onRetry: () => ref.invalidate(serviceTypesProvider),
           ),
         );
@@ -228,10 +245,8 @@ class _ProductSearchResultItem extends StatelessWidget {
                     height: double.infinity,
                     borderRadius: AppSpacing.radiusSm,
                   ),
-                  errorWidget: (context, url, err) => Icon(
-                    Icons.image,
-                    color: context.colors.textFaint,
-                  ),
+                  errorWidget: (context, url, err) =>
+                      Icon(Icons.image, color: context.colors.textFaint),
                 ),
               )
             : Icon(Icons.image, color: context.colors.textFaint),
@@ -271,7 +286,9 @@ class _ServiceSearchResultItem extends StatelessWidget {
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [context.colors.blueDark, context.colors.blueMid]),
+          gradient: LinearGradient(
+            colors: [context.colors.blueDark, context.colors.blueMid],
+          ),
           shape: BoxShape.circle,
         ),
         child: Icon(Icons.build_circle, color: context.colors.blueSky),

@@ -10,11 +10,13 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/service_providers.dart';
 import '../../../../core/utils/auth_guard.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ServiceDetailScreen extends ConsumerWidget {
   final String serviceTypeId;
-  
+
   const ServiceDetailScreen({super.key, required this.serviceTypeId});
 
   @override
@@ -28,24 +30,11 @@ class ServiceDetailScreen extends ConsumerWidget {
       body: serviceAsync.when(
         data: (service) => _buildBody(context, ref, service),
         loading: () => const TammLoading(),
-        error: (err, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'حدث خطأ في جلب تفاصيل الخدمة',
-                style: GoogleFonts.harmattan(
-                  fontSize: 18,
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TammButton(
-                label: 'حاول مجدداً',
-                onPressed: () => ref.invalidate(serviceDetailProvider(serviceTypeId)),
-              ),
-            ],
-          ),
+        error: (err, stack) => ErrorStateWidget(
+          message: err is AppException
+              ? err.message
+              : 'حدث خطأ في جلب تفاصيل الخدمة',
+          onRetry: () => ref.invalidate(serviceDetailProvider(serviceTypeId)),
         ),
       ),
     );
@@ -102,7 +91,11 @@ class ServiceDetailScreen extends ConsumerWidget {
                     ),
                     if (service.estimatedDuration != null) ...[
                       const Spacer(),
-                      Icon(Icons.timer_outlined, size: 16, color: context.colors.textSecond),
+                      Icon(
+                        Icons.timer_outlined,
+                        size: 16,
+                        color: context.colors.textSecond,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         service.estimatedDuration!,
@@ -111,13 +104,14 @@ class ServiceDetailScreen extends ConsumerWidget {
                           color: context.colors.textSecond,
                         ),
                       ),
-                    ]
+                    ],
                   ],
                 ),
                 const SizedBox(height: 16),
 
                 // Description
-                if (service.description != null && service.description!.isNotEmpty) ...[
+                if (service.description != null &&
+                    service.description!.isNotEmpty) ...[
                   Text(
                     'وصف الخدمة',
                     style: GoogleFonts.harmattan(
@@ -156,25 +150,33 @@ class ServiceDetailScreen extends ConsumerWidget {
                       border: Border.all(color: context.colors.border),
                     ),
                     child: Column(
-                      children: service.includes.map((item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(Icons.check_circle, size: 20, color: context.colors.success),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                item,
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 16,
-                                  color: context.colors.textPrimary,
-                                ),
+                      children: service.includes
+                          .map(
+                            (item) => Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.check_circle,
+                                    size: 20,
+                                    color: context.colors.success,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      item,
+                                      style: GoogleFonts.harmattan(
+                                        fontSize: 16,
+                                        color: context.colors.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      )).toList(),
+                          )
+                          .toList(),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -189,9 +191,7 @@ class ServiceDetailScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: context.colors.bgSurface,
-            border: Border(
-              top: BorderSide(color: context.colors.border),
-            ),
+            border: Border(top: BorderSide(color: context.colors.border)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
@@ -206,7 +206,7 @@ class ServiceDetailScreen extends ConsumerWidget {
             onPressed: () async {
               if (!await requireAuth(context, ref)) return;
               if (!context.mounted) return;
-              
+
               if (service.isQuoteBased) {
                 context.push('/customer/quote-request/${service.id}');
               } else {

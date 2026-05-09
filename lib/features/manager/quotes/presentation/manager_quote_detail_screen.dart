@@ -29,14 +29,16 @@ class ManagerQuoteDetailScreen extends ConsumerStatefulWidget {
   const ManagerQuoteDetailScreen({super.key, required this.orderId});
 
   @override
-  ConsumerState<ManagerQuoteDetailScreen> createState() => _ManagerQuoteDetailScreenState();
+  ConsumerState<ManagerQuoteDetailScreen> createState() =>
+      _ManagerQuoteDetailScreenState();
 }
 
-class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScreen> {
+class _ManagerQuoteDetailScreenState
+    extends ConsumerState<ManagerQuoteDetailScreen> {
   final _priceController = TextEditingController();
   final _detailsController = TextEditingController();
   final _durationController = TextEditingController();
-  
+
   Uint8List? _attachedBytes;
   String? _attachedFileName;
   bool _isSubmitting = false;
@@ -76,9 +78,9 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
   }
 
   bool _isFormValid() {
-    return _priceController.text.trim().isNotEmpty && 
-           _detailsController.text.trim().isNotEmpty &&
-           double.tryParse(_priceController.text.trim()) != null;
+    return _priceController.text.trim().isNotEmpty &&
+        _detailsController.text.trim().isNotEmpty &&
+        double.tryParse(_priceController.text.trim()) != null;
   }
 
   Future<void> _pickFile() async {
@@ -109,9 +111,18 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                   color: context.colors.bluePrimary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.photo_library, color: context.colors.bluePrimary),
+                child: Icon(
+                  Icons.photo_library,
+                  color: context.colors.bluePrimary,
+                ),
               ),
-              title: Text('اختر صورة من المعرض', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textPrimary)),
+              title: Text(
+                'اختر صورة من المعرض',
+                style: GoogleFonts.harmattan(
+                  fontSize: 16,
+                  color: context.colors.textPrimary,
+                ),
+              ),
               onTap: () => Navigator.pop(ctx, 'gallery'),
             ),
             ListTile(
@@ -123,7 +134,13 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                 ),
                 child: Icon(Icons.camera_alt, color: context.colors.success),
               ),
-              title: Text('التقط صورة', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textPrimary)),
+              title: Text(
+                'التقط صورة',
+                style: GoogleFonts.harmattan(
+                  fontSize: 16,
+                  color: context.colors.textPrimary,
+                ),
+              ),
               onTap: () => Navigator.pop(ctx, 'camera'),
             ),
             ListTile(
@@ -135,7 +152,13 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                 ),
                 child: Icon(Icons.file_present, color: context.colors.warning),
               ),
-              title: Text('اختر ملف PDF', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textPrimary)),
+              title: Text(
+                'اختر ملف PDF',
+                style: GoogleFonts.harmattan(
+                  fontSize: 16,
+                  color: context.colors.textPrimary,
+                ),
+              ),
               onTap: () => Navigator.pop(ctx, 'file'),
             ),
             const SizedBox(height: 8),
@@ -147,9 +170,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
     if (source == null) return;
 
     if (source == 'file') {
-      final result = await FilePicker.pickFiles(
-        type: FileType.any,
-      );
+      final result = await FilePicker.pickFiles(type: FileType.any);
       if (result != null && result.files.single.bytes != null) {
         final ext = result.files.single.extension?.toLowerCase() ?? '';
         final allowed = ['pdf', 'jpg', 'jpeg', 'png'];
@@ -194,9 +215,15 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
       final picker = ImagePicker();
       XFile? picked;
       if (source == 'gallery') {
-        picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+        picked = await picker.pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 85,
+        );
       } else if (source == 'camera') {
-        picked = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+        picked = await picker.pickImage(
+          source: ImageSource.camera,
+          imageQuality: 85,
+        );
       }
       if (picked != null) {
         final bytes = await picked.readAsBytes();
@@ -217,13 +244,13 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
 
   Future<void> _sendQuote() async {
     if (!_isFormValid()) return;
-    
+
     setState(() => _isSubmitting = true);
-    
+
     try {
       final repo = ref.read(quoteRepositoryProvider);
       final price = double.parse(_priceController.text.trim());
-      
+
       // Upload attachment if exists (non-blocking if fails)
       String? attachmentUrl;
       if (_attachedBytes != null) {
@@ -239,7 +266,9 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('تعذر رفع المرفق، سيتم إرسال العرض بدون مرفق'),
+                content: const Text(
+                  'تعذر رفع المرفق، سيتم إرسال العرض بدون مرفق',
+                ),
                 backgroundColor: context.colors.warning,
                 behavior: SnackBarBehavior.floating,
               ),
@@ -247,14 +276,16 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
           }
         }
       }
-      
+
       final currentOrderAsync = ref.read(orderDetailProvider(widget.orderId));
       if (currentOrderAsync.value?.quoteStatus == 'rejected') {
         await repo.resendQuote(
           orderId: widget.orderId,
           price: price,
           details: _detailsController.text.trim(),
-          duration: _durationController.text.trim().isNotEmpty ? _durationController.text.trim() : null,
+          duration: _durationController.text.trim().isNotEmpty
+              ? _durationController.text.trim()
+              : null,
           attachmentUrl: attachmentUrl,
         );
       } else {
@@ -262,14 +293,16 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
           orderId: widget.orderId,
           price: price,
           details: _detailsController.text.trim(),
-          duration: _durationController.text.trim().isNotEmpty ? _durationController.text.trim() : null,
+          duration: _durationController.text.trim().isNotEmpty
+              ? _durationController.text.trim()
+              : null,
           attachmentUrl: attachmentUrl,
         );
       }
-      
+
       ref.invalidate(orderDetailProvider(widget.orderId));
       ref.invalidate(managerQuotesProvider);
-      
+
       if (mounted) {
         showDialog(
           context: context,
@@ -282,7 +315,9 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                 const Text('تم الإرسال بنجاح'),
               ],
             ),
-            content: const Text('تم إرسال عرض السعر للعميل. سيتم إشعارك عند قبوله أو رفضه.'),
+            content: const Text(
+              'تم إرسال عرض السعر للعميل. سيتم إشعارك عند قبوله أو رفضه.',
+            ),
             actions: [
               TammButton(
                 label: 'العودة للطلبات',
@@ -290,22 +325,24 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                   Navigator.pop(dialogContext);
                   context.pop();
                 },
-              )
+              ),
             ],
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            e is AppException ? e.message : 'حدث خطأ في إرسال العرض',
-            style: GoogleFonts.harmattan(fontSize: 15),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is AppException ? e.message : 'حدث خطأ في إرسال العرض',
+              style: GoogleFonts.harmattan(fontSize: 15),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
           ),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-        ));
+        );
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -331,7 +368,9 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
         data: (order) => _buildBody(order),
         loading: () => const TammLoading(),
         error: (err, stack) => ErrorStateWidget(
-          message: err is AppException ? err.message : 'حدث خطأ في تحميل تفاصيل الطلب',
+          message: err is AppException
+              ? err.message
+              : 'حدث خطأ في تحميل تفاصيل الطلب',
           onRetry: () => ref.invalidate(orderDetailProvider(widget.orderId)),
         ),
       ),
@@ -358,17 +397,26 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     decoration: BoxDecoration(
                       color: context.colors.bluePrimary.withValues(alpha: 0.05),
                       borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: context.colors.bluePrimary.withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: context.colors.bluePrimary.withValues(
+                          alpha: 0.2,
+                        ),
+                      ),
                     ),
                     child: Row(
                       children: [
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: context.colors.bluePrimary.withValues(alpha: 0.1),
+                            color: context.colors.bluePrimary.withValues(
+                              alpha: 0.1,
+                            ),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.person, color: context.colors.bluePrimary),
+                          child: Icon(
+                            Icons.person,
+                            color: context.colors.bluePrimary,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -396,12 +444,18 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                         ),
                         if (order.customerProfile!['phone'] != null)
                           IconButton(
-                            icon: Icon(Icons.phone, color: context.colors.bluePrimary),
+                            icon: Icon(
+                              Icons.phone,
+                              color: context.colors.bluePrimary,
+                            ),
                             style: IconButton.styleFrom(
-                              backgroundColor: context.colors.bluePrimary.withValues(alpha: 0.1),
+                              backgroundColor: context.colors.bluePrimary
+                                  .withValues(alpha: 0.1),
                             ),
                             onPressed: () async {
-                              final url = Uri.parse('tel:${order.customerProfile!['phone']}');
+                              final url = Uri.parse(
+                                'tel:${order.customerProfile!['phone']}',
+                              );
                               if (await canLaunchUrl(url)) {
                                 await launchUrl(url);
                               }
@@ -433,7 +487,10 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _DetailRow(title: 'رقم الطلب', value: '#${order.orderNumber}'),
+                      _DetailRow(
+                        title: 'رقم الطلب',
+                        value: '#${order.orderNumber}',
+                      ),
                       const SizedBox(height: 8),
                       _DetailRow(title: 'الحالة', value: order.statusLabel),
                       Divider(height: 24, color: context.colors.border),
@@ -457,7 +514,11 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                       Divider(height: 24, color: context.colors.border),
                       Row(
                         children: [
-                          Icon(Icons.location_on, size: 20, color: context.colors.bluePrimary),
+                          Icon(
+                            Icons.location_on,
+                            size: 20,
+                            color: context.colors.bluePrimary,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -477,7 +538,9 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
 
                 // 2. Manager Response Form or Display Sent Details
                 Text(
-                  showForm ? (isRejected ? 'تقديم عرض جديد' : 'تقديم عرض السعر') : 'العرض المُرسل',
+                  showForm
+                      ? (isRejected ? 'تقديم عرض جديد' : 'تقديم عرض السعر')
+                      : 'العرض المُرسل',
                   style: GoogleFonts.harmattan(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -485,7 +548,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 if (showForm) ...[
                   if (isRejected && order.rejectionReason != null) ...[
                     Container(
@@ -494,7 +557,9 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                       decoration: BoxDecoration(
                         color: context.colors.error.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(color: context.colors.error.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: context.colors.error.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -531,7 +596,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     hint: '500',
                     controller: _priceController,
                     keyboardType: TextInputType.number,
-                    onChanged: (val) => setState((){}),
+                    onChanged: (val) => setState(() {}),
                   ),
                   const SizedBox(height: 16),
                   TammTextField(
@@ -539,7 +604,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     hint: 'يشمل التركيب والمواد الأساسية والضمان...',
                     controller: _detailsController,
                     maxLines: 4,
-                    onChanged: (val) => setState((){}),
+                    onChanged: (val) => setState(() {}),
                   ),
                   const SizedBox(height: 16),
                   TammTextField(
@@ -565,7 +630,9 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                       decoration: BoxDecoration(
                         color: context.colors.success.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusSm,
-                        border: Border.all(color: context.colors.success.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: context.colors.success.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -601,7 +668,11 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.close, color: context.colors.error, size: 20),
+                            icon: Icon(
+                              Icons.close,
+                              color: context.colors.error,
+                              size: 20,
+                            ),
                             onPressed: _removeAttachment,
                           ),
                         ],
@@ -610,7 +681,10 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                   ] else ...[
                     OutlinedButton.icon(
                       onPressed: _pickFile,
-                      icon: Icon(Icons.attach_file, color: context.colors.bluePrimary),
+                      icon: Icon(
+                        Icons.attach_file,
+                        color: context.colors.bluePrimary,
+                      ),
                       label: Text(
                         'إرفاق صورة العرض أو PDF',
                         style: GoogleFonts.harmattan(
@@ -620,9 +694,18 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-                        side: BorderSide(color: context.colors.bluePrimary.withValues(alpha: 0.4)),
-                        shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusSm),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 20,
+                        ),
+                        side: BorderSide(
+                          color: context.colors.bluePrimary.withValues(
+                            alpha: 0.4,
+                          ),
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: AppSpacing.radiusSm,
+                        ),
                       ),
                     ),
                   ],
@@ -639,14 +722,14 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _DetailRow(
-                          title: 'السعر المُرسل', 
+                          title: 'السعر المُرسل',
                           value: '${order.quotePrice?.toInt() ?? 0} ر.س',
                           isBoldValue: true,
                           valueColor: context.colors.blueSky,
                         ),
                         Divider(height: 24, color: context.colors.border),
                         _DetailRow(
-                          title: 'مدة التنفيذ', 
+                          title: 'مدة التنفيذ',
                           value: order.quoteDuration ?? 'لم تحدد',
                         ),
                         Divider(height: 24, color: context.colors.border),
@@ -672,7 +755,11 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                           Divider(height: 24, color: context.colors.border),
                           Row(
                             children: [
-                              Icon(Icons.attach_file, size: 18, color: context.colors.bluePrimary),
+                              Icon(
+                                Icons.attach_file,
+                                size: 18,
+                                color: context.colors.bluePrimary,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 'مرفق مع العرض',
@@ -685,7 +772,8 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                             ],
                           ),
                         ],
-                        if (order.quoteStatus == 'rejected' && order.rejectionReason != null) ...[
+                        if (order.quoteStatus == 'rejected' &&
+                            order.rejectionReason != null) ...[
                           Divider(height: 24, color: context.colors.border),
                           Text(
                             'سبب الرفض من العميل:',
@@ -703,13 +791,13 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                               color: context.colors.textPrimary,
                             ),
                           ),
-                        ]
+                        ],
                       ],
                     ),
                   ),
                 ],
                 const SizedBox(height: 32),
-                
+
                 // 3. Timeline
                 _buildTimeline(order),
                 const SizedBox(height: 32),
@@ -723,11 +811,17 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     decoration: BoxDecoration(
                       color: context.colors.success.withValues(alpha: 0.08),
                       borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: context.colors.success.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: context.colors.success.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.check_circle, color: context.colors.success, size: 32),
+                        Icon(
+                          Icons.check_circle,
+                          color: context.colors.success,
+                          size: 32,
+                        ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -765,11 +859,17 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     decoration: BoxDecoration(
                       color: context.colors.error.withValues(alpha: 0.08),
                       borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: context.colors.error.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: context.colors.error.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.cancel, color: context.colors.error, size: 32),
+                        Icon(
+                          Icons.cancel,
+                          color: context.colors.error,
+                          size: 32,
+                        ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
@@ -802,7 +902,8 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
           ),
 
         // After acceptance: assign technician
-        if (order.quoteStatus == 'accepted' && (order.status == 'confirmed' || order.status == 'pending'))
+        if (order.quoteStatus == 'accepted' &&
+            (order.status == 'confirmed' || order.status == 'pending'))
           _buildStickyBar(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -880,11 +981,15 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
         if (order.quoteRespondedAt != null)
           _TimelineItem(
             title: order.quoteStatus == 'rejected' ? 'تم الرفض' : 'تم القبول',
-            content: order.quoteStatus == 'rejected' ? 'تم الرفض من العميل' : 'تم القبول من العميل وبانتظار تعيين فني',
+            content: order.quoteStatus == 'rejected'
+                ? 'تم الرفض من العميل'
+                : 'تم القبول من العميل وبانتظار تعيين فني',
             time: order.quoteRespondedAt!,
             isCompleted: true,
             isLast: true,
-            color: order.quoteStatus == 'rejected' ? context.colors.error : context.colors.success,
+            color: order.quoteStatus == 'rejected'
+                ? context.colors.error
+                : context.colors.success,
           ),
       ],
     );
@@ -919,14 +1024,22 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                     return ListTile(
                       title: Text(
                         p?['full_name'] ?? '',
-                        style: GoogleFonts.harmattan(color: context.colors.textPrimary),
+                        style: GoogleFonts.harmattan(
+                          color: context.colors.textPrimary,
+                        ),
                       ),
                       subtitle: Text(
                         t['specialization'] ?? '',
-                        style: GoogleFonts.harmattan(color: context.colors.textSecond, fontSize: 14),
+                        style: GoogleFonts.harmattan(
+                          color: context.colors.textSecond,
+                          fontSize: 14,
+                        ),
                       ),
                       trailing: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: t['status'] == 'available'
                               ? context.colors.success.withValues(alpha: 0.15)
@@ -937,22 +1050,28 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                           t['status'] == 'available' ? 'متاح' : 'مشغول',
                           style: GoogleFonts.harmattan(
                             fontSize: 12,
-                            color: t['status'] == 'available' ? context.colors.success : context.colors.warning,
+                            color: t['status'] == 'available'
+                                ? context.colors.success
+                                : context.colors.warning,
                           ),
                         ),
                       ),
                       onTap: () async {
-                        await ref.read(assignmentRepositoryProvider).assignTechnician(
-                          orderId: widget.orderId,
-                          technicianId: t['id'],
-                        );
+                        await ref
+                            .read(assignmentRepositoryProvider)
+                            .assignTechnician(
+                              orderId: widget.orderId,
+                              technicianId: t['id'],
+                            );
                         ref.invalidate(orderDetailProvider(widget.orderId));
                         ref.invalidate(managerQuotesProvider);
                         ref.invalidate(allOrdersProvider(null));
                         if (context.mounted) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('تم تعيين الفني بنجاح')),
+                            const SnackBar(
+                              content: Text('تم تعيين الفني بنجاح'),
+                            ),
                           );
                         }
                       },
@@ -961,7 +1080,7 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
                 ),
               ),
               loading: () => const TammLoading(),
-              error: (e, _) => Text('$e'),
+              error: (e, _) => const SizedBox(),
             );
           },
         ),
@@ -976,10 +1095,16 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
         title: const Text('تأكيد الإلغاء'),
         content: const Text('هل أنت متأكد من إلغاء هذا الطلب؟'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('لا')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('لا'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('نعم، ألغِ', style: TextStyle(color: context.colors.error)),
+            child: Text(
+              'نعم، ألغِ',
+              style: TextStyle(color: context.colors.error),
+            ),
           ),
         ],
       ),
@@ -988,19 +1113,23 @@ class _ManagerQuoteDetailScreenState extends ConsumerState<ManagerQuoteDetailScr
     if (confirm == true) {
       setState(() => _isSubmitting = true);
       try {
-        await ref.read(orderRepositoryProvider).updateOrderStatus(widget.orderId, 'cancelled');
+        await ref
+            .read(orderRepositoryProvider)
+            .updateOrderStatus(widget.orderId, 'cancelled');
         ref.invalidate(orderDetailProvider(widget.orderId));
         ref.invalidate(managerQuotesProvider);
         ref.invalidate(allOrdersProvider(null));
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم إلغاء الطلب')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('تم إلغاء الطلب')));
           context.pop();
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطأ: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('خطأ: $e')));
         }
       } finally {
         if (mounted) setState(() => _isSubmitting = false);
@@ -1076,14 +1205,20 @@ class _TimelineItem extends StatelessWidget {
               height: 12,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: color ?? (isCompleted ? context.colors.bluePrimary : context.colors.textSecond.withValues(alpha: 0.3)),
+                color:
+                    color ??
+                    (isCompleted
+                        ? context.colors.bluePrimary
+                        : context.colors.textSecond.withValues(alpha: 0.3)),
               ),
             ),
             if (!isLast)
               Container(
                 width: 2,
                 height: 40,
-                color: isCompleted ? context.colors.bluePrimary : context.colors.textSecond.withValues(alpha: 0.3),
+                color: isCompleted
+                    ? context.colors.bluePrimary
+                    : context.colors.textSecond.withValues(alpha: 0.3),
               ),
           ],
         ),

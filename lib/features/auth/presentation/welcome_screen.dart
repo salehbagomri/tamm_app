@@ -32,7 +32,10 @@ class WelcomeScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: [context.colors.bluePrimary, context.colors.blueLight],
+                    colors: [
+                      context.colors.bluePrimary,
+                      context.colors.blueLight,
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),

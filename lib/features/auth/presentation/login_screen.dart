@@ -36,7 +36,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.signInWithGoogle();
-      
+
       if (kIsWeb) return;
 
       final profile = await repo.getProfile();
@@ -63,8 +63,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         return;
       }
       final msg = e.toString();
-      if (msg.contains('canceled') || msg.contains('cancelled') || msg.toLowerCase().contains('sign_in_canceled')) {
-        return; 
+      if (msg.contains('canceled') ||
+          msg.contains('cancelled') ||
+          msg.toLowerCase().contains('sign_in_canceled')) {
+        return;
       }
       debugPrint('Login error: $msg');
       if (msg.contains('AuthException')) {
@@ -88,7 +90,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.signInWithEmail(email: email, password: password);
-      
+
       final profile = await repo.getProfile();
       if (!mounted) return;
 
@@ -110,7 +112,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } catch (e) {
       debugPrint('Email login error: $e');
       final msg = e.toString().toLowerCase();
-      if (msg.contains('invalid login credentials') || msg.contains('invalid_credentials')) {
+      if (msg.contains('invalid login credentials') ||
+          msg.contains('invalid_credentials')) {
         _showError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
       } else {
         _showError('فشل تسجيل الدخول، حاول مجدداً');
@@ -124,10 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          message,
-          style: GoogleFonts.harmattan(fontSize: 16),
-        ),
+        content: Text(message, style: GoogleFonts.harmattan(fontSize: 16)),
         backgroundColor: context.colors.error,
         behavior: SnackBarBehavior.floating,
       ),
@@ -197,7 +197,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              
+
               // Google Sign-In Button
               SizedBox(
                 width: double.infinity,
@@ -247,16 +247,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: Divider(color: context.colors.textFaint, thickness: 0.5)),
+                  Expanded(
+                    child: Divider(
+                      color: context.colors.textFaint,
+                      thickness: 0.5,
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('أو', style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textFaint)),
+                    child: Text(
+                      'أو',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 14,
+                        color: context.colors.textFaint,
+                      ),
+                    ),
                   ),
-                  Expanded(child: Divider(color: context.colors.textFaint, thickness: 0.5)),
+                  Expanded(
+                    child: Divider(
+                      color: context.colors.textFaint,
+                      thickness: 0.5,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
-              
+
               // Email / Password
               TextField(
                 controller: _emailCtrl,
@@ -264,14 +280,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: TextStyle(color: context.colors.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'البريد الإلكتروني',
-                  hintStyle: GoogleFonts.harmattan(color: context.colors.textFaint),
+                  hintStyle: GoogleFonts.harmattan(
+                    color: context.colors.textFaint,
+                  ),
                   filled: true,
                   fillColor: context.colors.bgSurface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -281,14 +302,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: TextStyle(color: context.colors.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'كلمة المرور',
-                  hintStyle: GoogleFonts.harmattan(color: context.colors.textFaint),
+                  hintStyle: GoogleFonts.harmattan(
+                    color: context.colors.textFaint,
+                  ),
                   filled: true,
                   fillColor: context.colors.bgSurface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscure ? Icons.visibility_off : Icons.visibility,
@@ -317,12 +343,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   child: _loading
                       ? const SizedBox(
-                          width: 24, height: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : Text(
                           'تسجيل الدخول',
-                          style: GoogleFonts.harmattan(fontSize: 18, fontWeight: FontWeight.w600),
+                          style: GoogleFonts.harmattan(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                 ),
               ),
@@ -334,14 +367,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: () => context.push('/register'),
                     child: Text(
                       'ليس لديك حساب؟ أنشئ حساباً',
-                      style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.blueSky),
+                      style: GoogleFonts.harmattan(
+                        fontSize: 14,
+                        color: context.colors.blueSky,
+                      ),
                     ),
                   ),
                   TextButton(
                     onPressed: () => context.push('/forgot-password'),
                     child: Text(
                       'نسيت كلمة المرور؟',
-                      style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textSecond),
+                      style: GoogleFonts.harmattan(
+                        fontSize: 14,
+                        color: context.colors.textSecond,
+                      ),
                     ),
                   ),
                 ],

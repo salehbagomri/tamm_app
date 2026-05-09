@@ -100,11 +100,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [context.colors.bluePrimary, context.colors.blueLight],
+                        colors: [
+                          context.colors.bluePrimary,
+                          context.colors.blueLight,
+                        ],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: context.colors.bluePrimary.withValues(alpha: 0.35),
+                          color: context.colors.bluePrimary.withValues(
+                            alpha: 0.35,
+                          ),
                           blurRadius: 24,
                           spreadRadius: 4,
                         ),

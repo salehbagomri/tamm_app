@@ -17,7 +17,7 @@ class ActiveOrderCard extends ConsumerWidget {
     return activeOrderAsync.when(
       data: (order) {
         if (order == null) return const SizedBox.shrink();
-        
+
         return Container(
           width: double.infinity,
           margin: const EdgeInsets.only(top: 24),
@@ -25,7 +25,9 @@ class ActiveOrderCard extends ConsumerWidget {
           decoration: BoxDecoration(
             color: context.colors.bgSurface,
             borderRadius: AppSpacing.radiusLg,
-            border: Border.all(color: context.colors.bluePrimary.withOpacity(0.3)),
+            border: Border.all(
+              color: context.colors.bluePrimary.withOpacity(0.3),
+            ),
             boxShadow: [
               BoxShadow(
                 color: context.colors.bluePrimary.withOpacity(0.1),
@@ -82,7 +84,11 @@ class ActiveOrderCard extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.engineering, size: 16, color: context.colors.textSecond),
+                    Icon(
+                      Icons.engineering,
+                      size: 16,
+                      color: context.colors.textSecond,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'الفني: ${order.technicianName}',
@@ -100,7 +106,9 @@ class ActiveOrderCard extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: () => context.push('/customer/order/${order.id}'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context.colors.bluePrimary.withOpacity(0.1),
+                    backgroundColor: context.colors.bluePrimary.withOpacity(
+                      0.1,
+                    ),
                     foregroundColor: context.colors.blueSky,
                     elevation: 0,
                     shape: const RoundedRectangleBorder(

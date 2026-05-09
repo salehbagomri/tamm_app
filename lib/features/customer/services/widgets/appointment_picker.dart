@@ -96,20 +96,29 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                 child: Container(
                   width: 65,
                   decoration: BoxDecoration(
-                    color: isSelected ? context.colors.bluePrimary : context.colors.bgSurface,
+                    color: isSelected
+                        ? context.colors.bluePrimary
+                        : context.colors.bgSurface,
                     borderRadius: AppSpacing.radiusLg,
                     border: Border.all(
-                      color: isSelected ? context.colors.bluePrimary : context.colors.border,
+                      color: isSelected
+                          ? context.colors.bluePrimary
+                          : context.colors.border,
                     ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        dayName.substring(0, dayName.length > 4 ? 4 : dayName.length),
+                        dayName.substring(
+                          0,
+                          dayName.length > 4 ? 4 : dayName.length,
+                        ),
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
-                          color: isSelected ? Colors.white : context.colors.textSecond,
+                          color: isSelected
+                              ? Colors.white
+                              : context.colors.textSecond,
                         ),
                       ),
                       Text(
@@ -117,7 +126,9 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                         style: GoogleFonts.harmattan(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: isSelected ? Colors.white : context.colors.textPrimary,
+                          color: isSelected
+                              ? Colors.white
+                              : context.colors.textPrimary,
                         ),
                       ),
                     ],
@@ -158,10 +169,14 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: isSelected ? context.colors.bluePrimary : context.colors.bgSurface,
+                      color: isSelected
+                          ? context.colors.bluePrimary
+                          : context.colors.bgSurface,
                       borderRadius: AppSpacing.radiusSm,
                       border: Border.all(
-                        color: isSelected ? context.colors.bluePrimary : context.colors.border,
+                        color: isSelected
+                            ? context.colors.bluePrimary
+                            : context.colors.border,
                       ),
                     ),
                     child: Column(
@@ -171,14 +186,18 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                           style: GoogleFonts.harmattan(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: isSelected ? Colors.white : context.colors.textPrimary,
+                            color: isSelected
+                                ? Colors.white
+                                : context.colors.textPrimary,
                           ),
                         ),
                         Text(
                           _periodTimes[period]!,
                           style: GoogleFonts.harmattan(
                             fontSize: 12,
-                            color: isSelected ? Colors.white70 : context.colors.textSecond,
+                            color: isSelected
+                                ? Colors.white70
+                                : context.colors.textSecond,
                           ),
                         ),
                       ],
@@ -221,18 +240,26 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
               return GestureDetector(
                 onTap: () {
                   setState(() {
-                    _selectedHour = isSelected ? null : hour; // Toggle off if clicked again
+                    _selectedHour = isSelected
+                        ? null
+                        : hour; // Toggle off if clicked again
                     _notifyChange();
                   });
                 },
                 child: Container(
-                  width: (MediaQuery.of(context).size.width - 48 - 24) / 4, // 4 columns with padding
+                  width:
+                      (MediaQuery.of(context).size.width - 48 - 24) /
+                      4, // 4 columns with padding
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? context.colors.bluePrimary : context.colors.bgSurface,
+                    color: isSelected
+                        ? context.colors.bluePrimary
+                        : context.colors.bgSurface,
                     borderRadius: AppSpacing.radiusSm,
                     border: Border.all(
-                      color: isSelected ? context.colors.bluePrimary : context.colors.border,
+                      color: isSelected
+                          ? context.colors.bluePrimary
+                          : context.colors.border,
                     ),
                   ),
                   alignment: Alignment.center,
@@ -241,7 +268,9 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                     style: GoogleFonts.harmattan(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : context.colors.textPrimary,
+                      color: isSelected
+                          ? Colors.white
+                          : context.colors.textPrimary,
                     ),
                   ),
                 ),

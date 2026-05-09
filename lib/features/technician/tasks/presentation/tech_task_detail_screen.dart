@@ -224,7 +224,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         decoration: BoxDecoration(
                           color: isStarted
                               ? context.colors.warning.withValues(alpha: 0.2)
-                              : context.colors.bluePrimary.withValues(alpha: 0.2),
+                              : context.colors.bluePrimary.withValues(
+                                  alpha: 0.2,
+                                ),
                           borderRadius: AppSpacing.radiusSm,
                         ),
                         child: Text(
@@ -258,9 +260,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         children: [
                           Text(
                             customerName,
-                            style: TextStyle(
-                              color: context.colors.textPrimary,
-                            ),
+                            style: TextStyle(color: context.colors.textPrimary),
                           ),
                           if (customerPhone.isNotEmpty)
                             Text(
@@ -287,7 +287,10 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     contentPadding: EdgeInsets.zero,
                     leading: CircleAvatar(
                       backgroundColor: context.colors.bgPrimary,
-                      child: Icon(Icons.location_on, color: context.colors.blueDark),
+                      child: Icon(
+                        Icons.location_on,
+                        color: context.colors.blueDark,
+                      ),
                     ),
                     title: const Text(
                       'العنوان',
@@ -306,7 +309,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: context.colors.success.withValues(alpha: 0.15),
+                                color: context.colors.success.withValues(
+                                  alpha: 0.15,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -329,11 +334,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                             : context.colors.bluePrimary,
                       ),
                       tooltip: hasCoordinates ? 'ابدأ الملاحة' : 'فتح الخرائط',
-                      onPressed: () => _openMaps(
-                        address,
-                        lat: orderLat,
-                        lng: orderLng,
-                      ),
+                      onPressed: () =>
+                          _openMaps(address, lat: orderLat, lng: orderLng),
                     ),
                   ),
                 ],

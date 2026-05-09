@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../../../core/widgets/tamm_loading.dart';
 import '../../../core/widgets/tamm_empty_state.dart';
 import '../../../core/theme/tamm_colors.dart';
+import '../../../core/errors/app_exception.dart';
+import '../../../core/widgets/error_state_widget.dart';
 import '../../../shared/providers/notification_providers.dart';
 import '../../../shared/providers/auth_providers.dart';
 
@@ -35,7 +37,8 @@ class NotificationsScreen extends ConsumerWidget {
         actions: [
           if (unread > 0)
             TextButton(
-              onPressed: () => ref.read(notificationsProvider.notifier).markAllRead(),
+              onPressed: () =>
+                  ref.read(notificationsProvider.notifier).markAllRead(),
               child: Text(
                 'تعيين الكل كمقروء',
                 style: GoogleFonts.harmattan(
@@ -48,9 +51,9 @@ class NotificationsScreen extends ConsumerWidget {
       ),
       body: notifsAsync.when(
         loading: () => const TammLoading(),
-        error: (e, _) => const TammEmptyState(
-          icon: Icons.error_outline,
-          message: 'حدث خطأ أثناء تحميل الإشعارات',
+        error: (e, _) => ErrorStateWidget(
+          message: e is AppException ? e.message : 'حدث خطأ في تحميل الإشعارات',
+          onRetry: () => ref.invalidate(notificationsProvider),
         ),
         data: (notifs) {
           if (notifs.isEmpty) {
@@ -92,9 +95,9 @@ class _NotificationCard extends ConsumerWidget {
     return GestureDetector(
       onTap: () async {
         // Mark as read
-        await ref.read(notificationsProvider.notifier).markAsRead(
-          notification['id'] as String,
-        );
+        await ref
+            .read(notificationsProvider.notifier)
+            .markAsRead(notification['id'] as String);
         // Navigate
         if (orderId != null && context.mounted) {
           final route = _buildRoute(ref, type, orderId);
@@ -109,7 +112,9 @@ class _NotificationCard extends ConsumerWidget {
               : context.colors.bluePrimary.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isRead ? context.colors.border : context.colors.bluePrimary.withValues(alpha: 0.2),
+            color: isRead
+                ? context.colors.border
+                : context.colors.bluePrimary.withValues(alpha: 0.2),
           ),
         ),
         child: Row(
@@ -138,7 +143,9 @@ class _NotificationCard extends ConsumerWidget {
                           title,
                           style: GoogleFonts.harmattan(
                             fontSize: 15,
-                            fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
+                            fontWeight: isRead
+                                ? FontWeight.w500
+                                : FontWeight.w700,
                             color: context.colors.textPrimary,
                           ),
                           maxLines: 1,
@@ -216,16 +223,26 @@ class _NotificationCard extends ConsumerWidget {
 
   IconData _iconForType(String? type) {
     switch (type) {
-      case 'order_confirmed':   return Icons.check_circle_outline;
-      case 'assigned':          return Icons.engineering;
-      case 'on_the_way':        return Icons.directions_car_outlined;
-      case 'in_progress':       return Icons.build_outlined;
-      case 'completed':         return Icons.task_alt;
-      case 'quote_sent':        return Icons.request_quote_outlined;
-      case 'quote_responded':   return Icons.reply_outlined;
-      case 'new_order':         return Icons.shopping_bag_outlined;
-      case 'new_assignment':    return Icons.assignment_outlined;
-      default:                  return Icons.notifications_outlined;
+      case 'order_confirmed':
+        return Icons.check_circle_outline;
+      case 'assigned':
+        return Icons.engineering;
+      case 'on_the_way':
+        return Icons.directions_car_outlined;
+      case 'in_progress':
+        return Icons.build_outlined;
+      case 'completed':
+        return Icons.task_alt;
+      case 'quote_sent':
+        return Icons.request_quote_outlined;
+      case 'quote_responded':
+        return Icons.reply_outlined;
+      case 'new_order':
+        return Icons.shopping_bag_outlined;
+      case 'new_assignment':
+        return Icons.assignment_outlined;
+      default:
+        return Icons.notifications_outlined;
     }
   }
 
@@ -233,14 +250,18 @@ class _NotificationCard extends ConsumerWidget {
     switch (type) {
       case 'order_confirmed':
       case 'completed':
-      case 'new_assignment':    return context.colors.success;
+      case 'new_assignment':
+        return context.colors.success;
       case 'on_the_way':
-      case 'quote_responded':   return context.colors.warning;
+      case 'quote_responded':
+        return context.colors.warning;
       case 'assigned':
       case 'new_order':
       case 'quote_sent':
-      case 'in_progress':       return context.colors.bluePrimary;
-      default:                  return context.colors.textSecond;
+      case 'in_progress':
+        return context.colors.bluePrimary;
+      default:
+        return context.colors.textSecond;
     }
   }
 
@@ -249,10 +270,10 @@ class _NotificationCard extends ConsumerWidget {
     final date = DateTime.tryParse(iso);
     if (date == null) return '';
     final diff = DateTime.now().difference(date.toLocal());
-    if (diff.inMinutes < 1)  return 'الآن';
+    if (diff.inMinutes < 1) return 'الآن';
     if (diff.inMinutes < 60) return 'منذ ${diff.inMinutes} دقيقة';
-    if (diff.inHours < 24)   return 'منذ ${diff.inHours} ساعة';
-    if (diff.inDays < 7)     return 'منذ ${diff.inDays} يوم';
+    if (diff.inHours < 24) return 'منذ ${diff.inHours} ساعة';
+    if (diff.inDays < 7) return 'منذ ${diff.inDays} يوم';
     return DateFormat('yyyy/MM/dd').format(date.toLocal());
   }
 }

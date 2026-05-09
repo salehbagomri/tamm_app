@@ -14,29 +14,30 @@ class PromotionFormScreen extends ConsumerStatefulWidget {
   const PromotionFormScreen({super.key, this.promotion});
 
   @override
-  ConsumerState<PromotionFormScreen> createState() => _PromotionFormScreenState();
+  ConsumerState<PromotionFormScreen> createState() =>
+      _PromotionFormScreenState();
 }
 
 class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
   final _subtitleCtrl = TextEditingController();
-  
+
   String _iconName = 'local_offer';
   String _destination = '/customer/store';
   bool _isActive = true;
   bool _loading = false;
-  
+
   // Specific list of pre-defined gradient presets as per plan
   String _selectedGradient = 'blue_dark';
-  
+
   final Map<String, List<String>> _gradientOptions = {
     'blue_dark': ['#0A2540', '#0E4C8C'], // اشتر وركب
-    'teal': ['#0A3540', '#0E6C8C'],      // عروض مكيفات
-    'green': ['#0A4020', '#0E8C4C'],     // طاقة شمسية
-    'purple': ['#2A0A40', '#5C0E8C'],    // صيانة
-    'orange': ['#6B2B06', '#A34208'],    // اضافي
-    'blue_sky': ['#0E508C', '#1A79CA'],  // اضافي
+    'teal': ['#0A3540', '#0E6C8C'], // عروض مكيفات
+    'green': ['#0A4020', '#0E8C4C'], // طاقة شمسية
+    'purple': ['#2A0A40', '#5C0E8C'], // صيانة
+    'orange': ['#6B2B06', '#A34208'], // اضافي
+    'blue_sky': ['#0E508C', '#1A79CA'], // اضافي
   };
 
   @override
@@ -49,12 +50,14 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
       _iconName = p.iconName;
       _destination = p.destination;
       _isActive = p.isActive;
-      
+
       // Determine which gradient preset matches
-      _selectedGradient = _gradientOptions.entries.firstWhere(
-        (e) => e.value[0] == p.gradientStart && e.value[1] == p.gradientEnd,
-        orElse: () => const MapEntry('blue_dark', ['#0A2540', '#0E4C8C'])
-      ).key;
+      _selectedGradient = _gradientOptions.entries
+          .firstWhere(
+            (e) => e.value[0] == p.gradientStart && e.value[1] == p.gradientEnd,
+            orElse: () => const MapEntry('blue_dark', ['#0A2540', '#0E4C8C']),
+          )
+          .key;
     }
   }
 
@@ -63,7 +66,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
     setState(() => _loading = true);
     try {
       final gradientColors = _gradientOptions[_selectedGradient]!;
-      
+
       final data = {
         'title': _titleCtrl.text,
         'subtitle': _subtitleCtrl.text,
@@ -79,7 +82,9 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
             .read(promotionRepositoryProvider)
             .updatePromotion(widget.promotion!.id, data);
       } else {
-        await ref.read(promotionRepositoryProvider).createPromotion(
+        await ref
+            .read(promotionRepositoryProvider)
+            .createPromotion(
               Promotion(
                 id: '',
                 title: data['title'] as String,
@@ -125,8 +130,22 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(int.parse(_gradientOptions[_selectedGradient]![0].replaceAll('#', '0xff'))),
-                      Color(int.parse(_gradientOptions[_selectedGradient]![1].replaceAll('#', '0xff'))),
+                      Color(
+                        int.parse(
+                          _gradientOptions[_selectedGradient]![0].replaceAll(
+                            '#',
+                            '0xff',
+                          ),
+                        ),
+                      ),
+                      Color(
+                        int.parse(
+                          _gradientOptions[_selectedGradient]![1].replaceAll(
+                            '#',
+                            '0xff',
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   borderRadius: AppSpacing.radiusLg,
@@ -139,7 +158,9 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            _titleCtrl.text.isEmpty ? 'عنوان العرض' : _titleCtrl.text,
+                            _titleCtrl.text.isEmpty
+                                ? 'عنوان العرض'
+                                : _titleCtrl.text,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -148,7 +169,9 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                             maxLines: 1,
                           ),
                           Text(
-                            _subtitleCtrl.text.isEmpty ? 'تفاصيل العرض الفرعية' : _subtitleCtrl.text,
+                            _subtitleCtrl.text.isEmpty
+                                ? 'تفاصيل العرض الفرعية'
+                                : _subtitleCtrl.text,
                             style: const TextStyle(color: Colors.white70),
                             maxLines: 1,
                           ),
@@ -202,12 +225,30 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                 dropdownColor: context.colors.bgSurface2,
                 decoration: const InputDecoration(labelText: 'لون الخلفية'),
                 items: const [
-                  DropdownMenuItem(value: 'blue_dark', child: Text('تصميم أزرق غامق (افتراضي)')),
-                  DropdownMenuItem(value: 'teal', child: Text('تصميم أزرق مخضر (عروض)')),
-                  DropdownMenuItem(value: 'green', child: Text('تصميم أخضر (طاقة بديلة)')),
-                  DropdownMenuItem(value: 'purple', child: Text('تصميم بنفسجي (صيانة)')),
-                  DropdownMenuItem(value: 'orange', child: Text('تصميم برتقالي (تنبيهات)')),
-                  DropdownMenuItem(value: 'blue_sky', child: Text('تصميم أزرق فاتح')),
+                  DropdownMenuItem(
+                    value: 'blue_dark',
+                    child: Text('تصميم أزرق غامق (افتراضي)'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'teal',
+                    child: Text('تصميم أزرق مخضر (عروض)'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'green',
+                    child: Text('تصميم أخضر (طاقة بديلة)'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'purple',
+                    child: Text('تصميم بنفسجي (صيانة)'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'orange',
+                    child: Text('تصميم برتقالي (تنبيهات)'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'blue_sky',
+                    child: Text('تصميم أزرق فاتح'),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _selectedGradient = v!),
               ),
@@ -215,12 +256,26 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
               DropdownButtonFormField<String>(
                 initialValue: _destination,
                 dropdownColor: context.colors.bgSurface2,
-                decoration: const InputDecoration(labelText: 'الوجهة عند الضغط'),
+                decoration: const InputDecoration(
+                  labelText: 'الوجهة عند الضغط',
+                ),
                 items: const [
-                  DropdownMenuItem(value: '/customer/store', child: Text('المتجر')),
-                  DropdownMenuItem(value: '/customer/services?category=ac_install', child: Text('خدمات التركيب')),
-                  DropdownMenuItem(value: '/customer/services?category=ac_repair', child: Text('خدمات الصيانة')),
-                  DropdownMenuItem(value: '/customer/services?category=consultation', child: Text('طلب استشارة')),
+                  DropdownMenuItem(
+                    value: '/customer/store',
+                    child: Text('المتجر'),
+                  ),
+                  DropdownMenuItem(
+                    value: '/customer/services?category=ac_install',
+                    child: Text('خدمات التركيب'),
+                  ),
+                  DropdownMenuItem(
+                    value: '/customer/services?category=ac_repair',
+                    child: Text('خدمات الصيانة'),
+                  ),
+                  DropdownMenuItem(
+                    value: '/customer/services?category=consultation',
+                    child: Text('طلب استشارة'),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _destination = v!),
               ),
@@ -236,13 +291,18 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
                   onPressed: () async {
-                    await ref.read(promotionRepositoryProvider).deletePromotion(widget.promotion!.id);
+                    await ref
+                        .read(promotionRepositoryProvider)
+                        .deletePromotion(widget.promotion!.id);
                     ref.invalidate(allPromotionsProvider);
                     ref.invalidate(activePromotionsProvider);
                     if (context.mounted) context.pop();
                   },
                   icon: Icon(Icons.delete, color: context.colors.error),
-                  label: Text('حذف هذا العرض', style: TextStyle(color: context.colors.error)),
+                  label: Text(
+                    'حذف هذا العرض',
+                    style: TextStyle(color: context.colors.error),
+                  ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: context.colors.error),
                   ),

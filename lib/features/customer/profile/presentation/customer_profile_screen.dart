@@ -30,15 +30,30 @@ class CustomerProfileScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.person_outline, size: 80, color: context.colors.textFaint),
+                  Icon(
+                    Icons.person_outline,
+                    size: 80,
+                    color: context.colors.textFaint,
+                  ),
                   const SizedBox(height: 16),
-                  Text('سجّل دخولك لإدارة حسابك',
-                    style: GoogleFonts.harmattan(fontSize: 20, color: context.colors.textPrimary)),
+                  Text(
+                    'سجّل دخولك لإدارة حسابك',
+                    style: GoogleFonts.harmattan(
+                      fontSize: 20,
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 24),
-                  TammButton(label: 'تسجيل الدخول', onPressed: () => context.push('/login')),
+                  TammButton(
+                    label: 'تسجيل الدخول',
+                    onPressed: () => context.push('/login'),
+                  ),
                   const SizedBox(height: 12),
-                  TammButton(label: 'إنشاء حساب', type: TammButtonType.secondary,
-                    onPressed: () => context.push('/register')),
+                  TammButton(
+                    label: 'إنشاء حساب',
+                    type: TammButtonType.secondary,
+                    onPressed: () => context.push('/register'),
+                  ),
                   const SizedBox(height: 32),
                   const TammThemeSelector(),
                 ],
@@ -57,88 +72,90 @@ class CustomerProfileScreen extends ConsumerWidget {
           child: Padding(
             padding: AppSpacing.pagePadding,
             child: profileAsync.when(
-            data: (p) => Column(
-              children: [
-                const SizedBox(height: 20),
-                if (p?.avatarUrl != null && p!.avatarUrl!.isNotEmpty)
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: context.colors.blueDark,
-                    backgroundImage: CachedNetworkImageProvider(p.avatarUrl!),
-                  )
-                else
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: context.colors.blueDark,
-                    child: Text(
-                      p?.fullName.isNotEmpty == true ? p!.fullName[0] : '?',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 32,
-                        color: context.colors.textPrimary,
+              data: (p) => Column(
+                children: [
+                  const SizedBox(height: 20),
+                  if (p?.avatarUrl != null && p!.avatarUrl!.isNotEmpty)
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: context.colors.blueDark,
+                      backgroundImage: CachedNetworkImageProvider(p.avatarUrl!),
+                    )
+                  else
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: context.colors.blueDark,
+                      child: Text(
+                        p?.fullName.isNotEmpty == true ? p!.fullName[0] : '?',
+                        style: GoogleFonts.harmattan(
+                          fontSize: 32,
+                          color: context.colors.textPrimary,
+                        ),
                       ),
                     ),
+                  const SizedBox(height: 12),
+                  Text(
+                    p?.fullName ?? '',
+                    style: GoogleFonts.harmattan(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: context.colors.textPrimary,
+                    ),
                   ),
-                const SizedBox(height: 12),
-                Text(
-                  p?.fullName ?? '',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
+                  Text(
+                    p?.phone ?? '',
+                    style: GoogleFonts.harmattan(
+                      fontSize: 16,
+                      color: context.colors.textSecond,
+                    ),
                   ),
-                ),
-                Text(
-                  p?.phone ?? '',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    color: context.colors.textSecond,
+                  const SizedBox(height: 16),
+                  TammButton(
+                    label: 'تعديل الحساب',
+                    type: TammButtonType.secondary,
+                    icon: Icons.edit,
+                    width: 160,
+                    onPressed: () => context.push('/profile/edit'),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TammButton(
-                  label: 'تعديل الحساب',
-                  type: TammButtonType.secondary,
-                  icon: Icons.edit,
-                  width: 160,
-                  onPressed: () => context.push('/profile/edit'),
-                ),
-                const SizedBox(height: 32),
-                _ProfileItem(
-                  icon: Icons.receipt_long,
-                  label: AppStrings.myOrders,
-                  onTap: () => context.push('/customer/orders'),
-                ),
-                const SizedBox(height: 10),
-                _ProfileItem(
-                  icon: Icons.devices,
-                  label: AppStrings.myDevices,
-                  onTap: () => context.push('/customer/devices'),
-                ),
-                const SizedBox(height: 10),
-                const TammThemeSelector(),
-                const Spacer(),
-                _ProfileItem(
-                  icon: Icons.logout,
-                  label: 'تسجيل الخروج',
-                  onTap: () => AuthRepository.confirmSignOut(context, ref),
-                ),
-                const SizedBox(height: 16),
-                TammButton(
-                  label: 'حذف الحساب',
-                  type: TammButtonType.danger,
-                  icon: Icons.delete_forever,
-                  onPressed: () => _confirmDelete(context, ref),
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => ErrorStateWidget(
-              message: e is AppException ? e.message : 'حدث خطأ في تحميل بيانات الحساب',
-              onRetry: () => ref.refresh(userProfileProvider),
+                  const SizedBox(height: 32),
+                  _ProfileItem(
+                    icon: Icons.receipt_long,
+                    label: AppStrings.myOrders,
+                    onTap: () => context.push('/customer/orders'),
+                  ),
+                  const SizedBox(height: 10),
+                  _ProfileItem(
+                    icon: Icons.devices,
+                    label: AppStrings.myDevices,
+                    onTap: () => context.push('/customer/devices'),
+                  ),
+                  const SizedBox(height: 10),
+                  const TammThemeSelector(),
+                  const Spacer(),
+                  _ProfileItem(
+                    icon: Icons.logout,
+                    label: 'تسجيل الخروج',
+                    onTap: () => AuthRepository.confirmSignOut(context, ref),
+                  ),
+                  const SizedBox(height: 16),
+                  TammButton(
+                    label: 'حذف الحساب',
+                    type: TammButtonType.danger,
+                    icon: Icons.delete_forever,
+                    onPressed: () => _confirmDelete(context, ref),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => ErrorStateWidget(
+                message: e is AppException
+                    ? e.message
+                    : 'حدث خطأ في تحميل بيانات الحساب',
+                onRetry: () => ref.refresh(userProfileProvider),
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
@@ -151,21 +168,38 @@ class CustomerProfileScreen extends ConsumerWidget {
         backgroundColor: context.colors.bgSurface,
         title: Text(
           'حذف الحساب نهائياً',
-          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold, color: context.colors.error),
+          style: GoogleFonts.harmattan(
+            fontWeight: FontWeight.bold,
+            color: context.colors.error,
+          ),
         ),
         content: Text(
           'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء وسيتم مسح كافة البيانات المرتبطة بك.',
-          style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textPrimary),
+          style: GoogleFonts.harmattan(
+            fontSize: 16,
+            color: context.colors.textPrimary,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('إلغاء', style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond)),
+            child: Text(
+              'إلغاء',
+              style: GoogleFonts.harmattan(
+                fontSize: 16,
+                color: context.colors.textSecond,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: context.colors.error),
-            child: Text('حذف حسابي', style: GoogleFonts.harmattan(fontSize: 16, color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.colors.error,
+            ),
+            child: Text(
+              'حذف حسابي',
+              style: GoogleFonts.harmattan(fontSize: 16, color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -187,14 +221,16 @@ class CustomerProfileScreen extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
             content: Text(
               e is AppException ? e.message : 'حدث خطأ أثناء الحذف',
               style: GoogleFonts.harmattan(fontSize: 15),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
-          ));
+          ),
+        );
       }
     }
   }

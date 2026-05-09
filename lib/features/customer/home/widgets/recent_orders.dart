@@ -8,6 +8,8 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../shared/models/order.dart';
 import '../../../../shared/providers/order_providers.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class RecentOrders extends ConsumerWidget {
@@ -49,13 +51,16 @@ class RecentOrders extends ConsumerWidget {
         recentOrdersAsync.when(
           data: (orders) {
             if (orders.isEmpty) return _buildEmptyState(context);
-            
+
             return Column(
               children: orders.map((o) => _buildOrderTile(context, o)).toList(),
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+          error: (e, _) => ErrorStateWidget(
+            message: e is AppException ? e.message : 'تعذّر تحميل الطلبات',
+            onRetry: () => ref.invalidate(recentOrdersProvider),
+          ),
         ),
       ],
     );
@@ -111,13 +116,17 @@ class RecentOrders extends ConsumerWidget {
 
   Widget _buildOrderTile(BuildContext context, Order order) {
     // Generate an icon/label based on type
-    final isProduct = order.items.isNotEmpty && order.items.first.itemType == 'product';
-    final icon = isProduct ? Icons.shopping_bag : 
-        order.orderType == 'quote_request' ? Icons.request_quote : Icons.build_circle;
+    final isProduct =
+        order.items.isNotEmpty && order.items.first.itemType == 'product';
+    final icon = isProduct
+        ? Icons.shopping_bag
+        : order.orderType == 'quote_request'
+        ? Icons.request_quote
+        : Icons.build_circle;
     final title = _getOrderTypeLabel(order.orderType, isProduct);
-    
+
     final dateFormat = DateFormat('yyyy/MM/dd');
-    
+
     return InkWell(
       onTap: () => context.push('/customer/order/${order.id}'),
       borderRadius: AppSpacing.radiusSm,
@@ -155,7 +164,11 @@ class RecentOrders extends ConsumerWidget {
                           color: context.colors.textPrimary,
                         ),
                       ),
-                      _buildStatusLabel(context, order.status, order.statusLabel),
+                      _buildStatusLabel(
+                        context,
+                        order.status,
+                        order.statusLabel,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -170,7 +183,11 @@ class RecentOrders extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Icon(Icons.circle, size: 4, color: context.colors.textFaint),
+                      Icon(
+                        Icons.circle,
+                        size: 4,
+                        color: context.colors.textFaint,
+                      ),
                       const SizedBox(width: 12),
                       Text(
                         dateFormat.format(order.createdAt),

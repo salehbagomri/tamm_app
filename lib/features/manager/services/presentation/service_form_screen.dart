@@ -69,8 +69,14 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
         'category': _category,
         'base_price': double.tryParse(_priceCtrl.text) ?? 0.0,
         'is_quote_based': _isQuoteBased,
-        'includes': _includesCtrl.text.trim().split('\n').where((e) => e.isNotEmpty).toList(),
-        'estimated_duration': _durationCtrl.text.trim().isEmpty ? null : _durationCtrl.text.trim(),
+        'includes': _includesCtrl.text
+            .trim()
+            .split('\n')
+            .where((e) => e.isNotEmpty)
+            .toList(),
+        'estimated_duration': _durationCtrl.text.trim().isEmpty
+            ? null
+            : _durationCtrl.text.trim(),
       };
 
       final repo = ref.read(serviceRepositoryProvider);
@@ -185,7 +191,9 @@ class _ServiceFormScreenState extends ConsumerState<ServiceFormScreen> {
                 controller: _priceCtrl,
                 keyboardType: TextInputType.number,
                 validator: (val) =>
-                    !_isQuoteBased && (val == null || val.isEmpty) ? 'حقل مطلوب للسعر الثابت' : null,
+                    !_isQuoteBased && (val == null || val.isEmpty)
+                    ? 'حقل مطلوب للسعر الثابت'
+                    : null,
               ),
               const SizedBox(height: 16),
               CheckboxListTile(

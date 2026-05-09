@@ -38,7 +38,11 @@ class BuyInstallBanner extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.handyman, color: context.colors.blueSky, size: 20),
+                      Icon(
+                        Icons.handyman,
+                        color: context.colors.blueSky,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'اشترِ وركّب في طلب واحد',

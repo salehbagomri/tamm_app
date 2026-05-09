@@ -17,6 +17,8 @@ import '../widgets/appointment_display_card.dart';
 import '../widgets/appointment_picker.dart';
 import '../widgets/service_summary_card.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ServiceRequestScreen extends ConsumerStatefulWidget {
@@ -24,7 +26,8 @@ class ServiceRequestScreen extends ConsumerStatefulWidget {
   const ServiceRequestScreen({super.key, required this.serviceTypeId});
 
   @override
-  ConsumerState<ServiceRequestScreen> createState() => _ServiceRequestScreenState();
+  ConsumerState<ServiceRequestScreen> createState() =>
+      _ServiceRequestScreenState();
 }
 
 class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
@@ -55,7 +58,10 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       if (!serviceEnabled) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('الرجاء تفعيل خدمات الموقع.'), behavior: SnackBarBehavior.floating),
+          const SnackBar(
+            content: Text('الرجاء تفعيل خدمات الموقع.'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
         setState(() => _isLoadingLocation = false);
         return;
@@ -67,7 +73,10 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
         if (permission == LocationPermission.denied) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم رفض إذن الوصول للموقع.'), behavior: SnackBarBehavior.floating),
+            const SnackBar(
+              content: Text('تم رفض إذن الوصول للموقع.'),
+              behavior: SnackBarBehavior.floating,
+            ),
           );
           setState(() => _isLoadingLocation = false);
           return;
@@ -78,7 +87,9 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('إذن الوصول للموقع مرفوض نهائياً. تم التعيين كموقع افتراضي.'),
+            content: Text(
+              'إذن الوصول للموقع مرفوض نهائياً. تم التعيين كموقع افتراضي.',
+            ),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -100,14 +111,16 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          e is AppException ? e.message : 'حدث خطأ أثناء جلب الموقع',
-          style: GoogleFonts.harmattan(fontSize: 15),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e is AppException ? e.message : 'حدث خطأ أثناء جلب الموقع',
+            style: GoogleFonts.harmattan(fontSize: 15),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
         ),
-        backgroundColor: context.colors.error,
-        behavior: SnackBarBehavior.floating,
-      ));
+      );
       setState(() => _isLoadingLocation = false);
     }
   }
@@ -142,7 +155,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
             'quantity': 1,
             'unit_price': service.basePrice ?? 0.0,
             'total_price': service.basePrice ?? 0.0,
-          }
+          },
         ],
       );
       ref.invalidate(myOrdersProvider);
@@ -152,15 +165,17 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            e is AppException ? e.message : 'حدث خطأ في إتمام الحجز',
-            style: GoogleFonts.harmattan(fontSize: 15),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is AppException ? e.message : 'حدث خطأ في إتمام الحجز',
+              style: GoogleFonts.harmattan(fontSize: 15),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
           ),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-        ));
+        );
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -176,18 +191,12 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       body: serviceAsync.when(
         data: (service) => _buildBody(context, service),
         loading: () => const TammLoading(),
-        error: (err, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('حدث خطأ في تحميل الخدمة', style: GoogleFonts.harmattan(fontSize: 18)),
-              const SizedBox(height: 16),
-              TammButton(
-                label: 'حاول مجدداً',
-                onPressed: () => ref.invalidate(serviceDetailProvider(widget.serviceTypeId)),
-              ),
-            ],
-          ),
+        error: (err, stack) => ErrorStateWidget(
+          message: err is AppException
+              ? err.message
+              : 'حدث خطأ في تحميل الخدمة',
+          onRetry: () =>
+              ref.invalidate(serviceDetailProvider(widget.serviceTypeId)),
         ),
       ),
     );
@@ -198,11 +207,23 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 150),
+            padding: const EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: 150,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('التفاصيل الأساسية', style: GoogleFonts.harmattan(fontSize: 20, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+                Text(
+                  'التفاصيل الأساسية',
+                  style: GoogleFonts.harmattan(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 TammCard(
                   child: Row(
@@ -210,12 +231,17 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: context.colors.bluePrimary.withValues(alpha: 0.1),
+                          color: context.colors.bluePrimary.withValues(
+                            alpha: 0.1,
+                          ),
                           borderRadius: AppSpacing.radiusSm,
                         ),
                         child: Icon(
-                          service.category.contains('ac_') ? Icons.ac_unit :
-                          service.category.contains('solar') ? Icons.solar_power : Icons.miscellaneous_services,
+                          service.category.contains('ac_')
+                              ? Icons.ac_unit
+                              : service.category.contains('solar')
+                              ? Icons.solar_power
+                              : Icons.miscellaneous_services,
                           color: context.colors.bluePrimary,
                         ),
                       ),
@@ -224,10 +250,22 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(service.name, style: GoogleFonts.harmattan(fontSize: 18, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
                             Text(
-                              service.basePrice != null ? '${service.basePrice!.toInt()} ر.س' : 'يُحدد لاحقاً',
-                              style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.blueSky),
+                              service.name,
+                              style: GoogleFonts.harmattan(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: context.colors.textPrimary,
+                              ),
+                            ),
+                            Text(
+                              service.basePrice != null
+                                  ? '${service.basePrice!.toInt()} ر.س'
+                                  : 'يُحدد لاحقاً',
+                              style: GoogleFonts.harmattan(
+                                fontSize: 16,
+                                color: context.colors.blueSky,
+                              ),
                             ),
                           ],
                         ),
@@ -236,14 +274,27 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                Text('حدد الموقع', style: GoogleFonts.harmattan(fontSize: 20, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+                Text(
+                  'حدد الموقع',
+                  style: GoogleFonts.harmattan(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: _locationPicked ? context.colors.success.withValues(alpha: 0.1) : context.colors.bgSurface,
+                    color: _locationPicked
+                        ? context.colors.success.withValues(alpha: 0.1)
+                        : context.colors.bgSurface,
                     borderRadius: AppSpacing.radiusLg,
-                    border: Border.all(color: _locationPicked ? context.colors.success : context.colors.border),
+                    border: Border.all(
+                      color: _locationPicked
+                          ? context.colors.success
+                          : context.colors.border,
+                    ),
                   ),
                   child: InkWell(
                     onTap: _isLoadingLocation ? null : _pickLocation,
@@ -253,12 +304,26 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: _locationPicked ? context.colors.success : context.colors.bluePrimary,
+                            color: _locationPicked
+                                ? context.colors.success
+                                : context.colors.bluePrimary,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: _isLoadingLocation
-                              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : Icon(_locationPicked ? Icons.check_circle : Icons.my_location, color: Colors.white),
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Icon(
+                                  _locationPicked
+                                      ? Icons.check_circle
+                                      : Icons.my_location,
+                                  color: Colors.white,
+                                ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -266,18 +331,38 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _locationPicked ? 'تم تحديد الموقع ✓' : '📍 تحديد موقعي الحالي',
-                                style: GoogleFonts.harmattan(fontSize: 16, fontWeight: FontWeight.w700, color: _locationPicked ? context.colors.success : context.colors.textPrimary),
+                                _locationPicked
+                                    ? 'تم تحديد الموقع ✓'
+                                    : '📍 تحديد موقعي الحالي',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: _locationPicked
+                                      ? context.colors.success
+                                      : context.colors.textPrimary,
+                                ),
                               ),
                               Text(
-                                _locationPicked ? '${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}' : 'اضغط لإرسال موقعك الدقيق للفني',
-                                style: GoogleFonts.harmattan(fontSize: 12, color: context.colors.textSecond),
+                                _locationPicked
+                                    ? '${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
+                                    : 'اضغط لإرسال موقعك الدقيق للفني',
+                                style: GoogleFonts.harmattan(
+                                  fontSize: 12,
+                                  color: context.colors.textSecond,
+                                ),
                               ),
                             ],
                           ),
                         ),
                         if (_locationPicked)
-                          IconButton(icon: Icon(Icons.refresh, color: context.colors.textSecond), onPressed: _pickLocation, tooltip: 'تحديث الموقع'),
+                          IconButton(
+                            icon: Icon(
+                              Icons.refresh,
+                              color: context.colors.textSecond,
+                            ),
+                            onPressed: _pickLocation,
+                            tooltip: 'تحديث الموقع',
+                          ),
                       ],
                     ),
                   ),
@@ -291,32 +376,65 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   onChanged: (val) => setState(() {}),
                 ),
                 const SizedBox(height: 32),
-                Text('حدد الموعد', style: GoogleFonts.harmattan(fontSize: 20, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+                Text(
+                  'حدد الموعد',
+                  style: GoogleFonts.harmattan(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 if (_selectedDate != null && _selectedPeriod != null) ...[
-                  AppointmentDisplayCard(date: _selectedDate!, period: _selectedPeriod!, hour: _selectedHour),
+                  AppointmentDisplayCard(
+                    date: _selectedDate!,
+                    period: _selectedPeriod!,
+                    hour: _selectedHour,
+                  ),
                   const SizedBox(height: 16),
                   Center(
                     child: TextButton.icon(
-                      onPressed: () => setState(() { _selectedDate = null; _selectedPeriod = null; _selectedHour = null; }),
+                      onPressed: () => setState(() {
+                        _selectedDate = null;
+                        _selectedPeriod = null;
+                        _selectedHour = null;
+                      }),
                       icon: const Icon(Icons.edit, size: 16),
-                      label: Text('تعديل الموعد', style: GoogleFonts.harmattan(fontSize: 16)),
+                      label: Text(
+                        'تعديل الموعد',
+                        style: GoogleFonts.harmattan(fontSize: 16),
+                      ),
                     ),
                   ),
                 ] else ...[
                   Container(
                     padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: context.colors.bgSurface, borderRadius: AppSpacing.radiusLg, border: Border.all(color: context.colors.border)),
+                    decoration: BoxDecoration(
+                      color: context.colors.bgSurface,
+                      borderRadius: AppSpacing.radiusLg,
+                      border: Border.all(color: context.colors.border),
+                    ),
                     child: AppointmentPicker(
                       initialDate: _selectedDate,
                       onDateSelected: (date, period, hour) {
-                        setState(() { _selectedDate = date; _selectedPeriod = period; _selectedHour = hour; });
+                        setState(() {
+                          _selectedDate = date;
+                          _selectedPeriod = period;
+                          _selectedHour = hour;
+                        });
                       },
                     ),
                   ),
                 ],
                 const SizedBox(height: 32),
-                Text('أضف ملاحظات (اختياري)', style: GoogleFonts.harmattan(fontSize: 20, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+                Text(
+                  'أضف ملاحظات (اختياري)',
+                  style: GoogleFonts.harmattan(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 TammTextField(
                   label: 'أي تفاصيل إضافية تساعد الفني...',
@@ -341,16 +459,37 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
               ),
               Container(
                 color: context.colors.bgSurface,
-                padding: EdgeInsets.only(left: 24, right: 24, bottom: MediaQuery.of(context).padding.bottom + 16, top: 8),
-                child: TammButton(label: 'تأكيد الحجز', isLoading: _isSubmitting, onPressed: () => _submitOrder(service)),
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  bottom: MediaQuery.of(context).padding.bottom + 16,
+                  top: 8,
+                ),
+                child: TammButton(
+                  label: 'تأكيد الحجز',
+                  isLoading: _isSubmitting,
+                  onPressed: () => _submitOrder(service),
+                ),
               ),
             ],
           )
         else
           Container(
-            padding: EdgeInsets.only(left: 24, right: 24, bottom: MediaQuery.of(context).padding.bottom + 16, top: 16),
-            decoration: BoxDecoration(color: context.colors.bgSurface, border: Border(top: BorderSide(color: context.colors.border))),
-            child: TammButton(label: 'أكمل البيانات المطلوبة لحجز الخدمة', type: TammButtonType.secondary, onPressed: () {}),
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              bottom: MediaQuery.of(context).padding.bottom + 16,
+              top: 16,
+            ),
+            decoration: BoxDecoration(
+              color: context.colors.bgSurface,
+              border: Border(top: BorderSide(color: context.colors.border)),
+            ),
+            child: TammButton(
+              label: 'أكمل البيانات المطلوبة لحجز الخدمة',
+              type: TammButtonType.secondary,
+              onPressed: () {},
+            ),
           ),
       ],
     );

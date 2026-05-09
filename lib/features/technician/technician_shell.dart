@@ -50,36 +50,43 @@ class TechnicianShell extends ConsumerWidget {
         action = SnackBarAction(
           textColor: Colors.white,
           label: 'إعادة',
-          onPressed: () =>
-              ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
         );
       }
 
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          duration: const Duration(seconds: 4),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(12),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline_rounded,
-                  color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  next.message,
-                  style: GoogleFonts.harmattan(
-                      color: Colors.white, fontSize: 16),
+        ..showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 4),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.white,
+                  size: 20,
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    next.message,
+                    style: GoogleFonts.harmattan(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            action: action,
           ),
-          action: action,
-        ));
+        );
     });
 
     return AdaptiveShell(
@@ -95,14 +102,8 @@ class TechnicianShell extends ConsumerWidget {
         }
       },
       items: const [
-        NavItem(
-          icon: Icons.task_alt_rounded,
-          label: AppStrings.myTasks,
-        ),
-        NavItem(
-          icon: Icons.person_rounded,
-          label: AppStrings.profile,
-        ),
+        NavItem(icon: Icons.task_alt_rounded, label: AppStrings.myTasks),
+        NavItem(icon: Icons.person_rounded, label: AppStrings.profile),
       ],
       child: child,
     );

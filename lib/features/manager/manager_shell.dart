@@ -55,36 +55,43 @@ class ManagerShell extends ConsumerWidget {
         action = SnackBarAction(
           textColor: Colors.white,
           label: 'إعادة',
-          onPressed: () =>
-              ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
         );
       }
 
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          duration: const Duration(seconds: 4),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(12),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline_rounded,
-                  color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  next.message,
-                  style: GoogleFonts.harmattan(
-                      color: Colors.white, fontSize: 16),
+        ..showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 4),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.white,
+                  size: 20,
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    next.message,
+                    style: GoogleFonts.harmattan(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            action: action,
           ),
-          action: action,
-        ));
+        );
     });
 
     return AdaptiveShell(
@@ -110,30 +117,15 @@ class ManagerShell extends ConsumerWidget {
         }
       },
       items: const [
-        NavItem(
-          icon: Icons.dashboard_rounded,
-          label: AppStrings.dashboard,
-        ),
-        NavItem(
-          icon: Icons.receipt_long_rounded,
-          label: AppStrings.allOrders,
-        ),
-        NavItem(
-          icon: Icons.engineering_rounded,
-          label: AppStrings.manageTechs,
-        ),
+        NavItem(icon: Icons.dashboard_rounded, label: AppStrings.dashboard),
+        NavItem(icon: Icons.receipt_long_rounded, label: AppStrings.allOrders),
+        NavItem(icon: Icons.engineering_rounded, label: AppStrings.manageTechs),
         NavItem(
           icon: Icons.inventory_rounded,
           label: AppStrings.manageProducts,
         ),
-        NavItem(
-          icon: Icons.handyman_rounded,
-          label: 'الخدمات',
-        ),
-        NavItem(
-          icon: Icons.request_quote_rounded,
-          label: 'عروض الأسعار',
-        ),
+        NavItem(icon: Icons.handyman_rounded, label: 'الخدمات'),
+        NavItem(icon: Icons.request_quote_rounded, label: 'عروض الأسعار'),
       ],
       child: child,
     );

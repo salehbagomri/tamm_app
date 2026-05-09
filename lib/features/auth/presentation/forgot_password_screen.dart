@@ -13,7 +13,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
@@ -43,9 +44,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       _showError('يرجى إدخال بريد إلكتروني صحيح');
       return;
     }
-    
+
     setState(() => _loading = true);
-    
+
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.resetPassword(email);
@@ -71,7 +72,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.mark_email_read_outlined, size: 80, color: context.colors.success),
+                    Icon(
+                      Icons.mark_email_read_outlined,
+                      size: 80,
+                      color: context.colors.success,
+                    ),
                     const SizedBox(height: 24),
                     Text(
                       'تم إرسال رابط استعادة كلمة المرور بنجاح!',

@@ -7,6 +7,8 @@ import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/manager_providers.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManageServicesScreen extends ConsumerWidget {
@@ -126,7 +128,10 @@ class ManageServicesScreen extends ConsumerWidget {
             );
           },
           loading: () => const TammLoading(),
-          error: (e, _) => Center(child: Text('خطأ: $e')),
+          error: (e, _) => ErrorStateWidget(
+            message: e is AppException ? e.message : 'حدث خطأ في تحميل الخدمات',
+            onRetry: () => ref.invalidate(managerServicesProvider),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

@@ -26,7 +26,10 @@ class OrderSuccessScreen extends ConsumerWidget {
               Text(
                 'تم استلام طلبك بنجاح وسيتم التواصل معك قريباً',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: context.colors.textSecond, fontSize: 16),
+                style: TextStyle(
+                  color: context.colors.textSecond,
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 24),
               orderAsync.when(

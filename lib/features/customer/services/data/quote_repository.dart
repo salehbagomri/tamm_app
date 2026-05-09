@@ -21,14 +21,13 @@ class QuoteRepository {
       final path =
           'quotes/$orderId/attachment_${DateTime.now().millisecondsSinceEpoch}.$ext';
       await _client.storage.from('quote-attachments').uploadBinary(path, bytes);
-      final publicUrl =
-          _client.storage.from('quote-attachments').getPublicUrl(path);
+      final publicUrl = _client.storage
+          .from('quote-attachments')
+          .getPublicUrl(path);
       return publicUrl;
     } catch (e) {
       // رسالة مخصصة بغض النظر عن نوع الخطأ (شبكة أو خادم)
-      throw const ServerException(
-        message: 'فشل في رفع الملف، تحقق من اتصالك',
-      );
+      throw const ServerException(message: 'فشل في رفع الملف، تحقق من اتصالك');
     }
   }
 
@@ -62,23 +61,19 @@ class QuoteRepository {
     try {
       await _client.rpc('accept_quote', params: {'p_order_id': orderId});
     } catch (e) {
-      throw const ServerException(
-        message: 'فشل في تحديث حالة العرض',
-      );
+      throw const ServerException(message: 'فشل في تحديث حالة العرض');
     }
   }
 
   // 4. Customer: Reject Quote — via RPC (SECURITY DEFINER يتجاوز RLS)
   Future<void> rejectQuote(String orderId, {String? reason}) async {
     try {
-      await _client.rpc('reject_quote', params: {
-        'p_order_id': orderId,
-        'p_reason': reason ?? '',
-      });
-    } catch (e) {
-      throw const ServerException(
-        message: 'فشل في تحديث حالة العرض',
+      await _client.rpc(
+        'reject_quote',
+        params: {'p_order_id': orderId, 'p_reason': reason ?? ''},
       );
+    } catch (e) {
+      throw const ServerException(message: 'فشل في تحديث حالة العرض');
     }
   }
 
@@ -88,7 +83,8 @@ class QuoteRepository {
       final res = await _client
           .from('orders')
           .select(
-              '*, items:order_items(*), profiles!customer_id(full_name, phone)')
+            '*, items:order_items(*), profiles!customer_id(full_name, phone)',
+          )
           .eq('order_type', 'quote_request')
           .order('created_at', ascending: false);
       return (res as List).map((e) => Order.fromMap(e)).toList();
@@ -115,7 +111,8 @@ class QuoteRepository {
         'rejection_reason': null, // مسح سبب الرفض السابق
         'quote_responded_at': null,
       };
-      if (attachmentUrl != null) updates['quote_attachment_url'] = attachmentUrl;
+      if (attachmentUrl != null)
+        updates['quote_attachment_url'] = attachmentUrl;
       await _client.from('orders').update(updates).eq('id', orderId);
     } catch (e) {
       throw ErrorMapper.from(e);

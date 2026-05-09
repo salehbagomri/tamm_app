@@ -32,45 +32,45 @@ class CustomerHomeScreen extends ConsumerWidget {
         child: ResponsiveWrapper(
           child: SingleChildScrollView(
             padding: AppSpacing.pagePadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Header with Icons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        profileAsync.when(
-                          data: (p) => Text(
-                            'أهلاً ${p?.fullName.isNotEmpty == true ? p!.fullName : 'بك'} 👋',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              color: context.colors.textPrimary,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1. Header with Icons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          profileAsync.when(
+                            data: (p) => Text(
+                              'أهلاً ${p?.fullName.isNotEmpty == true ? p!.fullName : 'بك'} 👋',
+                              style: GoogleFonts.harmattan(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: context.colors.textPrimary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
                           ),
-                          loading: () => const SizedBox.shrink(),
-                          error: (_, __) => const SizedBox.shrink(),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'كيف نقدر نخدمك اليوم؟',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 16,
-                            color: context.colors.textSecond,
+                          const SizedBox(height: 4),
+                          Text(
+                            'كيف نقدر نخدمك اليوم؟',
+                            style: GoogleFonts.harmattan(
+                              fontSize: 16,
+                              color: context.colors.textSecond,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         const TammNotificationBell(),
                         if (!isGuest) ...[
                           _HeaderIcon(
@@ -89,164 +89,178 @@ class CustomerHomeScreen extends ConsumerWidget {
                             },
                           ),
                         ],
-                    ],
-                  )
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // 2. Search Bar
-              GestureDetector(
-                onTap: () {
-                  context.push('/customer/search');
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: context.colors.bgSurface,
-                    borderRadius: AppSpacing.radius,
-                    border: Border.all(color: context.colors.border),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.search, color: context.colors.textSecond),
-                      const SizedBox(width: 8),
-                      Text(
-                        'ابحث عن منتجات، مكيفات، ألواح...',
-                        style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.textSecond),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-
-
-              // 4. Promo Slider
-              const PromoSlider(),
-              const SizedBox(height: 32),
-
-              // 5. Quick Services (3 Cards)
-              Text(
-                'خدمات سريعة',
-                style: GoogleFonts.harmattan(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickServiceCard(
-                      icon: Icons.ac_unit,
-                      label: 'تركيب',
-                      onTap: () => context.push('/customer/services?category=ac_install'),
+                // 2. Search Bar
+                GestureDetector(
+                  onTap: () {
+                    context.push('/customer/search');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickServiceCard(
-                      icon: Icons.build,
-                      label: 'صيانة',
-                      onTap: () => context.push('/customer/services?category=ac_repair'),
+                    decoration: BoxDecoration(
+                      color: context.colors.bgSurface,
+                      borderRadius: AppSpacing.radius,
+                      border: Border.all(color: context.colors.border),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickServiceCard(
-                      icon: Icons.support_agent,
-                      label: 'استشارة',
-                      onTap: () => context.push('/customer/services?category=consultation'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // 6. Most Popular (Featured Products)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'الأكثر طلباً 🔥',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: context.colors.textPrimary,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => context.push('/customer/store'),
-                    child: Text(
-                      'عرض الكل',
-                      style: GoogleFonts.harmattan(color: context.colors.blueLight),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              featuredAsync.when(
-                data: (products) => _buildProductList(context, products),
-                loading: () => _buildShimmerList(),
-                error: (e, _) => ErrorStateWidget(
-                  message: e is AppException ? e.message : 'حدث خطأ في تحميل المنتجات',
-                  onRetry: () => ref.refresh(featuredProductsProvider),
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // 7. Special Deals
-              dealsAsync.when(
-                data: (deals) {
-                  if (deals.isEmpty) return const SizedBox.shrink();
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'عروض وأسعار مميزة 🏷️',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: context.colors.textPrimary,
-                            ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: context.colors.textSecond),
+                        const SizedBox(width: 8),
+                        Text(
+                          'ابحث عن منتجات، مكيفات، ألواح...',
+                          style: GoogleFonts.harmattan(
+                            fontSize: 16,
+                            color: context.colors.textSecond,
                           ),
-                          TextButton(
-                            onPressed: () => context.push('/customer/store'),
-                            child: Text(
-                              'تصفح العروض',
-                              style: GoogleFonts.harmattan(color: context.colors.blueLight),
-                            ),
-                          ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // 4. Promo Slider
+                const PromoSlider(),
+                const SizedBox(height: 32),
+
+                // 5. Quick Services (3 Cards)
+                Text(
+                  'خدمات سريعة',
+                  style: GoogleFonts.harmattan(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _QuickServiceCard(
+                        icon: Icons.ac_unit,
+                        label: 'تركيب',
+                        onTap: () => context.push(
+                          '/customer/services?category=ac_install',
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      _buildProductList(context, deals),
-                      const SizedBox(height: 32),
-                    ],
-                  );
-                },
-                loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
-              ),
-            ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _QuickServiceCard(
+                        icon: Icons.build,
+                        label: 'صيانة',
+                        onTap: () => context.push(
+                          '/customer/services?category=ac_repair',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _QuickServiceCard(
+                        icon: Icons.support_agent,
+                        label: 'استشارة',
+                        onTap: () => context.push(
+                          '/customer/services?category=consultation',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // 6. Most Popular (Featured Products)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'الأكثر طلباً 🔥',
+                      style: GoogleFonts.harmattan(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: context.colors.textPrimary,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => context.push('/customer/store'),
+                      child: Text(
+                        'عرض الكل',
+                        style: GoogleFonts.harmattan(
+                          color: context.colors.blueLight,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                featuredAsync.when(
+                  data: (products) => _buildProductList(context, products),
+                  loading: () => _buildShimmerList(),
+                  error: (e, _) => ErrorStateWidget(
+                    message: e is AppException
+                        ? e.message
+                        : 'حدث خطأ في تحميل المنتجات',
+                    onRetry: () => ref.refresh(featuredProductsProvider),
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // 7. Special Deals
+                dealsAsync.when(
+                  data: (deals) {
+                    if (deals.isEmpty) return const SizedBox.shrink();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'عروض وأسعار مميزة 🏷️',
+                              style: GoogleFonts.harmattan(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: context.colors.textPrimary,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () => context.push('/customer/store'),
+                              child: Text(
+                                'تصفح العروض',
+                                style: GoogleFonts.harmattan(
+                                  color: context.colors.blueLight,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        _buildProductList(context, deals),
+                        const SizedBox(height: 32),
+                      ],
+                    );
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
+                ),
+              ],
+            ),
           ),
-        ),
         ),
       ),
     );
   }
 
-
-
   Widget _buildProductList(BuildContext context, List<Product> products) {
     if (products.isEmpty) return const SizedBox.shrink();
-    
+
     return SizedBox(
       height: 200,
       child: ListView.separated(
@@ -284,11 +298,12 @@ class CustomerHomeScreen extends ConsumerWidget {
                                     imageUrl: p.imageUrl!,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
-                                    placeholder: (context, url) => const TammShimmer(
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      borderRadius: AppSpacing.radiusSm,
-                                    ),
+                                    placeholder: (context, url) =>
+                                        const TammShimmer(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          borderRadius: AppSpacing.radiusSm,
+                                        ),
                                     errorWidget: (context, url, err) => Icon(
                                       Icons.image,
                                       color: context.colors.textFaint,
@@ -309,7 +324,10 @@ class CustomerHomeScreen extends ConsumerWidget {
                             top: 4,
                             right: 4,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: context.colors.warning,
                                 borderRadius: BorderRadius.circular(4),
@@ -329,7 +347,10 @@ class CustomerHomeScreen extends ConsumerWidget {
                             top: 4,
                             right: 4,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: context.colors.error,
                                 borderRadius: BorderRadius.circular(4),
@@ -362,7 +383,9 @@ class CustomerHomeScreen extends ConsumerWidget {
                   Row(
                     children: [
                       Text(
-                        p.price != null ? '${p.price!.toInt()}' : 'السعر غير محدد',
+                        p.price != null
+                            ? '${p.price!.toInt()}'
+                            : 'السعر غير محدد',
                         style: GoogleFonts.harmattan(
                           fontSize: 14,
                           color: context.colors.blueSky,
@@ -443,11 +466,7 @@ class _HeaderIcon extends StatelessWidget {
             color: context.colors.bluePrimary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            color: context.colors.blueSky,
-            size: 24,
-          ),
+          child: Icon(icon, color: context.colors.blueSky, size: 24),
         ),
       ),
     );
@@ -473,7 +492,13 @@ class _QuickServiceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.colors.bgSurface,
           border: Border.all(color: context.colors.border),
-          boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 10, offset: Offset(0, 4))],
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x08000000),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
           borderRadius: AppSpacing.radius,
         ),
         child: Column(
@@ -495,4 +520,3 @@ class _QuickServiceCard extends StatelessWidget {
     );
   }
 }
-

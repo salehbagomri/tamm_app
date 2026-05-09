@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_card.dart';
@@ -14,7 +15,9 @@ import '../../../../shared/models/order.dart';
 import '../../../customer/services/data/quote_repository.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
-final managerQuotesProvider = FutureProvider.autoDispose<List<Order>>((ref) async {
+final managerQuotesProvider = FutureProvider.autoDispose<List<Order>>((
+  ref,
+) async {
   final repo = ref.watch(quoteRepositoryProvider);
   return repo.getQuoteRequests();
 });
@@ -23,10 +26,12 @@ class ManagerQuotesScreen extends ConsumerStatefulWidget {
   const ManagerQuotesScreen({super.key});
 
   @override
-  ConsumerState<ManagerQuotesScreen> createState() => _ManagerQuotesScreenState();
+  ConsumerState<ManagerQuotesScreen> createState() =>
+      _ManagerQuotesScreenState();
 }
 
-class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with SingleTickerProviderStateMixin {
+class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen>
+    with SingleTickerProviderStateMixin {
   RealtimeChannel? _channel;
   late final TabController _tabController;
 
@@ -34,7 +39,7 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with 
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
-    
+
     // إعادة جلب البيانات فور فتح الشاشة (مهم عند العودة من شاشة التفاصيل)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.invalidate(managerQuotesProvider);
@@ -77,7 +82,10 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with 
           labelColor: context.colors.bluePrimary,
           unselectedLabelColor: context.colors.textSecond,
           indicatorColor: context.colors.bluePrimary,
-          labelStyle: GoogleFonts.harmattan(fontWeight: FontWeight.w700, fontSize: 16),
+          labelStyle: GoogleFonts.harmattan(
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
           tabs: const [
             Tab(text: 'الكل'),
             Tab(text: 'معلقة'),
@@ -96,10 +104,18 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with 
             );
           }
 
-          final pendingQuotes = quotes.where((q) => q.quoteStatus == 'pending').toList();
-          final sentQuotes = quotes.where((q) => q.quoteStatus == 'sent').toList();
-          final acceptedQuotes = quotes.where((q) => q.quoteStatus == 'accepted').toList();
-          final rejectedQuotes = quotes.where((q) => q.quoteStatus == 'rejected').toList();
+          final pendingQuotes = quotes
+              .where((q) => q.quoteStatus == 'pending')
+              .toList();
+          final sentQuotes = quotes
+              .where((q) => q.quoteStatus == 'sent')
+              .toList();
+          final acceptedQuotes = quotes
+              .where((q) => q.quoteStatus == 'accepted')
+              .toList();
+          final rejectedQuotes = quotes
+              .where((q) => q.quoteStatus == 'rejected')
+              .toList();
 
           return TabBarView(
             controller: _tabController,
@@ -113,17 +129,22 @@ class _ManagerQuotesScreenState extends ConsumerState<ManagerQuotesScreen> with 
           );
         },
         loading: () => const TammLoading(),
-        error: (err, stack) => Center(child: Text('حدث خطأ: $err')),
+        error: (err, stack) => ErrorStateWidget(
+          message: err is AppException
+              ? err.message
+              : 'حدث خطأ في تحميل طلبات عروض الأسعار',
+          onRetry: () => ref.invalidate(managerQuotesProvider),
+        ),
       ),
     );
   }
 
   Widget _buildList(List<Order> quotes) {
     if (quotes.isEmpty) {
-       return const TammEmptyState(
-         icon: Icons.playlist_remove,
-         message: 'لا توجد طلبات في هذي القائمة',
-       );
+      return const TammEmptyState(
+        icon: Icons.playlist_remove,
+        message: 'لا توجد طلبات في هذي القائمة',
+      );
     }
     return RefreshIndicator(
       onRefresh: () async {
@@ -167,7 +188,8 @@ class _QuoteRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(context, order.quoteStatus);
-    final needsAction = order.quoteStatus == 'pending' || order.quoteStatus == 'rejected';
+    final needsAction =
+        order.quoteStatus == 'pending' || order.quoteStatus == 'rejected';
 
     return TammCard(
       onTap: onTap,
@@ -188,7 +210,10 @@ class _QuoteRequestCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: statusColor.withValues(alpha: 0.1),
                       borderRadius: AppSpacing.radiusSm,
@@ -207,7 +232,11 @@ class _QuoteRequestCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.person, size: 16, color: context.colors.bluePrimary),
+                  Icon(
+                    Icons.person,
+                    size: 16,
+                    color: context.colors.bluePrimary,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -224,7 +253,11 @@ class _QuoteRequestCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.location_on, size: 16, color: context.colors.textSecond),
+                  Icon(
+                    Icons.location_on,
+                    size: 16,
+                    color: context.colors.textSecond,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -259,7 +292,11 @@ class _QuoteRequestCard extends StatelessWidget {
                   color: context.colors.error,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.priority_high, size: 12, color: Colors.white),
+                child: const Icon(
+                  Icons.priority_high,
+                  size: 12,
+                  color: Colors.white,
+                ),
               ),
             ),
         ],

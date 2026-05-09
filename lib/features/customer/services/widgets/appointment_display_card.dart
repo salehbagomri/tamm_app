@@ -19,14 +19,16 @@ class AppointmentDisplayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dayName = DateFormat('EEEE d MMMM', 'ar').format(date);
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
-        border: Border.all(color: context.colors.bluePrimary.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: context.colors.bluePrimary.withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         children: [

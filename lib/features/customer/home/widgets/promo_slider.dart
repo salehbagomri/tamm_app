@@ -20,7 +20,7 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _timer;
-  
+
   // Fallback constant promos in case of error or empty
   final List<Promotion> _fallbackPromos = [
     const Promotion(
@@ -75,7 +75,7 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
     return promosAsync.when(
       data: (promos) {
         final displayPromos = promos.isNotEmpty ? promos : _fallbackPromos;
-        
+
         // Ensure timer understands new length based on state update
         if (_timer == null || !_timer!.isActive && displayPromos.length > 1) {
           _startTimer(displayPromos.length);
@@ -192,11 +192,7 @@ class _PromoSliderState extends ConsumerState<PromoSlider> {
                 color: Colors.white.withOpacity(0.15),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                promo.icon,
-                color: Colors.white,
-                size: 32,
-              ),
+              child: Icon(promo.icon, color: Colors.white, size: 32),
             ),
           ],
         ),

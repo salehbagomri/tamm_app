@@ -34,15 +34,17 @@ class _ManagerOrderDetailScreenState
       ref.invalidate(allOrdersProvider(null));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            e is AppException ? e.message : 'حدث خطأ غير متوقع',
-            style: GoogleFonts.harmattan(fontSize: 15),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is AppException ? e.message : 'حدث خطأ غير متوقع',
+              style: GoogleFonts.harmattan(fontSize: 15),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
           ),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-        ));
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -122,7 +124,9 @@ class _ManagerOrderDetailScreenState
               ),
               loading: () => const TammLoading(),
               error: (e, _) => ErrorStateWidget(
-                message: e is AppException ? e.message : 'حدث خطأ في تحميل الفنيين',
+                message: e is AppException
+                    ? e.message
+                    : 'حدث خطأ في تحميل الفنيين',
                 onRetry: () => ref.invalidate(techniciansProvider),
               ),
             );
@@ -170,7 +174,9 @@ class _ManagerOrderDetailScreenState
                     const SizedBox(height: 8),
                     Text(
                       'العنوان: ${o.address}',
-                      style: GoogleFonts.harmattan(color: context.colors.textSecond),
+                      style: GoogleFonts.harmattan(
+                        color: context.colors.textSecond,
+                      ),
                     ),
                     if (o.preferredDate != null)
                       Text(

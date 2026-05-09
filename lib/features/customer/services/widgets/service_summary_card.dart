@@ -27,9 +27,7 @@ class ServiceSummaryCard extends StatelessWidget {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
-        border: Border(
-          top: BorderSide(color: context.colors.border),
-        ),
+        border: Border(top: BorderSide(color: context.colors.border)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
@@ -54,8 +52,8 @@ class ServiceSummaryCard extends StatelessWidget {
           _SummaryRow(
             icon: Icons.miscellaneous_services,
             title: service.name,
-            value: service.basePrice != null 
-                ? '${service.basePrice!.toInt()} ر.س' 
+            value: service.basePrice != null
+                ? '${service.basePrice!.toInt()} ر.س'
                 : 'يُحدد لاحقاً',
             valueColor: context.colors.blueSky,
           ),

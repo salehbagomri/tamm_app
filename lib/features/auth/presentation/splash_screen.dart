@@ -28,7 +28,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _fadeAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(_fadeController);
+    _fadeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(_fadeController);
 
     _dotsController = AnimationController(
       vsync: this,
@@ -109,7 +112,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: [context.colors.bluePrimary, context.colors.blueLight],
+                    colors: [
+                      context.colors.bluePrimary,
+                      context.colors.blueLight,
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -148,8 +154,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     animation: _dotsController,
                     builder: (context, child) {
                       final double delay = index * 0.2;
-                      final double value = (_dotsController.value - delay) % 1.0;
-                      final double opacity = value < 0 ? 0 : (value > 0.5 ? 2 * (1 - value) : 2 * value);
+                      final double value =
+                          (_dotsController.value - delay) % 1.0;
+                      final double opacity = value < 0
+                          ? 0
+                          : (value > 0.5 ? 2 * (1 - value) : 2 * value);
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Opacity(

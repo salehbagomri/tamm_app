@@ -45,7 +45,10 @@ class QuoteOfferCard extends StatelessWidget {
                   color: context.colors.bluePrimary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.local_offer, color: context.colors.bluePrimary),
+                child: Icon(
+                  Icons.local_offer,
+                  color: context.colors.bluePrimary,
+                ),
               ),
               SizedBox(width: 12),
               Expanded(
@@ -74,7 +77,7 @@ class QuoteOfferCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 20),
-          
+
           // Price
           _BuildInfoRow(
             icon: Icons.payments_outlined,
@@ -87,9 +90,10 @@ class QuoteOfferCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 12),
             child: Divider(color: context.colors.border),
           ),
-          
+
           // Duration
-          if (order.quoteDuration != null && order.quoteDuration!.isNotEmpty) ...[
+          if (order.quoteDuration != null &&
+              order.quoteDuration!.isNotEmpty) ...[
             _BuildInfoRow(
               icon: Icons.timer_outlined,
               title: 'مدة التنفيذ التقديرية',
@@ -105,7 +109,11 @@ class QuoteOfferCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.description_outlined, size: 20, color: context.colors.textSecond),
+              Icon(
+                Icons.description_outlined,
+                size: 20,
+                color: context.colors.textSecond,
+              ),
               SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -153,17 +161,25 @@ class QuoteOfferCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: context.colors.bluePrimary.withValues(alpha: 0.05),
                   borderRadius: AppSpacing.radiusSm,
-                  border: Border.all(color: context.colors.bluePrimary.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: context.colors.bluePrimary.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Row(
                   children: [
                     Container(
                       padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: context.colors.bluePrimary.withValues(alpha: 0.1),
+                        color: context.colors.bluePrimary.withValues(
+                          alpha: 0.1,
+                        ),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.file_present, color: context.colors.bluePrimary, size: 20),
+                      child: Icon(
+                        Icons.file_present,
+                        color: context.colors.bluePrimary,
+                        size: 20,
+                      ),
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -188,7 +204,11 @@ class QuoteOfferCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Icon(Icons.open_in_new, color: context.colors.bluePrimary, size: 20),
+                    Icon(
+                      Icons.open_in_new,
+                      color: context.colors.bluePrimary,
+                      size: 20,
+                    ),
                   ],
                 ),
               ),

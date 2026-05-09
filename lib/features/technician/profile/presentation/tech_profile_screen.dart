@@ -8,6 +8,8 @@ import '../../../../core/widgets/tamm_button.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import '../../../../shared/providers/technician_providers.dart';
 import '../../../../core/widgets/tamm_theme_selector.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechProfileScreen extends ConsumerStatefulWidget {
@@ -63,11 +65,14 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
               return Column(
                 children: [
                   const SizedBox(height: 20),
-                  if (profile['avatar_url'] != null && profile['avatar_url'].toString().isNotEmpty)
+                  if (profile['avatar_url'] != null &&
+                      profile['avatar_url'].toString().isNotEmpty)
                     CircleAvatar(
                       radius: 40,
                       backgroundColor: context.colors.blueDark,
-                      backgroundImage: CachedNetworkImageProvider(profile['avatar_url'].toString()),
+                      backgroundImage: CachedNetworkImageProvider(
+                        profile['avatar_url'].toString(),
+                      ),
                     )
                   else
                     CircleAvatar(
@@ -253,14 +258,20 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                     label: 'تسجيل الخروج',
                     type: TammButtonType.secondary,
                     icon: Icons.logout,
-                    onPressed: () => AuthRepository.confirmSignOut(context, ref),
+                    onPressed: () =>
+                        AuthRepository.confirmSignOut(context, ref),
                   ),
                   const SizedBox(height: 16),
                 ],
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text('حدث خطأ: $e')),
+            error: (e, _) => ErrorStateWidget(
+              message: e is AppException
+                  ? e.message
+                  : 'حدث خطأ في تحميل الملف الشخصي',
+              onRetry: () => ref.invalidate(myTechnicianProfileProvider),
+            ),
           ),
         ),
       ),

@@ -70,8 +70,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           .maybeSingle();
 
       if (phoneExists != null) {
-        setState(() => _phoneError =
-            'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر');
+        setState(
+          () => _phoneError = 'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر',
+        );
         return; // inline widget will render; no account created
       }
 
@@ -108,7 +109,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       await FcmService.registerToken();
       if (!mounted) return;
       context.go('/customer/home');
-
     } catch (e) {
       debugPrint('Registration error: $e');
       final msg = e.toString().toLowerCase();
@@ -118,8 +118,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           (msg.contains('unique') && msg.contains('phone'))) {
         // DB-level UNIQUE violation (e.g. race condition after pre-flight check).
         // The auth account was already created → delete it (rollback).
-        setState(() => _phoneError =
-            'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر');
+        setState(
+          () => _phoneError = 'رقم الهاتف مستخدم بالفعل، يرجى إدخال رقم آخر',
+        );
         try {
           await ref.read(authRepositoryProvider).deleteAccount();
         } catch (_) {
@@ -167,32 +168,36 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 TammTextField(
                   label: 'الاسم الكامل',
                   hint: 'مثال: صالح عمر',
                   controller: _nameCtrl,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'الاسم الكامل مطلوب';
-                    if (v.trim().length < 3) return 'الاسم يجب أن يكون 3 أحرف على الأقل';
+                    if (v == null || v.trim().isEmpty)
+                      return 'الاسم الكامل مطلوب';
+                    if (v.trim().length < 3)
+                      return 'الاسم يجب أن يكون 3 أحرف على الأقل';
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
-                
+
                 TammTextField(
                   label: 'البريد الإلكتروني',
                   hint: 'example@domain.com',
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'البريد الإلكتروني مطلوب';
-                    if (!v.contains('@')) return 'صيغة البريد الإلكتروني غير صحيحة';
+                    if (v == null || v.trim().isEmpty)
+                      return 'البريد الإلكتروني مطلوب';
+                    if (!v.contains('@'))
+                      return 'صيغة البريد الإلكتروني غير صحيحة';
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
-                
+
                 TammTextField(
                   label: 'رقم الجوال',
                   hint: '7XXXXXXXX',
@@ -207,10 +212,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   },
                   validator: (v) {
                     if (_phoneError != null) return _phoneError;
-                    if (v == null || v.trim().isEmpty) return 'رقم الجوال مطلوب';
+                    if (v == null || v.trim().isEmpty)
+                      return 'رقم الجوال مطلوب';
                     final digits = v.trim().replaceAll(RegExp(r'\D'), '');
-                    if (!digits.startsWith('7')) return 'يجب أن يبدأ الرقم بـ 7';
-                    if (digits.length < 9 || digits.length > 10) return 'رقم الجوال غير صحيح';
+                    if (!digits.startsWith('7'))
+                      return 'يجب أن يبدأ الرقم بـ 7';
+                    if (digits.length < 9 || digits.length > 10)
+                      return 'رقم الجوال غير صحيح';
                     return null;
                   },
                 ),
@@ -226,32 +234,44 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ),
                 const SizedBox(height: 16),
-                
+
                 TammTextField(
                   label: 'كلمة المرور',
                   hint: '••••••••',
                   controller: _passCtrl,
                   obscureText: _obscurePass,
                   suffix: IconButton(
-                    icon: Icon(_obscurePass ? Icons.visibility_off : Icons.visibility, color: context.colors.textSecond),
-                    onPressed: () => setState(() => _obscurePass = !_obscurePass),
+                    icon: Icon(
+                      _obscurePass ? Icons.visibility_off : Icons.visibility,
+                      color: context.colors.textSecond,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePass = !_obscurePass),
                   ),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'كلمة المرور مطلوبة';
-                    if (v.length < 6) return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                    if (v.length < 6)
+                      return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
-                
+
                 TammTextField(
                   label: 'تأكيد كلمة المرور',
                   hint: '••••••••',
                   controller: _confirmPassCtrl,
                   obscureText: _obscureConfirmPass,
                   suffix: IconButton(
-                    icon: Icon(_obscureConfirmPass ? Icons.visibility_off : Icons.visibility, color: context.colors.textSecond),
-                    onPressed: () => setState(() => _obscureConfirmPass = !_obscureConfirmPass),
+                    icon: Icon(
+                      _obscureConfirmPass
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: context.colors.textSecond,
+                    ),
+                    onPressed: () => setState(
+                      () => _obscureConfirmPass = !_obscureConfirmPass,
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'يرجى تأكيد كلمة المرور';
@@ -260,20 +280,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 40),
-                
+
                 TammButton(
                   label: 'إنشاء حساب',
                   isLoading: _loading,
                   onPressed: _submit,
                 ),
                 const SizedBox(height: 24),
-                
+
                 Center(
                   child: TextButton(
                     onPressed: () => context.pop(),
                     child: Text(
                       'لديك حساب بالفعل؟ سجّل دخولك',
-                      style: GoogleFonts.harmattan(fontSize: 16, color: context.colors.blueSky),
+                      style: GoogleFonts.harmattan(
+                        fontSize: 16,
+                        color: context.colors.blueSky,
+                      ),
                     ),
                   ),
                 ),
