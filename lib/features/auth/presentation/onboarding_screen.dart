@@ -1,11 +1,10 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/widgets/tamm_button.dart';
 import '../../../core/widgets/tamm_text_field.dart';
 import '../../../shared/providers/auth_providers.dart';
@@ -79,7 +78,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             SnackBar(
               content: Text(
                 errorMsg,
-                style: GoogleFonts.harmattan(fontSize: 16),
+                style: AppTextStyles.body(context.colors.textPrimary),
               ),
               backgroundColor: context.colors.error,
               behavior: SnackBarBehavior.floating,
@@ -123,34 +122,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       child: Center(
                         child: Text(
                           'تمّ',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                   Center(
                     child: Text(
                       'أكمل بياناتك',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.gapSm,
                   Center(
                     child: Text(
                       'نحتاج بعض المعلومات لإكمال حسابك',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 16,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.body(context.colors.textSecond),
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -171,7 +159,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                   TammTextField(
                     label: 'رقم الجوال',
                     hint: '7XXXXXXXX',
@@ -204,10 +192,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       padding: const EdgeInsets.only(top: 8.0, right: 12.0),
                       child: Text(
                         _phoneError!,
-                        style: GoogleFonts.harmattan(
-                          fontSize: 13,
-                          color: context.colors.error,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                     ),
                   const SizedBox(height: 40),

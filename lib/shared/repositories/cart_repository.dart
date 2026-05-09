@@ -30,7 +30,10 @@ class CartRepository {
   }
 
   Future<void> addToCart(
-      String productId, int quantity, bool includeInstallation) async {
+    String productId,
+    int quantity,
+    bool includeInstallation,
+  ) async {
     try {
       final userId = _client.auth.currentUser!.id;
 

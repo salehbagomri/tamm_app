@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -93,8 +93,8 @@ class ActiveOrderCard extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: () => context.push('/customer/order/${order.id}'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context.colors.bluePrimary.withOpacity(
-                      0.1,
+                    backgroundColor: context.colors.bluePrimary.withValues(
+                      alpha: 0.1,
                     ),
                     foregroundColor: context.colors.blueSky,
                     elevation: 0,

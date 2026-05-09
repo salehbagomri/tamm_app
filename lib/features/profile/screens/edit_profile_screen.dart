@@ -1,11 +1,10 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/models/user_profile.dart';
@@ -115,7 +114,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         SnackBar(
           content: Text(
             'تم حفظ التعديلات بنجاح',
-            style: GoogleFonts.harmattan(fontSize: 16),
+            style: AppTextStyles.body(context.colors.textPrimary),
           ),
           backgroundColor: context.colors.success,
         ),
@@ -127,7 +126,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         final errorMsg = e.toString().replaceAll('Exception: ', '');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errorMsg, style: GoogleFonts.harmattan(fontSize: 16)),
+            content: Text(
+              errorMsg,
+              style: AppTextStyles.body(context.colors.textPrimary),
+            ),
             backgroundColor: context.colors.error,
           ),
         );
@@ -150,7 +152,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       backgroundColor: context.colors.bgPrimary,
       appBar: AppBar(
         backgroundColor: context.colors.bgPrimary,
-        title: Text('تعديل الحساب', style: AppTextStyles.h2),
+        title: Text('تعديل الحساب', style: AppTextStyles.h2(context.colors.textPrimary)),
         centerTitle: true,
         iconTheme: IconThemeData(color: context.colors.textPrimary),
       ),
@@ -182,10 +184,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             controller: _nameCtrl,
                             prefix: const Icon(Icons.person_outline),
                             validator: (v) {
-                              if (v == null || v.trim().isEmpty)
+                              if (v == null || v.trim().isEmpty) {
                                 return 'الاسم الكامل مطلوب';
-                              if (v.trim().length < 3)
+                              }
+                              if (v.trim().length < 3) {
                                 return 'الاسم يجب أن يكون 3 أحرف على الأقل';
+                              }
                               if (RegExp(
                                 r'[0-9!@#%^&*(),.?":{}|<>]',
                               ).hasMatch(v)) {
@@ -194,7 +198,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 20),
+                          AppSpacing.gapLg,
                           TammTextField(
                             label: 'رقم الجوال (بدون مفتاح الدولة)',
                             controller: _phoneCtrl,
@@ -205,23 +209,26 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             validator: (v) {
-                              if (v == null || v.trim().isEmpty)
+                              if (v == null || v.trim().isEmpty) {
                                 return 'رقم الجوال مطلوب';
+                              }
                               final digits = v.trim().replaceAll(
                                 RegExp(r'\D'),
                                 '',
                               );
-                              if (!digits.startsWith('7'))
+                              if (!digits.startsWith('7')) {
                                 return 'يجب أن يبدأ الرقم بـ 7';
-                              if (digits.length < 9 || digits.length > 10)
+                              }
+                              if (digits.length < 9 || digits.length > 10) {
                                 return 'رقم الجوال غير صحيح';
+                              }
                               return null;
                             },
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    AppSpacing.gapXl,
                     if (_hasChanges)
                       TammButton(
                         label: 'حفظ التعديلات',

@@ -17,7 +17,6 @@ import '../widgets/appointment_display_card.dart';
 import '../widgets/appointment_picker.dart';
 import '../widgets/service_summary_card.dart';
 import '../../../../core/errors/app_exception.dart';
-import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 

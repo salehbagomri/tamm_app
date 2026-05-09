@@ -1,7 +1,8 @@
+﻿import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/widgets/tamm_loading.dart';
 import '../../../core/widgets/tamm_empty_state.dart';
@@ -26,11 +27,7 @@ class NotificationsScreen extends ConsumerWidget {
         elevation: 0,
         title: Text(
           'الإشعارات',
-          style: GoogleFonts.harmattan(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         centerTitle: false,
         iconTheme: IconThemeData(color: context.colors.textPrimary),
@@ -41,10 +38,7 @@ class NotificationsScreen extends ConsumerWidget {
                   ref.read(notificationsProvider.notifier).markAllRead(),
               child: Text(
                 'تعيين الكل كمقروء',
-                style: GoogleFonts.harmattan(
-                  fontSize: 14,
-                  color: context.colors.bluePrimary,
-                ),
+                style: AppTextStyles.bodySmall(context.colors.bluePrimary),
               ),
             ),
         ],
@@ -65,7 +59,7 @@ class NotificationsScreen extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             itemCount: notifs.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, __) => AppSpacing.gapSm,
             itemBuilder: (context, index) {
               return _NotificationCard(notification: notifs[index]);
             },
@@ -110,7 +104,7 @@ class _NotificationCard extends ConsumerWidget {
           color: isRead
               ? context.colors.bgSurface
               : context.colors.bluePrimary.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppSpacing.radius,
           border: Border.all(
             color: isRead
                 ? context.colors.border
@@ -122,14 +116,14 @@ class _NotificationCard extends ConsumerWidget {
           children: [
             // Icon
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: AppSpacing.iconCirclePadding,
               decoration: BoxDecoration(
                 color: iconColor.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(iconData, color: iconColor, size: 20),
             ),
-            const SizedBox(width: 12),
+            AppSpacing.hGapSm2,
             // Content
             Expanded(
               child: Column(
@@ -141,34 +135,22 @@ class _NotificationCard extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: GoogleFonts.harmattan(
-                            fontSize: 15,
-                            fontWeight: isRead
-                                ? FontWeight.w500
-                                : FontWeight.w700,
-                            color: context.colors.textPrimary,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppSpacing.hGapSm,
                       Text(
                         _relativeTime(createdAt),
-                        style: GoogleFonts.harmattan(
-                          fontSize: 12,
-                          color: context.colors.textFaint,
-                        ),
+                        style: AppTextStyles.caption(context.colors.textFaint),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  AppSpacing.gapXs,
                   Text(
                     body,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 14,
-                      color: context.colors.textSecond,
-                    ),
+                    style: AppTextStyles.bodySmall(context.colors.textSecond),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

@@ -1,9 +1,9 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/tamm_button.dart';
 import '../../../shared/providers/auth_providers.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -54,7 +54,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         SnackBar(
           content: Text(
             'تم تغيير كلمة المرور بنجاح! يرجى تسجيل الدخول مجدداً.',
-            style: GoogleFonts.harmattan(fontSize: 16),
+            style: AppTextStyles.body(context.colors.textPrimary),
           ),
           backgroundColor: context.colors.success,
           behavior: SnackBarBehavior.floating,
@@ -67,7 +67,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           SnackBar(
             content: Text(
               'حدث خطأ أثناء تغيير كلمة المرور، حاول مجدداً.',
-              style: GoogleFonts.harmattan(fontSize: 16),
+              style: AppTextStyles.body(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
@@ -122,22 +122,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
                 Text(
                   'تعيين كلمة مرور جديدة',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
-                const SizedBox(height: 8),
+                AppSpacing.gapSm,
                 Text(
                   'أدخل كلمة المرور الجديدة وتأكيدها لإتمام إعادة التعيين.',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    color: context.colors.textSecond,
-                  ),
+                  style: AppTextStyles.body(context.colors.textSecond),
                 ),
                 const SizedBox(height: 36),
 
@@ -145,23 +138,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 TextFormField(
                   controller: _passCtrl,
                   obscureText: _obscurePass,
-                  style: GoogleFonts.harmattan(
-                    color: context.colors.textPrimary,
-                    fontSize: 17,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                   decoration: InputDecoration(
                     labelText: 'كلمة المرور الجديدة',
-                    labelStyle: GoogleFonts.harmattan(
-                      color: context.colors.textSecond,
-                    ),
+                    labelStyle: AppTextStyles.body(context.colors.textSecond),
                     filled: true,
                     fillColor: context.colors.bgSurface,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    border: const OutlineInputBorder(
+                      borderRadius: AppSpacing.radius,
                       borderSide: BorderSide.none,
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppSpacing.radius,
                       borderSide: BorderSide(
                         color: context.colors.bluePrimary,
                         width: 1.5,
@@ -192,29 +180,24 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
 
                 // Confirm password
                 TextFormField(
                   controller: _confirmCtrl,
                   obscureText: _obscureConfirm,
-                  style: GoogleFonts.harmattan(
-                    color: context.colors.textPrimary,
-                    fontSize: 17,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                   decoration: InputDecoration(
                     labelText: 'تأكيد كلمة المرور',
-                    labelStyle: GoogleFonts.harmattan(
-                      color: context.colors.textSecond,
-                    ),
+                    labelStyle: AppTextStyles.body(context.colors.textSecond),
                     filled: true,
                     fillColor: context.colors.bgSurface,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    border: const OutlineInputBorder(
+                      borderRadius: AppSpacing.radius,
                       borderSide: BorderSide.none,
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppSpacing.radius,
                       borderSide: BorderSide(
                         color: context.colors.bluePrimary,
                         width: 1.5,

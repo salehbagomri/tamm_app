@@ -1,10 +1,10 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -62,13 +62,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         title: TextField(
           controller: _searchCtrl,
           autofocus: true,
-          style: GoogleFonts.harmattan(
-            fontSize: 16,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.body(context.colors.textPrimary),
           decoration: InputDecoration(
             hintText: 'ابحث عن منتج أو خدمة...',
-            hintStyle: GoogleFonts.harmattan(color: context.colors.textSecond),
+            hintStyle: AppTextStyles.body(context.colors.textSecond),
             border: InputBorder.none,
           ),
           onChanged: _onSearchChanged,
@@ -103,13 +100,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           children: [
             Text(
               'اقتراحات لك',
-              style: GoogleFonts.harmattan(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-              ),
+              style: AppTextStyles.cardTitle(context.colors.textPrimary),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapMd,
             ...suggestions.map(
               (p) => ListTile(
                 leading: Icon(
@@ -118,10 +111,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ),
                 title: Text(
                   p.name,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
                 onTap: () => context.push('/customer/product/${p.id}'),
               ),
@@ -171,32 +161,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 if (filteredProducts.isNotEmpty) ...[
                   Text(
                     'منتجات 🛒',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.cardTitle(context.colors.textPrimary),
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.gapSm,
                   ...filteredProducts.map(
                     (p) => _ProductSearchResultItem(product: p),
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                 ],
                 if (filteredServices.isNotEmpty) ...[
                   Text(
                     'خدمات 🔧',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.cardTitle(context.colors.textPrimary),
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.gapSm,
                   ...filteredServices.map(
                     (s) => _ServiceSearchResultItem(service: s),
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                 ],
               ],
             );
@@ -253,21 +235,17 @@ class _ProductSearchResultItem extends StatelessWidget {
       ),
       title: Text(
         product.name,
-        style: GoogleFonts.harmattan(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: context.colors.textPrimary,
-        ),
+        style: AppTextStyles.body(
+          context.colors.textPrimary,
+        ).copyWith(fontWeight: AppTextStyles.bold),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
         product.price != null ? '${product.price!.toInt()} ر.س' : 'غير محدد',
-        style: GoogleFonts.harmattan(
-          fontSize: 14,
-          color: context.colors.blueSky,
-          fontWeight: FontWeight.w700,
-        ),
+        style: AppTextStyles.bodySmall(
+          context.colors.blueSky,
+        ).copyWith(fontWeight: AppTextStyles.bold),
       ),
       onTap: () => context.push('/customer/product/${product.id}'),
     );
@@ -295,21 +273,16 @@ class _ServiceSearchResultItem extends StatelessWidget {
       ),
       title: Text(
         service.name,
-        style: GoogleFonts.harmattan(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: context.colors.textPrimary,
-        ),
+        style: AppTextStyles.body(
+          context.colors.textPrimary,
+        ).copyWith(fontWeight: AppTextStyles.bold),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: service.description != null
           ? Text(
               service.description!,
-              style: GoogleFonts.harmattan(
-                fontSize: 14,
-                color: context.colors.textSecond,
-              ),
+              style: AppTextStyles.bodySmall(context.colors.textSecond),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             )

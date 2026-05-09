@@ -96,7 +96,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
     int currentPending,
   ) {
     return Container(
-      padding: EdgeInsets.all(AppSpacing.radiusXlValue),
+      padding: const EdgeInsets.all(AppSpacing.radiusXlValue),
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radius,

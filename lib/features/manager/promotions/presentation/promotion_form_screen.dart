@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -126,7 +126,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
               Container(
                 height: 120,
                 width: double.infinity,
-                padding: EdgeInsets.all(AppSpacing.radiusXlValue),
+                padding: const EdgeInsets.all(AppSpacing.radiusXlValue),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [

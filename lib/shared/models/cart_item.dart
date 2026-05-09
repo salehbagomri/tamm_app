@@ -6,10 +6,13 @@ class CartItem {
   bool includeInstallation;
 
   CartItem({
-    required this.product, 
+    required this.product,
     this.quantity = 1,
     this.includeInstallation = false,
   });
 
-  double get total => ((product.price ?? 0) + (includeInstallation ? product.installationPrice : 0)) * quantity;
+  double get total =>
+      ((product.price ?? 0) +
+          (includeInstallation ? product.installationPrice : 0)) *
+      quantity;
 }

@@ -1,7 +1,6 @@
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/service_type.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
@@ -12,7 +11,7 @@ class ServiceSummaryCard extends StatelessWidget {
   final String period;
   final String? hour;
 
-  ServiceSummaryCard({
+  const ServiceSummaryCard({
     super.key,
     required this.service,
     required this.locationText,
@@ -33,7 +32,7 @@ class ServiceSummaryCard extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
-            offset: Offset(0, -5),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
@@ -80,7 +79,7 @@ class _SummaryRow extends StatelessWidget {
   final String value;
   final Color? valueColor;
 
-  _SummaryRow({
+  const _SummaryRow({
     required this.icon,
     required this.title,
     required this.value,

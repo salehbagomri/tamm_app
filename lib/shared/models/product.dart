@@ -1,3 +1,4 @@
+
 class Product {
   final String id;
   final String name;
@@ -64,10 +65,10 @@ class Product {
     'old_price': oldPrice,
   };
 
-  bool get hasDiscount => oldPrice != null && price != null && oldPrice! > price!;
-  int get discountPercentage => hasDiscount
-      ? (((oldPrice! - price!) / oldPrice!) * 100).round()
-      : 0;
+  bool get hasDiscount =>
+      oldPrice != null && price != null && oldPrice! > price!;
+  int get discountPercentage =>
+      hasDiscount ? (((oldPrice! - price!) / oldPrice!) * 100).round() : 0;
 
   String get categoryLabel => switch (category) {
     'ac' => 'مكيفات',

@@ -15,10 +15,12 @@ final myOrdersProvider = FutureProvider.autoDispose<List<Order>>((ref) async {
 
 final allOrdersProvider = FutureProvider.autoDispose
     .family<List<Order>, String?>((ref, status) async {
-  return ref.read(orderRepositoryProvider).getAllOrders(status: status);
-});
+      return ref.read(orderRepositoryProvider).getAllOrders(status: status);
+    });
 
-final recentOrdersProvider = FutureProvider.autoDispose<List<Order>>((ref) async {
+final recentOrdersProvider = FutureProvider.autoDispose<List<Order>>((
+  ref,
+) async {
   final all = await ref.read(orderRepositoryProvider).getMyOrders();
   return all.take(3).toList();
 });
@@ -26,7 +28,7 @@ final recentOrdersProvider = FutureProvider.autoDispose<List<Order>>((ref) async
 final activeOrderStreamProvider = StreamProvider.autoDispose<Order?>((ref) {
   final supabase = Supabase.instance.client;
   final userId = supabase.auth.currentUser?.id;
-  
+
   if (userId == null) return Stream.value(null);
 
   // Listen to the orders table for this user
@@ -40,14 +42,16 @@ final activeOrderStreamProvider = StreamProvider.autoDispose<Order?>((ref) {
           (e) => e['status'] != 'completed' && e['status'] != 'cancelled',
           orElse: () => <String, dynamic>{}, // Return empty map if none found
         );
-        
+
         if (activeEvent.isEmpty) return null;
         return Order.fromMap(activeEvent);
       });
 });
 
-final orderDetailProvider =
-    FutureProvider.autoDispose.family<Order, String>((ref, id) async {
+final orderDetailProvider = FutureProvider.autoDispose.family<Order, String>((
+  ref,
+  id,
+) async {
   return ref.read(orderRepositoryProvider).getOrder(id);
 });
 
@@ -61,18 +65,20 @@ final cartCountProvider = Provider<int>((ref) {
 
 final localCartProvider = Provider((ref) => LocalCartRepository());
 
-final cartProvider = StateNotifierProvider<CartNotifier, AsyncValue<List<CartItem>>>((ref) {
-  return CartNotifier(
-    ref.read(cartRepositoryProvider),
-    ref.read(localCartProvider),
-  );
-});
+final cartProvider =
+    StateNotifierProvider<CartNotifier, AsyncValue<List<CartItem>>>((ref) {
+      return CartNotifier(
+        ref.read(cartRepositoryProvider),
+        ref.read(localCartProvider),
+      );
+    });
 
 class CartNotifier extends StateNotifier<AsyncValue<List<CartItem>>> {
   final CartRepository _repository;
   final LocalCartRepository _localRepo;
 
-  CartNotifier(this._repository, this._localRepo) : super(const AsyncValue.loading()) {
+  CartNotifier(this._repository, this._localRepo)
+    : super(const AsyncValue.loading()) {
     loadCart();
   }
 
@@ -100,8 +106,8 @@ class CartNotifier extends StateNotifier<AsyncValue<List<CartItem>>> {
     }
     try {
       await _repository.addToCart(
-        item.product.id, 
-        item.quantity, 
+        item.product.id,
+        item.quantity,
         item.includeInstallation,
       );
       await loadCart();
@@ -161,8 +167,8 @@ class CartNotifier extends StateNotifier<AsyncValue<List<CartItem>>> {
     final guestItems = _localRepo.extractAndClear();
     for (final item in guestItems) {
       await _repository.addToCart(
-        item.product.id, 
-        item.quantity, 
+        item.product.id,
+        item.quantity,
         item.includeInstallation,
       );
     }

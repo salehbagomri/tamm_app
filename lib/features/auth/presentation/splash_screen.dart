@@ -1,9 +1,9 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../shared/providers/auth_providers.dart';
 import '../../../core/services/fcm_service.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -138,13 +138,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               Text(
                 'خدمات التكييف والطاقة الشمسية',
-                style: GoogleFonts.harmattan(
-                  fontSize: 18,
-                  color: context.colors.textSecond,
-                ),
+                style: AppTextStyles.body(context.colors.textPrimary),
               ),
               const SizedBox(height: 48),
               Row(

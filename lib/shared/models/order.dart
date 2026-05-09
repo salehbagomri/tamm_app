@@ -1,3 +1,4 @@
+
 class Order {
   final String id;
   final String orderNumber;
@@ -15,7 +16,7 @@ class Order {
   final Map<String, dynamic>? customerProfile;
   final String? technicianNotes;
   final String? technicianName;
-  
+
   // New Fields
   final String? scheduledPeriod;
   final String? scheduledHour;
@@ -100,8 +101,12 @@ class Order {
       quoteDetails: m['quote_details'],
       quoteDuration: m['quote_duration'],
       quoteStatus: m['quote_status'],
-      quoteSentAt: m['quote_sent_at'] != null ? DateTime.parse(m['quote_sent_at']) : null,
-      quoteRespondedAt: m['quote_responded_at'] != null ? DateTime.parse(m['quote_responded_at']) : null,
+      quoteSentAt: m['quote_sent_at'] != null
+          ? DateTime.parse(m['quote_sent_at'])
+          : null,
+      quoteRespondedAt: m['quote_responded_at'] != null
+          ? DateTime.parse(m['quote_responded_at'])
+          : null,
       rejectionReason: m['rejection_reason'],
       quoteAttachmentUrl: m['quote_attachment_url'],
     );
@@ -110,7 +115,12 @@ class Order {
   String get statusLabel {
     if (orderType == 'quote_request') {
       // بعد التعيين: نستخدم حالة الطلب العادية
-      if (['assigned', 'on_the_way', 'in_progress', 'completed'].contains(status)) {
+      if ([
+        'assigned',
+        'on_the_way',
+        'in_progress',
+        'completed',
+      ].contains(status)) {
         return switch (status) {
           'assigned' => 'تم التعيين',
           'on_the_way' => 'الفني في الطريق',
@@ -125,7 +135,7 @@ class Order {
       if (quoteStatus == 'accepted') return 'تم قبول العرض';
       if (quoteStatus == 'rejected') return 'عرض مرفوض';
     }
-    
+
     return switch (status) {
       'pending' => 'معلق',
       'confirmed' => 'مؤكد',

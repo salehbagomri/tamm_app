@@ -13,7 +13,6 @@ import 'shared/providers/theme_provider.dart';
 import 'shared/providers/notification_providers.dart';
 import 'shared/providers/order_providers.dart';
 
-
 class TammApp extends ConsumerStatefulWidget {
   const TammApp({super.key});
 
@@ -31,8 +30,9 @@ class _TammAppState extends ConsumerState<TammApp> {
     super.initState();
 
     // ── Auth state listener ─────────────────────────────────────────────────
-    _authSubscription =
-        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+      data,
+    ) {
       final router = ref.read(appRouterProvider);
 
       switch (data.event) {
@@ -46,8 +46,7 @@ class _TammAppState extends ConsumerState<TammApp> {
           ref.invalidate(cartProvider);
           // During a password-reset flow the screen calls signOut() and then
           // navigates to /login itself — don't override that navigation.
-          final isPasswordReset =
-              ref.read(passwordResetSignOutProvider);
+          final isPasswordReset = ref.read(passwordResetSignOutProvider);
           if (isPasswordReset) {
             ref.read(passwordResetSignOutProvider.notifier).state = false;
           } else {
@@ -68,17 +67,20 @@ class _TammAppState extends ConsumerState<TammApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final router = ref.read(appRouterProvider);
       FcmService.setNavigationCallback((route) => router.push(route));
-      FcmService.setBannerCallback((
-          {required String title,
-          required String body,
-          String? orderId,
-          String? notificationType}) {
-        ref.read(inAppNotificationProvider.notifier).show(
-          title: title,
-          body: body,
-          orderId: orderId,
-          notificationType: notificationType,
-        );
+      FcmService.setBannerCallback(({
+        required String title,
+        required String body,
+        String? orderId,
+        String? notificationType,
+      }) {
+        ref
+            .read(inAppNotificationProvider.notifier)
+            .show(
+              title: title,
+              body: body,
+              orderId: orderId,
+              notificationType: notificationType,
+            );
       });
     });
   }
@@ -135,12 +137,7 @@ class _TammAppState extends ConsumerState<TammApp> {
       builder: (context, child) {
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: Stack(
-            children: [
-              child!,
-              const InAppNotificationBanner(),
-            ],
-          ),
+          child: Stack(children: [child!, const InAppNotificationBanner()]),
         );
       },
     );

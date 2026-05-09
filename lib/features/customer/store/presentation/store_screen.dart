@@ -210,8 +210,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   children: _categories.entries.map((e) {
                     final isSelected = filter.category == e.key;
                     final count = categoryCounts[e.key] ?? 0;
-                    if (e.key != null && count == 0)
+                    if (e.key != null && count == 0) {
                       return const SizedBox.shrink();
+                    }
                     return Padding(
                       padding: const EdgeInsets.only(left: 8),
                       child: ChoiceChip(

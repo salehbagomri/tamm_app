@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
-import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/responsive_wrapper.dart';
@@ -189,7 +188,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     padding: AppSpacing.pagePadding,
                     itemCount: 4,
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (_, __) => TammShimmer(
+                    itemBuilder: (_, __) => const TammShimmer(
                       height: 80,
                       width: double.infinity,
                       borderRadius: AppSpacing.radius,

@@ -1,5 +1,3 @@
-﻿import '../../../../core/constants/app_text_styles.dart';
-import '../../../../core/constants/app_spacing.dart';
 import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -113,8 +111,9 @@ class QuoteRepository {
         'rejection_reason': null, // مسح سبب الرفض السابق
         'quote_responded_at': null,
       };
-      if (attachmentUrl != null)
+      if (attachmentUrl != null) {
         updates['quote_attachment_url'] = attachmentUrl;
+      }
       await _client.from('orders').update(updates).eq('id', orderId);
     } catch (e) {
       throw ErrorMapper.from(e);

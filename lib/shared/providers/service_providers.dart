@@ -9,7 +9,10 @@ final serviceTypesProvider = FutureProvider<List<ServiceType>>((ref) async {
   return ref.read(serviceRepositoryProvider).getServiceTypes();
 });
 
-final serviceDetailProvider = FutureProvider.family<ServiceType, String>((ref, id) async {
+final serviceDetailProvider = FutureProvider.family<ServiceType, String>((
+  ref,
+  id,
+) async {
   final data = await Supabase.instance.client
       .from('service_types')
       .select()

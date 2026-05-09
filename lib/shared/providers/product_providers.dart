@@ -4,6 +4,7 @@ import '../models/product.dart';
 
 // Filter state model for the store
 enum ProductSort { none, priceAsc, priceDesc, newest }
+
 class StoreFilterState {
   final String? category;
   final String searchQuery;
@@ -37,7 +38,9 @@ class StoreFilterState {
   }
 }
 
-final storeFilterProvider = StateProvider<StoreFilterState>((ref) => const StoreFilterState());
+final storeFilterProvider = StateProvider<StoreFilterState>(
+  (ref) => const StoreFilterState(),
+);
 
 final productRepositoryProvider = Provider((ref) => ProductRepository());
 
@@ -50,7 +53,7 @@ final allProductsProvider = FutureProvider<List<Product>>((ref) async {
 final categoryCountsProvider = Provider<Map<String?, int>>((ref) {
   final productsOpt = ref.watch(allProductsProvider).valueOrNull;
   if (productsOpt == null) return {};
-  
+
   final Map<String?, int> counts = {null: productsOpt.length}; // Total count
   for (final p in productsOpt) {
     counts[p.category] = (counts[p.category] ?? 0) + 1;
@@ -63,7 +66,9 @@ final categoryCountsProvider = Provider<Map<String?, int>>((ref) {
 });
 
 // The filtered products provider that the store consumes
-final storeFilteredProductsProvider = Provider<AsyncValue<List<Product>>>((ref) {
+final storeFilteredProductsProvider = Provider<AsyncValue<List<Product>>>((
+  ref,
+) {
   final asyncProducts = ref.watch(allProductsProvider);
   final filter = ref.watch(storeFilterProvider);
 
@@ -80,10 +85,13 @@ final storeFilteredProductsProvider = Provider<AsyncValue<List<Product>>>((ref) 
     // 2. Filter by search query
     if (filter.searchQuery.isNotEmpty) {
       final q = filter.searchQuery.toLowerCase();
-      filtered = filtered.where((p) => 
-        p.name.toLowerCase().contains(q) || 
-        (p.brand?.toLowerCase().contains(q) ?? false)
-      ).toList();
+      filtered = filtered
+          .where(
+            (p) =>
+                p.name.toLowerCase().contains(q) ||
+                (p.brand?.toLowerCase().contains(q) ?? false),
+          )
+          .toList();
     }
 
     // 3. Filter by deals / featured toggles
@@ -109,7 +117,10 @@ final storeFilteredProductsProvider = Provider<AsyncValue<List<Product>>>((ref) 
   });
 });
 
-final productsProvider = FutureProvider.family<List<Product>, String?>((ref, category) async {
+final productsProvider = FutureProvider.family<List<Product>, String?>((
+  ref,
+  category,
+) async {
   return ref.read(productRepositoryProvider).getProducts(category: category);
 });
 
@@ -118,7 +129,10 @@ final featuredProductsProvider = FutureProvider<List<Product>>((ref) async {
   return all.where((p) => p.isFeatured).toList();
 });
 
-final productDetailProvider = FutureProvider.family<Product, String>((ref, id) async {
+final productDetailProvider = FutureProvider.family<Product, String>((
+  ref,
+  id,
+) async {
   return ref.read(productRepositoryProvider).getProduct(id);
 });
 

@@ -25,10 +25,10 @@ final roleStreamProvider = StreamProvider<String?>((ref) {
   if (userId == null) return Stream.value(null);
 
   return Supabase.instance.client
-    .from('profiles')
-    .stream(primaryKey: ['id'])
-    .eq('id', userId)
-    .map((rows) => rows.isEmpty ? null : rows.first['role'] as String?);
+      .from('profiles')
+      .stream(primaryKey: ['id'])
+      .eq('id', userId)
+      .map((rows) => rows.isEmpty ? null : rows.first['role'] as String?);
 });
 
 /// هل المستخدم زائر (غير مسجّل)؟

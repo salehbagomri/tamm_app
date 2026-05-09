@@ -1,10 +1,10 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/tamm_app_bar.dart';
 import '../../../core/widgets/tamm_button.dart';
 import '../../../core/widgets/tamm_text_field.dart';
@@ -46,7 +46,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: GoogleFonts.harmattan(fontSize: 16)),
+        content: Text(
+          message,
+          style: AppTextStyles.body(context.colors.textPrimary),
+        ),
         backgroundColor: context.colors.error,
       ),
     );
@@ -89,7 +92,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           SnackBar(
             content: Text(
               'تم إنشاء الحساب. يرجى التحقق من بريدك الإلكتروني لتفعيل حسابك.',
-              style: GoogleFonts.harmattan(fontSize: 16),
+              style: AppTextStyles.body(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.success,
             duration: const Duration(seconds: 5),
@@ -153,35 +156,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               children: [
                 Text(
                   'مرحباً بك في تمّ!',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
-                const SizedBox(height: 8),
+                AppSpacing.gapSm,
                 Text(
                   'قم بإنشاء حسابك لتتمكن من طلب الخدمات والمنتجات بكل سهولة',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    color: context.colors.textSecond,
-                  ),
+                  style: AppTextStyles.body(context.colors.textSecond),
                 ),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 TammTextField(
                   label: 'الاسم الكامل',
                   hint: 'مثال: صالح عمر',
                   controller: _nameCtrl,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty)
+                    if (v == null || v.trim().isEmpty) {
                       return 'الاسم الكامل مطلوب';
-                    if (v.trim().length < 3)
+                    }
+                    if (v.trim().length < 3) {
                       return 'الاسم يجب أن يكون 3 أحرف على الأقل';
+                    }
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
 
                 TammTextField(
                   label: 'البريد الإلكتروني',
@@ -189,14 +187,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty)
+                    if (v == null || v.trim().isEmpty) {
                       return 'البريد الإلكتروني مطلوب';
-                    if (!v.contains('@'))
+                    }
+                    if (!v.contains('@')) {
                       return 'صيغة البريد الإلكتروني غير صحيحة';
+                    }
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
 
                 TammTextField(
                   label: 'رقم الجوال',
@@ -212,13 +212,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   },
                   validator: (v) {
                     if (_phoneError != null) return _phoneError;
-                    if (v == null || v.trim().isEmpty)
+                    if (v == null || v.trim().isEmpty) {
                       return 'رقم الجوال مطلوب';
+                    }
                     final digits = v.trim().replaceAll(RegExp(r'\D'), '');
-                    if (!digits.startsWith('7'))
+                    if (!digits.startsWith('7')) {
                       return 'يجب أن يبدأ الرقم بـ 7';
-                    if (digits.length < 9 || digits.length > 10)
+                    }
+                    if (digits.length < 9 || digits.length > 10) {
                       return 'رقم الجوال غير صحيح';
+                    }
                     return null;
                   },
                 ),
@@ -227,13 +230,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     padding: const EdgeInsets.only(top: 8.0, right: 12.0),
                     child: Text(
                       _phoneError!,
-                      style: GoogleFonts.harmattan(
-                        fontSize: 13,
-                        color: context.colors.error,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
                   ),
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
 
                 TammTextField(
                   label: 'كلمة المرور',
@@ -250,12 +250,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'كلمة المرور مطلوبة';
-                    if (v.length < 6)
+                    if (v.length < 6) {
                       return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                    }
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
 
                 TammTextField(
                   label: 'تأكيد كلمة المرور',
@@ -286,21 +287,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   isLoading: _loading,
                   onPressed: _submit,
                 ),
-                const SizedBox(height: 24),
+                AppSpacing.gapLg,
 
                 Center(
                   child: TextButton(
                     onPressed: () => context.pop(),
                     child: Text(
                       'لديك حساب بالفعل؟ سجّل دخولك',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 16,
-                        color: context.colors.blueSky,
-                      ),
+                      style: AppTextStyles.body(context.colors.blueSky),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
               ],
             ),
           ),

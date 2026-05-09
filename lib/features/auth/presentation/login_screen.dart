@@ -1,10 +1,10 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import '../../../core/utils/platform_utils.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../shared/providers/auth_providers.dart';
 import '../../../shared/providers/order_providers.dart';
@@ -127,7 +127,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: GoogleFonts.harmattan(fontSize: 16)),
+        content: Text(
+          message,
+          style: AppTextStyles.body(context.colors.textPrimary),
+        ),
         backgroundColor: context.colors.error,
         behavior: SnackBarBehavior.floating,
       ),
@@ -178,25 +181,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              AppSpacing.gapXl,
               Text(
                 AppStrings.welcome,
-                style: GoogleFonts.harmattan(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.body(context.colors.textPrimary),
               ),
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               Text(
                 'سجّل دخولك للاستمتاع بكافة المميزات',
-                style: GoogleFonts.harmattan(
-                  fontSize: 16,
-                  color: context.colors.textSecond,
-                ),
+                style: AppTextStyles.body(context.colors.textSecond),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              AppSpacing.gapXl,
 
               // Google Sign-In Button
               SizedBox(
@@ -207,8 +203,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black87,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppSpacing.radiusLg,
                     ),
                     elevation: 2,
                   ),
@@ -231,14 +227,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 color: Colors.red,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            AppSpacing.hGapSm2,
                             Text(
                               'الدخول بحساب Google',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
+                              style: AppTextStyles.cardTitle(Colors.black87),
                             ),
                           ],
                         ),
@@ -257,10 +249,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'أو',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        color: context.colors.textFaint,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textFaint),
                     ),
                   ),
                   Expanded(
@@ -280,13 +269,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: TextStyle(color: context.colors.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'البريد الإلكتروني',
-                  hintStyle: GoogleFonts.harmattan(
-                    color: context.colors.textFaint,
-                  ),
+                  hintStyle: AppTextStyles.body(context.colors.textFaint),
                   filled: true,
                   fillColor: context.colors.bgSurface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  border: const OutlineInputBorder(
+                    borderRadius: AppSpacing.radius,
                     borderSide: BorderSide.none,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
@@ -295,20 +282,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               TextField(
                 controller: _passCtrl,
                 obscureText: _obscure,
                 style: TextStyle(color: context.colors.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'كلمة المرور',
-                  hintStyle: GoogleFonts.harmattan(
-                    color: context.colors.textFaint,
-                  ),
+                  hintStyle: AppTextStyles.body(context.colors.textFaint),
                   filled: true,
                   fillColor: context.colors.bgSurface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  border: const OutlineInputBorder(
+                    borderRadius: AppSpacing.radius,
                     borderSide: BorderSide.none,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
@@ -328,7 +313,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -337,8 +322,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.colors.bluePrimary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppSpacing.radius,
                     ),
                   ),
                   child: _loading
@@ -352,14 +337,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         )
                       : Text(
                           'تسجيل الدخول',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                 ),
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -367,20 +349,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: () => context.push('/register'),
                     child: Text(
                       'ليس لديك حساب؟ أنشئ حساباً',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        color: context.colors.blueSky,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.blueSky),
                     ),
                   ),
                   TextButton(
                     onPressed: () => context.push('/forgot-password'),
                     child: Text(
                       'نسيت كلمة المرور؟',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textSecond),
                     ),
                   ),
                 ],

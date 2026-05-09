@@ -224,7 +224,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   ] else if (o.quoteStatus == 'pending') ...[
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(AppSpacing.radiusXlValue),
+                      padding: const EdgeInsets.all(AppSpacing.radiusXlValue),
                       decoration: BoxDecoration(
                         color: context.colors.warning.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusLg,
@@ -428,7 +428,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     if (o.status == 'completed') currentStep = 4;
 
     return Container(
-      padding: EdgeInsets.all(AppSpacing.radiusXlValue),
+      padding: const EdgeInsets.all(AppSpacing.radiusXlValue),
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,

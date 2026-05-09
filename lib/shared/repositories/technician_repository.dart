@@ -119,8 +119,8 @@ class TechnicianRepository {
           .from('orders')
           .select()
           .eq('order_type', 'quote_request')
-          .inFilter('quote_status', ['pending', 'rejected']).count(
-              CountOption.exact);
+          .inFilter('quote_status', ['pending', 'rejected'])
+          .count(CountOption.exact);
 
       final completed = await _client
           .from('orders')
@@ -132,8 +132,8 @@ class TechnicianRepository {
       final inProgress = await _client
           .from('orders')
           .select()
-          .inFilter('status', ['in_progress', 'assigned', 'on_the_way']).count(
-              CountOption.exact);
+          .inFilter('status', ['in_progress', 'assigned', 'on_the_way'])
+          .count(CountOption.exact);
 
       final techs = await _client
           .from('technicians')

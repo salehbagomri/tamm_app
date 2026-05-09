@@ -1,8 +1,8 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/tamm_app_bar.dart';
 import '../../../core/widgets/tamm_button.dart';
 import '../../../core/widgets/tamm_text_field.dart';
@@ -32,7 +32,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: GoogleFonts.harmattan(fontSize: 16)),
+        content: Text(
+          message,
+          style: AppTextStyles.body(context.colors.textPrimary),
+        ),
         backgroundColor: context.colors.error,
       ),
     );
@@ -77,23 +80,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       size: 80,
                       color: context.colors.success,
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.gapLg,
                     Text(
                       'تم إرسال رابط استعادة كلمة المرور بنجاح!',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 12),
+                    AppSpacing.gapSm2,
                     Text(
                       'يرجى التحقق من بريدك الإلكتروني (بما في ذلك صندوق المهملات) واتباع الرابط لتعيين كلمة مرور جديدة.',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 16,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.body(context.colors.textSecond),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
@@ -108,28 +104,21 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   children: [
                     Text(
                       'نسيت كلمة المرور؟',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
-                    const SizedBox(height: 8),
+                    AppSpacing.gapSm,
                     Text(
                       'أدخل بريدك الإلكتروني المسجل وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 16,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.body(context.colors.textSecond),
                     ),
-                    const SizedBox(height: 32),
+                    AppSpacing.gapXl,
                     TammTextField(
                       label: 'البريد الإلكتروني',
                       hint: 'example@domain.com',
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
                     ),
-                    const SizedBox(height: 32),
+                    AppSpacing.gapXl,
                     TammButton(
                       label: 'إرسال الرابط',
                       isLoading: _loading,

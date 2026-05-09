@@ -60,7 +60,7 @@ class TammButton extends StatelessWidget {
           onPressed: isLoading ? null : onPressed,
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: context.colors.bluePrimary),
-            shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
+            shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
           ),
           child: child,
         ),
@@ -77,7 +77,7 @@ class TammButton extends StatelessWidget {
               ? context.colors.error
               : context.colors.bluePrimary,
           foregroundColor: textColor,
-          shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
+          shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
           elevation: 0,
         ),
         child: child,

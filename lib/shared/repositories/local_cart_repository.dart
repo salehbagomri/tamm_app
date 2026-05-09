@@ -17,7 +17,10 @@ class LocalCartRepository {
   }
 
   void updateQuantity(String productId, int qty) {
-    if (qty <= 0) { removeItem(productId); return; }
+    if (qty <= 0) {
+      removeItem(productId);
+      return;
+    }
     final idx = _items.indexWhere((e) => e.product.id == productId);
     if (idx >= 0) _items[idx].quantity = qty;
   }

@@ -1,8 +1,8 @@
+import 'package:tamm_app/core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 import '../../core/services/fcm_service.dart';
@@ -43,8 +43,8 @@ class AuthRepository {
       // Mobile: استخدام google_sign_in + ID token
       await _ensureGoogleInitialized();
 
-      final GoogleSignInAccount account =
-          await GoogleSignIn.instance.authenticate();
+      final GoogleSignInAccount account = await GoogleSignIn.instance
+          .authenticate();
 
       final idToken = account.authentication.idToken;
       if (idToken == null) {
@@ -84,10 +84,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      return await _client.auth.signUp(
-        email: email,
-        password: password,
-      );
+      return await _client.auth.signUp(email: email, password: password);
     } catch (e) {
       throw ErrorMapper.from(e);
     }
@@ -108,9 +105,7 @@ class AuthRepository {
   /// تحديث كلمة المرور بعد التحقق من رابط الاستعادة
   Future<void> updatePassword(String newPassword) async {
     try {
-      await _client.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
+      await _client.auth.updateUser(UserAttributes(password: newPassword));
     } catch (e) {
       throw ErrorMapper.from(e);
     }
@@ -195,34 +190,38 @@ class AuthRepository {
 
   /// تسجيل الخروج مع تأكيد (UI logic — لا تعديل)
   static Future<void> confirmSignOut(
-      BuildContext context, WidgetRef ref) async {
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.bgSurface,
         title: Text(
           'تسجيل الخروج',
-          style: GoogleFonts.harmattan(
-              fontWeight: FontWeight.bold,
-              color: context.colors.textPrimary),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         content: Text(
           'هل أنت متأكد أنك تريد تسجيل الخروج؟',
-          style: GoogleFonts.harmattan(
-              fontSize: 18, color: context.colors.textPrimary),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('إلغاء',
-                style: GoogleFonts.harmattan(
-                    fontSize: 16, color: context.colors.textSecond)),
+            child: Text(
+              'إلغاء',
+              style: AppTextStyles.body(context.colors.textSecond),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(
-                backgroundColor: context.colors.bluePrimary),
-            child: Text('تأكيد', style: GoogleFonts.harmattan(fontSize: 16)),
+              backgroundColor: context.colors.bluePrimary,
+            ),
+            child: Text(
+              'تأكيد',
+              style: AppTextStyles.body(context.colors.textPrimary),
+            ),
           ),
         ],
       ),

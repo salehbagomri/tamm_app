@@ -24,9 +24,7 @@ class AssignmentRepository {
             .update({'status': 'assigned'})
             .eq('id', orderId);
       } catch (e) {
-        throw const ServerException(
-          message: 'فشل في تحديث حالة الطلب',
-        );
+        throw const ServerException(message: 'فشل في تحديث حالة الطلب');
       }
     } catch (e) {
       if (e is AppException) rethrow;

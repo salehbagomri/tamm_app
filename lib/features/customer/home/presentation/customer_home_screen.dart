@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -405,7 +405,7 @@ class CustomerHomeScreen extends ConsumerWidget {
         scrollDirection: Axis.horizontal,
         itemCount: 3,
         separatorBuilder: (_, __) => AppSpacing.hGapSm2,
-        itemBuilder: (_, __) => TammShimmer(
+        itemBuilder: (_, __) => const TammShimmer(
           width: 160,
           height: 200,
           borderRadius: AppSpacing.radius,

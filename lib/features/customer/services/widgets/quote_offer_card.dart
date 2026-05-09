@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../shared/models/order.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -11,17 +10,17 @@ import 'package:tamm_app/core/theme/tamm_colors.dart';
 class QuoteOfferCard extends StatelessWidget {
   final Order order;
 
-  QuoteOfferCard({super.key, required this.order});
+  const QuoteOfferCard({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
     if (order.quotePrice == null || order.quoteDetails == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(AppSpacing.radiusXlValue),
+      padding: const EdgeInsets.all(AppSpacing.radiusXlValue),
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
@@ -30,7 +29,7 @@ class QuoteOfferCard extends StatelessWidget {
           BoxShadow(
             color: context.colors.bluePrimary.withValues(alpha: 0.1),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -40,7 +39,7 @@ class QuoteOfferCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: context.colors.bluePrimary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -73,7 +72,7 @@ class QuoteOfferCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Price
           _BuildInfoRow(
@@ -84,7 +83,7 @@ class QuoteOfferCard extends StatelessWidget {
             isBold: true,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.symmetric(vertical: 12),
             child: Divider(color: context.colors.border),
           ),
 
@@ -97,7 +96,7 @@ class QuoteOfferCard extends StatelessWidget {
               value: order.quoteDuration!,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Divider(color: context.colors.border),
             ),
           ],
@@ -134,7 +133,7 @@ class QuoteOfferCard extends StatelessWidget {
           // Attachment
           if (order.quoteAttachmentUrl != null) ...[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Divider(color: context.colors.border),
             ),
             InkWell(
@@ -146,7 +145,7 @@ class QuoteOfferCard extends StatelessWidget {
               },
               borderRadius: AppSpacing.radiusSm,
               child: Container(
-                padding: EdgeInsets.all(14),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: context.colors.bluePrimary.withValues(alpha: 0.05),
                   borderRadius: AppSpacing.radiusSm,
@@ -157,7 +156,7 @@ class QuoteOfferCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: context.colors.bluePrimary.withValues(
                           alpha: 0.1,
@@ -213,7 +212,7 @@ class _BuildInfoRow extends StatelessWidget {
   final Color? valueColor;
   final bool isBold;
 
-  _BuildInfoRow({
+  const _BuildInfoRow({
     required this.icon,
     required this.title,
     required this.value,
@@ -228,7 +227,7 @@ class _BuildInfoRow extends StatelessWidget {
         Icon(icon, size: 20, color: context.colors.textSecond),
         AppSpacing.hGapSm2,
         Text(title, style: AppTextStyles.body(context.colors.textSecond)),
-        Spacer(),
+        const Spacer(),
         Text(value, style: AppTextStyles.body(context.colors.textPrimary)),
       ],
     );
