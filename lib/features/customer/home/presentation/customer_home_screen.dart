@@ -124,7 +124,7 @@ class CustomerHomeScreen extends ConsumerWidget {
 
                 // 4. Promo Slider
                 const PromoSlider(),
-                AppSpacing.gapXl,
+                AppSpacing.gapSection,
 
                 // 5. Quick Services (3 Cards)
                 Text(
@@ -165,7 +165,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                AppSpacing.gapXl,
+                AppSpacing.gapSection,
 
                 // 6. Most Popular (Featured Products)
                 Row(
@@ -198,7 +198,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     onRetry: () => ref.refresh(featuredProductsProvider),
                   ),
                 ),
-                AppSpacing.gapXl,
+                AppSpacing.gapSection,
 
                 // 7. Special Deals
                 dealsAsync.when(
@@ -230,7 +230,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                         ),
                         AppSpacing.gapSm2,
                         _buildProductList(context, deals),
-                        AppSpacing.gapXl,
+                        AppSpacing.gapSection,
                       ],
                     );
                   },

@@ -32,8 +32,8 @@ class AppSpacing {
   /// المسافة بين البطاقات في القوائم
   static const double cardGap = sm2;
 
-  /// المسافة بين الأقسام الرئيسية في الشاشة
-  static const double sectionGap = xl;
+  /// المسافة بين الأقسام الرئيسية في الشاشة (معيار تطبيقات المتاجر الاحترافية)
+  static const double sectionGap = 20;
 
   /// المسافة الداخلية للصفحة من الجانبين
   static const double pageHorizontal = md;
@@ -140,6 +140,9 @@ class AppSpacing {
   static const Widget gapLg = SizedBox(height: lg);
   static const Widget gapXl = SizedBox(height: xl);
   static const Widget gapXxl = SizedBox(height: xxl);
+
+  /// فاصل بين الأقسام الرئيسية في الشاشة (يُفضَّل استخدامه بدلاً من gapXl بين الأقسام)
+  static const Widget gapSection = SizedBox(height: sectionGap);
 
   static const Widget hGapXs = SizedBox(width: xs);
   static const Widget hGapSm = SizedBox(width: sm);
