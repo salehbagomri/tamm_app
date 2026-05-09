@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/product_specs.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
@@ -116,11 +116,9 @@ class ProductDetailScreen extends ConsumerWidget {
                     ),
                     child: Text(
                       'مميز ⭐',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
+                      style: AppTextStyles.bodySmall(
+                        Colors.white,
+                      ).copyWith(fontWeight: AppTextStyles.bold),
                     ),
                   ),
                 ),
@@ -139,11 +137,9 @@ class ProductDetailScreen extends ConsumerWidget {
                     ),
                     child: Text(
                       'عرض خاص: خصم ${p.discountPercentage}% 🏷️',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
+                      style: AppTextStyles.bodySmall(
+                        Colors.white,
+                      ).copyWith(fontWeight: AppTextStyles.bold),
                     ),
                   ),
                 ),
@@ -154,26 +150,19 @@ class ProductDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
                 if (p.brand != null)
                   Text(
                     p.brand!,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: context.colors.textSecond,
-                    ),
+                    style: AppTextStyles.body(
+                      context.colors.textSecond,
+                    ).copyWith(fontWeight: AppTextStyles.bold),
                   ),
                 Text(
                   p.name,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                    height: 1.2,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -181,61 +170,39 @@ class ProductDetailScreen extends ConsumerWidget {
                       p.price != null
                           ? '${p.price!.toInt()} ر.س'
                           : 'السعر غير محدد',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.blueSky,
-                        height: 1,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
                     if (p.hasDiscount) ...[
-                      const SizedBox(width: 8),
+                      AppSpacing.hGapSm,
                       Padding(
                         padding: const EdgeInsets.only(bottom: 4),
                         child: Text(
                           '${p.oldPrice!.toInt()}',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 18,
-                            color: context.colors.textSecond,
-                            decoration: TextDecoration.lineThrough,
-                            height: 1,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                       ),
                     ],
                   ],
                 ),
                 if (p.description != null) ...[
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                   Text(
                     'وصف المنتج',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.cardTitle(context.colors.textPrimary),
                   ),
-                  const SizedBox(height: 4),
+                  AppSpacing.gapXs,
                   Text(
                     p.description!,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      color: context.colors.textSecond,
-                      height: 1.6,
-                    ),
+                    style: AppTextStyles.body(context.colors.textPrimary),
                   ),
                 ],
                 if (p.specs.isNotEmpty) ...[
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                   Text(
                     'المواصفات التقنية',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(context.colors.textPrimary),
                   ),
-                  const SizedBox(height: 12),
+                  AppSpacing.gapSm2,
                   Container(
                     decoration: BoxDecoration(
                       color: context.colors.bgSurface,
@@ -277,26 +244,22 @@ class ProductDetailScreen extends ConsumerWidget {
                                 size: 20,
                                 color: context.colors.bluePrimary,
                               ),
-                              const SizedBox(width: 12),
+                              AppSpacing.hGapSm2,
                               Expanded(
                                 flex: 2,
                                 child: Text(
                                   specName,
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: context.colors.textSecond,
-                                  ),
+                                  style: AppTextStyles.body(
+                                    context.colors.textSecond,
+                                  ).copyWith(fontWeight: AppTextStyles.bold),
                                 ),
                               ),
                               Expanded(
                                 flex: 3,
                                 child: Text(
                                   '${spec.value}',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 16,
-                                    color: context.colors.textPrimary,
-                                    fontWeight: FontWeight.bold,
+                                  style: AppTextStyles.body(
+                                    context.colors.textPrimary,
                                   ),
                                   textAlign: TextAlign.start,
                                 ),
@@ -308,7 +271,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     ),
                   ),
                 ],
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
                 if (p.price != null)
                   TammButton(
                     label: p.requiresInstallation
@@ -326,7 +289,7 @@ class ProductDetailScreen extends ConsumerWidget {
                   ),
                 const SizedBox(height: 40),
                 _RelatedProducts(currentProductId: p.id, category: p.category),
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
               ],
             ),
           ),
@@ -365,8 +328,11 @@ class ProductDetailScreen extends ConsumerWidget {
             content: Row(
               children: [
                 const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Text('تم الإضافة: ${p.name}', style: GoogleFonts.harmattan()),
+                AppSpacing.hGapSm,
+                Text(
+                  'تم الإضافة: ${p.name}',
+                  style: AppTextStyles.body(context.colors.textPrimary),
+                ),
               ],
             ),
             backgroundColor: context.colors.success,
@@ -387,7 +353,7 @@ class ProductDetailScreen extends ConsumerWidget {
           SnackBar(
             content: Text(
               e is AppException ? e.message : 'تعذرت الإضافة للسلة',
-              style: GoogleFonts.harmattan(fontSize: 15),
+              style: AppTextStyles.body(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
@@ -422,19 +388,15 @@ class _RelatedProducts extends ConsumerWidget {
           children: [
             Text(
               'منتجات مشابهة',
-              style: GoogleFonts.harmattan(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-              ),
+              style: AppTextStyles.sectionTitle(context.colors.textPrimary),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapMd,
             SizedBox(
               height: 220,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: related.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                separatorBuilder: (_, __) => AppSpacing.hGapSm2,
                 itemBuilder: (_, i) {
                   final rp = related[i];
                   return GestureDetector(
@@ -498,11 +460,8 @@ class _RelatedProducts extends ConsumerWidget {
                                 children: [
                                   Text(
                                     rp.name,
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: context.colors.textPrimary,
-                                      height: 1.2,
+                                    style: AppTextStyles.body(
+                                      context.colors.textPrimary,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -514,18 +473,18 @@ class _RelatedProducts extends ConsumerWidget {
                                         rp.price != null
                                             ? '${rp.price!.toInt()}'
                                             : 'غير محدد',
-                                        style: GoogleFonts.harmattan(
-                                          fontSize: 14,
-                                          color: context.colors.blueSky,
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                        style:
+                                            AppTextStyles.bodySmall(
+                                              context.colors.blueSky,
+                                            ).copyWith(
+                                              fontWeight: AppTextStyles.bold,
+                                            ),
                                       ),
                                       if (rp.price != null)
                                         Text(
                                           ' ر.س',
-                                          style: GoogleFonts.harmattan(
-                                            fontSize: 10,
-                                            color: context.colors.blueSky,
+                                          style: AppTextStyles.badge(
+                                            context.colors.blueSky,
                                           ),
                                         ),
                                     ],

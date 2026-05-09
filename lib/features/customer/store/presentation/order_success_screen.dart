@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/app_spacing.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -22,7 +23,7 @@ class OrderSuccessScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const TammSuccessBadge(message: 'تمّ طلبك ✓'),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Text(
                 'تم استلام طلبك بنجاح وسيتم التواصل معك قريباً',
                 textAlign: TextAlign.center,
@@ -31,7 +32,7 @@ class OrderSuccessScreen extends ConsumerWidget {
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               orderAsync.when(
                 data: (order) => Text(
                   'رقم الطلب: #${order.orderNumber}',
@@ -44,12 +45,12 @@ class OrderSuccessScreen extends ConsumerWidget {
                 loading: () => const CircularProgressIndicator(),
                 error: (e, _) => const SizedBox(),
               ),
-              const SizedBox(height: 32),
+              AppSpacing.gapXl,
               TammButton(
                 label: 'تتبع الطلب',
                 onPressed: () => context.push('/customer/order/$orderId'),
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapSm2,
               TammButton(
                 type: TammButtonType.secondary,
                 label: 'الرئيسية',

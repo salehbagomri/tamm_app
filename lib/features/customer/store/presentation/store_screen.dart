@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
@@ -86,11 +86,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   children: [
                     Text(
                       AppStrings.store,
-                      style: GoogleFonts.harmattan(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
                     Consumer(
                       builder: (context, ref, child) {
@@ -112,7 +108,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -120,13 +116,11 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     Expanded(
                       child: TextField(
                         controller: _searchCtrl,
-                        style: GoogleFonts.harmattan(
-                          color: context.colors.textPrimary,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                         decoration: InputDecoration(
                           hintText: 'ابحث عن منتج أو ماركة...',
-                          hintStyle: GoogleFonts.harmattan(
-                            color: context.colors.textSecond,
+                          hintStyle: AppTextStyles.body(
+                            context.colors.textSecond,
                           ),
                           prefixIcon: Icon(
                             Icons.search,
@@ -177,7 +171,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                             .update((s) => s.copyWith(searchQuery: val)),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    AppSpacing.hGapSm,
                     Container(
                       decoration: BoxDecoration(
                         color: context.colors.bgSurface,
@@ -207,7 +201,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               SizedBox(
                 height: 40,
                 child: ListView(
@@ -223,9 +217,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       child: ChoiceChip(
                         label: Text(
                           '${e.value} ($count)',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 14,
-                            color: isSelected
+                          style: AppTextStyles.bodySmall(
+                            isSelected
                                 ? Colors.white
                                 : context.colors.textSecond,
                           ),
@@ -261,9 +254,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                         .whenData(
                           (products) => Text(
                             '${products.length} نتيجة',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 14,
-                              color: context.colors.textSecond,
+                            style: AppTextStyles.bodySmall(
+                              context.colors.textSecond,
                             ),
                           ),
                         )
@@ -406,14 +398,12 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                               decoration: BoxDecoration(
                                                 color: context.colors.warning,
                                                 borderRadius:
-                                                    BorderRadius.circular(4),
+                                                    AppSpacing.radiusXs,
                                               ),
                                               child: Text(
                                                 'مميز ⭐',
-                                                style: GoogleFonts.harmattan(
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white,
+                                                style: AppTextStyles.body(
+                                                  context.colors.textPrimary,
                                                 ),
                                               ),
                                             ),
@@ -431,14 +421,12 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                               decoration: BoxDecoration(
                                                 color: context.colors.error,
                                                 borderRadius:
-                                                    BorderRadius.circular(4),
+                                                    AppSpacing.radiusXs,
                                               ),
                                               child: Text(
                                                 'خصم ${p.discountPercentage}% 🏷️',
-                                                style: GoogleFonts.harmattan(
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white,
+                                                style: AppTextStyles.body(
+                                                  context.colors.textPrimary,
                                                 ),
                                               ),
                                             ),
@@ -449,7 +437,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                   Expanded(
                                     flex: 4,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(10),
+                                      padding: AppSpacing.iconCirclePadding,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -457,22 +445,16 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                           if (p.brand != null)
                                             Text(
                                               p.brand!,
-                                              style: GoogleFonts.harmattan(
-                                                fontSize: 12,
-                                                color:
-                                                    context.colors.textSecond,
-                                                height: 1,
+                                              style: AppTextStyles.body(
+                                                context.colors.textPrimary,
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           Text(
                                             p.name,
-                                            style: GoogleFonts.harmattan(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              color: context.colors.textPrimary,
-                                              height: 1.2,
+                                            style: AppTextStyles.body(
+                                              context.colors.textPrimary,
                                             ),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
@@ -492,31 +474,22 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                     if (p.hasDiscount)
                                                       Text(
                                                         '${p.oldPrice!.toInt()}',
-                                                        style: GoogleFonts.harmattan(
-                                                          fontSize: 12,
-                                                          color: context
-                                                              .colors
-                                                              .textSecond,
-                                                          decoration:
-                                                              TextDecoration
-                                                                  .lineThrough,
-                                                          height: 1,
-                                                        ),
+                                                        style:
+                                                            AppTextStyles.body(
+                                                              context
+                                                                  .colors
+                                                                  .textPrimary,
+                                                            ),
                                                       ),
                                                     Text(
                                                       p.price != null
                                                           ? '${p.price!.toInt()} ر.س'
                                                           : 'غير محدد',
-                                                      style:
-                                                          GoogleFonts.harmattan(
-                                                            fontSize: 16,
-                                                            color: context
-                                                                .colors
-                                                                .blueSky,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                            height: 1.1,
-                                                          ),
+                                                      style: AppTextStyles.body(
+                                                        context
+                                                            .colors
+                                                            .textPrimary,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -528,7 +501,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                     p,
                                                   ),
                                                   borderRadius:
-                                                      BorderRadius.circular(8),
+                                                      AppSpacing.radiusSm,
                                                   child: Container(
                                                     padding:
                                                         const EdgeInsets.all(6),
@@ -616,8 +589,11 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             content: Row(
               children: [
                 const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Text('تم الإضافة: ${p.name}', style: GoogleFonts.harmattan()),
+                AppSpacing.hGapSm,
+                Text(
+                  'تم الإضافة: ${p.name}',
+                  style: AppTextStyles.body(context.colors.textPrimary),
+                ),
               ],
             ),
             backgroundColor: context.colors.success,
@@ -638,7 +614,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           SnackBar(
             content: Text(
               e is AppException ? e.message : 'تعذرت الإضافة للسلة',
-              style: GoogleFonts.harmattan(fontSize: 15),
+              style: AppTextStyles.body(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
@@ -672,11 +648,7 @@ class _FilterSheet extends ConsumerWidget {
                 children: [
                   Text(
                     'خيارات الفلترة',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(context.colors.textPrimary),
                   ),
                   IconButton(
                     icon: Icon(Icons.close, color: context.colors.textSecond),
@@ -684,16 +656,14 @@ class _FilterSheet extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Text(
                 'الترتيب حسب',
-                style: GoogleFonts.harmattan(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.textSecond,
-                ),
+                style: AppTextStyles.body(
+                  context.colors.textSecond,
+                ).copyWith(fontWeight: AppTextStyles.bold),
               ),
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -721,22 +691,18 @@ class _FilterSheet extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               Text(
                 'إظهار المنتجات التي تحتوي على',
-                style: GoogleFonts.harmattan(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.textSecond,
-                ),
+                style: AppTextStyles.body(
+                  context.colors.textSecond,
+                ).copyWith(fontWeight: AppTextStyles.bold),
               ),
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               CheckboxListTile(
                 title: Text(
                   'عروض وتخفيضات 🏷️',
-                  style: GoogleFonts.harmattan(
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
                 value: filter.dealsOnly,
                 activeColor: context.colors.bluePrimary,
@@ -749,9 +715,7 @@ class _FilterSheet extends ConsumerWidget {
               CheckboxListTile(
                 title: Text(
                   'منتجات مميزة ⭐',
-                  style: GoogleFonts.harmattan(
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
                 value: filter.featuredOnly,
                 activeColor: context.colors.bluePrimary,
@@ -761,7 +725,7 @@ class _FilterSheet extends ConsumerWidget {
                     .read(storeFilterProvider.notifier)
                     .update((s) => s.copyWith(featuredOnly: val)),
               ),
-              const SizedBox(height: 24),
+              AppSpacing.gapLg,
               SizedBox(
                 width: double.infinity,
                 child: TammButton(
@@ -787,8 +751,8 @@ class _FilterSheet extends ConsumerWidget {
     return ChoiceChip(
       label: Text(
         label,
-        style: GoogleFonts.harmattan(
-          color: isSelected ? Colors.white : context.colors.textSecond,
+        style: AppTextStyles.body(
+          isSelected ? Colors.white : context.colors.textSecond,
         ),
       ),
       selected: isSelected,

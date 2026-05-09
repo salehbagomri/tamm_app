@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
@@ -29,13 +29,13 @@ class BuyInstallSheet extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          AppSpacing.gapLg,
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: AppSpacing.iconCirclePadding,
                 decoration: BoxDecoration(
-                  color: context.colors.bluePrimary.withOpacity(0.15),
+                  color: context.colors.bluePrimary.withValues(alpha: 0.15),
                   borderRadius: AppSpacing.radius,
                 ),
                 child: Icon(
@@ -44,45 +44,40 @@ class BuyInstallSheet extends StatelessWidget {
                   size: 28,
                 ),
               ),
-              const SizedBox(width: 16),
+              AppSpacing.hGapMd,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'هل تريد إضافة خدمة تركيب؟',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
+                      style: AppTextStyles.sectionTitle(
+                        context.colors.textPrimary,
                       ),
                     ),
                     Text(
                       'متوفر فنيين للتركيب الفوري بإحترافية عالية',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 14,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textSecond),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 32),
+          AppSpacing.gapXl,
           TammButton(
             label: 'نعم، أريد التركيب',
             icon: Icons.check_circle_outline,
             onPressed: () => Navigator.of(context).pop(true),
           ),
-          const SizedBox(height: 12),
+          AppSpacing.gapSm2,
           TammButton(
             type: TammButtonType.secondary,
             label: 'لا، شراء فقط',
             icon: Icons.shopping_bag_outlined,
             onPressed: () => Navigator.of(context).pop(false),
           ),
-          const SizedBox(height: 8),
+          AppSpacing.gapSm,
         ],
       ),
     );

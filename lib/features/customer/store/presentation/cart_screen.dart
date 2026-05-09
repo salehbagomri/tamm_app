@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
@@ -78,7 +78,7 @@ class CartScreen extends ConsumerWidget {
                         notifier.removeItem(item.product.id);
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: AppSpacing.cardPaddingSm,
                         decoration: BoxDecoration(
                           color: context.colors.bgSurface,
                           borderRadius: AppSpacing.radius,
@@ -124,53 +124,42 @@ class CartScreen extends ConsumerWidget {
                                       color: context.colors.textFaint,
                                     ),
                             ),
-                            const SizedBox(width: 12),
+                            AppSpacing.hGapSm2,
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     item.product.name,
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: context.colors.textPrimary,
-                                      height: 1.2,
+                                    style: AppTextStyles.body(
+                                      context.colors.textPrimary,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
+                                  AppSpacing.gapXs,
                                   if (item.product.hasDiscount)
                                     Row(
                                       children: [
                                         Text(
                                           '${(item.product.oldPrice! * item.quantity).toInt()}',
-                                          style: GoogleFonts.harmattan(
-                                            fontSize: 13,
-                                            color: context.colors.textSecond,
-                                            decoration:
-                                                TextDecoration.lineThrough,
+                                          style: AppTextStyles.body(
+                                            context.colors.textPrimary,
                                           ),
                                         ),
-                                        const SizedBox(width: 4),
+                                        AppSpacing.hGapXs,
                                         Text(
                                           'وفرت ${((item.product.oldPrice! - item.product.price!) * item.quantity).toInt()} ر.س',
-                                          style: GoogleFonts.harmattan(
-                                            fontSize: 13,
-                                            color: context.colors.success,
-                                            fontWeight: FontWeight.w600,
+                                          style: AppTextStyles.body(
+                                            context.colors.textPrimary,
                                           ),
                                         ),
                                       ],
                                     ),
                                   Text(
                                     '${((item.product.price ?? 0) * item.quantity).toInt()} ر.س',
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 16,
-                                      color: context.colors.blueSky,
-                                      fontWeight: FontWeight.w700,
-                                      height: 1.2,
+                                    style: AppTextStyles.body(
+                                      context.colors.textPrimary,
                                     ),
                                   ),
                                   if (item.includeInstallation)
@@ -183,12 +172,11 @@ class CartScreen extends ConsumerWidget {
                                             size: 14,
                                             color: context.colors.bluePrimary,
                                           ),
-                                          const SizedBox(width: 4),
+                                          AppSpacing.hGapXs,
                                           Text(
                                             'تركيب (+${(item.product.installationPrice * item.quantity).toInt()})',
-                                            style: GoogleFonts.harmattan(
-                                              fontSize: 13,
-                                              color: context.colors.bluePrimary,
+                                            style: AppTextStyles.body(
+                                              context.colors.textPrimary,
                                             ),
                                           ),
                                         ],
@@ -218,11 +206,9 @@ class CartScreen extends ConsumerWidget {
                                 ),
                                 Text(
                                   '${item.quantity}',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: context.colors.textPrimary,
-                                  ),
+                                  style: AppTextStyles.body(
+                                    context.colors.textPrimary,
+                                  ).copyWith(fontWeight: AppTextStyles.bold),
                                 ),
                                 IconButton(
                                   padding: EdgeInsets.zero,
@@ -272,39 +258,32 @@ class CartScreen extends ConsumerWidget {
                         children: [
                           Text(
                             'المجموع الأصلي',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              color: context.colors.textSecond,
+                            style: AppTextStyles.body(
+                              context.colors.textSecond,
                             ),
                           ),
                           Text(
                             '${originalTotal.toInt()} ر.س',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              color: context.colors.textSecond,
-                              decoration: TextDecoration.lineThrough,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      AppSpacing.gapXs,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             'إجمالي التوفير',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              color: context.colors.success,
-                              fontWeight: FontWeight.w600,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                           Text(
                             '-${savings.toInt()} ر.س',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              color: context.colors.success,
-                              fontWeight: FontWeight.w700,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                         ],
@@ -320,24 +299,17 @@ class CartScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'المبلغ الإجمالي',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: context.colors.textPrimary,
+                          style: AppTextStyles.cardTitle(
+                            context.colors.textPrimary,
                           ),
                         ),
                         Text(
                           '${finalTotal.toInt()} ر.س',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w700,
-                            color: context.colors.blueSky,
-                            height: 1,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.gapMd,
                     SizedBox(
                       width: double.infinity,
                       child: TammButton(
@@ -345,7 +317,7 @@ class CartScreen extends ConsumerWidget {
                         onPressed: () => context.push('/customer/checkout'),
                       ),
                     ),
-                    const SizedBox(height: 8), // For safe area
+                    AppSpacing.gapSm, // For safe area
                   ],
                 ),
               ),

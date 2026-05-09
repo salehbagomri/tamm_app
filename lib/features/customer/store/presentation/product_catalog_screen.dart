@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_loading.dart';
@@ -60,11 +60,7 @@ class ProductCatalogScreen extends ConsumerWidget {
         ),
         title: Text(
           _title,
-          style: GoogleFonts.harmattan(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.sectionTitle(context.colors.textPrimary),
         ),
         actions: [
           IconButton(
@@ -113,9 +109,8 @@ class ProductCatalogScreen extends ConsumerWidget {
                       alignment: AlignmentDirectional.centerStart,
                       child: Text(
                         '${products.length} منتج',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 14,
-                          color: context.colors.textSecond,
+                        style: AppTextStyles.bodySmall(
+                          context.colors.textSecond,
                         ),
                       ),
                     ),
@@ -227,15 +222,11 @@ class _ProductCard extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: context.colors.error,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: AppSpacing.radiusXs,
                         ),
                         child: Text(
                           '-${p.discountPercentage}%',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                       ),
                     ),
@@ -251,15 +242,11 @@ class _ProductCard extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: context.colors.warning,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: AppSpacing.radiusXs,
                         ),
                         child: Text(
                           'مميز ⭐',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                       ),
                     ),
@@ -277,11 +264,7 @@ class _ProductCard extends StatelessWidget {
                   children: [
                     Text(
                       p.name,
-                      style: GoogleFonts.harmattan(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: context.colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -292,22 +275,18 @@ class _ProductCard extends StatelessWidget {
                         children: [
                           Text(
                             '${p.price!.toInt()} ر.س',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: p.hasDiscount
+                            style: AppTextStyles.bodySmall(
+                              p.hasDiscount
                                   ? context.colors.error
                                   : context.colors.blueSky,
-                            ),
+                            ).copyWith(fontWeight: AppTextStyles.bold),
                           ),
                           if (p.hasDiscount && p.oldPrice != null) ...[
-                            const SizedBox(width: 4),
+                            AppSpacing.hGapXs,
                             Text(
                               '${p.oldPrice!.toInt()}',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 11,
-                                color: context.colors.textFaint,
-                                decoration: TextDecoration.lineThrough,
+                              style: AppTextStyles.body(
+                                context.colors.textPrimary,
                               ),
                             ),
                           ],
