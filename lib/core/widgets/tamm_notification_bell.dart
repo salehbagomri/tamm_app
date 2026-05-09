@@ -19,34 +19,27 @@ class TammNotificationBell extends ConsumerWidget {
 
     final count = ref.watch(unreadCountProvider);
 
-    return IconButton(
-      onPressed: () => context.push('/notifications'),
-      tooltip: 'الإشعارات',
-      icon: Stack(
-        children: [
-          Icon(
-            Icons.notifications_outlined,
-            color: context.colors.textPrimary,
-          ),
-          if (count > 0)
-            Positioned(
-              right: 0,
-              top: 0,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: context.colors.error,
-                  shape: BoxShape.circle,
-                ),
-                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                child: Text(
-                  count > 99 ? '99+' : '$count',
-                  style: const TextStyle(color: Colors.white, fontSize: 10),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+    return Tooltip(
+      message: 'الإشعارات',
+      child: GestureDetector(
+        onTap: () => context.push('/notifications'),
+        child: Badge(
+          isLabelVisible: count > 0,
+          label: Text(count > 99 ? '99+' : '$count'),
+          backgroundColor: context.colors.error,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: context.colors.bluePrimary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
             ),
-        ],
+            child: Icon(
+              Icons.notifications_outlined,
+              color: context.colors.blueSky,
+              size: 24,
+            ),
+          ),
+        ),
       ),
     );
   }
