@@ -1,61 +1,136 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
 
+/// ─────────────────────────────────────────────────────
+/// Tamm Design Token System — AppTextStyles
+/// ─────────────────────────────────────────────────────
+/// نظام الخطوط الموحد لتطبيق تمّ
+///
+/// الاستخدام الصح:
+/// ✅ GoogleFonts.harmattan(fontSize: AppTextStyles.fontSizeLg, fontWeight: AppTextStyles.bold, color: context.colors.textPrimary)
+/// ✅ AppTextStyles.withColor(AppTextStyles.h2, context.colors.textPrimary)
+///
+/// ⚠️ تنبيه: لا تستخدم AppTextStyles مباشرة مع ألوان ثابتة — استخدم context.colors دائماً
+/// ─────────────────────────────────────────────────────
 class AppTextStyles {
   AppTextStyles._();
 
-  static TextStyle _base({
-    double size = 16,
-    FontWeight weight = FontWeight.w400,
-    Color color = AppColors.textPrimary,
-    double? height,
-  }) {
-    return GoogleFonts.harmattan(
-      fontSize: size,
-      fontWeight: weight,
-      color: color,
-      height: height,
-    );
-  }
+  // ─── Font Sizes ──────────────────────────────────────
+  static const double fontSizeXs = 11; // ملاحظات دقيقة، شارات
+  static const double fontSizeSm = 12; // Caption, تواريخ
+  static const double fontSizeSm2 = 13; // نصوص ثانوية صغيرة
+  static const double fontSizeMd = 14; // نصوص ثانوية، labels
+  static const double fontSizeMd2 = 15; // نصوص عادية صغيرة
+  static const double fontSizeBase = 16; // النص الأساسي
+  static const double fontSizeLg = 18; // نصوص مميزة
+  static const double fontSizeXl = 20; // عناوين الأقسام
+  static const double fontSizeXl2 = 22; // عناوين فرعية
+  static const double fontSizeH3 = 24; // عناوين المستوى الثالث
+  static const double fontSizeH2 = 26; // عناوين الشاشات
+  static const double fontSizeH1 = 32; // عناوين رئيسية كبيرة
 
-  // العناوين
-  static final h1 = _base(size: 32, weight: FontWeight.w700);
-  static final h2 = _base(size: 26, weight: FontWeight.w700);
-  static final h3 = _base(size: 22, weight: FontWeight.w600);
-  static final h4 = _base(size: 18, weight: FontWeight.w600);
+  // ─── Font Weights ────────────────────────────────────
+  static const FontWeight regular = FontWeight.w400;
+  static const FontWeight medium = FontWeight.w500;
+  static const FontWeight semiBold = FontWeight.w600;
+  static const FontWeight bold = FontWeight.w700;
 
-  // النصوص
-  static final bodyLarge = _base(size: 18);
-  static final body = _base(size: 16);
-  static final bodySmall = _base(size: 14);
+  // ─── Line Heights ────────────────────────────────────
+  static const double lineHeightNormal = 1.4;
+  static const double lineHeightTight = 1.2;
+  static const double lineHeightLoose = 1.6;
 
-  // ثانوي
-  static final caption = _base(size: 12, color: AppColors.textSecond);
-  static final label = _base(size: 14, weight: FontWeight.w600);
+  // ─── Style Builders (context-aware) ─────────────────
+  // استخدم هذه الدوال لإنشاء TextStyle مع لون context
 
-  // خاص
-  static final price = _base(
-    size: 20,
-    weight: FontWeight.w700,
-    color: AppColors.blueSky,
+  static TextStyle h1(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeH1,
+    fontWeight: bold,
+    color: color,
   );
-  static final tamm = _base(
-    size: 40,
-    weight: FontWeight.w700,
-    color: AppColors.success,
-  );
-  static final link = _base(size: 16, color: AppColors.blueLight);
 
-  // أزرار
-  static final button = _base(
-    size: 16,
-    weight: FontWeight.w600,
-    color: const Color(0xFFFFFFFF),
+  static TextStyle h2(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeH2,
+    fontWeight: bold,
+    color: color,
   );
-  static final buttonSmall = _base(
-    size: 14,
-    weight: FontWeight.w600,
-    color: const Color(0xFFFFFFFF),
+
+  static TextStyle h3(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeH3,
+    fontWeight: semiBold,
+    color: color,
+  );
+
+  static TextStyle sectionTitle(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeXl,
+    fontWeight: semiBold,
+    color: color,
+  );
+
+  static TextStyle cardTitle(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeLg,
+    fontWeight: semiBold,
+    color: color,
+  );
+
+  static TextStyle body(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeBase,
+    fontWeight: regular,
+    color: color,
+  );
+
+  static TextStyle bodySmall(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeMd,
+    fontWeight: regular,
+    color: color,
+  );
+
+  static TextStyle label(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeMd,
+    fontWeight: semiBold,
+    color: color,
+  );
+
+  static TextStyle caption(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeSm,
+    fontWeight: regular,
+    color: color,
+  );
+
+  static TextStyle price(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeXl,
+    fontWeight: bold,
+    color: color,
+  );
+
+  static TextStyle priceSm(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeLg,
+    fontWeight: bold,
+    color: color,
+  );
+
+  static TextStyle badge(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeXs,
+    fontWeight: bold,
+    color: color,
+  );
+
+  static TextStyle button(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeBase,
+    fontWeight: semiBold,
+    color: color,
+  );
+
+  static TextStyle buttonSm(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeMd,
+    fontWeight: semiBold,
+    color: color,
+  );
+
+  static TextStyle link(Color color) => GoogleFonts.harmattan(
+    fontSize: fontSizeBase,
+    fontWeight: regular,
+    color: color,
+    decoration: TextDecoration.underline,
   );
 }
