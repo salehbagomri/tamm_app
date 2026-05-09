@@ -7,6 +7,8 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/product_providers.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManageProductsScreen extends ConsumerWidget {
@@ -43,7 +45,11 @@ class ManageProductsScreen extends ConsumerWidget {
                   const SizedBox(width: 8),
                   TextButton.icon(
                     onPressed: () => context.push('/manager/promotions'),
-                    icon: Icon(Icons.campaign, size: 18, color: context.colors.blueSky),
+                    icon: Icon(
+                      Icons.campaign,
+                      size: 18,
+                      color: context.colors.blueSky,
+                    ),
                     label: Text(
                       'العروض',
                       style: GoogleFonts.harmattan(
@@ -119,11 +125,17 @@ class ManageProductsScreen extends ConsumerWidget {
                                       children: [
                                         if (p.isFeatured)
                                           Container(
-                                            margin: const EdgeInsets.only(left: 4),
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            margin: const EdgeInsets.only(
+                                              left: 4,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
                                             decoration: BoxDecoration(
                                               color: context.colors.warning,
-                                              borderRadius: BorderRadius.circular(4),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               'مميز ⭐',
@@ -136,10 +148,14 @@ class ManageProductsScreen extends ConsumerWidget {
                                           ),
                                         if (p.hasDiscount)
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
                                             decoration: BoxDecoration(
                                               color: context.colors.error,
-                                              borderRadius: BorderRadius.circular(4),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               'خصم ${p.discountPercentage}%',
@@ -185,8 +201,12 @@ class ManageProductsScreen extends ConsumerWidget {
                     );
                   },
                   loading: () => const TammLoading(),
-                  error: (e, _) =>
-                      TammEmptyState(icon: Icons.error_outline, message: '$e'),
+                  error: (e, _) => ErrorStateWidget(
+                    message: e is AppException
+                        ? e.message
+                        : 'حدث خطأ في تحميل المنتجات',
+                    onRetry: () => ref.invalidate(productsProvider),
+                  ),
                 ),
               ),
             ],

@@ -10,6 +10,8 @@ import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../shared/providers/technician_providers.dart';
 import '../../../../core/widgets/tamm_notification_bell.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechTasksScreen extends ConsumerStatefulWidget {
@@ -112,9 +114,8 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                             ? context.colors.warning.withValues(
                                                 alpha: 0.15,
                                               )
-                                            : context.colors.bluePrimary.withValues(
-                                                alpha: 0.15,
-                                              ),
+                                            : context.colors.bluePrimary
+                                                  .withValues(alpha: 0.15),
                                         borderRadius: AppSpacing.radiusFull,
                                       ),
                                       child: Text(
@@ -177,8 +178,12 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                     );
                   },
                   loading: () => const TammLoading(),
-                  error: (e, _) =>
-                      TammEmptyState(icon: Icons.error_outline, message: '$e'),
+                  error: (e, _) => ErrorStateWidget(
+                    message: e is AppException
+                        ? e.message
+                        : 'حدث خطأ في تحميل المهام',
+                    onRetry: () => ref.invalidate(myAssignmentsProvider),
+                  ),
                 ),
               ),
             ],

@@ -8,6 +8,8 @@ import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/manager_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TechniciansScreen extends ConsumerStatefulWidget {
@@ -165,8 +167,12 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                     );
                   },
                   loading: () => const TammLoading(),
-                  error: (e, _) =>
-                      TammEmptyState(icon: Icons.error_outline, message: '$e'),
+                  error: (e, _) => ErrorStateWidget(
+                    message: e is AppException
+                        ? e.message
+                        : 'حدث خطأ في تحميل الفنيين',
+                    onRetry: () => ref.invalidate(techniciansProvider),
+                  ),
                 ),
               ),
             ],

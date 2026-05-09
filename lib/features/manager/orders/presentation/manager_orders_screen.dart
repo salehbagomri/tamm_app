@@ -8,6 +8,8 @@ import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_card.dart';
 import '../../../../shared/providers/order_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ManagerOrdersScreen extends ConsumerStatefulWidget {
@@ -97,7 +99,9 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                       selectedColor: context.colors.bluePrimary,
                       backgroundColor: context.colors.bgSurface,
                       side: BorderSide(
-                        color: sel ? context.colors.bluePrimary : context.colors.border,
+                        color: sel
+                            ? context.colors.bluePrimary
+                            : context.colors.border,
                       ),
                       onSelected: (_) => setState(() => _statusFilter = e.key),
                     ),
@@ -158,9 +162,8 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: context.colors.bluePrimary.withValues(
-                                        alpha: 0.15,
-                                      ),
+                                      color: context.colors.bluePrimary
+                                          .withValues(alpha: 0.15),
                                       borderRadius: AppSpacing.radiusFull,
                                     ),
                                     child: Text(
@@ -206,11 +209,14 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    o.orderType == 'quote_request' && o.totalAmount == 0
+                                    o.orderType == 'quote_request' &&
+                                            o.totalAmount == 0
                                         ? o.statusLabel
                                         : '${o.totalAmount.toInt()} ر.س',
                                     style: GoogleFonts.harmattan(
-                                      color: o.orderType == 'quote_request' && o.totalAmount == 0
+                                      color:
+                                          o.orderType == 'quote_request' &&
+                                              o.totalAmount == 0
                                           ? context.colors.warning
                                           : context.colors.blueSky,
                                       fontWeight: FontWeight.w700,
@@ -226,8 +232,15 @@ class _ManagerOrdersScreenState extends ConsumerState<ManagerOrdersScreen> {
                   );
                 },
                 loading: () => const TammLoading(),
-                error: (e, _) =>
-                    TammEmptyState(icon: Icons.error_outline, message: '$e'),
+                error: (e, _) => ErrorStateWidget(
+                  message: e is AppException
+                      ? e.message
+                      : 'حدث خطأ في تحميل الطلبات',
+                  onRetry: () {
+                    ref.invalidate(allOrdersProvider(null));
+                    ref.invalidate(allOrdersProvider(_statusFilter));
+                  },
+                ),
               ),
             ),
           ],
