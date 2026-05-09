@@ -73,6 +73,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                       children: [
                         const TammNotificationBell(),
                         if (!isGuest) ...[
+                          const SizedBox(width: 8),
                           _HeaderIcon(
                             icon: Icons.receipt_long_outlined,
                             onTap: () => context.push('/customer/orders'),
