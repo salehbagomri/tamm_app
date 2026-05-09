@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -35,26 +35,23 @@ class CustomerProfileScreen extends ConsumerWidget {
                     size: 80,
                     color: context.colors.textFaint,
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                   Text(
                     'سجّل دخولك لإدارة حسابك',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 20,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(context.colors.textPrimary),
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                   TammButton(
                     label: 'تسجيل الدخول',
                     onPressed: () => context.push('/login'),
                   ),
-                  const SizedBox(height: 12),
+                  AppSpacing.gapSm2,
                   TammButton(
                     label: 'إنشاء حساب',
                     type: TammButtonType.secondary,
                     onPressed: () => context.push('/register'),
                   ),
-                  const SizedBox(height: 32),
+                  AppSpacing.gapXl,
                   const TammThemeSelector(),
                 ],
               ),
@@ -87,29 +84,19 @@ class CustomerProfileScreen extends ConsumerWidget {
                       backgroundColor: context.colors.blueDark,
                       child: Text(
                         p?.fullName.isNotEmpty == true ? p!.fullName[0] : '?',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 32,
-                          color: context.colors.textPrimary,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                     ),
-                  const SizedBox(height: 12),
+                  AppSpacing.gapSm2,
                   Text(
                     p?.fullName ?? '',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(context.colors.textPrimary),
                   ),
                   Text(
                     p?.phone ?? '',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      color: context.colors.textSecond,
-                    ),
+                    style: AppTextStyles.body(context.colors.textSecond),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                   TammButton(
                     label: 'تعديل الحساب',
                     type: TammButtonType.secondary,
@@ -117,7 +104,7 @@ class CustomerProfileScreen extends ConsumerWidget {
                     width: 160,
                     onPressed: () => context.push('/profile/edit'),
                   ),
-                  const SizedBox(height: 32),
+                  AppSpacing.gapXl,
                   _ProfileItem(
                     icon: Icons.receipt_long,
                     label: AppStrings.myOrders,
@@ -137,14 +124,14 @@ class CustomerProfileScreen extends ConsumerWidget {
                     label: 'تسجيل الخروج',
                     onTap: () => AuthRepository.confirmSignOut(context, ref),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                   TammButton(
                     label: 'حذف الحساب',
                     type: TammButtonType.danger,
                     icon: Icons.delete_forever,
                     onPressed: () => _confirmDelete(context, ref),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                 ],
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -168,27 +155,18 @@ class CustomerProfileScreen extends ConsumerWidget {
         backgroundColor: context.colors.bgSurface,
         title: Text(
           'حذف الحساب نهائياً',
-          style: GoogleFonts.harmattan(
-            fontWeight: FontWeight.bold,
-            color: context.colors.error,
-          ),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         content: Text(
           'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء وسيتم مسح كافة البيانات المرتبطة بك.',
-          style: GoogleFonts.harmattan(
-            fontSize: 16,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(
               'إلغاء',
-              style: GoogleFonts.harmattan(
-                fontSize: 16,
-                color: context.colors.textSecond,
-              ),
+              style: AppTextStyles.body(context.colors.textSecond),
             ),
           ),
           ElevatedButton(
@@ -196,10 +174,7 @@ class CustomerProfileScreen extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: context.colors.error,
             ),
-            child: Text(
-              'حذف حسابي',
-              style: GoogleFonts.harmattan(fontSize: 16, color: Colors.white),
-            ),
+            child: Text('حذف حسابي', style: AppTextStyles.body(Colors.white)),
           ),
         ],
       ),
@@ -213,7 +188,10 @@ class CustomerProfileScreen extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('تم حذف حسابك', style: GoogleFonts.harmattan()),
+            content: Text(
+              'تم حذف حسابك',
+              style: AppTextStyles.body(context.colors.textPrimary),
+            ),
             backgroundColor: context.colors.success,
           ),
         );
@@ -225,7 +203,7 @@ class CustomerProfileScreen extends ConsumerWidget {
           SnackBar(
             content: Text(
               e is AppException ? e.message : 'حدث خطأ أثناء الحذف',
-              style: GoogleFonts.harmattan(fontSize: 15),
+              style: AppTextStyles.bodySmall(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
@@ -252,14 +230,8 @@ class _ProfileItem extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, color: context.colors.bluePrimary, size: 22),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: GoogleFonts.harmattan(
-              fontSize: 16,
-              color: context.colors.textPrimary,
-            ),
-          ),
+          AppSpacing.hGapSm2,
+          Text(label, style: AppTextStyles.body(context.colors.textPrimary)),
           const Spacer(),
           Icon(Icons.chevron_left, color: context.colors.textFaint, size: 20),
         ],

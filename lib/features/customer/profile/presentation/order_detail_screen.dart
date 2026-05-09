@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -106,17 +106,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             children: [
                               Text(
                                 o.orderTypeLabel,
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: context.colors.textPrimary,
+                                style: AppTextStyles.sectionTitle(
+                                  context.colors.textPrimary,
                                 ),
                               ),
                               Text(
                                 '#${o.orderNumber}',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 14,
-                                  color: context.colors.textSecond,
+                                style: AppTextStyles.bodySmall(
+                                  context.colors.textSecond,
                                 ),
                               ),
                             ],
@@ -132,11 +129,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             ),
                             child: Text(
                               o.statusLabel,
-                              style: GoogleFonts.harmattan(
-                                fontSize: 14,
-                                color: _getStatusColor(o),
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTextStyles.bodySmall(
+                                _getStatusColor(o),
+                              ).copyWith(fontWeight: AppTextStyles.bold),
                             ),
                           ),
                         ],
@@ -171,14 +166,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
 
                 // Quote Details Section (for quote_request orders in quote phase)
                 if (isQuotePhase) ...[
                   if (o.quoteStatus == 'sent') ...[
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(16),
+                      padding: AppSpacing.cardPadding,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -200,25 +195,21 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             color: context.colors.bluePrimary,
                             size: 36,
                           ),
-                          const SizedBox(height: 8),
+                          AppSpacing.gapSm,
                           Text(
                             'تم استلام عرض السعر!',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: context.colors.textPrimary,
+                            style: AppTextStyles.cardTitle(
+                              context.colors.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          AppSpacing.gapXs,
                           Text(
                             'السعر: ${o.quotePrice?.toInt() ?? 0} ر.س',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              color: context.colors.blueSky,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          AppSpacing.gapMd,
                           TammButton(
                             label: 'عرض التفاصيل والرد',
                             icon: Icons.reply,
@@ -229,11 +220,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.gapMd,
                   ] else if (o.quoteStatus == 'pending') ...[
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(AppSpacing.radiusXlValue),
                       decoration: BoxDecoration(
                         color: context.colors.warning.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusLg,
@@ -248,24 +239,21 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             color: context.colors.warning,
                             size: 32,
                           ),
-                          const SizedBox(width: 16),
+                          AppSpacing.hGapMd,
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'بانتظار عرض السعر',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: context.colors.textPrimary,
-                                  ),
+                                  style: AppTextStyles.body(
+                                    context.colors.textPrimary,
+                                  ).copyWith(fontWeight: AppTextStyles.bold),
                                 ),
                                 Text(
                                   'يقوم فريقنا بمراجعة طلبك وسيتم إرسال العرض قريباً',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 14,
-                                    color: context.colors.textSecond,
+                                  style: AppTextStyles.bodySmall(
+                                    context.colors.textSecond,
                                   ),
                                 ),
                               ],
@@ -274,11 +262,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.gapMd,
                   ] else if (o.quoteStatus == 'accepted') ...[
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(16),
+                      padding: AppSpacing.cardPadding,
                       decoration: BoxDecoration(
                         color: context.colors.success.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusLg,
@@ -293,24 +281,21 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             color: context.colors.success,
                             size: 32,
                           ),
-                          const SizedBox(width: 16),
+                          AppSpacing.hGapMd,
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'تم قبول العرض',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: context.colors.success,
-                                  ),
+                                  style: AppTextStyles.body(
+                                    context.colors.success,
+                                  ).copyWith(fontWeight: AppTextStyles.bold),
                                 ),
                                 Text(
                                   'السعر المتفق عليه: ${o.quotePrice?.toInt() ?? 0} ر.س',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 14,
-                                    color: context.colors.textSecond,
+                                  style: AppTextStyles.bodySmall(
+                                    context.colors.textSecond,
                                   ),
                                 ),
                               ],
@@ -319,11 +304,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.gapMd,
                   ] else if (o.quoteStatus == 'rejected') ...[
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(16),
+                      padding: AppSpacing.cardPadding,
                       decoration: BoxDecoration(
                         color: context.colors.error.withValues(alpha: 0.08),
                         borderRadius: AppSpacing.radiusLg,
@@ -338,24 +323,21 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             color: context.colors.error,
                             size: 32,
                           ),
-                          const SizedBox(width: 16),
+                          AppSpacing.hGapMd,
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'تم رفض العرض',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: context.colors.error,
-                                  ),
+                                  style: AppTextStyles.body(
+                                    context.colors.error,
+                                  ).copyWith(fontWeight: AppTextStyles.bold),
                                 ),
                                 Text(
                                   'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 14,
-                                    color: context.colors.textPrimary,
+                                  style: AppTextStyles.bodySmall(
+                                    context.colors.textPrimary,
                                   ),
                                 ),
                               ],
@@ -364,7 +346,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.gapMd,
                   ],
                 ],
 
@@ -377,19 +359,15 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                           'completed',
                         ].contains(o.status))) ...[
                   _buildProgressBar(o),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapMd,
                 ],
 
                 // Items
                 Text(
                   'العناصر',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.cardTitle(context.colors.textPrimary),
                 ),
-                const SizedBox(height: 8),
+                AppSpacing.gapSm,
                 ...o.items.map(
                   (item) => Padding(
                     padding: const EdgeInsets.only(bottom: 8),
@@ -399,17 +377,16 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         children: [
                           Text(
                             '${item.itemType == 'product' ? 'منتج' : 'خدمة'} × ${item.quantity}',
-                            style: GoogleFonts.harmattan(
-                              color: context.colors.textPrimary,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                           Text(
                             item.totalPrice > 0
                                 ? '${item.totalPrice.toInt()} ر.س'
                                 : 'عرض سعر',
-                            style: GoogleFonts.harmattan(
-                              color: context.colors.blueSky,
-                              fontWeight: FontWeight.w700,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                         ],
@@ -417,7 +394,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                AppSpacing.gapSm2,
 
                 // Total
                 if (o.totalAmount > 0 ||
@@ -427,18 +404,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                     children: [
                       Text(
                         'المجموع',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 18,
-                          color: context.colors.textSecond,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                       Text(
                         '${(o.orderType == 'quote_request' ? (o.quotePrice ?? 0) : o.totalAmount).toInt()} ر.س',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: context.colors.blueSky,
-                        ),
+                        style: AppTextStyles.body(context.colors.textPrimary),
                       ),
                     ],
                   ),
@@ -458,7 +428,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     if (o.status == 'completed') currentStep = 4;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(AppSpacing.radiusXlValue),
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
@@ -469,13 +439,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         children: [
           Text(
             'حالة التنفيذ',
-            style: GoogleFonts.harmattan(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: context.colors.textPrimary,
-            ),
+            style: AppTextStyles.cardTitle(context.colors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -525,17 +491,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
               ? const Icon(Icons.check, size: 16, color: Colors.white)
               : null,
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: GoogleFonts.harmattan(
-            fontSize: 12,
-            color: active
-                ? context.colors.textPrimary
-                : context.colors.textSecond,
-            fontWeight: active ? FontWeight.w700 : FontWeight.w400,
-          ),
-        ),
+        AppSpacing.gapSm,
+        Text(label, style: AppTextStyles.body(context.colors.textPrimary)),
       ],
     );
   }
@@ -575,15 +532,11 @@ class _InfoRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 18, color: context.colors.textSecond),
-          const SizedBox(width: 8),
+          AppSpacing.hGapSm,
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.harmattan(
-                fontSize: 15,
-                color: context.colors.textSecond,
-                height: 1.4,
-              ),
+              style: AppTextStyles.body(context.colors.textPrimary),
             ),
           ),
         ],

@@ -1,6 +1,6 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
@@ -41,7 +41,6 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
   }
 
   void _showAddDialog() {
-    final nameCtrl = TextEditingController();
     final brandCtrl = TextEditingController();
     final locationCtrl = TextEditingController();
     String type = 'ac_split';
@@ -51,7 +50,7 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
         backgroundColor: context.colors.bgSurface,
         title: Text(
           'إضافة جهاز',
-          style: GoogleFonts.harmattan(color: context.colors.textPrimary),
+          style: AppTextStyles.body(context.colors.textPrimary),
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -71,9 +70,9 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
                 ],
                 onChanged: (v) => type = v!,
               ),
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               TammTextField(label: 'العلامة التجارية', controller: brandCtrl),
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               TammTextField(
                 label: 'الموقع في المنزل',
                 hint: 'مثل: غرفة النوم',
@@ -138,23 +137,21 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
                             : Icons.ac_unit,
                         color: context.colors.bluePrimary,
                       ),
-                      const SizedBox(width: 12),
+                      AppSpacing.hGapSm2,
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               d['brand'] ?? d['device_type'],
-                              style: GoogleFonts.harmattan(
-                                fontWeight: FontWeight.w600,
-                                color: context.colors.textPrimary,
+                              style: AppTextStyles.body(
+                                context.colors.textPrimary,
                               ),
                             ),
                             Text(
                               d['location_in_home'] ?? '',
-                              style: GoogleFonts.harmattan(
-                                fontSize: 14,
-                                color: context.colors.textSecond,
+                              style: AppTextStyles.bodySmall(
+                                context.colors.textSecond,
                               ),
                             ),
                           ],

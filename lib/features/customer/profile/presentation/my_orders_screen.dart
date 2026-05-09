@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_loading.dart';
@@ -45,18 +45,15 @@ class MyOrdersScreen extends ConsumerWidget {
                         children: [
                           Text(
                             o.orderTypeLabel,
-                            style: GoogleFonts.harmattan(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                              color: context.colors.textPrimary,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             '#${o.orderNumber}',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 13,
-                              color: context.colors.textSecond,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                         ],
@@ -69,20 +66,12 @@ class MyOrdersScreen extends ConsumerWidget {
                           o.orderType == 'quote_request' && o.totalAmount == 0
                               ? o.statusLabel
                               : '${o.totalAmount.toInt()} ر.س',
-                          style: GoogleFonts.harmattan(
-                            color:
-                                o.orderType == 'quote_request' &&
-                                    o.totalAmount == 0
-                                ? context.colors.warning
-                                : context.colors.blueSky,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                         Text(
                           o.statusLabel,
-                          style: GoogleFonts.harmattan(
-                            fontSize: 12,
-                            color: context.colors.textSecond,
+                          style: AppTextStyles.caption(
+                            context.colors.textSecond,
                           ),
                         ),
                       ],
