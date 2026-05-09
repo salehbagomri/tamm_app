@@ -8,9 +8,7 @@ class AppTheme {
 
   static final darkTheme = ThemeData(
     brightness: Brightness.dark,
-    extensions: const <ThemeExtension<dynamic>>[
-      TammColors.dark,
-    ],
+    extensions: const <ThemeExtension<dynamic>>[TammColors.dark],
     scaffoldBackgroundColor: TammColors.dark.bgPrimary,
     primaryColor: TammColors.dark.bluePrimary,
     colorScheme: ColorScheme.dark(
@@ -108,7 +106,9 @@ class AppTheme {
     dividerTheme: DividerThemeData(color: TammColors.dark.border, thickness: 1),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: TammColors.dark.bgSurface2,
-      contentTextStyle: GoogleFonts.harmattan(color: TammColors.dark.textPrimary),
+      contentTextStyle: GoogleFonts.harmattan(
+        color: TammColors.dark.textPrimary,
+      ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       behavior: SnackBarBehavior.floating,
     ),
@@ -116,9 +116,7 @@ class AppTheme {
 
   static final lightTheme = ThemeData(
     brightness: Brightness.light,
-    extensions: const <ThemeExtension<dynamic>>[
-      TammColors.light,
-    ],
+    extensions: const <ThemeExtension<dynamic>>[TammColors.light],
     scaffoldBackgroundColor: TammColors.light.bgPrimary,
     primaryColor: TammColors.light.bluePrimary,
     colorScheme: ColorScheme.light(
@@ -131,10 +129,11 @@ class AppTheme {
       onSurface: TammColors.light.textPrimary,
       onError: Colors.white,
     ),
-    textTheme: GoogleFonts.harmattanTextTheme(ThemeData.light().textTheme).apply(
-      bodyColor: TammColors.light.textPrimary,
-      displayColor: TammColors.light.textPrimary,
-    ),
+    textTheme: GoogleFonts.harmattanTextTheme(ThemeData.light().textTheme)
+        .apply(
+          bodyColor: TammColors.light.textPrimary,
+          displayColor: TammColors.light.textPrimary,
+        ),
     appBarTheme: AppBarTheme(
       backgroundColor: TammColors.light.bgPrimary,
       elevation: 0,
@@ -213,10 +212,15 @@ class AppTheme {
       unselectedItemColor: TammColors.light.textFaint,
       type: BottomNavigationBarType.fixed,
     ),
-    dividerTheme: DividerThemeData(color: TammColors.light.border, thickness: 1),
+    dividerTheme: DividerThemeData(
+      color: TammColors.light.border,
+      thickness: 1,
+    ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: TammColors.light.bgSurface2,
-      contentTextStyle: GoogleFonts.harmattan(color: TammColors.light.textPrimary),
+      contentTextStyle: GoogleFonts.harmattan(
+        color: TammColors.light.textPrimary,
+      ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       behavior: SnackBarBehavior.floating,
     ),

@@ -1,6 +1,7 @@
 import 'dart:async' show TimeoutException;
 import 'package:supabase_flutter/supabase_flutter.dart'
-    as supabase show AuthException, PostgrestException;
+    as supabase
+    show AuthException, PostgrestException;
 import 'app_exception.dart';
 
 /// يُحوّل أي خطأ خام إلى [AppException] منظّم.

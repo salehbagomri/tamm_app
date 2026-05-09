@@ -45,7 +45,6 @@ class ErrorNotifier extends StateNotifier<AppException?> {
 }
 
 /// الـ Provider المركزي للأخطاء — يُستهلك في كل Shell.
-final errorProvider =
-    StateNotifierProvider<ErrorNotifier, AppException?>(
+final errorProvider = StateNotifierProvider<ErrorNotifier, AppException?>(
   (ref) => ErrorNotifier(),
 );

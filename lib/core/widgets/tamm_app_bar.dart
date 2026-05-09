@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../constants/app_colors.dart';
+﻿import 'package:flutter/material.dart';
+import '../constants/app_text_styles.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -18,18 +17,15 @@ class TammAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0.0));
+  Size get preferredSize =>
+      Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0.0));
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(
         title,
-        style: GoogleFonts.harmattan(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: context.colors.textPrimary,
-        ),
+        style: AppTextStyles.sectionTitle(context.colors.textPrimary),
       ),
       automaticallyImplyLeading: showBack,
       actions: actions,

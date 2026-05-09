@@ -66,7 +66,7 @@ const Map<String, List<String>> categoryDefaultSpecs = {
     'refrigerant',
     'voltage',
     'country_of_origin',
-    'warranty'
+    'warranty',
   ],
   'solar_panel': [
     'wattage',
@@ -76,7 +76,7 @@ const Map<String, List<String>> categoryDefaultSpecs = {
     'voltage',
     'certifications',
     'warranty',
-    'country_of_origin'
+    'country_of_origin',
   ],
   'solar_battery': [
     'capacity_ah',
@@ -85,7 +85,7 @@ const Map<String, List<String>> categoryDefaultSpecs = {
     'cycle_life',
     'dimensions',
     'weight',
-    'warranty'
+    'warranty',
   ],
   'solar_inverter': [
     'inverter_type',
@@ -94,13 +94,13 @@ const Map<String, List<String>> categoryDefaultSpecs = {
     'output_voltage',
     'phases',
     'efficiency',
-    'warranty'
+    'warranty',
   ],
   'accessory': [
     'type',
     'dimensions',
     'weight',
     'country_of_origin',
-    'warranty'
+    'warranty',
   ],
 };

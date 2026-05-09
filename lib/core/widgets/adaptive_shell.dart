@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../constants/app_colors.dart';
 import '../utils/responsive.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
@@ -70,17 +69,19 @@ class AdaptiveShell extends StatelessWidget {
           currentIndex: currentIndex,
           onTap: onTap,
           items: items
-              .map((item) => BottomNavigationBarItem(
-                    icon: item.badge != null
-                        ? Badge(
-                            isLabelVisible: true,
-                            label: item.badge!,
-                            backgroundColor: context.colors.error,
-                            child: Icon(item.icon),
-                          )
-                        : Icon(item.icon),
-                    label: item.label,
-                  ))
+              .map(
+                (item) => BottomNavigationBarItem(
+                  icon: item.badge != null
+                      ? Badge(
+                          isLabelVisible: true,
+                          label: item.badge!,
+                          backgroundColor: context.colors.error,
+                          child: Icon(item.icon),
+                        )
+                      : Icon(item.icon),
+                  label: item.label,
+                ),
+              )
               .toList(),
         ),
       ),
@@ -185,7 +186,9 @@ class _TammSidebar extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? context.colors.bluePrimary.withValues(alpha: 0.15)
+                              ? context.colors.bluePrimary.withValues(
+                                  alpha: 0.15,
+                                )
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -219,11 +222,12 @@ class _TammSidebar extends StatelessWidget {
                                     const SizedBox(width: 8),
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 2),
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: context.colors.error,
-                                        borderRadius:
-                                            BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: item.badge!,
                                     ),

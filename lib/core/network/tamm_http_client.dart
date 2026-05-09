@@ -16,13 +16,15 @@ class TammHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
-    return _inner.send(request).timeout(
-      timeout,
-      onTimeout: () => throw TimeoutException(
-        'تعذر الاتصال بالخادم، تحقق من الشبكة',
-        timeout,
-      ),
-    );
+    return _inner
+        .send(request)
+        .timeout(
+          timeout,
+          onTimeout: () => throw TimeoutException(
+            'تعذر الاتصال بالخادم، تحقق من الشبكة',
+            timeout,
+          ),
+        );
   }
 
   @override

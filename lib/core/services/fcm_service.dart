@@ -26,31 +26,33 @@ class FcmService {
     required String body,
     String? orderId,
     String? notificationType,
-  })? _bannerCallback;
+  })?
+  _bannerCallback;
 
   static void setNavigationCallback(Function(String route) cb) {
     _navigationCallback = cb;
   }
 
-  static void setBannerCallback(Function({
-    required String title,
-    required String body,
-    String? orderId,
-    String? notificationType,
-  }) cb) {
+  static void setBannerCallback(
+    Function({
+      required String title,
+      required String body,
+      String? orderId,
+      String? notificationType,
+    })
+    cb,
+  ) {
     _bannerCallback = cb;
   }
 
   /// يُستدعى مرة واحدة في main()
   static Future<void> initialize() async {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
     // طلب إذن الإشعارات
-    await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    await _messaging.requestPermission(alert: true, badge: true, sound: true);
 
     // على الويب نكتفي بإذن الإشعارات بدون Local Notifications
     if (kIsWeb) return;
@@ -59,8 +61,9 @@ class FcmService {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
     // إعداد Local Notifications
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     await _localNotifications.initialize(
       settings: const InitializationSettings(android: androidSettings),
     );
@@ -74,7 +77,8 @@ class FcmService {
     );
     await _localNotifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     // ── Foreground: عرض InAppBanner بدلاً من Local Notification ──────
@@ -134,8 +138,7 @@ class FcmService {
   }
 
   /// بناء المسار حسب نوع الإشعار والدور
-  static String? _buildRoute(
-      String? type, String orderId, String role) {
+  static String? _buildRoute(String? type, String orderId, String role) {
     if (type == 'new_assignment') {
       return '/technician/task/$orderId';
     }
@@ -166,29 +169,23 @@ class FcmService {
       final token = await _messaging.getToken();
       if (token == null) return;
 
-      await _client.from('device_tokens').upsert(
-        {
-          'user_id': user.id,
-          'fcm_token': token,
-          'device_platform': 'android',
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-        onConflict: 'user_id,fcm_token',
-      );
+      await _client.from('device_tokens').upsert({
+        'user_id': user.id,
+        'fcm_token': token,
+        'device_platform': 'android',
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'user_id,fcm_token');
 
       // استمع لتغيير Token
       _messaging.onTokenRefresh.listen((newToken) async {
         final currentUser = _client.auth.currentUser;
         if (currentUser == null) return;
-        await _client.from('device_tokens').upsert(
-          {
-            'user_id': currentUser.id,
-            'fcm_token': newToken,
-            'device_platform': 'android',
-            'updated_at': DateTime.now().toIso8601String(),
-          },
-          onConflict: 'user_id,fcm_token',
-        );
+        await _client.from('device_tokens').upsert({
+          'user_id': currentUser.id,
+          'fcm_token': newToken,
+          'device_platform': 'android',
+          'updated_at': DateTime.now().toIso8601String(),
+        }, onConflict: 'user_id,fcm_token');
       });
     } catch (e) {
       // تجاهل الخطأ — لا نريد إيقاف التطبيق بسببه

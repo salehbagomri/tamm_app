@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
+import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
@@ -28,26 +28,14 @@ class TammButton extends StatelessWidget {
     final bool isSecondary = type == TammButtonType.secondary;
     final bool isDanger = type == TammButtonType.danger;
 
-    Color textColor;
-    if (isSecondary) {
-      textColor = context.colors.bluePrimary;
-    } else if (isDanger) {
-      textColor = Colors.white;
-    } else {
-      textColor = context.colors.bgPrimary; // Primary button text color (usually dark)
-    }
-    
-    // In original code, AppTextStyles.button was used for primary, and copyWith(color) for outlined.
-    // Assuming primary button is dark text on white background depending on theme, or white on blue.
-    // Let's stick to the original logic for primary, and add danger.
-    final textStyle = isSecondary || isDanger
-        ? AppTextStyles.button.copyWith(color: textColor)
-        : AppTextStyles.button; // Uses default from style
+    final Color textColor = isSecondary
+        ? context.colors.bluePrimary
+        : Colors.white;
 
     final child = isLoading
         ? SizedBox(
-            width: 22,
-            height: 22,
+            width: AppSpacing.iconMd,
+            height: AppSpacing.iconMd,
             child: CircularProgressIndicator(
               strokeWidth: 2,
               color: isSecondary ? context.colors.bluePrimary : Colors.white,
@@ -57,22 +45,22 @@ class TammButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 20, color: textColor),
-                const SizedBox(width: 8),
+                Icon(icon, size: AppSpacing.iconSm, color: textColor),
+                AppSpacing.hGapSm,
               ],
-              Text(label, style: textStyle),
+              Text(label, style: AppTextStyles.button(textColor)),
             ],
           );
 
     if (isSecondary) {
       return SizedBox(
         width: width ?? double.infinity,
-        height: 52,
+        height: AppSpacing.buttonHeight,
         child: OutlinedButton(
           onPressed: isLoading ? null : onPressed,
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: context.colors.bluePrimary),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
           ),
           child: child,
         ),
@@ -81,13 +69,15 @@ class TammButton extends StatelessWidget {
 
     return SizedBox(
       width: width ?? double.infinity,
-      height: 52,
+      height: AppSpacing.buttonHeight,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDanger ? context.colors.error : context.colors.bluePrimary,
+          backgroundColor: isDanger
+              ? context.colors.error
+              : context.colors.bluePrimary,
           foregroundColor: textColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
           elevation: 0,
         ),
         child: child,

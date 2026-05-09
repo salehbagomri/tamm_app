@@ -12,17 +12,17 @@ class TammColors extends ThemeExtension<TammColors> {
   final Color bgSurface;
   final Color bgSurface2;
   final Color border;
-  
+
   final Color blueDark;
   final Color blueMid;
   final Color bluePrimary;
   final Color blueLight;
   final Color blueSky;
-  
+
   final Color textPrimary;
   final Color textSecond;
   final Color textFaint;
-  
+
   final Color success;
   final Color error;
   final Color warning;
@@ -70,19 +70,19 @@ class TammColors extends ThemeExtension<TammColors> {
     bgSurface: Color(0xFFFFFFFF),
     bgSurface2: Color(0xFFEAF0F6),
     border: Color(0xFFD6E2ED),
-    
+
     // Blues usually look a bit darker on light themes for contrast
     blueDark: Color(0xFF071F36),
     blueMid: Color(0xFF0C427B),
     bluePrimary: AppColors.bluePrimary, // Brand color stays same
     blueLight: AppColors.blueLight,
     blueSky: AppColors.blueSky,
-    
+
     // Text colors inverted for light background
     textPrimary: Color(0xFF0F1A26),
     textSecond: Color(0xFF4A5D70),
     textFaint: Color(0xFF8BA0B5),
-    
+
     // Status colors stay the same as they work on both
     success: AppColors.success,
     error: AppColors.error,

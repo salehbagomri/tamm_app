@@ -11,12 +11,15 @@ class TammThemeSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
-    
+
     String getThemeName(ThemeMode mode) {
       switch (mode) {
-        case ThemeMode.system: return 'النظام';
-        case ThemeMode.light: return 'فاتح';
-        case ThemeMode.dark: return 'داكن';
+        case ThemeMode.system:
+          return 'النظام';
+        case ThemeMode.light:
+          return 'فاتح';
+        case ThemeMode.dark:
+          return 'داكن';
       }
     }
 
@@ -33,7 +36,11 @@ class TammThemeSelector extends ConsumerWidget {
       },
       child: Row(
         children: [
-          Icon(Icons.dark_mode_outlined, color: context.colors.bluePrimary, size: 22),
+          Icon(
+            Icons.dark_mode_outlined,
+            color: context.colors.bluePrimary,
+            size: 22,
+          ),
           const SizedBox(width: 12),
           Text(
             'مظهر التطبيق',
@@ -64,7 +71,7 @@ class _ThemeSelectionSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
-    
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -84,28 +91,65 @@ class _ThemeSelectionSheet extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildOption(context, ref, 'مظهر النظام', ThemeMode.system, themeMode, Icons.brightness_auto),
-            _buildOption(context, ref, 'الوضع الفاتح', ThemeMode.light, themeMode, Icons.light_mode),
-            _buildOption(context, ref, 'الوضع الداكن', ThemeMode.dark, themeMode, Icons.dark_mode),
+            _buildOption(
+              context,
+              ref,
+              'مظهر النظام',
+              ThemeMode.system,
+              themeMode,
+              Icons.brightness_auto,
+            ),
+            _buildOption(
+              context,
+              ref,
+              'الوضع الفاتح',
+              ThemeMode.light,
+              themeMode,
+              Icons.light_mode,
+            ),
+            _buildOption(
+              context,
+              ref,
+              'الوضع الداكن',
+              ThemeMode.dark,
+              themeMode,
+              Icons.dark_mode,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildOption(BuildContext context, WidgetRef ref, String title, ThemeMode mode, ThemeMode currentMode, IconData icon) {
+  Widget _buildOption(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    ThemeMode mode,
+    ThemeMode currentMode,
+    IconData icon,
+  ) {
     final isSelected = mode == currentMode;
     return ListTile(
-      leading: Icon(icon, color: isSelected ? context.colors.bluePrimary : context.colors.textSecond),
+      leading: Icon(
+        icon,
+        color: isSelected
+            ? context.colors.bluePrimary
+            : context.colors.textSecond,
+      ),
       title: Text(
         title,
         style: GoogleFonts.harmattan(
           fontSize: 18,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? context.colors.bluePrimary : context.colors.textPrimary,
+          color: isSelected
+              ? context.colors.bluePrimary
+              : context.colors.textPrimary,
         ),
       ),
-      trailing: isSelected ? Icon(Icons.check_circle, color: context.colors.bluePrimary) : null,
+      trailing: isSelected
+          ? Icon(Icons.check_circle, color: context.colors.bluePrimary)
+          : null,
       onTap: () {
         ref.read(themeModeProvider.notifier).setTheme(mode);
         Navigator.pop(context);

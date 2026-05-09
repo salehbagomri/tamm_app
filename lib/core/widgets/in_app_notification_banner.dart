@@ -41,8 +41,7 @@ class InAppNotificationState {
 
 // ─── Notifier ────────────────────────────────────────────────────────────────
 
-class InAppNotificationNotifier
-    extends StateNotifier<InAppNotificationState> {
+class InAppNotificationNotifier extends StateNotifier<InAppNotificationState> {
   Timer? _timer;
 
   InAppNotificationNotifier() : super(const InAppNotificationState());
@@ -81,8 +80,8 @@ class InAppNotificationNotifier
 
 final inAppNotificationProvider =
     StateNotifierProvider<InAppNotificationNotifier, InAppNotificationState>(
-  (ref) => InAppNotificationNotifier(),
-);
+      (ref) => InAppNotificationNotifier(),
+    );
 
 // ─── Widget ──────────────────────────────────────────────────────────────────
 
@@ -184,7 +183,11 @@ class InAppNotificationBanner extends ConsumerWidget {
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  icon: Icon(Icons.close, size: 18, color: context.colors.textFaint),
+                  icon: Icon(
+                    Icons.close,
+                    size: 18,
+                    color: context.colors.textFaint,
+                  ),
                   onPressed: () =>
                       ref.read(inAppNotificationProvider.notifier).hide(),
                 ),
@@ -204,14 +207,22 @@ class InAppNotificationBanner extends ConsumerWidget {
 
   IconData _iconForType(String? type) {
     switch (type) {
-      case 'on_the_way':      return Icons.directions_car_outlined;
-      case 'in_progress':     return Icons.build_outlined;
-      case 'completed':       return Icons.task_alt;
-      case 'quote_sent':      return Icons.request_quote_outlined;
-      case 'quote_responded': return Icons.reply_outlined;
-      case 'new_order':       return Icons.shopping_bag_outlined;
-      case 'new_assignment':  return Icons.assignment_outlined;
-      default:                return Icons.notifications_outlined;
+      case 'on_the_way':
+        return Icons.directions_car_outlined;
+      case 'in_progress':
+        return Icons.build_outlined;
+      case 'completed':
+        return Icons.task_alt;
+      case 'quote_sent':
+        return Icons.request_quote_outlined;
+      case 'quote_responded':
+        return Icons.reply_outlined;
+      case 'new_order':
+        return Icons.shopping_bag_outlined;
+      case 'new_assignment':
+        return Icons.assignment_outlined;
+      default:
+        return Icons.notifications_outlined;
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_spacing.dart';
+import '../constants/app_text_styles.dart';
 import '../theme/tamm_colors.dart';
 import '../widgets/tamm_button.dart';
 
@@ -11,7 +12,7 @@ import '../widgets/tamm_button.dart';
 /// الاستخدام:
 /// ```dart
 /// error: (e, _) => ErrorStateWidget(
-///   message: ErrorMapper.from(e).message,
+///   message: e is AppException ? e.message : 'حدث خطأ',
 ///   onRetry: () => ref.invalidate(myProvider),
 /// ),
 /// ```
@@ -22,11 +23,7 @@ class ErrorStateWidget extends StatelessWidget {
   /// إذا مُرِّرت، يظهر زر "إعادة المحاولة".
   final VoidCallback? onRetry;
 
-  const ErrorStateWidget({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ErrorStateWidget({super.key, required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -34,26 +31,23 @@ class ErrorStateWidget extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 400),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 Icons.error_outline_rounded,
-                size: 64,
+                size: AppSpacing.iconXxl,
                 color: context.colors.error,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Text(
                 message,
-                style: GoogleFonts.harmattan(
-                  fontSize: 18,
-                  color: context.colors.textSecond,
-                ),
+                style: AppTextStyles.cardTitle(context.colors.textSecond),
                 textAlign: TextAlign.center,
               ),
               if (onRetry != null) ...[
-                const SizedBox(height: 20),
+                AppSpacing.gapLg,
                 TammButton(
                   label: 'إعادة المحاولة',
                   type: TammButtonType.secondary,

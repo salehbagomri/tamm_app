@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../constants/app_colors.dart';
+import '../constants/app_spacing.dart';
+import '../constants/app_text_styles.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammEmptyState extends StatelessWidget {
@@ -20,33 +20,34 @@ class TammEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 64, color: context.colors.textFaint),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: GoogleFonts.harmattan(
-              fontSize: 18,
-              color: context.colors.textSecond,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: AppSpacing.iconXxl,
+              color: context.colors.textFaint,
             ),
-            textAlign: TextAlign.center,
-          ),
-          if (actionLabel != null) ...[
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: onAction,
-              child: Text(
-                actionLabel!,
-                style: GoogleFonts.harmattan(
-                  color: context.colors.blueLight,
-                  fontSize: 16,
+            AppSpacing.gapMd,
+            Text(
+              message,
+              style: AppTextStyles.cardTitle(context.colors.textSecond),
+              textAlign: TextAlign.center,
+            ),
+            if (actionLabel != null) ...[
+              AppSpacing.gapMd,
+              TextButton(
+                onPressed: onAction,
+                child: Text(
+                  actionLabel!,
+                  style: AppTextStyles.body(context.colors.blueLight),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

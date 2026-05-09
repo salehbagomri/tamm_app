@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../constants/app_colors.dart';
+import '../constants/app_spacing.dart';
+import '../constants/app_text_styles.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class TammTextField extends StatelessWidget {
@@ -17,7 +17,6 @@ class TammTextField extends StatelessWidget {
   final Widget? suffix;
   final String? prefixText;
   final List<TextInputFormatter>? inputFormatters;
-
   final bool readOnly;
 
   const TammTextField({
@@ -42,15 +41,8 @@ class TammTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.harmattan(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: context.colors.textSecond,
-          ),
-        ),
-        const SizedBox(height: 6),
+        Text(label, style: AppTextStyles.label(context.colors.textSecond)),
+        AppSpacing.gapXs,
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
@@ -60,10 +52,7 @@ class TammTextField extends StatelessWidget {
           onChanged: onChanged,
           inputFormatters: inputFormatters,
           readOnly: readOnly,
-          style: GoogleFonts.harmattan(
-            color: context.colors.textPrimary,
-            fontSize: 16,
-          ),
+          style: AppTextStyles.body(context.colors.textPrimary),
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: prefix,

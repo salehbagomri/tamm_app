@@ -22,7 +22,8 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: context.colors.textFaint,
                 borderRadius: BorderRadius.circular(2),
@@ -34,19 +35,24 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
             Text(
               'سجّل دخولك للمتابعة',
               style: GoogleFonts.harmattan(
-                fontSize: 22, fontWeight: FontWeight.w700,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'تحتاج تسجيل الدخول للإضافة للسلة وإتمام الطلبات',
-              style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textSecond),
+              style: GoogleFonts.harmattan(
+                fontSize: 14,
+                color: context.colors.textSecond,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             SizedBox(
-              width: double.infinity, height: 48,
+              width: double.infinity,
+              height: 48,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
@@ -54,17 +60,29 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.colors.bluePrimary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: Text('تسجيل الدخول',
-                  style: GoogleFonts.harmattan(fontSize: 16, fontWeight: FontWeight.w600)),
+                child: Text(
+                  'تسجيل الدخول',
+                  style: GoogleFonts.harmattan(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 10),
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: Text('لاحقاً',
-                style: GoogleFonts.harmattan(fontSize: 14, color: context.colors.textSecond)),
+              child: Text(
+                'لاحقاً',
+                style: GoogleFonts.harmattan(
+                  fontSize: 14,
+                  color: context.colors.textSecond,
+                ),
+              ),
             ),
           ],
         ),
