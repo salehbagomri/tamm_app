@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_spacing.dart';
+import '../constants/app_text_styles.dart';
 import '../utils/responsive.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
@@ -115,7 +117,7 @@ class _TammSidebar extends StatelessWidget {
           Container(
             height: 80,
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm2),
             child: extended
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -133,12 +135,12 @@ class _TammSidebar extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      AppSpacing.hGapSm2,
                       Text(
                         'تمّ',
                         style: GoogleFonts.harmattan(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
+                          fontSize: AppTextStyles.fontSizeXl2,
+                          fontWeight: AppTextStyles.bold,
                           color: context.colors.textPrimary,
                         ),
                       ),
@@ -159,30 +161,32 @@ class _TammSidebar extends StatelessWidget {
                   ),
           ),
           Divider(color: context.colors.border, height: 1),
-          const SizedBox(height: 8),
+          AppSpacing.gapSm,
 
           // Nav items
           Expanded(
             child: ListView.builder(
               itemCount: items.length,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
               itemBuilder: (context, index) {
                 final item = items[index];
                 final isSelected = index == currentIndex;
 
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                   child: Material(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppSpacing.radius,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppSpacing.radius,
                       onTap: () => onTap(index),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         padding: EdgeInsets.symmetric(
-                          horizontal: extended ? 16 : 0,
-                          vertical: 12,
+                          horizontal: extended
+                              ? AppSpacing.md
+                              : AppSpacing.none,
+                          vertical: AppSpacing.sm2,
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
@@ -190,7 +194,7 @@ class _TammSidebar extends StatelessWidget {
                                   alpha: 0.15,
                                 )
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppSpacing.radius,
                         ),
                         child: extended
                             ? Row(
@@ -202,15 +206,15 @@ class _TammSidebar extends StatelessWidget {
                                         ? context.colors.blueLight
                                         : context.colors.textSecond,
                                   ),
-                                  const SizedBox(width: 12),
+                                  AppSpacing.hGapSm2,
                                   Expanded(
                                     child: Text(
                                       item.label,
                                       style: GoogleFonts.harmattan(
-                                        fontSize: 16,
+                                        fontSize: AppTextStyles.fontSizeBase,
                                         fontWeight: isSelected
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
+                                            ? AppTextStyles.bold
+                                            : AppTextStyles.medium,
                                         color: isSelected
                                             ? context.colors.blueLight
                                             : context.colors.textSecond,
@@ -219,10 +223,10 @@ class _TammSidebar extends StatelessWidget {
                                     ),
                                   ),
                                   if (item.badge != null) ...[
-                                    const SizedBox(width: 8),
+                                    AppSpacing.hGapSm,
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
+                                        horizontal: AppSpacing.sm,
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
@@ -242,7 +246,7 @@ class _TammSidebar extends StatelessWidget {
                                         backgroundColor: context.colors.error,
                                         child: Icon(
                                           item.icon,
-                                          size: 24,
+                                          size: AppSpacing.iconMd,
                                           color: isSelected
                                               ? context.colors.blueLight
                                               : context.colors.textSecond,
@@ -250,7 +254,7 @@ class _TammSidebar extends StatelessWidget {
                                       )
                                     : Icon(
                                         item.icon,
-                                        size: 24,
+                                        size: AppSpacing.iconMd,
                                         color: isSelected
                                             ? context.colors.blueLight
                                             : context.colors.textSecond,

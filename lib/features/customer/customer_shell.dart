@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/constants/app_strings.dart';
+import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_text_styles.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/errors/error_notifier.dart';
 import '../../core/theme/tamm_colors.dart';
@@ -70,25 +71,22 @@ class CustomerShell extends ConsumerWidget {
             duration: const Duration(seconds: 4),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+            margin: AppSpacing.cardPaddingSm,
+            shape: const RoundedRectangleBorder(
+              borderRadius: AppSpacing.radius,
             ),
             content: Row(
               children: [
                 const Icon(
                   Icons.error_outline_rounded,
                   color: Colors.white,
-                  size: 20,
+                  size: AppSpacing.iconSm,
                 ),
-                const SizedBox(width: 8),
+                AppSpacing.hGapSm,
                 Expanded(
                   child: Text(
                     next.message,
-                    style: GoogleFonts.harmattan(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
+                    style: AppTextStyles.body(Colors.white),
                   ),
                 ),
               ],
@@ -131,7 +129,9 @@ class CustomerShell extends ConsumerWidget {
           badge: cartCount > 0
               ? Text(
                   '$cartCount',
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
+                  style: AppTextStyles.badge(
+                    Colors.white,
+                  ).copyWith(fontSize: 10),
                 )
               : null,
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../constants/app_spacing.dart';
 import '../../shared/providers/notification_providers.dart';
 import '../../shared/providers/auth_providers.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -28,7 +29,7 @@ class TammNotificationBell extends ConsumerWidget {
           label: Text(count > 99 ? '99+' : '$count'),
           backgroundColor: context.colors.error,
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: AppSpacing.iconCirclePadding,
             decoration: BoxDecoration(
               color: context.colors.bluePrimary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
@@ -36,7 +37,7 @@ class TammNotificationBell extends ConsumerWidget {
             child: Icon(
               Icons.notifications_outlined,
               color: context.colors.blueSky,
-              size: 24,
+              size: AppSpacing.iconMd,
             ),
           ),
         ),

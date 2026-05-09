@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_spacing.dart';
+import '../constants/app_text_styles.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 /// شارة "تمّ ✓" — تُستخدم في شاشات التأكيد
@@ -26,12 +28,12 @@ class TammSuccessBadge extends StatelessWidget {
             color: context.colors.success,
           ),
         ),
-        const SizedBox(height: 24),
+        AppSpacing.gapLg,
         Text(
           message,
           style: GoogleFonts.harmattan(
             fontSize: 36,
-            fontWeight: FontWeight.w700,
+            fontWeight: AppTextStyles.bold,
             color: context.colors.success,
           ),
         ),
