@@ -1,5 +1,5 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_spacing.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -22,7 +22,7 @@ class AppointmentDisplayCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
@@ -33,7 +33,7 @@ class AppointmentDisplayCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: AppSpacing.iconCirclePadding,
             decoration: BoxDecoration(
               color: context.colors.bluePrimary.withValues(alpha: 0.1),
               borderRadius: AppSpacing.radiusSm,
@@ -44,26 +44,21 @@ class AppointmentDisplayCard extends StatelessWidget {
               size: 24,
             ),
           ),
-          const SizedBox(width: 16),
+          AppSpacing.hGapMd,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'موعدك المختار',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 14,
-                    color: context.colors.textSecond,
-                  ),
+                  style: AppTextStyles.bodySmall(context.colors.textSecond),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '$dayName — $period ${hour != null ? '— $hour' : ''}',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.bold),
                 ),
               ],
             ),

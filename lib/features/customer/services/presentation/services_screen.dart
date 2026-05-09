@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -67,11 +67,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(
                   'الخدمات',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
               ),
               SizedBox(
@@ -86,11 +82,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                       child: ChoiceChip(
                         label: Text(
                           e.value,
-                          style: GoogleFonts.harmattan(
-                            fontSize: 14,
-                            color: selected
-                                ? Colors.white
-                                : context.colors.textSecond,
+                          style: AppTextStyles.bodySmall(
+                            selected ? Colors.white : context.colors.textSecond,
                           ),
                         ),
                         selected: selected,
@@ -108,7 +101,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   }).toList(),
                 ),
               ),
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               Expanded(
                 child: servicesAsync.when(
                   data: (services) {
@@ -159,18 +152,18 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                                   children: [
                                     Text(
                                       s.name,
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: context.colors.textPrimary,
-                                      ),
+                                      style:
+                                          AppTextStyles.body(
+                                            context.colors.textPrimary,
+                                          ).copyWith(
+                                            fontWeight: AppTextStyles.bold,
+                                          ),
                                     ),
                                     if (s.description != null)
                                       Text(
                                         s.description!,
-                                        style: GoogleFonts.harmattan(
-                                          fontSize: 13,
-                                          color: context.colors.textSecond,
+                                        style: AppTextStyles.body(
+                                          context.colors.textPrimary,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -182,11 +175,9 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                                 s.basePrice != null
                                     ? '${s.basePrice!.toInt()} ر.س'
                                     : 'عرض سعر',
-                                style: GoogleFonts.harmattan(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: context.colors.blueSky,
-                                ),
+                                style: AppTextStyles.bodySmall(
+                                  context.colors.blueSky,
+                                ).copyWith(fontWeight: AppTextStyles.bold),
                               ),
                             ],
                           ),
@@ -201,7 +192,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     itemBuilder: (_, __) => TammShimmer(
                       height: 80,
                       width: double.infinity,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppSpacing.radius,
                     ),
                   ),
                   error: (e, _) => ErrorStateWidget(

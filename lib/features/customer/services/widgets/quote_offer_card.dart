@@ -1,5 +1,5 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
@@ -21,7 +21,7 @@ class QuoteOfferCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(AppSpacing.radiusXlValue),
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
@@ -50,25 +50,22 @@ class QuoteOfferCard extends StatelessWidget {
                   color: context.colors.bluePrimary,
                 ),
               ),
-              SizedBox(width: 12),
+              AppSpacing.hGapSm2,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'عرض السعر المقترح',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
+                      style: AppTextStyles.sectionTitle(
+                        context.colors.textPrimary,
                       ),
                     ),
                     if (order.quoteSentAt != null)
                       Text(
                         'مُرسل: ${DateFormat('yyyy/MM/dd HH:mm').format(order.quoteSentAt!)}',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 14,
-                          color: context.colors.textSecond,
+                        style: AppTextStyles.bodySmall(
+                          context.colors.textSecond,
                         ),
                       ),
                   ],
@@ -114,27 +111,19 @@ class QuoteOfferCard extends StatelessWidget {
                 size: 20,
                 color: context.colors.textSecond,
               ),
-              SizedBox(width: 12),
+              AppSpacing.hGapSm2,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'تفاصيل العرض',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 16,
-                        color: context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.body(context.colors.textSecond),
                     ),
-                    SizedBox(height: 4),
+                    AppSpacing.gapXs,
                     Text(
                       order.quoteDetails!,
-                      style: GoogleFonts.harmattan(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: context.colors.textPrimary,
-                        height: 1.5,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
                   ],
                 ),
@@ -181,24 +170,21 @@ class QuoteOfferCard extends StatelessWidget {
                         size: 20,
                       ),
                     ),
-                    SizedBox(width: 12),
+                    AppSpacing.hGapSm2,
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'مرفق عرض السعر',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: context.colors.textPrimary,
-                            ),
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
+                            ).copyWith(fontWeight: AppTextStyles.bold),
                           ),
                           Text(
                             'اضغط لعرض الملف',
-                            style: GoogleFonts.harmattan(
-                              fontSize: 13,
-                              color: context.colors.bluePrimary,
+                            style: AppTextStyles.body(
+                              context.colors.textPrimary,
                             ),
                           ),
                         ],
@@ -240,23 +226,10 @@ class _BuildInfoRow extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 20, color: context.colors.textSecond),
-        SizedBox(width: 12),
-        Text(
-          title,
-          style: GoogleFonts.harmattan(
-            fontSize: 16,
-            color: context.colors.textSecond,
-          ),
-        ),
+        AppSpacing.hGapSm2,
+        Text(title, style: AppTextStyles.body(context.colors.textSecond)),
         Spacer(),
-        Text(
-          value,
-          style: GoogleFonts.harmattan(
-            fontSize: isBold ? 22 : 16,
-            fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
-            color: valueColor ?? context.colors.textPrimary,
-          ),
-        ),
+        Text(value, style: AppTextStyles.body(context.colors.textPrimary)),
       ],
     );
   }

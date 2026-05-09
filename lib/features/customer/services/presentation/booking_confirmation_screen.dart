@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
@@ -39,7 +39,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 // Success Badge
                 Container(
@@ -55,29 +55,21 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                AppSpacing.gapLg,
 
                 Text(
                   'تمّ حجزك بنجاح!',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
 
-                const SizedBox(height: 8),
+                AppSpacing.gapSm,
 
                 Text(
                   'رقم الطلب: ${order.orderNumber}',
-                  style: GoogleFonts.harmattan(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: context.colors.textSecond,
-                  ),
+                  style: AppTextStyles.cardTitle(context.colors.textSecond),
                 ),
 
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 // Summary Card
                 TammCard(
@@ -108,16 +100,12 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                AppSpacing.gapXl,
 
                 Text(
                   'سيتواصل معك الفني قريباً لتأكيد الموعد.',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 18,
-                    color: context.colors.bluePrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.body(context.colors.textPrimary),
                 ),
 
                 const SizedBox(height: 48),
@@ -128,7 +116,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   onPressed: () => context.push('/customer/order/$orderId'),
                 ),
 
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
 
                 TammButton(
                   label: 'العودة للرئيسية',
@@ -166,21 +154,16 @@ class _SummaryRow extends StatelessWidget {
           flex: 2,
           child: Text(
             title,
-            style: GoogleFonts.harmattan(
-              fontSize: 16,
-              color: context.colors.textSecond,
-            ),
+            style: AppTextStyles.body(context.colors.textSecond),
           ),
         ),
         Expanded(
           flex: 3,
           child: Text(
             value,
-            style: GoogleFonts.harmattan(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: context.colors.textPrimary,
-            ),
+            style: AppTextStyles.body(
+              context.colors.textPrimary,
+            ).copyWith(fontWeight: AppTextStyles.bold),
             textAlign: TextAlign.end,
           ),
         ),

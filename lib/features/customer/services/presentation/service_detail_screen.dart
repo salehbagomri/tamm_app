@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
@@ -65,29 +65,21 @@ class ServiceDetailScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                AppSpacing.gapLg,
 
                 // Name and Price
                 Text(
                   service.name,
-                  style: GoogleFonts.harmattan(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                  ),
+                  style: AppTextStyles.h3(context.colors.textPrimary),
                 ),
-                const SizedBox(height: 8),
+                AppSpacing.gapSm,
                 Row(
                   children: [
                     Text(
                       service.isQuoteBased || service.basePrice == null
                           ? 'تتطلب عرض سعر'
                           : '${service.basePrice!.toInt()} ر.س',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.blueSky,
-                      ),
+                      style: AppTextStyles.body(context.colors.textPrimary),
                     ),
                     if (service.estimatedDuration != null) ...[
                       const Spacer(),
@@ -96,54 +88,42 @@ class ServiceDetailScreen extends ConsumerWidget {
                         size: 16,
                         color: context.colors.textSecond,
                       ),
-                      const SizedBox(width: 4),
+                      AppSpacing.hGapXs,
                       Text(
                         service.estimatedDuration!,
-                        style: GoogleFonts.harmattan(
-                          fontSize: 14,
-                          color: context.colors.textSecond,
+                        style: AppTextStyles.bodySmall(
+                          context.colors.textSecond,
                         ),
                       ),
                     ],
                   ],
                 ),
-                const SizedBox(height: 16),
+                AppSpacing.gapMd,
 
                 // Description
                 if (service.description != null &&
                     service.description!.isNotEmpty) ...[
                   Text(
                     'وصف الخدمة',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.cardTitle(context.colors.textPrimary),
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.gapSm,
                   Text(
                     service.description!,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      color: context.colors.textSecond,
-                    ),
+                    style: AppTextStyles.body(context.colors.textSecond),
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.gapLg,
                 ],
 
                 // What's included
                 if (service.includes.isNotEmpty) ...[
                   Text(
                     'ماذا تشمل الخدمة؟',
-                    style: GoogleFonts.harmattan(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.cardTitle(context.colors.textPrimary),
                   ),
-                  const SizedBox(height: 8),
+                  AppSpacing.gapSm,
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: AppSpacing.cardPadding,
                     decoration: BoxDecoration(
                       color: context.colors.bgSurface,
                       borderRadius: AppSpacing.radiusLg,
@@ -162,13 +142,12 @@ class ServiceDetailScreen extends ConsumerWidget {
                                     size: 20,
                                     color: context.colors.success,
                                   ),
-                                  const SizedBox(width: 8),
+                                  AppSpacing.hGapSm,
                                   Expanded(
                                     child: Text(
                                       item,
-                                      style: GoogleFonts.harmattan(
-                                        fontSize: 16,
-                                        color: context.colors.textPrimary,
+                                      style: AppTextStyles.body(
+                                        context.colors.textPrimary,
                                       ),
                                     ),
                                   ),
@@ -179,7 +158,7 @@ class ServiceDetailScreen extends ConsumerWidget {
                           .toList(),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  AppSpacing.gapXl,
                 ],
               ],
             ),

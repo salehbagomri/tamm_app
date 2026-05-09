@@ -1,3 +1,5 @@
+import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -17,7 +19,7 @@ class ServiceSuccessScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const TammSuccessBadge(message: 'تمّ الحجز ✓'),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
               Text(
                 'سيتم التواصل معك لتأكيد الموعد',
                 style: TextStyle(
@@ -25,7 +27,7 @@ class ServiceSuccessScreen extends StatelessWidget {
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(height: 32),
+              AppSpacing.gapXl,
               TammButton(
                 label: 'الرئيسية',
                 onPressed: () => context.go('/customer/home'),

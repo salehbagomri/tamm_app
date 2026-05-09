@@ -1,5 +1,6 @@
+import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/service_type.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -24,7 +25,7 @@ class ServiceSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         border: Border(top: BorderSide(color: context.colors.border)),
@@ -42,13 +43,11 @@ class ServiceSummaryCard extends StatelessWidget {
         children: [
           Text(
             'ملخص الطلب',
-            style: GoogleFonts.harmattan(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: context.colors.textPrimary,
-            ),
+            style: AppTextStyles.body(
+              context.colors.textPrimary,
+            ).copyWith(fontWeight: AppTextStyles.bold),
           ),
-          SizedBox(height: 12),
+          AppSpacing.gapSm2,
           _SummaryRow(
             icon: Icons.miscellaneous_services,
             title: service.name,
@@ -57,13 +56,13 @@ class ServiceSummaryCard extends StatelessWidget {
                 : 'يُحدد لاحقاً',
             valueColor: context.colors.blueSky,
           ),
-          SizedBox(height: 8),
+          AppSpacing.gapSm,
           _SummaryRow(
             icon: Icons.calendar_today,
             title: 'الموعد',
             value: '$period ${hour ?? ''}',
           ),
-          SizedBox(height: 8),
+          AppSpacing.gapSm,
           _SummaryRow(
             icon: Icons.location_on,
             title: 'الموقع',
@@ -94,23 +93,15 @@ class _SummaryRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 16, color: context.colors.textSecond),
-        SizedBox(width: 8),
-        Text(
-          title,
-          style: GoogleFonts.harmattan(
-            fontSize: 14,
-            color: context.colors.textSecond,
-          ),
-        ),
-        SizedBox(width: 12),
+        AppSpacing.hGapSm,
+        Text(title, style: AppTextStyles.bodySmall(context.colors.textSecond)),
+        AppSpacing.hGapSm2,
         Expanded(
           child: Text(
             value,
-            style: GoogleFonts.harmattan(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: valueColor ?? context.colors.textPrimary,
-            ),
+            style: AppTextStyles.bodySmall(
+              valueColor ?? context.colors.textPrimary,
+            ).copyWith(fontWeight: AppTextStyles.bold),
             textAlign: TextAlign.end,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

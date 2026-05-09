@@ -1,5 +1,5 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_spacing.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -67,19 +67,15 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
         // 1. Days Selection
         Text(
           'اختر اليوم',
-          style: GoogleFonts.harmattan(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: context.colors.textPrimary,
-          ),
+          style: AppTextStyles.cardTitle(context.colors.textPrimary),
         ),
-        const SizedBox(height: 8),
+        AppSpacing.gapSm,
         SizedBox(
           height: 80,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _days.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, __) => AppSpacing.hGapSm,
             itemBuilder: (context, i) {
               final day = _days[i];
               final isSelected = _selectedDate == day;
@@ -114,19 +110,14 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                           0,
                           dayName.length > 4 ? 4 : dayName.length,
                         ),
-                        style: GoogleFonts.harmattan(
-                          fontSize: 14,
-                          color: isSelected
-                              ? Colors.white
-                              : context.colors.textSecond,
+                        style: AppTextStyles.bodySmall(
+                          isSelected ? Colors.white : context.colors.textSecond,
                         ),
                       ),
                       Text(
                         '${day.day}',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: isSelected
+                        style: AppTextStyles.sectionTitle(
+                          isSelected
                               ? Colors.white
                               : context.colors.textPrimary,
                         ),
@@ -141,16 +132,12 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
 
         // 2. Period Selection (only if date is selected)
         if (_selectedDate != null) ...[
-          const SizedBox(height: 24),
+          AppSpacing.gapLg,
           Text(
             'اختر الفترة',
-            style: GoogleFonts.harmattan(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: context.colors.textPrimary,
-            ),
+            style: AppTextStyles.cardTitle(context.colors.textPrimary),
           ),
-          const SizedBox(height: 8),
+          AppSpacing.gapSm,
           Row(
             children: _periods.map((period) {
               final isSelected = _selectedPeriod == period;
@@ -183,19 +170,16 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                       children: [
                         Text(
                           period,
-                          style: GoogleFonts.harmattan(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: isSelected
+                          style: AppTextStyles.body(
+                            isSelected
                                 ? Colors.white
                                 : context.colors.textPrimary,
-                          ),
+                          ).copyWith(fontWeight: AppTextStyles.bold),
                         ),
                         Text(
                           _periodTimes[period]!,
-                          style: GoogleFonts.harmattan(
-                            fontSize: 12,
-                            color: isSelected
+                          style: AppTextStyles.caption(
+                            isSelected
                                 ? Colors.white70
                                 : context.colors.textSecond,
                           ),
@@ -211,27 +195,20 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
 
         // 3. Hour Selection (optional, only if period is selected)
         if (_selectedPeriod != null) ...[
-          const SizedBox(height: 24),
+          AppSpacing.gapLg,
           Row(
             children: [
               Text(
                 'اختر الوقت ',
-                style: GoogleFonts.harmattan(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.cardTitle(context.colors.textPrimary),
               ),
               Text(
                 '(اختياري)',
-                style: GoogleFonts.harmattan(
-                  fontSize: 14,
-                  color: context.colors.textSecond,
-                ),
+                style: AppTextStyles.bodySmall(context.colors.textSecond),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          AppSpacing.gapSm,
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -265,13 +242,9 @@ class _AppointmentPickerState extends State<AppointmentPicker> {
                   alignment: Alignment.center,
                   child: Text(
                     hour,
-                    style: GoogleFonts.harmattan(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? Colors.white
-                          : context.colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(
+                      isSelected ? Colors.white : context.colors.textPrimary,
+                    ).copyWith(fontWeight: AppTextStyles.bold),
                   ),
                 ),
               );

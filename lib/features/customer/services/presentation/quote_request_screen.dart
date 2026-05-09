@@ -1,8 +1,8 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -101,7 +101,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
         SnackBar(
           content: Text(
             'تعذر جلب الموقع، حاول مجدداً',
-            style: GoogleFonts.harmattan(fontSize: 15),
+            style: AppTextStyles.bodySmall(context.colors.textPrimary),
           ),
           behavior: SnackBarBehavior.floating,
         ),
@@ -149,7 +149,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
             title: Row(
               children: [
                 Icon(Icons.check_circle, color: context.colors.success),
-                const SizedBox(width: 8),
+                AppSpacing.hGapSm,
                 const Text('تم الإرسال بنجاح'),
               ],
             ),
@@ -182,7 +182,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
           SnackBar(
             content: Text(
               'حدث خطأ أثناء إرسال الطلب، حاول مجدداً',
-              style: GoogleFonts.harmattan(fontSize: 15),
+              style: AppTextStyles.bodySmall(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
@@ -215,7 +215,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       child: Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: AppSpacing.cardPaddingSm,
                             decoration: BoxDecoration(
                               color: context.colors.bluePrimary.withValues(
                                 alpha: 0.1,
@@ -231,24 +231,21 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                               color: context.colors.bluePrimary,
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          AppSpacing.hGapMd,
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   service.name,
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    color: context.colors.textPrimary,
+                                  style: AppTextStyles.cardTitle(
+                                    context.colors.textPrimary,
                                   ),
                                 ),
                                 Text(
                                   'تتطلب الخدمة معاينة أو تقييم لتقديم السعر',
-                                  style: GoogleFonts.harmattan(
-                                    fontSize: 14,
-                                    color: context.colors.textSecond,
+                                  style: AppTextStyles.bodySmall(
+                                    context.colors.textSecond,
                                   ),
                                 ),
                               ],
@@ -257,16 +254,14 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.gapLg,
                     Text(
                       'وصف الاحتياج',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
+                      style: AppTextStyles.cardTitle(
+                        context.colors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    AppSpacing.gapSm,
                     TammTextField(
                       label: 'أشرح تفاصيل الخدمة المطلوبة',
                       hint: 'مثال: أحتاج تركيب 3 مكيفات اسبليت بالدور الأول...',
@@ -274,18 +269,16 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       maxLines: 4,
                       onChanged: (val) => setState(() {}),
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.gapLg,
                     Text(
                       'الموقع',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
+                      style: AppTextStyles.cardTitle(
+                        context.colors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    AppSpacing.gapSm,
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: AppSpacing.cardPaddingSm,
                       decoration: BoxDecoration(
                         color: _locationPicked
                             ? context.colors.success.withValues(alpha: 0.1)
@@ -299,16 +292,16 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       ),
                       child: InkWell(
                         onTap: _isLoadingLocation ? null : _pickLocation,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppSpacing.radiusSm,
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(10),
+                              padding: AppSpacing.iconCirclePadding,
                               decoration: BoxDecoration(
                                 color: _locationPicked
                                     ? context.colors.success
                                     : context.colors.bluePrimary,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: AppSpacing.radius,
                               ),
                               child: _isLoadingLocation
                                   ? const SizedBox(
@@ -326,7 +319,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                       color: Colors.white,
                                     ),
                             ),
-                            const SizedBox(width: 12),
+                            AppSpacing.hGapSm2,
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,21 +328,18 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                     _locationPicked
                                         ? 'تم تحديد الموقع ✓'
                                         : '📍 تحديد موقعي الحالي',
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: _locationPicked
+                                    style: AppTextStyles.body(
+                                      _locationPicked
                                           ? context.colors.success
                                           : context.colors.textPrimary,
-                                    ),
+                                    ).copyWith(fontWeight: AppTextStyles.bold),
                                   ),
                                   Text(
                                     _locationPicked
                                         ? '${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
                                         : 'اضغط لإرسال موقعك الدقيق للفني',
-                                    style: GoogleFonts.harmattan(
-                                      fontSize: 12,
-                                      color: context.colors.textSecond,
+                                    style: AppTextStyles.caption(
+                                      context.colors.textSecond,
                                     ),
                                   ),
                                 ],
@@ -368,7 +358,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.gapMd,
                     TammTextField(
                       label: 'العنوان بالتفصيل',
                       hint: 'المدينة، الحي، الشارع، رقم المبنى...',
@@ -376,16 +366,14 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       maxLines: 2,
                       onChanged: (val) => setState(() {}),
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.gapLg,
                     Text(
                       'رقم التواصل',
-                      style: GoogleFonts.harmattan(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
+                      style: AppTextStyles.cardTitle(
+                        context.colors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    AppSpacing.gapSm,
                     TammTextField(
                       label: 'الرقم المسجل في النظام',
                       hint: '',
@@ -394,7 +382,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                       ),
                       readOnly: true,
                     ),
-                    const SizedBox(height: 24),
+                    AppSpacing.gapLg,
                     TammTextField(
                       label: 'ملاحظات إضافية (اختياري)',
                       hint: 'أي معلومات قد تهمنا...',

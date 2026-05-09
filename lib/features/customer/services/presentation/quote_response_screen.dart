@@ -1,7 +1,7 @@
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
@@ -65,7 +65,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
           SnackBar(
             content: Text(
               e is AppException ? e.message : 'حدث خطأ في قبول العرض',
-              style: GoogleFonts.harmattan(fontSize: 15),
+              style: AppTextStyles.bodySmall(context.colors.textPrimary),
             ),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
@@ -90,7 +90,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('هل أنت متأكد من رغبتك في رفض هذا العرض؟'),
-            const SizedBox(height: 16),
+            AppSpacing.gapMd,
             TextField(
               controller: reasonController,
               decoration: const InputDecoration(
@@ -158,7 +158,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
             SnackBar(
               content: Text(
                 e is AppException ? e.message : 'حدث خطأ في رفض العرض',
-                style: GoogleFonts.harmattan(fontSize: 15),
+                style: AppTextStyles.bodySmall(context.colors.textPrimary),
               ),
               backgroundColor: context.colors.error,
               behavior: SnackBarBehavior.floating,
@@ -190,20 +190,18 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       QuoteOfferCard(order: order),
-                      const SizedBox(height: 32),
+                      AppSpacing.gapXl,
 
                       Text(
                         'تفاصيل طلبك الأصلي',
-                        style: GoogleFonts.harmattan(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: context.colors.textPrimary,
+                        style: AppTextStyles.cardTitle(
+                          context.colors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      AppSpacing.gapSm2,
 
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: AppSpacing.cardPadding,
                         decoration: BoxDecoration(
                           color: context.colors.bgSurface,
                           borderRadius: AppSpacing.radiusLg,
@@ -211,11 +209,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
                         ),
                         child: Text(
                           order.notes ?? 'لا توجد ملاحظات من طرفك.',
-                          style: GoogleFonts.harmattan(
-                            fontSize: 16,
-                            color: context.colors.textSecond,
-                            height: 1.5,
-                          ),
+                          style: AppTextStyles.body(context.colors.textPrimary),
                         ),
                       ),
                     ],
@@ -246,7 +240,7 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
                         isLoading: _isSaving,
                         onPressed: _acceptQuote,
                       ),
-                      const SizedBox(height: 12),
+                      AppSpacing.gapSm2,
                       TammButton(
                         label: 'رفض العرض',
                         type: TammButtonType.secondary,
