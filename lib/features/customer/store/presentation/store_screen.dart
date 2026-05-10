@@ -328,7 +328,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    flex: 5,
                                     child: Stack(
                                       children: [
                                         Container(
@@ -435,13 +434,11 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                       ],
                                     ),
                                   ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Padding(
-                                      padding: AppSpacing.iconCirclePadding,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                  Padding(
+                                    padding: AppSpacing.iconCirclePadding,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                         children: [
                                           if (p.brand != null)
                                             Text(
@@ -460,7 +457,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          const Spacer(),
+                                          AppSpacing.gapXs,
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -530,7 +527,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                             ],
                                           ),
                                         ],
-                                      ),
                                     ),
                                   ),
                                 ],

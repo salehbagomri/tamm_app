@@ -171,7 +171,6 @@ class _ProductCard extends StatelessWidget {
           children: [
             // — صورة المنتج
             Expanded(
-              flex: 5,
               child: Stack(
                 children: [
                   Container(
@@ -254,13 +253,10 @@ class _ProductCard extends StatelessWidget {
               ),
             ),
             // — تفاصيل المنتج
-            Expanded(
-              flex: 3,
-              child: Padding(
+            Padding(
                 padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       p.name,
@@ -294,7 +290,6 @@ class _ProductCard extends StatelessWidget {
                       ),
                   ],
                 ),
-              ),
             ),
           ],
         ),
