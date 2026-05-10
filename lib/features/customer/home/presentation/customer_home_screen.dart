@@ -362,28 +362,23 @@ class CustomerHomeScreen extends ConsumerWidget {
                   ),
                   AppSpacing.gapXs,
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
                         p.price != null
-                            ? '${p.price!.toInt()}'
+                            ? '${p.price!.toInt()} ر.س'
                             : 'السعر غير محدد',
                         style: AppTextStyles.bodySmall(
                           context.colors.blueSky,
                         ).copyWith(fontWeight: AppTextStyles.bold),
                       ),
-                      if (p.price != null) ...[
+                      if (p.hasDiscount && p.oldPrice != null) ...[
                         AppSpacing.hGapXs,
                         Text(
-                          'ر.س',
-                          style: AppTextStyles.badge(context.colors.blueSky),
-                        ),
-                      ],
-                      if (p.hasDiscount) ...[
-                        AppSpacing.hGapXs,
-                        Text(
-                          '${p.oldPrice!.toInt()}',
+                          '${p.oldPrice!.toInt()} ر.س',
                           style: AppTextStyles.caption(
-                            context.colors.textSecond,
+                            context.colors.textFaint,
                           ).copyWith(decoration: TextDecoration.lineThrough),
                         ),
                       ],

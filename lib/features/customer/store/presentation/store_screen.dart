@@ -469,25 +469,28 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    if (p.hasDiscount)
+                                                    if (p.hasDiscount &&
+                                                        p.oldPrice != null)
                                                       Text(
-                                                        '${p.oldPrice!.toInt()}',
+                                                        '${p.oldPrice!.toInt()} ر.س',
                                                         style:
-                                                            AppTextStyles.body(
+                                                            AppTextStyles.caption(
                                                               context
                                                                   .colors
-                                                                  .textPrimary,
+                                                                  .textFaint,
+                                                            ).copyWith(
+                                                              decoration: TextDecoration.lineThrough,
                                                             ),
                                                       ),
                                                     Text(
                                                       p.price != null
                                                           ? '${p.price!.toInt()} ر.س'
-                                                          : 'غير محدد',
+                                                          : 'السعر غير محدد',
                                                       style: AppTextStyles.body(
                                                         context
                                                             .colors
-                                                            .textPrimary,
-                                                      ),
+                                                            .blueSky,
+                                                      ).copyWith(fontWeight: AppTextStyles.bold),
                                                     ),
                                                   ],
                                                 ),

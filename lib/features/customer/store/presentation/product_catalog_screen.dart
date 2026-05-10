@@ -280,10 +280,10 @@ class _ProductCard extends StatelessWidget {
                           if (p.hasDiscount && p.oldPrice != null) ...[
                             AppSpacing.hGapXs,
                             Text(
-                              '${p.oldPrice!.toInt()}',
-                              style: AppTextStyles.body(
-                                context.colors.textPrimary,
-                              ),
+                              '${p.oldPrice!.toInt()} ر.س',
+                              style: AppTextStyles.caption(
+                                context.colors.textFaint,
+                              ).copyWith(decoration: TextDecoration.lineThrough),
                             ),
                           ],
                         ],
