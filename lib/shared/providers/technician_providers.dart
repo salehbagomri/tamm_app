@@ -17,7 +17,7 @@ final myAssignmentsProvider =
       return await client
           .from('assignments')
           .select(
-            '*, orders(*, profiles!customer_id(full_name, phone, address))',
+            '*, orders(*, profiles!customer_id(full_name, phone, address), order_items(*))',
           )
           .eq('technician_id', techId)
           .inFilter('status', ['assigned', 'started'])

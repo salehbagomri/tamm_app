@@ -375,11 +375,33 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            '${item.itemType == 'product' ? 'منتج' : 'خدمة'} × ${item.quantity}',
-                            style: AppTextStyles.body(
-                              context.colors.textPrimary,
-                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${item.itemType == 'product' ? 'منتج' : 'خدمة'} × ${item.quantity}',
+                                style: AppTextStyles.body(
+                                  context.colors.textPrimary,
+                                ),
+                              ),
+                              if (item.includeInstallation) ...[
+                                AppSpacing.gapXs,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: context.colors.success
+                                        .withValues(alpha: 0.1),
+                                    borderRadius: AppSpacing.radiusXs,
+                                  ),
+                                  child: Text(
+                                    'شامل التركيب',
+                                    style: AppTextStyles.caption(
+                                        context.colors.success),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                           Text(
                             item.totalPrice > 0

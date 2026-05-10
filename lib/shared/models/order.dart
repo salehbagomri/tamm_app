@@ -174,6 +174,7 @@ class OrderItem {
   final int quantity;
   final double unitPrice;
   final double totalPrice;
+  final bool includeInstallation;
 
   const OrderItem({
     required this.id,
@@ -184,6 +185,7 @@ class OrderItem {
     required this.quantity,
     required this.unitPrice,
     required this.totalPrice,
+    this.includeInstallation = false,
   });
 
   factory OrderItem.fromMap(Map<String, dynamic> m) => OrderItem(
@@ -195,5 +197,42 @@ class OrderItem {
     quantity: m['quantity'] ?? 1,
     unitPrice: (m['unit_price'] as num).toDouble(),
     totalPrice: (m['total_price'] as num).toDouble(),
+    includeInstallation: m['include_installation'] ?? false,
   );
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'order_id': orderId,
+    'item_type': itemType,
+    'product_id': productId,
+    'service_type_id': serviceTypeId,
+    'quantity': quantity,
+    'unit_price': unitPrice,
+    'total_price': totalPrice,
+    'include_installation': includeInstallation,
+  };
+
+  OrderItem copyWith({
+    String? id,
+    String? orderId,
+    String? itemType,
+    String? productId,
+    String? serviceTypeId,
+    int? quantity,
+    double? unitPrice,
+    double? totalPrice,
+    bool? includeInstallation,
+  }) {
+    return OrderItem(
+      id: id ?? this.id,
+      orderId: orderId ?? this.orderId,
+      itemType: itemType ?? this.itemType,
+      productId: productId ?? this.productId,
+      serviceTypeId: serviceTypeId ?? this.serviceTypeId,
+      quantity: quantity ?? this.quantity,
+      unitPrice: unitPrice ?? this.unitPrice,
+      totalPrice: totalPrice ?? this.totalPrice,
+      includeInstallation: includeInstallation ?? this.includeInstallation,
+    );
+  }
 }

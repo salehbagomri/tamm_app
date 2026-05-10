@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -342,6 +342,61 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               ),
             ),
             AppSpacing.gapMd,
+            if (order['order_items'] != null && (order['order_items'] as List).isNotEmpty) ...[
+              Text(
+                'العناصر المطلوب تنفيذها',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: context.colors.textPrimary,
+                ),
+              ),
+              AppSpacing.gapSm,
+              ...(order['order_items'] as List).map((item) {
+                final isProduct = item['item_type'] == 'product';
+                final includeInst = item['include_installation'] ?? false;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: context.colors.bgSurface,
+                      borderRadius: AppSpacing.radiusLg,
+                      border: Border.all(color: context.colors.border),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${isProduct ? 'منتج' : 'خدمة'} × ${item['quantity']}',
+                              style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.bold),
+                            ),
+                            if (includeInst) ...[
+                              AppSpacing.gapXs,
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: context.colors.success.withValues(alpha: 0.1),
+                                  borderRadius: AppSpacing.radiusXs,
+                                ),
+                                child: Text(
+                                  'شامل التركيب',
+                                  style: TextStyle(fontSize: 12, color: context.colors.success, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              AppSpacing.gapMd,
+            ],
             if (notes != null && notes.isNotEmpty) ...[
               Container(
                 padding: AppSpacing.cardPadding,
