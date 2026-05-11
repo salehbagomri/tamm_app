@@ -164,8 +164,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     label: 'رقم الجوال',
                     hint: '7XXXXXXXX',
                     controller: _phoneCtrl,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.number,
                     prefixText: '+967 ',
+                    maxLength: 9,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onChanged: (v) {
                       if (_phoneError != null) {
@@ -177,12 +178,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       if (v == null || v.trim().isEmpty) {
                         return 'رقم الجوال مطلوب';
                       }
-                      final digits = v.trim().replaceAll(RegExp(r'\D'), '');
-                      if (!digits.startsWith('7')) {
-                        return 'يجب أن يبدأ الرقم بـ 7';
-                      }
-                      if (digits.length < 9 || digits.length > 10) {
-                        return 'رقم الجوال غير صحيح';
+                      final phoneRegex = RegExp(r'^7[0-9]{8}$');
+                      if (!phoneRegex.hasMatch(v.trim())) {
+                        return 'أدخل رقم هاتف يمني صحيح (7XXXXXXXX)';
                       }
                       return null;
                     },

@@ -18,6 +18,7 @@ class TammTextField extends StatelessWidget {
   final String? prefixText;
   final List<TextInputFormatter>? inputFormatters;
   final bool readOnly;
+  final int? maxLength;
 
   const TammTextField({
     super.key,
@@ -34,6 +35,7 @@ class TammTextField extends StatelessWidget {
     this.prefixText,
     this.inputFormatters,
     this.readOnly = false,
+    this.maxLength,
   });
 
   @override
@@ -48,6 +50,7 @@ class TammTextField extends StatelessWidget {
           keyboardType: keyboardType,
           obscureText: obscureText,
           maxLines: maxLines,
+          maxLength: maxLength,
           validator: validator,
           onChanged: onChanged,
           inputFormatters: inputFormatters,
