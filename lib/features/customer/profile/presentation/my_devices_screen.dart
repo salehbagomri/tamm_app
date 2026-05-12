@@ -95,6 +95,7 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
                 'brand': brandCtrl.text,
                 'location_in_home': locationCtrl.text,
               });
+              if (!mounted) return;
               Navigator.pop(context);
               _load();
             },

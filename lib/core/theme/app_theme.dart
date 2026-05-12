@@ -20,7 +20,7 @@ class AppTheme {
       onSurface: TammColors.dark.textPrimary,
       onError: Colors.white,
     ),
-    textTheme: GoogleFonts.harmattanTextTheme(ThemeData.dark().textTheme).apply(
+    textTheme: GoogleFonts.alexandriaTextTheme(ThemeData.dark().textTheme).apply(
       bodyColor: TammColors.dark.textPrimary,
       displayColor: TammColors.dark.textPrimary,
     ),
@@ -28,7 +28,7 @@ class AppTheme {
       backgroundColor: TammColors.dark.bgPrimary,
       elevation: 0,
       centerTitle: true,
-      titleTextStyle: GoogleFonts.harmattan(
+      titleTextStyle: GoogleFonts.alexandria(
         fontSize: 20,
         fontWeight: FontWeight.w700,
         color: TammColors.dark.textPrimary,
@@ -49,7 +49,7 @@ class AppTheme {
         foregroundColor: Colors.white,
         minimumSize: const Size(double.infinity, 52),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: GoogleFonts.harmattan(
+        textStyle: GoogleFonts.alexandria(
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -61,7 +61,7 @@ class AppTheme {
         minimumSize: const Size(double.infinity, 52),
         side: BorderSide(color: TammColors.dark.bluePrimary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: GoogleFonts.harmattan(
+        textStyle: GoogleFonts.alexandria(
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -87,11 +87,11 @@ class AppTheme {
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: TammColors.dark.error),
       ),
-      hintStyle: GoogleFonts.harmattan(
+      hintStyle: GoogleFonts.alexandria(
         color: TammColors.dark.textFaint,
         fontSize: 14,
       ),
-      labelStyle: GoogleFonts.harmattan(
+      labelStyle: GoogleFonts.alexandria(
         color: TammColors.dark.textSecond,
         fontSize: 14,
       ),
@@ -105,7 +105,7 @@ class AppTheme {
     dividerTheme: DividerThemeData(color: TammColors.dark.border, thickness: 1),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: TammColors.dark.bgSurface2,
-      contentTextStyle: GoogleFonts.harmattan(
+      contentTextStyle: GoogleFonts.alexandria(
         color: TammColors.dark.textPrimary,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -128,7 +128,7 @@ class AppTheme {
       onSurface: TammColors.light.textPrimary,
       onError: Colors.white,
     ),
-    textTheme: GoogleFonts.harmattanTextTheme(ThemeData.light().textTheme)
+    textTheme: GoogleFonts.alexandriaTextTheme(ThemeData.light().textTheme)
         .apply(
           bodyColor: TammColors.light.textPrimary,
           displayColor: TammColors.light.textPrimary,
@@ -137,7 +137,7 @@ class AppTheme {
       backgroundColor: TammColors.light.bgPrimary,
       elevation: 0,
       centerTitle: true,
-      titleTextStyle: GoogleFonts.harmattan(
+      titleTextStyle: GoogleFonts.alexandria(
         fontSize: 20,
         fontWeight: FontWeight.w700,
         color: TammColors.light.textPrimary,
@@ -158,7 +158,7 @@ class AppTheme {
         foregroundColor: Colors.white,
         minimumSize: const Size(double.infinity, 52),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: GoogleFonts.harmattan(
+        textStyle: GoogleFonts.alexandria(
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -170,7 +170,7 @@ class AppTheme {
         minimumSize: const Size(double.infinity, 52),
         side: BorderSide(color: TammColors.light.bluePrimary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: GoogleFonts.harmattan(
+        textStyle: GoogleFonts.alexandria(
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -196,11 +196,11 @@ class AppTheme {
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: TammColors.light.error),
       ),
-      hintStyle: GoogleFonts.harmattan(
+      hintStyle: GoogleFonts.alexandria(
         color: TammColors.light.textFaint,
         fontSize: 14,
       ),
-      labelStyle: GoogleFonts.harmattan(
+      labelStyle: GoogleFonts.alexandria(
         color: TammColors.light.textSecond,
         fontSize: 14,
       ),
@@ -217,7 +217,7 @@ class AppTheme {
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: TammColors.light.bgSurface2,
-      contentTextStyle: GoogleFonts.harmattan(
+      contentTextStyle: GoogleFonts.alexandria(
         color: TammColors.light.textPrimary,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

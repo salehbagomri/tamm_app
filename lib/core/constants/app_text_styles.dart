@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 /// نظام الخطوط الموحد لتطبيق تمّ
 ///
 /// الاستخدام الصح:
-/// ✅ GoogleFonts.harmattan(fontSize: AppTextStyles.fontSizeLg, fontWeight: AppTextStyles.bold, color: context.colors.textPrimary)
+/// ✅ GoogleFonts.alexandria(fontSize: AppTextStyles.fontSizeLg, fontWeight: AppTextStyles.bold, color: context.colors.textPrimary)
 /// ✅ AppTextStyles.withColor(AppTextStyles.h2, context.colors.textPrimary)
 ///
 /// ⚠️ تنبيه: لا تستخدم AppTextStyles مباشرة مع ألوان ثابتة — استخدم context.colors دائماً
@@ -43,91 +43,91 @@ class AppTextStyles {
   // ─── Style Builders (context-aware) ─────────────────
   // استخدم هذه الدوال لإنشاء TextStyle مع لون context
 
-  static TextStyle h1(Color color) => GoogleFonts.harmattan(
+  static TextStyle h1(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeH1,
     fontWeight: bold,
     color: color,
   );
 
-  static TextStyle h2(Color color) => GoogleFonts.harmattan(
+  static TextStyle h2(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeH2,
     fontWeight: bold,
     color: color,
   );
 
-  static TextStyle h3(Color color) => GoogleFonts.harmattan(
+  static TextStyle h3(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeH3,
     fontWeight: semiBold,
     color: color,
   );
 
-  static TextStyle sectionTitle(Color color) => GoogleFonts.harmattan(
+  static TextStyle sectionTitle(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeXl,
     fontWeight: semiBold,
     color: color,
   );
 
-  static TextStyle cardTitle(Color color) => GoogleFonts.harmattan(
+  static TextStyle cardTitle(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeLg,
     fontWeight: semiBold,
     color: color,
   );
 
-  static TextStyle body(Color color) => GoogleFonts.harmattan(
+  static TextStyle body(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeBase,
     fontWeight: regular,
     color: color,
   );
 
-  static TextStyle bodySmall(Color color) => GoogleFonts.harmattan(
+  static TextStyle bodySmall(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeMd,
     fontWeight: regular,
     color: color,
   );
 
-  static TextStyle label(Color color) => GoogleFonts.harmattan(
+  static TextStyle label(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeMd,
     fontWeight: semiBold,
     color: color,
   );
 
-  static TextStyle caption(Color color) => GoogleFonts.harmattan(
+  static TextStyle caption(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeSm,
     fontWeight: regular,
     color: color,
   );
 
-  static TextStyle price(Color color) => GoogleFonts.harmattan(
+  static TextStyle price(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeXl,
     fontWeight: bold,
     color: color,
   );
 
-  static TextStyle priceSm(Color color) => GoogleFonts.harmattan(
+  static TextStyle priceSm(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeLg,
     fontWeight: bold,
     color: color,
   );
 
-  static TextStyle badge(Color color) => GoogleFonts.harmattan(
+  static TextStyle badge(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeXs,
     fontWeight: bold,
     color: color,
   );
 
-  static TextStyle button(Color color) => GoogleFonts.harmattan(
+  static TextStyle button(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeBase,
     fontWeight: semiBold,
     color: color,
   );
 
-  static TextStyle buttonSm(Color color) => GoogleFonts.harmattan(
+  static TextStyle buttonSm(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeMd,
     fontWeight: semiBold,
     color: color,
   );
 
-  static TextStyle link(Color color) => GoogleFonts.harmattan(
+  static TextStyle link(Color color) => GoogleFonts.alexandria(
     fontSize: fontSizeBase,
     fontWeight: regular,
     color: color,

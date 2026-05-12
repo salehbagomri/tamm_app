@@ -74,7 +74,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
         backgroundColor: context.colors.bgSurface,
         title: Text(
           'إضافة مواصفة مخصصة',
-          style: GoogleFonts.harmattan(fontWeight: FontWeight.bold),
+          style: GoogleFonts.alexandria(fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -89,7 +89,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'إلغاء',
-              style: GoogleFonts.harmattan(color: context.colors.textSecond),
+              style: GoogleFonts.alexandria(color: context.colors.textSecond),
             ),
           ),
           ElevatedButton(
@@ -104,7 +104,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
             },
             child: Text(
               'إضافة',
-              style: GoogleFonts.harmattan(color: Colors.white),
+              style: GoogleFonts.alexandria(color: Colors.white),
             ),
           ),
         ],
@@ -135,7 +135,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
               const SizedBox(width: 8),
               Text(
                 'المواصفات التقنية',
-                style: GoogleFonts.harmattan(
+                style: GoogleFonts.alexandria(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: context.colors.textPrimary,
@@ -148,7 +148,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
           if (availableRecommendedKeys.isNotEmpty) ...[
             Text(
               'مواصفات مقترحة (اضغط للإضافة):',
-              style: GoogleFonts.harmattan(
+              style: GoogleFonts.alexandria(
                 fontSize: 14,
                 color: context.colors.textSecond,
               ),
@@ -161,7 +161,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                 return ActionChip(
                   label: Text(
                     specsTranslation[key] ?? key,
-                    style: GoogleFonts.harmattan(fontSize: 13),
+                    style: GoogleFonts.alexandria(fontSize: 13),
                   ),
                   backgroundColor: context.colors.bgPrimary,
                   side: BorderSide(color: context.colors.border),
@@ -198,7 +198,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                           flex: 2,
                           child: Text(
                             specsTranslation[e.key] ?? e.key,
-                            style: GoogleFonts.harmattan(
+                            style: GoogleFonts.alexandria(
                               fontWeight: FontWeight.bold,
                               color: context.colors.textPrimary,
                             ),
@@ -208,10 +208,10 @@ class _SpecsEditorState extends State<SpecsEditor> {
                           flex: 3,
                           child: TextFormField(
                             initialValue: e.value.toString(),
-                            style: GoogleFonts.harmattan(),
+                            style: GoogleFonts.alexandria(),
                             decoration: InputDecoration(
                               hintText: 'القيمة...',
-                              hintStyle: GoogleFonts.harmattan(
+                              hintStyle: GoogleFonts.alexandria(
                                 color: context.colors.textFaint,
                               ),
                               border: const UnderlineInputBorder(),
@@ -251,7 +251,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                     isExpanded: true,
                     hint: Text(
                       'إضافة من القائمة...',
-                      style: GoogleFonts.harmattan(
+                      style: GoogleFonts.alexandria(
                         color: context.colors.bluePrimary,
                       ),
                     ),
@@ -266,7 +266,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
                             value: e.key,
                             child: Text(
                               e.value,
-                              style: GoogleFonts.harmattan(),
+                              style: GoogleFonts.alexandria(),
                             ),
                           ),
                         )
@@ -281,7 +281,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
               TextButton.icon(
                 onPressed: _showAddCustomSpecDialog,
                 icon: const Icon(Icons.add, size: 18),
-                label: Text('مواصفة مخصصة', style: GoogleFonts.harmattan()),
+                label: Text('مواصفة مخصصة', style: GoogleFonts.alexandria()),
                 style: TextButton.styleFrom(
                   foregroundColor: context.colors.textSecond,
                 ),

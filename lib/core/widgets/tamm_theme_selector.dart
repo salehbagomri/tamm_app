@@ -44,7 +44,7 @@ class TammThemeSelector extends ConsumerWidget {
           const SizedBox(width: 12),
           Text(
             'مظهر التطبيق',
-            style: GoogleFonts.harmattan(
+            style: GoogleFonts.alexandria(
               fontSize: 16,
               color: context.colors.textPrimary,
             ),
@@ -52,7 +52,7 @@ class TammThemeSelector extends ConsumerWidget {
           const Spacer(),
           Text(
             getThemeName(themeMode),
-            style: GoogleFonts.harmattan(
+            style: GoogleFonts.alexandria(
               fontSize: 14,
               color: context.colors.textSecond,
             ),
@@ -83,7 +83,7 @@ class _ThemeSelectionSheet extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'اختر مظهر التطبيق',
-                style: GoogleFonts.harmattan(
+                style: GoogleFonts.alexandria(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: context.colors.textPrimary,
@@ -139,7 +139,7 @@ class _ThemeSelectionSheet extends ConsumerWidget {
       ),
       title: Text(
         title,
-        style: GoogleFonts.harmattan(
+        style: GoogleFonts.alexandria(
           fontSize: 18,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           color: isSelected

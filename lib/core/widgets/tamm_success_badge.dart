@@ -31,7 +31,7 @@ class TammSuccessBadge extends StatelessWidget {
         AppSpacing.gapLg,
         Text(
           message,
-          style: GoogleFonts.harmattan(
+          style: GoogleFonts.alexandria(
             fontSize: 36,
             fontWeight: AppTextStyles.bold,
             color: context.colors.success,

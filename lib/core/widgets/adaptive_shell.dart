@@ -138,7 +138,7 @@ class _TammSidebar extends StatelessWidget {
                       AppSpacing.hGapSm2,
                       Text(
                         'تمّ',
-                        style: GoogleFonts.harmattan(
+                        style: GoogleFonts.alexandria(
                           fontSize: AppTextStyles.fontSizeXl2,
                           fontWeight: AppTextStyles.bold,
                           color: context.colors.textPrimary,
@@ -210,7 +210,7 @@ class _TammSidebar extends StatelessWidget {
                                   Expanded(
                                     child: Text(
                                       item.label,
-                                      style: GoogleFonts.harmattan(
+                                      style: GoogleFonts.alexandria(
                                         fontSize: AppTextStyles.fontSizeBase,
                                         fontWeight: isSelected
                                             ? AppTextStyles.bold

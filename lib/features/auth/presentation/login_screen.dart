@@ -44,6 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       await FcmService.registerToken();
       await ref.read(cartProvider.notifier).mergeGuestCart();
+      if (!mounted) return;
 
       if (profile == null || !profile.isComplete) {
         context.go('/onboarding');
@@ -96,6 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       await FcmService.registerToken();
       await ref.read(cartProvider.notifier).mergeGuestCart();
+      if (!mounted) return;
 
       if (profile == null || !profile.isComplete) {
         context.go('/onboarding');

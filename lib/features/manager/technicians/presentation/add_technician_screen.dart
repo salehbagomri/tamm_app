@@ -69,8 +69,10 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تمت الترقية إلى فني بنجاح!')),
       );
-      if (mounted) context.pop();
+      if (!mounted) return;
+      if (context.mounted) context.pop();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
       setState(() => _isPromoting = false);
     }

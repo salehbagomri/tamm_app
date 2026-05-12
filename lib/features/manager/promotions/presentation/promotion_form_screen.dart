@@ -102,6 +102,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
       ref.invalidate(activePromotionsProvider);
       if (mounted) context.pop();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -296,6 +297,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                         .deletePromotion(widget.promotion!.id);
                     ref.invalidate(allPromotionsProvider);
                     ref.invalidate(activePromotionsProvider);
+                    if (!mounted) return;
                     if (context.mounted) context.pop();
                   },
                   icon: Icon(Icons.delete, color: context.colors.error),

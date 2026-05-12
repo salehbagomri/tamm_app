@@ -34,7 +34,7 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
             const SizedBox(height: 16),
             Text(
               'سجّل دخولك للمتابعة',
-              style: GoogleFonts.harmattan(
+              style: GoogleFonts.alexandria(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
@@ -43,7 +43,7 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
             const SizedBox(height: 8),
             Text(
               'تحتاج تسجيل الدخول للإضافة للسلة وإتمام الطلبات',
-              style: GoogleFonts.harmattan(
+              style: GoogleFonts.alexandria(
                 fontSize: 14,
                 color: context.colors.textSecond,
               ),
@@ -66,7 +66,7 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
                 ),
                 child: Text(
                   'تسجيل الدخول',
-                  style: GoogleFonts.harmattan(
+                  style: GoogleFonts.alexandria(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -78,7 +78,7 @@ Future<bool> requireAuth(BuildContext context, WidgetRef ref) async {
               onPressed: () => Navigator.of(ctx).pop(),
               child: Text(
                 'لاحقاً',
-                style: GoogleFonts.harmattan(
+                style: GoogleFonts.alexandria(
                   fontSize: 14,
                   color: context.colors.textSecond,
                 ),

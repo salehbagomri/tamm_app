@@ -159,7 +159,7 @@ class InAppNotificationBanner extends ConsumerWidget {
                     children: [
                       Text(
                         state.title,
-                        style: GoogleFonts.harmattan(
+                        style: GoogleFonts.alexandria(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: context.colors.textPrimary,
@@ -169,7 +169,7 @@ class InAppNotificationBanner extends ConsumerWidget {
                       ),
                       Text(
                         state.body,
-                        style: GoogleFonts.harmattan(
+                        style: GoogleFonts.alexandria(
                           fontSize: 13,
                           color: context.colors.textSecond,
                         ),
