@@ -65,6 +65,8 @@ class OrderRepository {
     String? quoteStatus,
     double? latitude,
     double? longitude,
+    String paymentType = 'cash',
+    String? paymentMethodId,
     required List<Map<String, dynamic>> items,
   }) async {
     try {
@@ -83,6 +85,8 @@ class OrderRepository {
             'scheduled_period': scheduledPeriod,
             'scheduled_hour': scheduledHour,
             'quote_status': quoteStatus,
+            'payment_type': paymentType,
+            if (paymentMethodId != null) 'payment_method_id': paymentMethodId,
             if (latitude != null) 'latitude': latitude,
             if (longitude != null) 'longitude': longitude,
           })

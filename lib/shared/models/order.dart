@@ -28,6 +28,8 @@ class Order {
   final DateTime? quoteRespondedAt;
   final String? rejectionReason;
   final String? quoteAttachmentUrl;
+  final String paymentType;
+  final String? paymentMethodId;
 
   const Order({
     required this.id,
@@ -56,6 +58,8 @@ class Order {
     this.quoteRespondedAt,
     this.rejectionReason,
     this.quoteAttachmentUrl,
+    this.paymentType = 'cash',
+    this.paymentMethodId,
   });
 
   factory Order.fromMap(Map<String, dynamic> m) {
@@ -109,6 +113,8 @@ class Order {
           : null,
       rejectionReason: m['rejection_reason'],
       quoteAttachmentUrl: m['quote_attachment_url'],
+      paymentType: m['payment_type'] as String? ?? 'cash',
+      paymentMethodId: m['payment_method_id'] as String?,
     );
   }
 

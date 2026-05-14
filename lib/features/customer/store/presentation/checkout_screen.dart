@@ -15,6 +15,7 @@ import '../../services/widgets/appointment_display_card.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
+import 'payment_method_selector.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
@@ -30,6 +31,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   String? _selectedPeriod;
   String? _selectedHour;
   bool _loading = false;
+  String _paymentType = 'cash';
+  String? _paymentMethodId;
 
   // GPS
   double? _latitude;
@@ -97,6 +100,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       }
       return;
     }
+    if (_paymentType != 'cash' && _paymentMethodId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'يرجى اختيار طريقة الدفع',
+              style: AppTextStyles.body(context.colors.textPrimary),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return;
+    }
     setState(() => _loading = true);
     try {
       final cartAsync = ref.read(cartProvider);
@@ -150,6 +168,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             includeInstall: hasInstallation,
             latitude: _latitude,
             longitude: _longitude,
+            paymentType: _paymentType,
+            paymentMethodId: _paymentMethodId,
             items: items,
           );
       await notifier.clear();
@@ -346,17 +366,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 maxLines: 3,
               ),
               AppSpacing.gapLg,
-              Row(
-                children: [
-                  Icon(Icons.money, color: context.colors.bluePrimary),
-                  AppSpacing.hGapSm,
-                  Text(
-                    'طريقة الدفع: كاش عند الاستلام',
-                    style: AppTextStyles.body(
-                      context.colors.textPrimary,
-                    ).copyWith(fontWeight: AppTextStyles.bold),
-                  ),
-                ],
+              PaymentMethodSelector(
+                selectedType: _paymentType,
+                selectedMethodId: _paymentMethodId,
+                onChanged: (type, methodId) {
+                  setState(() {
+                    _paymentType = type;
+                    _paymentMethodId = methodId;
+                  });
+                },
               ),
               AppSpacing.gapLg,
               TammButton(
