@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/product_specs.dart';
@@ -68,10 +67,14 @@ class ProductDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref, Product p) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
           Stack(
             children: [
               Container(
@@ -272,29 +275,21 @@ class ProductDetailScreen extends ConsumerWidget {
                   ),
                 ],
                 AppSpacing.gapXl,
-                if (p.price != null)
-                  TammButton(
-                    label: p.requiresInstallation
-                        ? 'اشترِ وركّب / أضف للسلة'
-                        : AppStrings.addToCart,
-                    icon: Icons.shopping_cart_outlined,
-                    onPressed: () => _addToCart(context, ref, p),
-                  )
-                else
-                  TammButton(
-                    label: 'تواصل معنا للسعر',
-                    icon: Icons.chat_outlined,
-                    type: TammButtonType.secondary,
-                    onPressed: () => context.push('/customer/services'),
-                  ),
-                const SizedBox(height: 40),
                 _RelatedProducts(currentProductId: p.id, category: p.category),
                 AppSpacing.gapXl,
               ],
             ),
           ),
         ],
+        ),
       ),
+    ),
+    _BottomPurchaseBar(
+      product: p,
+      bottomPadding: bottomPadding,
+      onPressed: () => _addToCart(context, ref, p),
+    ),
+  ],
     );
   }
 
@@ -365,6 +360,108 @@ class ProductDetailScreen extends ConsumerWidget {
         );
       }
     }
+  }
+}
+
+class _BottomPurchaseBar extends StatelessWidget {
+  final Product product;
+  final double bottomPadding;
+  final VoidCallback onPressed;
+
+  const _BottomPurchaseBar({
+    required this.product,
+    required this.bottomPadding,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final p = product;
+    return Container(
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        border: Border(
+          top: BorderSide(color: context.colors.border),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: context.colors.textPrimary.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.only(
+        left: AppSpacing.pagePadding.left,
+        right: AppSpacing.pagePadding.right,
+        top: AppSpacing.sm,
+        bottom: AppSpacing.sm + bottomPadding,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: p.price != null
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (p.hasDiscount)
+                        Text(
+                          '${p.oldPrice!.toInt()} ر.س',
+                          style: AppTextStyles.caption(
+                            context.colors.textFaint,
+                          ).copyWith(
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            '${p.price!.toInt()}',
+                            style: AppTextStyles.price(
+                              context.colors.bluePrimary,
+                            ),
+                          ),
+                          AppSpacing.hGapXs,
+                          Text(
+                            'ر.س',
+                            style: AppTextStyles.caption(
+                              context.colors.textSecond,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                : Text(
+                    'السعر غير محدد',
+                    style: AppTextStyles.body(context.colors.textSecond),
+                  ),
+          ),
+          AppSpacing.hGapMd,
+          Expanded(
+            child: p.price != null
+                ? TammButton(
+                    label: p.requiresInstallation
+                        ? 'اشترِ وركّب 🛠'
+                        : 'أضف للسلة 🛒',
+                    icon: p.requiresInstallation
+                        ? Icons.build_outlined
+                        : Icons.shopping_cart_outlined,
+                    onPressed: onPressed,
+                  )
+                : TammButton(
+                    label: 'تواصل معنا للسعر',
+                    icon: Icons.chat_outlined,
+                    type: TammButtonType.secondary,
+                    onPressed: () => context.push('/customer/services'),
+                  ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
