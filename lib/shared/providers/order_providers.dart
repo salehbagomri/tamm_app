@@ -55,6 +55,16 @@ final orderDetailProvider = FutureProvider.autoDispose.family<Order, String>((
   return ref.read(orderRepositoryProvider).getOrder(id);
 });
 
+final paymentMethodByIdProvider = FutureProvider.autoDispose
+    .family<Map<String, dynamic>?, String>((ref, id) async {
+  if (id.isEmpty) return null;
+  return Supabase.instance.client
+      .from('payment_methods')
+      .select('id, name, type, account_number, account_name')
+      .eq('id', id)
+      .maybeSingle();
+});
+
 final cartCountProvider = Provider<int>((ref) {
   final cartAsync = ref.watch(cartProvider);
   return cartAsync.maybeWhen(

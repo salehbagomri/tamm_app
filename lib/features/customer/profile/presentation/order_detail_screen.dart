@@ -434,6 +434,10 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       ),
                     ],
                   ),
+                if (o.orderType != 'quote_request') ...[
+                  AppSpacing.gapMd,
+                  _PaymentSection(order: o),
+                ],
               ],
             ),
           ),
@@ -561,6 +565,139 @@ class _InfoRow extends StatelessWidget {
               style: AppTextStyles.body(context.colors.textPrimary),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaymentSection extends ConsumerWidget {
+  final Order order;
+  const _PaymentSection({required this.order});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isCash = order.paymentType == 'cash';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'طريقة الدفع',
+          style: AppTextStyles.cardTitle(context.colors.textPrimary),
+        ),
+        AppSpacing.gapSm,
+        Container(
+          width: double.infinity,
+          padding: AppSpacing.cardPaddingSm,
+          decoration: BoxDecoration(
+            color: context.colors.bgSurface,
+            borderRadius: AppSpacing.radius,
+            border: Border.all(color: context.colors.border),
+          ),
+          child: isCash
+              ? Row(
+                  children: [
+                    Icon(
+                      Icons.payments_outlined,
+                      color: context.colors.bluePrimary,
+                      size: AppSpacing.iconMd,
+                    ),
+                    AppSpacing.hGapSm2,
+                    Text(
+                      'كاش عند الاستلام',
+                      style: AppTextStyles.body(context.colors.textPrimary)
+                          .copyWith(fontWeight: AppTextStyles.semiBold),
+                    ),
+                  ],
+                )
+              : order.paymentMethodId != null
+                  ? _MethodDisplay(
+                      methodId: order.paymentMethodId!,
+                      type: order.paymentType,
+                    )
+                  : Row(
+                      children: [
+                        Icon(
+                          order.paymentType == 'bank'
+                              ? Icons.account_balance_outlined
+                              : Icons.account_balance_wallet_outlined,
+                          color: context.colors.bluePrimary,
+                          size: AppSpacing.iconMd,
+                        ),
+                        AppSpacing.hGapSm2,
+                        Text(
+                          order.paymentType == 'bank'
+                              ? 'تحويل بنكي'
+                              : 'محفظة إلكترونية',
+                          style: AppTextStyles.body(context.colors.textPrimary),
+                        ),
+                      ],
+                    ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MethodDisplay extends ConsumerWidget {
+  final String methodId;
+  final String type;
+  const _MethodDisplay({required this.methodId, required this.type});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final methodAsync = ref.watch(paymentMethodByIdProvider(methodId));
+    final fallbackLabel =
+        type == 'bank' ? 'تحويل بنكي' : 'محفظة إلكترونية';
+    final fallbackIcon = type == 'bank'
+        ? Icons.account_balance_outlined
+        : Icons.account_balance_wallet_outlined;
+
+    return methodAsync.when(
+      data: (method) => Row(
+        children: [
+          Icon(fallbackIcon, color: context.colors.bluePrimary, size: AppSpacing.iconMd),
+          AppSpacing.hGapSm2,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  method?['name'] as String? ?? fallbackLabel,
+                  style: AppTextStyles.body(context.colors.textPrimary)
+                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                ),
+                if (method?['account_number'] != null)
+                  Text(
+                    method!['account_number'] as String,
+                    style: AppTextStyles.caption(context.colors.textSecond),
+                  ),
+                if (method?['account_name'] != null)
+                  Text(
+                    method!['account_name'] as String,
+                    style: AppTextStyles.caption(context.colors.textSecond),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      loading: () => Row(
+        children: [
+          Icon(fallbackIcon, color: context.colors.bluePrimary, size: AppSpacing.iconMd),
+          AppSpacing.hGapSm2,
+          const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ],
+      ),
+      error: (_, __) => Row(
+        children: [
+          Icon(fallbackIcon, color: context.colors.bluePrimary, size: AppSpacing.iconMd),
+          AppSpacing.hGapSm2,
+          Text(fallbackLabel, style: AppTextStyles.body(context.colors.textPrimary)),
         ],
       ),
     );
