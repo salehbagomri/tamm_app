@@ -329,9 +329,12 @@ class ProductDetailScreen extends ConsumerWidget {
               children: [
                 const Icon(Icons.check_circle, color: Colors.white),
                 AppSpacing.hGapSm,
-                Text(
-                  'تم الإضافة: ${p.name}',
-                  style: AppTextStyles.body(context.colors.textPrimary),
+                Expanded(
+                  child: Text(
+                    'تم الإضافة: ${p.name}',
+                    style: AppTextStyles.body(context.colors.textPrimary),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
