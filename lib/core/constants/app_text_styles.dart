@@ -16,18 +16,18 @@ class AppTextStyles {
   AppTextStyles._();
 
   // ─── Font Sizes ──────────────────────────────────────
-  static const double fontSizeXs = 11; // ملاحظات دقيقة، شارات
-  static const double fontSizeSm = 12; // Caption, تواريخ
-  static const double fontSizeSm2 = 13; // نصوص ثانوية صغيرة
-  static const double fontSizeMd = 14; // نصوص ثانوية، labels
-  static const double fontSizeMd2 = 15; // نصوص عادية صغيرة
-  static const double fontSizeBase = 16; // النص الأساسي
-  static const double fontSizeLg = 18; // نصوص مميزة
-  static const double fontSizeXl = 20; // عناوين الأقسام
-  static const double fontSizeXl2 = 22; // عناوين فرعية
-  static const double fontSizeH3 = 24; // عناوين المستوى الثالث
-  static const double fontSizeH2 = 26; // عناوين الشاشات
-  static const double fontSizeH1 = 32; // عناوين رئيسية كبيرة
+  static const double fontSizeXs = 8.3; // ملاحظات دقيقة، شارات
+  static const double fontSizeSm = 9.0; // Caption, تواريخ
+  static const double fontSizeSm2 = 9.8; // نصوص ثانوية صغيرة
+  static const double fontSizeMd = 10.5; // نصوص ثانوية، labels
+  static const double fontSizeMd2 = 11.3; // نصوص عادية صغيرة
+  static const double fontSizeBase = 12.0; // النص الأساسي
+  static const double fontSizeLg = 13.5; // نصوص مميزة
+  static const double fontSizeXl = 15.0; // عناوين الأقسام
+  static const double fontSizeXl2 = 16.5; // عناوين فرعية
+  static const double fontSizeH3 = 18.0; // عناوين المستوى الثالث
+  static const double fontSizeH2 = 19.5; // عناوين الشاشات
+  static const double fontSizeH1 = 24.0; // عناوين رئيسية كبيرة
 
   // ─── Font Weights ────────────────────────────────────
   static const FontWeight regular = FontWeight.w400;
