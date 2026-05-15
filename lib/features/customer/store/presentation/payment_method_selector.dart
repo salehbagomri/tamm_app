@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -186,10 +187,10 @@ class _TypeTile extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// _MethodList
+// _MethodList — auto-collapses after selection
 // ---------------------------------------------------------------------------
 
-class _MethodList extends ConsumerWidget {
+class _MethodList extends ConsumerStatefulWidget {
   final String type;
   final String? selectedId;
   final void Function(String id) onSelect;
@@ -201,8 +202,29 @@ class _MethodList extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final methodsAsync = ref.watch(_paymentMethodsProvider(type));
+  ConsumerState<_MethodList> createState() => _MethodListState();
+}
+
+class _MethodListState extends ConsumerState<_MethodList> {
+  bool _expanded = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = widget.selectedId == null;
+  }
+
+  @override
+  void didUpdateWidget(_MethodList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.type != widget.type || widget.selectedId == null) {
+      _expanded = true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final methodsAsync = ref.watch(_paymentMethodsProvider(widget.type));
     return methodsAsync.when(
       data: (methods) {
         if (methods.isEmpty) {
@@ -219,6 +241,36 @@ class _MethodList extends ConsumerWidget {
             ),
           );
         }
+
+        final selectedMethod = widget.selectedId != null
+            ? methods.where((m) => m.id == widget.selectedId).firstOrNull
+            : null;
+
+        if (!_expanded && selectedMethod != null) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _MethodCard(
+                method: selectedMethod,
+                selected: true,
+                onTap: () {},
+              ),
+              TextButton.icon(
+                onPressed: () => setState(() => _expanded = true),
+                icon: Icon(
+                  Icons.swap_horiz,
+                  size: 16,
+                  color: context.colors.bluePrimary,
+                ),
+                label: Text(
+                  'تغيير',
+                  style: AppTextStyles.bodySmall(context.colors.bluePrimary),
+                ),
+              ),
+            ],
+          );
+        }
+
         return Column(
           children: methods
               .map(
@@ -226,8 +278,11 @@ class _MethodList extends ConsumerWidget {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: _MethodCard(
                     method: m,
-                    selected: m.id == selectedId,
-                    onTap: () => onSelect(m.id),
+                    selected: m.id == widget.selectedId,
+                    onTap: () {
+                      widget.onSelect(m.id);
+                      setState(() => _expanded = false);
+                    },
                   ),
                 ),
               )
@@ -250,7 +305,7 @@ class _MethodList extends ConsumerWidget {
 // _MethodCard
 // ---------------------------------------------------------------------------
 
-class _MethodCard extends StatelessWidget {
+class _MethodCard extends StatefulWidget {
   final PaymentMethod method;
   final bool selected;
   final VoidCallback onTap;
@@ -262,20 +317,38 @@ class _MethodCard extends StatelessWidget {
   });
 
   @override
+  State<_MethodCard> createState() => _MethodCardState();
+}
+
+class _MethodCardState extends State<_MethodCard> {
+  bool _copied = false;
+
+  Future<void> _copyAccountNumber(String accountNumber) async {
+    await Clipboard.setData(ClipboardData(text: accountNumber));
+    if (!mounted) return;
+    setState(() => _copied = true);
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) setState(() => _copied = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final m = widget.method;
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
+        duration: const Duration(milliseconds: 200),
         padding: AppSpacing.cardPaddingSm,
         decoration: BoxDecoration(
-          color: selected
-              ? context.colors.bluePrimary.withValues(alpha: 0.08)
+          color: widget.selected
+              ? context.colors.bluePrimary.withValues(alpha: 0.07)
               : context.colors.bgSurface,
           borderRadius: AppSpacing.radius,
           border: Border.all(
-            color: selected ? context.colors.bluePrimary : context.colors.border,
-            width: selected ? 2 : 1,
+            color: widget.selected
+                ? context.colors.bluePrimary
+                : context.colors.border,
+            width: widget.selected ? 2 : 1,
           ),
         ),
         child: Row(
@@ -288,7 +361,7 @@ class _MethodCard extends StatelessWidget {
                 borderRadius: AppSpacing.radiusSm,
               ),
               child: Icon(
-                method.type == 'bank'
+                m.type == 'bank'
                     ? Icons.account_balance_outlined
                     : Icons.account_balance_wallet_outlined,
                 size: AppSpacing.iconSm,
@@ -301,24 +374,50 @@ class _MethodCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    method.name,
+                    m.name,
                     style: AppTextStyles.body(context.colors.textPrimary)
                         .copyWith(fontWeight: AppTextStyles.semiBold),
                   ),
-                  if (method.accountNumber != null)
-                    Text(
-                      method.accountNumber!,
-                      style: AppTextStyles.caption(context.colors.textSecond),
+                  if (m.accountNumber != null)
+                    GestureDetector(
+                      onTap: widget.selected
+                          ? () => _copyAccountNumber(m.accountNumber!)
+                          : null,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            m.accountNumber!,
+                            style: AppTextStyles.caption(
+                              context.colors.textSecond,
+                            ),
+                          ),
+                          if (widget.selected) ...[
+                            AppSpacing.hGapXs,
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              child: Icon(
+                                _copied ? Icons.check : Icons.copy,
+                                key: ValueKey(_copied),
+                                size: 14,
+                                color: _copied
+                                    ? context.colors.success
+                                    : context.colors.textFaint,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
-                  if (method.accountName != null)
+                  if (m.accountName != null)
                     Text(
-                      method.accountName!,
+                      m.accountName!,
                       style: AppTextStyles.caption(context.colors.textSecond),
                     ),
                 ],
               ),
             ),
-            if (selected)
+            if (widget.selected)
               Icon(
                 Icons.check_circle,
                 color: context.colors.bluePrimary,
