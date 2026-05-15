@@ -252,7 +252,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                               )
                             : Icon(
                                 _locationPicked
-                                    ? Icons.check_circle
+                                    ? Icons.check_circle_outline
                                     : Icons.my_location,
                                 color: Colors.white,
                               ),
@@ -328,7 +328,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       });
                     },
                     icon: Icon(
-                      Icons.edit,
+                      Icons.edit_outlined,
                       size: 16,
                       color: context.colors.bluePrimary,
                     ),
@@ -447,7 +447,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                   Row(
                                     children: [
                                       Icon(
-                                        Icons.handyman,
+                                        Icons.handyman_outlined,
                                         size: 14,
                                         color: context.colors.bluePrimary,
                                       ),

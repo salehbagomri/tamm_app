@@ -226,7 +226,7 @@ class _QuoteRequestCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    Icons.person,
+                    Icons.person_outlined,
                     size: 16,
                     color: context.colors.bluePrimary,
                   ),
@@ -245,7 +245,7 @@ class _QuoteRequestCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    Icons.location_on,
+                    Icons.location_on_outlined,
                     size: 16,
                     color: context.colors.textSecond,
                   ),

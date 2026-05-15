@@ -123,7 +123,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                             context.colors.textSecond,
                           ),
                           prefixIcon: Icon(
-                            Icons.search,
+                            Icons.search_outlined,
                             color: context.colors.textSecond,
                           ),
                           filled: true,
@@ -367,7 +367,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Icon(
-                                                              Icons.image,
+                                                              Icons.image_outlined,
                                                               color: context
                                                                   .colors
                                                                   .textFaint,
@@ -377,7 +377,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                 )
                                               : Center(
                                                   child: Icon(
-                                                    Icons.image,
+                                                    Icons.image_outlined,
                                                     color: context
                                                         .colors
                                                         .textFaint,
@@ -519,7 +519,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                                                           ),
                                                     ),
                                                     child: Icon(
-                                                      Icons.add_shopping_cart,
+                                                      Icons.add_shopping_cart_outlined,
                                                       size: 20,
                                                       color: context
                                                           .colors
@@ -588,7 +588,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.check_circle, color: Colors.white),
+                const Icon(Icons.check_circle_outline, color: Colors.white),
                 AppSpacing.hGapSm,
                 Expanded(
                   child: Text(

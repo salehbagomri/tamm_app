@@ -106,7 +106,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ...suggestions.map(
               (p) => ListTile(
                 leading: Icon(
-                  Icons.trending_up,
+                  Icons.trending_up_outlined,
                   color: context.colors.textSecond,
                 ),
                 title: Text(
@@ -228,10 +228,10 @@ class _ProductSearchResultItem extends StatelessWidget {
                     borderRadius: AppSpacing.radiusSm,
                   ),
                   errorWidget: (context, url, err) =>
-                      Icon(Icons.image, color: context.colors.textFaint),
+                      Icon(Icons.image_outlined, color: context.colors.textFaint),
                 ),
               )
-            : Icon(Icons.image, color: context.colors.textFaint),
+            : Icon(Icons.image_outlined, color: context.colors.textFaint),
       ),
       title: Text(
         product.name,
@@ -269,7 +269,7 @@ class _ServiceSearchResultItem extends StatelessWidget {
           ),
           shape: BoxShape.circle,
         ),
-        child: Icon(Icons.build_circle, color: context.colors.blueSky),
+        child: Icon(Icons.build_circle_outlined, color: context.colors.blueSky),
       ),
       title: Text(
         service.name,

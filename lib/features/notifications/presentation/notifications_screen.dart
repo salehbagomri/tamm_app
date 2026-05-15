@@ -1,4 +1,4 @@
-﻿import 'package:tamm_app/core/constants/app_text_styles.dart';
+import 'package:tamm_app/core/constants/app_text_styles.dart';
 import 'package:tamm_app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -208,13 +208,13 @@ class _NotificationCard extends ConsumerWidget {
       case 'order_confirmed':
         return Icons.check_circle_outline;
       case 'assigned':
-        return Icons.engineering;
+        return Icons.engineering_outlined;
       case 'on_the_way':
         return Icons.directions_car_outlined;
       case 'in_progress':
         return Icons.build_outlined;
       case 'completed':
-        return Icons.task_alt;
+        return Icons.task_alt_rounded;
       case 'quote_sent':
         return Icons.request_quote_outlined;
       case 'quote_responded':

@@ -180,7 +180,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                       ),
                     ),
                     Icon(
-                      Promotion.iconMap[_iconName] ?? Icons.campaign,
+                      Promotion.iconMap[_iconName] ?? Icons.campaign_outlined,
                       color: Colors.white,
                       size: 32,
                     ),
@@ -300,7 +300,7 @@ class _PromotionFormScreenState extends ConsumerState<PromotionFormScreen> {
                     if (!mounted) return;
                     if (context.mounted) context.pop();
                   },
-                  icon: Icon(Icons.delete, color: context.colors.error),
+                  icon: Icon(Icons.delete_outlined, color: context.colors.error),
                   label: Text(
                     'حذف هذا العرض',
                     style: TextStyle(color: context.colors.error),

@@ -137,16 +137,16 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         ],
                       ),
                       Divider(height: 24, color: context.colors.border),
-                      _InfoRow(icon: Icons.location_on, text: o.address),
+                      _InfoRow(icon: Icons.location_on_outlined, text: o.address),
                       if (o.preferredDate != null)
                         _InfoRow(
-                          icon: Icons.calendar_today,
+                          icon: Icons.calendar_today_outlined,
                           text:
                               '${o.preferredDate!.day}/${o.preferredDate!.month}/${o.preferredDate!.year}',
                         ),
                       if (o.scheduledPeriod != null)
                         _InfoRow(
-                          icon: Icons.access_time,
+                          icon: Icons.access_time_outlined,
                           text:
                               '${o.scheduledPeriod!} ${o.scheduledHour ?? ''}',
                         ),
@@ -154,13 +154,13 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         _InfoRow(icon: Icons.note, text: o.notes!),
                       if (o.technicianName != null)
                         _InfoRow(
-                          icon: Icons.engineering,
+                          icon: Icons.engineering_outlined,
                           text: 'الفني: ${o.technicianName!}',
                         ),
                       if (o.technicianNotes != null &&
                           o.technicianNotes!.isNotEmpty)
                         _InfoRow(
-                          icon: Icons.fact_check,
+                          icon: Icons.fact_check_outlined,
                           text: 'تقرير الفني: ${o.technicianNotes!}',
                         ),
                     ],
@@ -191,7 +191,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       child: Column(
                         children: [
                           Icon(
-                            Icons.local_offer,
+                            Icons.local_offer_outlined,
                             color: context.colors.bluePrimary,
                             size: 36,
                           ),
@@ -212,7 +212,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                           AppSpacing.gapMd,
                           TammButton(
                             label: 'عرض التفاصيل والرد',
-                            icon: Icons.reply,
+                            icon: Icons.reply_outlined,
                             onPressed: () => context.push(
                               '/customer/quote-response/${o.id}',
                             ),
@@ -277,7 +277,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.check_circle,
+                            Icons.check_circle_outline,
                             color: context.colors.success,
                             size: 32,
                           ),

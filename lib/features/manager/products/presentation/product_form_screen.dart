@@ -1,4 +1,4 @@
-﻿import 'dart:typed_data';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -286,7 +286,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.check_circle, color: context.colors.success),
+                      Icon(Icons.check_circle_outline, color: context.colors.success),
                       AppSpacing.hGapSm,
                       Expanded(
                         child: Column(

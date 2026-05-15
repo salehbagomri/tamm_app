@@ -51,18 +51,18 @@ class Promotion {
   }
 
   static const Map<String, IconData> iconMap = {
-    'handyman': Icons.handyman,
-    'local_offer': Icons.local_offer,
-    'solar_power': Icons.solar_power,
-    'build_circle': Icons.build_circle,
-    'ac_unit': Icons.ac_unit,
-    'shopping_cart': Icons.shopping_cart,
-    'flash_on': Icons.flash_on,
-    'star': Icons.star,
-    'campaign': Icons.campaign,
+    'handyman': Icons.handyman_outlined,
+    'local_offer': Icons.local_offer_outlined,
+    'solar_power': Icons.solar_power_outlined,
+    'build_circle': Icons.build_circle_outlined,
+    'ac_unit': Icons.ac_unit_outlined,
+    'shopping_cart': Icons.shopping_cart_outlined,
+    'flash_on': Icons.flash_on_outlined,
+    'star': Icons.star_outline,
+    'campaign': Icons.campaign_outlined,
   };
 
-  IconData get icon => iconMap[iconName] ?? Icons.campaign;
+  IconData get icon => iconMap[iconName] ?? Icons.campaign_outlined;
 
   List<Color> get gradientColors {
     return [

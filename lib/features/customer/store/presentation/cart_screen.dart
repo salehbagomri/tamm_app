@@ -115,12 +115,12 @@ class CartScreen extends ConsumerWidget {
                                             borderRadius: AppSpacing.radiusSm,
                                           ),
                                       errorWidget: (context, url, err) => Icon(
-                                        Icons.image,
+                                        Icons.image_outlined,
                                         color: context.colors.textFaint,
                                       ),
                                     )
                                   : Icon(
-                                      Icons.image,
+                                      Icons.image_outlined,
                                       color: context.colors.textFaint,
                                     ),
                             ),
@@ -168,7 +168,7 @@ class CartScreen extends ConsumerWidget {
                                       child: Row(
                                         children: [
                                           Icon(
-                                            Icons.handyman,
+                                            Icons.handyman_outlined,
                                             size: 14,
                                             color: context.colors.bluePrimary,
                                           ),

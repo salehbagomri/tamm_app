@@ -108,7 +108,7 @@ class _ManagerQuoteDetailScreenState
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.photo_library,
+                  Icons.photo_library_outlined,
                   color: context.colors.bluePrimary,
                 ),
               ),
@@ -125,7 +125,7 @@ class _ManagerQuoteDetailScreenState
                   color: context.colors.success.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.camera_alt, color: context.colors.success),
+                child: Icon(Icons.camera_alt_outlined, color: context.colors.success),
               ),
               title: Text(
                 'التقط صورة',
@@ -297,7 +297,7 @@ class _ManagerQuoteDetailScreenState
           builder: (dialogContext) => AlertDialog(
             title: Row(
               children: [
-                Icon(Icons.check_circle, color: context.colors.success),
+                Icon(Icons.check_circle_outline, color: context.colors.success),
                 AppSpacing.hGapSm,
                 const Text('تم الإرسال بنجاح'),
               ],
@@ -401,7 +401,7 @@ class _ManagerQuoteDetailScreenState
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            Icons.person,
+                            Icons.person_outlined,
                             color: context.colors.bluePrimary,
                           ),
                         ),
@@ -429,7 +429,7 @@ class _ManagerQuoteDetailScreenState
                         if (order.customerProfile!['phone'] != null)
                           IconButton(
                             icon: Icon(
-                              Icons.phone,
+                              Icons.phone_outlined,
                               color: context.colors.bluePrimary,
                             ),
                             style: IconButton.styleFrom(
@@ -489,7 +489,7 @@ class _ManagerQuoteDetailScreenState
                       Row(
                         children: [
                           Icon(
-                            Icons.location_on,
+                            Icons.location_on_outlined,
                             size: 20,
                             color: context.colors.bluePrimary,
                           ),
@@ -535,7 +535,7 @@ class _ManagerQuoteDetailScreenState
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.feedback, color: context.colors.error),
+                              Icon(Icons.feedback_outlined, color: context.colors.error),
                               AppSpacing.hGapSm,
                               Text(
                                 'سبب الرفض من العميل:',
@@ -603,7 +603,7 @@ class _ManagerQuoteDetailScreenState
                           Icon(
                             _attachedFileName?.endsWith('.pdf') == true
                                 ? Icons.picture_as_pdf
-                                : Icons.image,
+                                : Icons.image_outlined,
                             color: context.colors.success,
                           ),
                           AppSpacing.hGapSm2,
@@ -764,7 +764,7 @@ class _ManagerQuoteDetailScreenState
                     child: Row(
                       children: [
                         Icon(
-                          Icons.check_circle,
+                          Icons.check_circle_outline,
                           color: context.colors.success,
                           size: 32,
                         ),
@@ -851,7 +851,7 @@ class _ManagerQuoteDetailScreenState
               children: [
                 TammButton(
                   label: 'تعيين فني للتنفيذ',
-                  icon: Icons.engineering,
+                  icon: Icons.engineering_outlined,
                   onPressed: () => _showAssignDialog(order),
                 ),
                 const SizedBox(height: 10),

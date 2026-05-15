@@ -39,7 +39,7 @@ class AppointmentDisplayCard extends StatelessWidget {
               borderRadius: AppSpacing.radiusSm,
             ),
             child: Icon(
-              Icons.calendar_today,
+              Icons.calendar_today_outlined,
               color: context.colors.bluePrimary,
               size: 24,
             ),

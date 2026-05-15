@@ -105,7 +105,7 @@ class _ThemeSelectionSheet extends ConsumerWidget {
               'الوضع الفاتح',
               ThemeMode.light,
               themeMode,
-              Icons.light_mode,
+              Icons.light_mode_outlined,
             ),
             _buildOption(
               context,
@@ -113,7 +113,7 @@ class _ThemeSelectionSheet extends ConsumerWidget {
               'الوضع الداكن',
               ThemeMode.dark,
               themeMode,
-              Icons.dark_mode,
+              Icons.dark_mode_outlined,
             ),
           ],
         ),
@@ -148,7 +148,7 @@ class _ThemeSelectionSheet extends ConsumerWidget {
         ),
       ),
       trailing: isSelected
-          ? Icon(Icons.check_circle, color: context.colors.bluePrimary)
+          ? Icon(Icons.check_circle_outline, color: context.colors.bluePrimary)
           : null,
       onTap: () {
         ref.read(themeModeProvider.notifier).setTheme(mode);

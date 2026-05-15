@@ -105,10 +105,10 @@ class RecentOrders extends ConsumerWidget {
     final isProduct =
         order.items.isNotEmpty && order.items.first.itemType == 'product';
     final icon = isProduct
-        ? Icons.shopping_bag
+        ? Icons.shopping_bag_outlined
         : order.orderType == 'quote_request'
-        ? Icons.request_quote
-        : Icons.build_circle;
+        ? Icons.request_quote_outlined
+        : Icons.build_circle_outlined;
     final title = _getOrderTypeLabel(order.orderType, isProduct);
 
     final dateFormat = DateFormat('yyyy/MM/dd');

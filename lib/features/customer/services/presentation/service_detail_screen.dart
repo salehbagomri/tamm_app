@@ -138,7 +138,7 @@ class ServiceDetailScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Icon(
-                                    Icons.check_circle,
+                                    Icons.check_circle_outline,
                                     size: 20,
                                     color: context.colors.success,
                                   ),
@@ -199,8 +199,8 @@ class ServiceDetailScreen extends ConsumerWidget {
   }
 
   IconData _getIconForCategory(String category) {
-    if (category.contains('ac_')) return Icons.ac_unit;
-    if (category.contains('solar')) return Icons.solar_power;
-    return Icons.miscellaneous_services;
+    if (category.contains('ac_')) return Icons.ac_unit_outlined;
+    if (category.contains('solar')) return Icons.solar_power_outlined;
+    return Icons.miscellaneous_services_outlined;
   }
 }

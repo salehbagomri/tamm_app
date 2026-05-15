@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -39,7 +39,7 @@ class BuyInstallBanner extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.handyman,
+                        Icons.handyman_outlined,
                         color: context.colors.blueSky,
                         size: AppSpacing.iconSm,
                       ),

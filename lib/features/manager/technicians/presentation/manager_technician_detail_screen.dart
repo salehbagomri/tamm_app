@@ -58,7 +58,7 @@ class ManagerTechnicianDetailScreen extends ConsumerWidget {
                   AppSpacing.gapMd,
                   if (assignments.isEmpty)
                     const TammEmptyState(
-                      icon: Icons.assignment,
+                      icon: Icons.assignment_outlined,
                       message: 'لا توجد مهام مسندة لهذا الفني حتى الآن.',
                     )
                   else

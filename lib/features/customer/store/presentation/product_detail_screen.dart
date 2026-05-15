@@ -91,14 +91,14 @@ class ProductDetailScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(0),
                         ),
                         errorWidget: (context, url, error) => Icon(
-                          Icons.image,
+                          Icons.image_outlined,
                           size: 80,
                           color: context.colors.textFaint,
                         ),
                       )
                     : Center(
                         child: Icon(
-                          Icons.image,
+                          Icons.image_outlined,
                           size: 80,
                           color: context.colors.textFaint,
                         ),
@@ -322,7 +322,7 @@ class ProductDetailScreen extends ConsumerWidget {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.check_circle, color: Colors.white),
+                const Icon(Icons.check_circle_outline, color: Colors.white),
                 AppSpacing.hGapSm,
                 Expanded(
                   child: Text(
@@ -538,14 +538,14 @@ class _RelatedProducts extends ConsumerWidget {
                                             ),
                                         errorWidget: (context, url, err) =>
                                             Icon(
-                                              Icons.image,
+                                              Icons.image_outlined,
                                               color: context.colors.textFaint,
                                             ),
                                       ),
                                     )
                                   : Center(
                                       child: Icon(
-                                        Icons.image,
+                                        Icons.image_outlined,
                                         color: context.colors.textFaint,
                                       ),
                                     ),

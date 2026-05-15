@@ -42,13 +42,13 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   }
 
   IconData _getIcon(String? name) => switch (name) {
-    'ac_unit' => Icons.ac_unit,
-    'build' => Icons.build,
-    'handyman' => Icons.handyman,
-    'cleaning_services' => Icons.cleaning_services,
-    'solar_power' => Icons.solar_power,
-    'support_agent' => Icons.support_agent,
-    _ => Icons.miscellaneous_services,
+    'ac_unit' => Icons.ac_unit_outlined,
+    'build' => Icons.build_outlined,
+    'handyman' => Icons.handyman_outlined,
+    'cleaning_services' => Icons.cleaning_services_outlined,
+    'solar_power' => Icons.solar_power_outlined,
+    'support_agent' => Icons.support_agent_outlined,
+    _ => Icons.miscellaneous_services_outlined,
   };
 
   @override
@@ -113,7 +113,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
                     if (filtered.isEmpty) {
                       return const TammEmptyState(
-                        icon: Icons.miscellaneous_services,
+                        icon: Icons.miscellaneous_services_outlined,
                         message: 'لا توجد خدمات في هذا التصنيف حالياً',
                       );
                     }

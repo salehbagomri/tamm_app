@@ -419,7 +419,7 @@ class _MethodCardState extends State<_MethodCard> {
             ),
             if (widget.selected)
               Icon(
-                Icons.check_circle,
+                Icons.check_circle_outline,
                 color: context.colors.bluePrimary,
                 size: AppSpacing.iconMd,
               ),

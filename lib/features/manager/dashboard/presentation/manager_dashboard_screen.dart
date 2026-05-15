@@ -1,4 +1,4 @@
-﻿import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -115,7 +115,7 @@ class _ManagerDashboardScreenState
                                   label: 'معلق',
                                   value: '${stats['pending'] ?? 0}',
                                   color: context.colors.warning,
-                                  icon: Icons.pending_actions,
+                                  icon: Icons.pending_actions_outlined,
                                 ),
                               ),
                               AppSpacing.hGapSm2,
@@ -124,7 +124,7 @@ class _ManagerDashboardScreenState
                                   label: 'عروض تحتاج إجراء',
                                   value: '${stats['quotes_need_action'] ?? 0}',
                                   color: context.colors.error,
-                                  icon: Icons.request_quote,
+                                  icon: Icons.request_quote_outlined,
                                 ),
                               ),
                             ],
@@ -137,7 +137,7 @@ class _ManagerDashboardScreenState
                                   label: 'جاري التنفيذ',
                                   value: '${stats['in_progress'] ?? 0}',
                                   color: context.colors.blueLight,
-                                  icon: Icons.engineering,
+                                  icon: Icons.engineering_outlined,
                                 ),
                               ),
                               AppSpacing.hGapSm2,
@@ -146,7 +146,7 @@ class _ManagerDashboardScreenState
                                   label: 'مكتمل اليوم',
                                   value: '${stats['completed'] ?? 0}',
                                   color: context.colors.success,
-                                  icon: Icons.check_circle,
+                                  icon: Icons.check_circle_outline,
                                 ),
                               ),
                             ],

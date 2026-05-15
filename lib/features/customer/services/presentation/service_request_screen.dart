@@ -233,10 +233,10 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                         ),
                         child: Icon(
                           service.category.contains('ac_')
-                              ? Icons.ac_unit
+                              ? Icons.ac_unit_outlined
                               : service.category.contains('solar')
-                              ? Icons.solar_power
-                              : Icons.miscellaneous_services,
+                              ? Icons.solar_power_outlined
+                              : Icons.miscellaneous_services_outlined,
                           color: context.colors.bluePrimary,
                         ),
                       ),
@@ -306,7 +306,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                                 )
                               : Icon(
                                   _locationPicked
-                                      ? Icons.check_circle
+                                      ? Icons.check_circle_outline
                                       : Icons.my_location,
                                   color: Colors.white,
                                 ),
@@ -378,7 +378,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                         _selectedPeriod = null;
                         _selectedHour = null;
                       }),
-                      icon: const Icon(Icons.edit, size: 16),
+                      icon: const Icon(Icons.edit_outlined, size: 16),
                       label: Text(
                         'تعديل الموعد',
                         style: AppTextStyles.body(context.colors.textPrimary),

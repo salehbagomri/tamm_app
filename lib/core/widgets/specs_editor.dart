@@ -131,7 +131,7 @@ class _SpecsEditorState extends State<SpecsEditor> {
         children: [
           Row(
             children: [
-              Icon(Icons.list_alt, color: context.colors.bluePrimary),
+              Icon(Icons.list_alt_outlined, color: context.colors.bluePrimary),
               const SizedBox(width: 8),
               Text(
                 'المواصفات التقنية',

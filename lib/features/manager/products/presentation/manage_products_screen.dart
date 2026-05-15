@@ -42,7 +42,7 @@ class ManageProductsScreen extends ConsumerWidget {
                   TextButton.icon(
                     onPressed: () => context.push('/manager/promotions'),
                     icon: Icon(
-                      Icons.campaign,
+                      Icons.campaign_outlined,
                       size: 18,
                       color: context.colors.blueSky,
                     ),
@@ -59,7 +59,7 @@ class ManageProductsScreen extends ConsumerWidget {
                   data: (products) {
                     if (products.isEmpty) {
                       return const TammEmptyState(
-                        icon: Icons.inventory,
+                        icon: Icons.inventory_outlined,
                         message: 'لا توجد منتجات',
                       );
                     }
@@ -91,7 +91,7 @@ class ManageProductsScreen extends ConsumerWidget {
                                         ),
                                       )
                                     : Icon(
-                                        Icons.image,
+                                        Icons.image_outlined,
                                         color: context.colors.textFaint,
                                       ),
                               ),

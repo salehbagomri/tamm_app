@@ -48,7 +48,7 @@ class ServiceSummaryCard extends StatelessWidget {
           ),
           AppSpacing.gapSm2,
           _SummaryRow(
-            icon: Icons.miscellaneous_services,
+            icon: Icons.miscellaneous_services_outlined,
             title: service.name,
             value: service.basePrice != null
                 ? '${service.basePrice!.toInt()} ر.س'
@@ -57,13 +57,13 @@ class ServiceSummaryCard extends StatelessWidget {
           ),
           AppSpacing.gapSm,
           _SummaryRow(
-            icon: Icons.calendar_today,
+            icon: Icons.calendar_today_outlined,
             title: 'الموعد',
             value: '$period ${hour ?? ''}',
           ),
           AppSpacing.gapSm,
           _SummaryRow(
-            icon: Icons.location_on,
+            icon: Icons.location_on_outlined,
             title: 'الموقع',
             value: locationText.isEmpty ? 'لم يحدد بعد' : locationText,
           ),

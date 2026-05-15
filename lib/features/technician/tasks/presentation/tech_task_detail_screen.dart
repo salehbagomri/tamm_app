@@ -248,7 +248,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     contentPadding: EdgeInsets.zero,
                     leading: CircleAvatar(
                       backgroundColor: context.colors.bgPrimary,
-                      child: Icon(Icons.person, color: context.colors.blueDark),
+                      child: Icon(Icons.person_outlined, color: context.colors.blueDark),
                     ),
                     title: const Text(
                       'العميل',
@@ -280,7 +280,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                       ),
                     ),
                     trailing: IconButton(
-                      icon: Icon(Icons.call, color: context.colors.success),
+                      icon: Icon(Icons.call_outlined, color: context.colors.success),
                       onPressed: () => _makePhoneCall(customerPhone),
                     ),
                   ),
@@ -289,7 +289,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     leading: CircleAvatar(
                       backgroundColor: context.colors.bgPrimary,
                       child: Icon(
-                        Icons.location_on,
+                        Icons.location_on_outlined,
                         color: context.colors.blueDark,
                       ),
                     ),
@@ -329,7 +329,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     ),
                     trailing: IconButton(
                       icon: Icon(
-                        hasCoordinates ? Icons.navigation : Icons.map,
+                        hasCoordinates ? Icons.navigation : Icons.map_outlined,
                         color: hasCoordinates
                             ? context.colors.success
                             : context.colors.bluePrimary,

@@ -212,7 +212,7 @@ class InAppNotificationBanner extends ConsumerWidget {
       case 'in_progress':
         return Icons.build_outlined;
       case 'completed':
-        return Icons.task_alt;
+        return Icons.task_alt_rounded;
       case 'quote_sent':
         return Icons.request_quote_outlined;
       case 'quote_responded':

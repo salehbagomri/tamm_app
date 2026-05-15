@@ -110,7 +110,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.search, color: context.colors.textSecond),
+                        Icon(Icons.search_outlined, color: context.colors.textSecond),
                         AppSpacing.hGapSm,
                         Text(
                           'ابحث عن منتجات، مكيفات، ألواح...',
@@ -136,7 +136,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _QuickServiceCard(
-                        icon: Icons.ac_unit,
+                        icon: Icons.ac_unit_outlined,
                         label: 'تركيب',
                         onTap: () => context.push(
                           '/customer/services?category=ac_install',
@@ -146,7 +146,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     AppSpacing.hGapSm2,
                     Expanded(
                       child: _QuickServiceCard(
-                        icon: Icons.build,
+                        icon: Icons.build_outlined,
                         label: 'صيانة',
                         onTap: () => context.push(
                           '/customer/services?category=ac_repair',
@@ -156,7 +156,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                     AppSpacing.hGapSm2,
                     Expanded(
                       child: _QuickServiceCard(
-                        icon: Icons.support_agent,
+                        icon: Icons.support_agent_outlined,
                         label: 'استشارة',
                         onTap: () => context.push(
                           '/customer/services?category=consultation',
@@ -292,7 +292,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                                           borderRadius: AppSpacing.radiusSm,
                                         ),
                                     errorWidget: (context, url, err) => Icon(
-                                      Icons.image,
+                                      Icons.image_outlined,
                                       color: context.colors.textFaint,
                                       size: 40,
                                     ),
@@ -300,7 +300,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                                 )
                               : Center(
                                   child: Icon(
-                                    Icons.image,
+                                    Icons.image_outlined,
                                     color: context.colors.textFaint,
                                     size: 40,
                                   ),

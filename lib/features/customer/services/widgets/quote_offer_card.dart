@@ -45,7 +45,7 @@ class QuoteOfferCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.local_offer,
+                  Icons.local_offer_outlined,
                   color: context.colors.bluePrimary,
                 ),
               ),

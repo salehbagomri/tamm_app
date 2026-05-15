@@ -100,19 +100,19 @@ class CustomerProfileScreen extends ConsumerWidget {
                   TammButton(
                     label: 'تعديل الحساب',
                     type: TammButtonType.secondary,
-                    icon: Icons.edit,
+                    icon: Icons.edit_outlined,
                     width: 160,
                     onPressed: () => context.push('/profile/edit'),
                   ),
                   AppSpacing.gapXl,
                   _ProfileItem(
-                    icon: Icons.receipt_long,
+                    icon: Icons.receipt_long_outlined,
                     label: AppStrings.myOrders,
                     onTap: () => context.push('/customer/orders'),
                   ),
                   const SizedBox(height: 10),
                   _ProfileItem(
-                    icon: Icons.devices,
+                    icon: Icons.devices_outlined,
                     label: AppStrings.myDevices,
                     onTap: () => context.push('/customer/devices'),
                   ),
@@ -128,7 +128,7 @@ class CustomerProfileScreen extends ConsumerWidget {
                   TammButton(
                     label: 'حذف الحساب',
                     type: TammButtonType.danger,
-                    icon: Icons.delete_forever,
+                    icon: Icons.delete_forever_outlined,
                     onPressed: () => _confirmDelete(context, ref),
                   ),
                   AppSpacing.gapMd,

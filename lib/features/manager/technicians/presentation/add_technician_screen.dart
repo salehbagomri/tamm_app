@@ -131,7 +131,7 @@ class _AddTechnicianScreenState extends ConsumerState<AddTechnicianScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Icon(Icons.search, color: Colors.white),
+                            : const Icon(Icons.search_outlined, color: Colors.white),
                       ),
                     ),
                   ),

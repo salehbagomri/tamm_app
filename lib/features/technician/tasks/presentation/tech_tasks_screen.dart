@@ -73,7 +73,7 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                   data: (tasks) {
                     if (tasks.isEmpty) {
                       return const TammEmptyState(
-                        icon: Icons.task_alt,
+                        icon: Icons.task_alt_rounded,
                         message: 'لا توجد مهام حالياً',
                       );
                     }

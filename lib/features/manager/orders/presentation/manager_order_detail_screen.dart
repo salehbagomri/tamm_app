@@ -212,7 +212,7 @@ class _ManagerOrderDetailScreenState
               if (o.status == 'confirmed') ...[
                 TammButton(
                   label: 'تعيين فني',
-                  icon: Icons.engineering,
+                  icon: Icons.engineering_outlined,
                   onPressed: _showAssignDialog,
                 ),
                 AppSpacing.gapSm,

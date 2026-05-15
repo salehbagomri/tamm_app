@@ -129,7 +129,7 @@ class _TammSidebar extends StatelessWidget {
                           height: 36,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Icon(
-                            Icons.ac_unit,
+                            Icons.ac_unit_outlined,
                             color: context.colors.bluePrimary,
                             size: 28,
                           ),
@@ -153,7 +153,7 @@ class _TammSidebar extends StatelessWidget {
                       height: 36,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Icon(
-                        Icons.ac_unit,
+                        Icons.ac_unit_outlined,
                         color: context.colors.bluePrimary,
                         size: 28,
                       ),

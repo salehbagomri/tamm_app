@@ -148,7 +148,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
           builder: (dialogContext) => AlertDialog(
             title: Row(
               children: [
-                Icon(Icons.check_circle, color: context.colors.success),
+                Icon(Icons.check_circle_outline, color: context.colors.success),
                 AppSpacing.hGapSm,
                 const Text('تم الإرسال بنجاح'),
               ],
@@ -224,10 +224,10 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                             ),
                             child: Icon(
                               service.category.contains('ac_')
-                                  ? Icons.ac_unit
+                                  ? Icons.ac_unit_outlined
                                   : service.category.contains('solar')
-                                  ? Icons.solar_power
-                                  : Icons.miscellaneous_services,
+                                  ? Icons.solar_power_outlined
+                                  : Icons.miscellaneous_services_outlined,
                               color: context.colors.bluePrimary,
                             ),
                           ),
@@ -314,7 +314,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                     )
                                   : Icon(
                                       _locationPicked
-                                          ? Icons.check_circle
+                                          ? Icons.check_circle_outline
                                           : Icons.my_location,
                                       color: Colors.white,
                                     ),

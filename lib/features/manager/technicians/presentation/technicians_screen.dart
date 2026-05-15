@@ -64,7 +64,7 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
                   data: (techs) {
                     if (techs.isEmpty) {
                       return const TammEmptyState(
-                        icon: Icons.engineering,
+                        icon: Icons.engineering_outlined,
                         message: 'لا يوجد فنيون',
                       );
                     }
@@ -169,7 +169,7 @@ class _TechniciansScreenState extends ConsumerState<TechniciansScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: context.colors.bluePrimary,
-        icon: const Icon(Icons.person_add, color: Colors.white),
+        icon: const Icon(Icons.person_add_outlined, color: Colors.white),
         label: Text(
           'إضافة فني',
           style: AppTextStyles.body(context.colors.textPrimary),

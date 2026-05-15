@@ -48,7 +48,7 @@ class ManagePromotionsScreen extends ConsumerWidget {
                   data: (promos) {
                     if (promos.isEmpty) {
                       return const TammEmptyState(
-                        icon: Icons.campaign,
+                        icon: Icons.campaign_outlined,
                         message: 'لا توجد عروض مضافة',
                       );
                     }

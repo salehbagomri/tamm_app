@@ -195,7 +195,7 @@ class _ProductCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(0),
                               ),
                               errorWidget: (_, __, ___) => Icon(
-                                Icons.image,
+                                Icons.image_outlined,
                                 color: context.colors.textFaint,
                                 size: 40,
                               ),
@@ -203,7 +203,7 @@ class _ProductCard extends StatelessWidget {
                           )
                         : Center(
                             child: Icon(
-                              Icons.image,
+                              Icons.image_outlined,
                               color: context.colors.textFaint,
                               size: 40,
                             ),

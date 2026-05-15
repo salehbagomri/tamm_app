@@ -134,8 +134,8 @@ class _MyDevicesScreenState extends ConsumerState<MyDevicesScreen> {
                     children: [
                       Icon(
                         d['device_type'].toString().contains('solar')
-                            ? Icons.solar_power
-                            : Icons.ac_unit,
+                            ? Icons.solar_power_outlined
+                            : Icons.ac_unit_outlined,
                         color: context.colors.bluePrimary,
                       ),
                       AppSpacing.hGapSm2,
