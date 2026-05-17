@@ -79,7 +79,7 @@ class OrderRepository {
         'total_amount': total,
         'address': address,
         'preferred_date': preferredDate?.toIso8601String().split('T')[0],
-        'preferred_time_slot': timeSlot,
+        'preferred_time_slot': timeSlot ?? 'صباحاً',
         'notes': notes,
         'include_installation': includeInstall,
         'scheduled_period': scheduledPeriod,
@@ -114,7 +114,8 @@ class OrderRepository {
 
       return orderId;
     } catch (e) {
-      debugPrint('=== ORDER ERROR: ${e.toString()}');
+      debugPrint('=== ORDER ERROR TYPE: ${e.runtimeType}');
+      debugPrint('=== ORDER ERROR: $e');
       if (e is PostgrestException) {
         debugPrint('=== POSTGREST CODE: ${e.code}');
         debugPrint('=== POSTGREST MESSAGE: ${e.message}');
