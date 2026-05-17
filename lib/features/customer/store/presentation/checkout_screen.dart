@@ -10,8 +10,8 @@ import '../../../../core/widgets/tamm_app_bar.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../core/utils/auth_guard.dart';
-import '../../services/widgets/appointment_picker.dart';
 import '../../services/widgets/appointment_display_card.dart';
+import '../widgets/tamm_date_picker.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -43,6 +43,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   DateTime? _selectedDate;
   String? _selectedPeriod;
   String? _selectedHour;
+
+  static const _periods = ['صباحاً', 'ظهراً', 'مساءً'];
+  static const _periodTimes = {
+    'صباحاً': '٨ص — ١٢م',
+    'ظهراً': '١٢م — ٤م',
+    'مساءً': '٤م — ٨م',
+  };
+
+  List<String> _hoursForPeriod(String period) {
+    if (period == 'صباحاً') return ['٠٨:٠٠', '٠٩:٠٠', '١٠:٠٠', '١١:٠٠'];
+    if (period == 'ظهراً') return ['١٢:٠٠', '٠١:٠٠', '٠٢:٠٠', '٠٣:٠٠'];
+    if (period == 'مساءً') return ['٠٤:٠٠', '٠٥:٠٠', '٠٦:٠٠', '٠٧:٠٠'];
+    return [];
+  }
 
   // Step 3 — Payment
   String _paymentType = 'cash';
@@ -203,6 +217,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           .createOrder(
             orderType: hasInstallation ? 'product_and_service' : 'product',
             address: _addressCtrl.text,
+            city: _selectedCity,
             total: notifier.total,
             preferredDate: _selectedDate,
             timeSlot: _selectedHour,
@@ -567,22 +582,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   // ─── Step 2: Appointment ─────────────────────────────
   Widget _buildAppointmentStep() {
+    final appointmentConfirmed =
+        _selectedDate != null && _selectedPeriod != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppSpacing.gapMd,
-        Text(
-          'حدد الموعد',
-          style: AppTextStyles.label(context.colors.textPrimary),
-        ),
-        AppSpacing.gapSm2,
-        if (_selectedDate != null && _selectedPeriod != null) ...[
+
+        if (appointmentConfirmed) ...[
+          // ── Confirmed: show summary card + edit button ──
           AppointmentDisplayCard(
             date: _selectedDate!,
             period: _selectedPeriod!,
             hour: _selectedHour,
           ),
-          AppSpacing.gapMd,
+          AppSpacing.gapSm2,
           Center(
             child: TextButton.icon(
               onPressed: () => setState(() {
@@ -597,30 +612,151 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               ),
               label: Text(
                 'تعديل الموعد',
-                style: AppTextStyles.body(context.colors.textPrimary),
+                style: AppTextStyles.body(context.colors.bluePrimary),
               ),
             ),
           ),
         ] else ...[
-          Container(
-            padding: AppSpacing.cardPadding,
-            decoration: BoxDecoration(
-              color: context.colors.bgSurface,
-              borderRadius: AppSpacing.radiusLg,
-              border: Border.all(color: context.colors.border),
-            ),
-            child: AppointmentPicker(
-              initialDate: _selectedDate,
-              onDateSelected: (date, period, hour) {
-                setState(() {
-                  _selectedDate = date;
-                  _selectedPeriod = period;
-                  _selectedHour = hour;
-                });
-              },
-            ),
+          // ── Picker: calendar → period → hour ────────────
+          Text(
+            'اختر التاريخ',
+            style: AppTextStyles.label(context.colors.textPrimary),
           ),
+          AppSpacing.gapSm,
+          TammDatePicker(
+            initialDate: _selectedDate,
+            onDateSelected: (date) => setState(() {
+              _selectedDate = date;
+              _selectedPeriod = null;
+              _selectedHour = null;
+            }),
+          ),
+
+          if (_selectedDate != null) ...[
+            AppSpacing.gapLg,
+            Text(
+              'اختر الفترة',
+              style: AppTextStyles.label(context.colors.textPrimary),
+            ),
+            AppSpacing.gapSm,
+            Row(
+              children: List.generate(_periods.length, (i) {
+                final period = _periods[i];
+                final isSelected = _selectedPeriod == period;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() {
+                      _selectedPeriod = period;
+                      _selectedHour = null;
+                    }),
+                    child: Container(
+                      margin: EdgeInsets.only(
+                        left: i < _periods.length - 1 ? AppSpacing.sm : 0,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.sm2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? context.colors.bluePrimary
+                            : context.colors.bgSurface,
+                        borderRadius: AppSpacing.radiusSm,
+                        border: Border.all(
+                          color: isSelected
+                              ? context.colors.bluePrimary
+                              : context.colors.border,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            period,
+                            style: AppTextStyles.body(
+                              isSelected
+                                  ? context.colors.bgSurface
+                                  : context.colors.textPrimary,
+                            ).copyWith(fontWeight: AppTextStyles.bold),
+                          ),
+                          Text(
+                            _periodTimes[period]!,
+                            style: AppTextStyles.caption(
+                              isSelected
+                                  ? context.colors.bgSurface.withValues(
+                                      alpha: 0.7,
+                                    )
+                                  : context.colors.textSecond,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ],
+
+          if (_selectedPeriod != null) ...[
+            AppSpacing.gapLg,
+            Row(
+              children: [
+                Text(
+                  'اختر الوقت',
+                  style: AppTextStyles.label(context.colors.textPrimary),
+                ),
+                AppSpacing.hGapXs,
+                Text(
+                  '(اختياري)',
+                  style: AppTextStyles.bodySmall(context.colors.textSecond),
+                ),
+              ],
+            ),
+            AppSpacing.gapSm,
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: _hoursForPeriod(_selectedPeriod!).map((hour) {
+                final isSelected = _selectedHour == hour;
+                return GestureDetector(
+                  onTap: () => setState(
+                    () => _selectedHour = isSelected ? null : hour,
+                  ),
+                  child: Container(
+                    width:
+                        (MediaQuery.of(context).size.width -
+                            AppSpacing.pageHorizontal * 2 -
+                            AppSpacing.sm * 3) /
+                        4,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? context.colors.bluePrimary
+                          : context.colors.bgSurface,
+                      borderRadius: AppSpacing.radiusSm,
+                      border: Border.all(
+                        color: isSelected
+                            ? context.colors.bluePrimary
+                            : context.colors.border,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      hour,
+                      style: AppTextStyles.body(
+                        isSelected
+                            ? context.colors.bgSurface
+                            : context.colors.textPrimary,
+                      ).copyWith(fontWeight: AppTextStyles.bold),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ],
+
         AppSpacing.gapLg,
       ],
     );

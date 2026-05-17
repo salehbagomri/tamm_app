@@ -30,6 +30,9 @@ class Order {
   final String? quoteAttachmentUrl;
   final String paymentType;
   final String? paymentMethodId;
+  final String? city;
+  final double? latitude;
+  final double? longitude;
 
   const Order({
     required this.id,
@@ -60,6 +63,9 @@ class Order {
     this.quoteAttachmentUrl,
     this.paymentType = 'cash',
     this.paymentMethodId,
+    this.city,
+    this.latitude,
+    this.longitude,
   });
 
   factory Order.fromMap(Map<String, dynamic> m) {
@@ -115,6 +121,9 @@ class Order {
       quoteAttachmentUrl: m['quote_attachment_url'],
       paymentType: m['payment_type'] as String? ?? 'cash',
       paymentMethodId: m['payment_method_id'] as String?,
+      city: m['city'] as String?,
+      latitude: (m['latitude'] as num?)?.toDouble(),
+      longitude: (m['longitude'] as num?)?.toDouble(),
     );
   }
 

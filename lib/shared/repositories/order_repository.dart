@@ -63,6 +63,7 @@ class OrderRepository {
     String? scheduledPeriod,
     String? scheduledHour,
     String? quoteStatus,
+    String? city,
     double? latitude,
     double? longitude,
     String paymentType = 'cash',
@@ -87,6 +88,7 @@ class OrderRepository {
             'quote_status': quoteStatus,
             'payment_type': paymentType,
             if (paymentMethodId != null) 'payment_method_id': paymentMethodId,
+            if (city != null) 'city': city,
             if (latitude != null) 'latitude': latitude,
             if (longitude != null) 'longitude': longitude,
           })
