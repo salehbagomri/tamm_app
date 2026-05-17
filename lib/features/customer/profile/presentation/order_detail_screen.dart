@@ -1,20 +1,140 @@
-import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/widgets/tamm_app_bar.dart';
-import '../../../../core/widgets/tamm_button.dart';
-import '../../../../core/widgets/tamm_loading.dart';
-import '../../../../core/widgets/tamm_card.dart';
-import '../../../../shared/models/order.dart';
-import '../../../../shared/providers/order_providers.dart';
-import '../../../../core/errors/app_exception.dart';
-import '../../../../core/widgets/error_state_widget.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
+import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/widgets/error_state_widget.dart';
+import '../../../../core/widgets/tamm_button.dart';
+import '../../../../core/widgets/tamm_loading.dart';
+import '../../../../shared/models/order.dart';
+import '../../../../shared/providers/order_providers.dart';
+import '../widgets/order_timeline.dart';
 import '../widgets/receipt_upload_widget.dart';
+
+Color _orderStatusColor(BuildContext context, Order o) {
+  if (o.orderType == 'quote_request') {
+    return switch (o.quoteStatus) {
+      'pending' => context.colors.warning,
+      'sent' => context.colors.bluePrimary,
+      'accepted' => context.colors.success,
+      'rejected' => context.colors.error,
+      _ => context.colors.textSecond,
+    };
+  }
+  return switch (o.status) {
+    'pending' => context.colors.warning,
+    'confirmed' => context.colors.bluePrimary,
+    'assigned' || 'on_the_way' => context.colors.blueLight,
+    'in_progress' => context.colors.bluePrimary,
+    'completed' => context.colors.success,
+    'cancelled' => context.colors.error,
+    _ => context.colors.textSecond,
+  };
+}
+
+// ─── Custom AppBar ────────────────────────────────────────────────────────────
+
+class _OrderDetailAppBar extends StatefulWidget
+    implements PreferredSizeWidget {
+  final Order order;
+  const _OrderDetailAppBar({required this.order});
+
+  @override
+  State<_OrderDetailAppBar> createState() => _OrderDetailAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(AppSpacing.appBarHeight + 4);
+}
+
+class _OrderDetailAppBarState extends State<_OrderDetailAppBar> {
+  bool _copied = false;
+
+  void _copyOrderNumber() {
+    Clipboard.setData(ClipboardData(text: widget.order.orderNumber));
+    setState(() => _copied = true);
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted) setState(() => _copied = false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final statusColor = _orderStatusColor(context, widget.order);
+    return AppBar(
+      backgroundColor: context.colors.bgSurface,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      titleSpacing: AppSpacing.sm,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            widget.order.orderTypeLabel,
+            style: AppTextStyles.cardTitle(context.colors.textPrimary),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '#${widget.order.orderNumber}',
+                style: AppTextStyles.bodySmall(context.colors.textSecond),
+              ),
+              AppSpacing.hGapXs,
+              GestureDetector(
+                onTap: _copyOrderNumber,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    _copied
+                        ? Icons.check_circle_outlined
+                        : Icons.copy_outlined,
+                    key: ValueKey(_copied),
+                    size: AppSpacing.iconXs,
+                    color: _copied
+                        ? context.colors.success
+                        : context.colors.textFaint,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(
+            right: AppSpacing.md,
+            top: AppSpacing.sm,
+            bottom: AppSpacing.sm,
+          ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm2,
+              vertical: AppSpacing.xs,
+            ),
+            decoration: BoxDecoration(
+              color: statusColor.withValues(alpha: 0.12),
+              borderRadius: AppSpacing.radiusFull,
+            ),
+            child: Text(
+              widget.order.statusLabel,
+              style: AppTextStyles.caption(statusColor).copyWith(
+                fontWeight: AppTextStyles.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
 class OrderDetailScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -61,7 +181,18 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     final orderAsync = ref.watch(orderDetailProvider(widget.orderId));
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
-      appBar: const TammAppBar(title: 'تفاصيل الطلب'),
+      appBar: orderAsync.maybeWhen(
+        data: (o) => _OrderDetailAppBar(order: o),
+        orElse: () => AppBar(
+          backgroundColor: context.colors.bgSurface,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          title: Text(
+            'تفاصيل الطلب',
+            style: AppTextStyles.cardTitle(context.colors.textPrimary),
+          ),
+        ),
+      ),
       body: orderAsync.when(
         data: (o) => _buildBody(context, o),
         loading: () => const TammLoading(),
@@ -74,18 +205,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   }
 
   Widget _buildBody(BuildContext context, Order o) {
-    final isQuotePhase =
-        o.orderType == 'quote_request' &&
-        (o.status == 'pending' || o.status == 'confirmed');
-    final isExecutionPhase =
-        o.orderType == 'quote_request' &&
-        [
-          'assigned',
-          'on_the_way',
-          'in_progress',
-          'completed',
-        ].contains(o.status);
-
+    final bottomBar = _buildBottomBar(context, o);
     return Column(
       children: [
         Expanded(
@@ -94,375 +214,99 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Order Header
-                TammCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                o.orderTypeLabel,
-                                style: AppTextStyles.sectionTitle(
-                                  context.colors.textPrimary,
-                                ),
-                              ),
-                              Text(
-                                '#${o.orderNumber}',
-                                style: AppTextStyles.bodySmall(
-                                  context.colors.textSecond,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getStatusColor(o).withValues(alpha: 0.15),
-                              borderRadius: AppSpacing.radiusFull,
-                            ),
-                            child: Text(
-                              o.statusLabel,
-                              style: AppTextStyles.bodySmall(
-                                _getStatusColor(o),
-                              ).copyWith(fontWeight: AppTextStyles.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Divider(height: 24, color: context.colors.border),
-                      _InfoRow(icon: Icons.location_on_outlined, text: o.address),
-                      if (o.preferredDate != null)
-                        _InfoRow(
-                          icon: Icons.calendar_today_outlined,
-                          text:
-                              '${o.preferredDate!.day}/${o.preferredDate!.month}/${o.preferredDate!.year}',
-                        ),
-                      if (o.scheduledPeriod != null)
-                        _InfoRow(
-                          icon: Icons.access_time_outlined,
-                          text:
-                              '${o.scheduledPeriod!} ${o.scheduledHour ?? ''}',
-                        ),
-                      if (o.notes != null && o.notes!.isNotEmpty)
-                        _InfoRow(icon: Icons.note, text: o.notes!),
-                      if (o.technicianName != null)
-                        _InfoRow(
-                          icon: Icons.engineering_outlined,
-                          text: 'الفني: ${o.technicianName!}',
-                        ),
-                      if (o.technicianNotes != null &&
-                          o.technicianNotes!.isNotEmpty)
-                        _InfoRow(
-                          icon: Icons.fact_check_outlined,
-                          text: 'تقرير الفني: ${o.technicianNotes!}',
-                        ),
-                    ],
-                  ),
-                ),
+                // 1. Timeline
+                OrderTimeline(currentStatus: o.status),
                 AppSpacing.gapMd,
 
-                // Quote Details Section (for quote_request orders in quote phase)
-                if (isQuotePhase) ...[
-                  if (o.quoteStatus == 'sent') ...[
-                    Container(
-                      width: double.infinity,
-                      padding: AppSpacing.cardPadding,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            context.colors.bluePrimary.withValues(alpha: 0.08),
-                            context.colors.blueSky.withValues(alpha: 0.05),
-                          ],
-                        ),
-                        borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(
-                          color: context.colors.bluePrimary.withValues(
-                            alpha: 0.3,
-                          ),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.local_offer_outlined,
-                            color: context.colors.bluePrimary,
-                            size: 36,
-                          ),
-                          AppSpacing.gapSm,
-                          Text(
-                            'تم استلام عرض السعر!',
-                            style: AppTextStyles.cardTitle(
-                              context.colors.textPrimary,
-                            ),
-                          ),
-                          AppSpacing.gapXs,
-                          Text(
-                            'السعر: ${o.quotePrice?.toInt() ?? 0} ر.س',
-                            style: AppTextStyles.body(
-                              context.colors.textPrimary,
-                            ),
-                          ),
-                          AppSpacing.gapMd,
-                          TammButton(
-                            label: 'عرض التفاصيل والرد',
-                            icon: Icons.reply_outlined,
-                            onPressed: () => context.push(
-                              '/customer/quote-response/${o.id}',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AppSpacing.gapMd,
-                  ] else if (o.quoteStatus == 'pending') ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppSpacing.radiusXlValue),
-                      decoration: BoxDecoration(
-                        color: context.colors.warning.withValues(alpha: 0.08),
-                        borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(
-                          color: context.colors.warning.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.hourglass_top,
-                            color: context.colors.warning,
-                            size: 32,
-                          ),
-                          AppSpacing.hGapMd,
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'بانتظار عرض السعر',
-                                  style: AppTextStyles.body(
-                                    context.colors.textPrimary,
-                                  ).copyWith(fontWeight: AppTextStyles.bold),
-                                ),
-                                Text(
-                                  'يقوم فريقنا بمراجعة طلبك وسيتم إرسال العرض قريباً',
-                                  style: AppTextStyles.bodySmall(
-                                    context.colors.textSecond,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AppSpacing.gapMd,
-                  ] else if (o.quoteStatus == 'accepted') ...[
-                    Container(
-                      width: double.infinity,
-                      padding: AppSpacing.cardPadding,
-                      decoration: BoxDecoration(
-                        color: context.colors.success.withValues(alpha: 0.08),
-                        borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(
-                          color: context.colors.success.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle_outline,
-                            color: context.colors.success,
-                            size: 32,
-                          ),
-                          AppSpacing.hGapMd,
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'تم قبول العرض',
-                                  style: AppTextStyles.body(
-                                    context.colors.success,
-                                  ).copyWith(fontWeight: AppTextStyles.bold),
-                                ),
-                                Text(
-                                  'السعر المتفق عليه: ${o.quotePrice?.toInt() ?? 0} ر.س',
-                                  style: AppTextStyles.bodySmall(
-                                    context.colors.textSecond,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AppSpacing.gapMd,
-                  ] else if (o.quoteStatus == 'rejected') ...[
-                    Container(
-                      width: double.infinity,
-                      padding: AppSpacing.cardPadding,
-                      decoration: BoxDecoration(
-                        color: context.colors.error.withValues(alpha: 0.08),
-                        borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(
-                          color: context.colors.error.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.cancel,
-                            color: context.colors.error,
-                            size: 32,
-                          ),
-                          AppSpacing.hGapMd,
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'تم رفض العرض',
-                                  style: AppTextStyles.body(
-                                    context.colors.error,
-                                  ).copyWith(fontWeight: AppTextStyles.bold),
-                                ),
-                                Text(
-                                  'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
-                                  style: AppTextStyles.bodySmall(
-                                    context.colors.textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AppSpacing.gapMd,
-                  ],
-                ],
-
-                if (isExecutionPhase ||
-                    (o.orderType != 'quote_request' &&
-                        [
-                          'assigned',
-                          'on_the_way',
-                          'in_progress',
-                          'completed',
-                        ].contains(o.status))) ...[
-                  _buildProgressBar(o),
+                // 2. Quote section (quote_request orders only)
+                if (o.orderType == 'quote_request') ...[
+                  _buildQuoteSection(context, o),
                   AppSpacing.gapMd,
                 ],
 
-                // Items
-                Text(
-                  'العناصر',
-                  style: AppTextStyles.cardTitle(context.colors.textPrimary),
-                ),
-                AppSpacing.gapSm,
-                ...o.items.map(
-                  (item) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: TammCard(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${item.itemType == 'product' ? 'منتج' : 'خدمة'} × ${item.quantity}',
-                                style: AppTextStyles.body(
-                                  context.colors.textPrimary,
-                                ),
-                              ),
-                              if (item.includeInstallation) ...[
-                                AppSpacing.gapXs,
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: context.colors.success
-                                        .withValues(alpha: 0.1),
-                                    borderRadius: AppSpacing.radiusXs,
-                                  ),
-                                  child: Text(
-                                    'شامل التركيب',
-                                    style: AppTextStyles.caption(
-                                        context.colors.success),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                          Text(
-                            item.totalPrice > 0
-                                ? '${item.totalPrice.toInt()} ر.س'
-                                : 'عرض سعر',
-                            style: AppTextStyles.body(
-                              context.colors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                AppSpacing.gapSm2,
+                // 3. Order info (address, date, time, notes, technician)
+                _buildDeliverySection(context, o),
+                AppSpacing.gapMd,
 
-                // Total
+                // 4. Items
+                _buildItemsSection(context, o),
+
+                // 5. Total
                 if (o.totalAmount > 0 ||
-                    (o.orderType == 'quote_request' && o.quotePrice != null))
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'المجموع',
-                        style: AppTextStyles.body(context.colors.textPrimary),
-                      ),
-                      Text(
-                        '${(o.orderType == 'quote_request' ? (o.quotePrice ?? 0) : o.totalAmount).toInt()} ر.س',
-                        style: AppTextStyles.body(context.colors.textPrimary),
-                      ),
-                    ],
-                  ),
+                    (o.orderType == 'quote_request' &&
+                        o.quotePrice != null)) ...[
+                  AppSpacing.gapSm2,
+                  _buildTotalRow(context, o),
+                ],
+
+                // 6. Payment + Receipt (non-quote orders only)
                 if (o.orderType != 'quote_request') ...[
                   AppSpacing.gapMd,
                   _PaymentSection(order: o),
-                  if (o.paymentType == 'bank' || o.paymentType == 'wallet') ...[
+                  if (o.paymentType == 'bank' ||
+                      o.paymentType == 'wallet') ...[
                     AppSpacing.gapMd,
                     ReceiptUploadWidget(
                       orderId: o.id,
+                      orderNumber: o.orderNumber,
                       initialReceiptUrl: o.receiptUrl,
                     ),
                   ],
                 ],
+
+                AppSpacing.gapXl,
               ],
             ),
           ),
         ),
+        if (bottomBar != null) bottomBar,
       ],
     );
   }
 
-  Widget _buildProgressBar(Order o) {
-    int currentStep = 0;
-    if (o.status == 'assigned') currentStep = 1;
-    if (o.status == 'on_the_way') currentStep = 2;
-    if (o.status == 'in_progress') currentStep = 3;
-    if (o.status == 'completed') currentStep = 4;
+  // ─── Quote section ──────────────────────────────────────────────────────────
 
+  Widget _buildQuoteSection(BuildContext context, Order o) {
+    if (o.quoteStatus == 'sent') {
+      return _InfoCard(
+        color: context.colors.bluePrimary,
+        icon: Icons.local_offer_outlined,
+        title: 'تم استلام عرض السعر!',
+        body: 'السعر: ${o.quotePrice?.toInt() ?? 0} ر.س — اضغط على الزر أدناه للرد',
+      );
+    }
+    if (o.quoteStatus == 'accepted') {
+      return _InfoCard(
+        color: context.colors.success,
+        icon: Icons.check_circle_outlined,
+        title: 'تم قبول العرض',
+        body: 'السعر المتفق عليه: ${o.quotePrice?.toInt() ?? 0} ر.س',
+      );
+    }
+    if (o.quoteStatus == 'rejected') {
+      return _InfoCard(
+        color: context.colors.error,
+        icon: Icons.cancel_outlined,
+        title: 'تم رفض العرض',
+        body:
+            'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
+      );
+    }
+    // pending (default)
+    return _InfoCard(
+      color: context.colors.warning,
+      icon: Icons.hourglass_top_outlined,
+      title: 'بانتظار عرض السعر',
+      body: 'يقوم فريقنا بمراجعة طلبك وسيتم إرسال العرض قريباً',
+    );
+  }
+
+  // ─── Delivery / order info ──────────────────────────────────────────────────
+
+  Widget _buildDeliverySection(BuildContext context, Order o) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.radiusXlValue),
+      width: double.infinity,
+      padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: AppSpacing.radiusLg,
@@ -472,86 +316,215 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'حالة التنفيذ',
+            'تفاصيل الطلب',
             style: AppTextStyles.cardTitle(context.colors.textPrimary),
           ),
-          AppSpacing.gapMd,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildProgressStep('تم التعيين', currentStep >= 1, isFirst: true),
-              _buildProgressLine(currentStep >= 2),
-              _buildProgressStep('في الطريق', currentStep >= 2),
-              _buildProgressLine(currentStep >= 3),
-              _buildProgressStep('جاري التنفيذ', currentStep >= 3),
-              _buildProgressLine(currentStep >= 4),
-              _buildProgressStep('مكتمل', currentStep >= 4, isLast: true),
-            ],
-          ),
+          AppSpacing.gapSm2,
+          _InfoRow(icon: Icons.location_on_outlined, text: o.address),
+          if (o.preferredDate != null)
+            _InfoRow(
+              icon: Icons.calendar_today_outlined,
+              text:
+                  '${o.preferredDate!.day}/${o.preferredDate!.month}/${o.preferredDate!.year}',
+            ),
+          if (o.scheduledPeriod != null)
+            _InfoRow(
+              icon: Icons.access_time_outlined,
+              text: '${o.scheduledPeriod!} ${o.scheduledHour ?? ''}'.trim(),
+            ),
+          if (o.notes != null && o.notes!.isNotEmpty)
+            _InfoRow(icon: Icons.note_outlined, text: o.notes!),
+          if (o.technicianName != null)
+            _InfoRow(
+              icon: Icons.engineering_outlined,
+              text: 'الفني: ${o.technicianName!}',
+            ),
+          if (o.technicianNotes != null && o.technicianNotes!.isNotEmpty)
+            _InfoRow(
+              icon: Icons.fact_check_outlined,
+              text: 'تقرير الفني: ${o.technicianNotes!}',
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildProgressLine(bool active) {
-    return Expanded(
-      child: Container(
-        height: 2,
-        color: active ? context.colors.success : context.colors.border,
-      ),
-    );
-  }
+  // ─── Items ──────────────────────────────────────────────────────────────────
 
-  Widget _buildProgressStep(
-    String label,
-    bool active, {
-    bool isFirst = false,
-    bool isLast = false,
-  }) {
+  Widget _buildItemsSection(BuildContext context, Order o) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: active ? context.colors.success : context.colors.bgSurface,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: active ? context.colors.success : context.colors.border,
-              width: 2,
-            ),
-          ),
-          child: active
-              ? const Icon(Icons.check, size: 16, color: Colors.white)
-              : null,
+        Text(
+          'العناصر',
+          style: AppTextStyles.cardTitle(context.colors.textPrimary),
         ),
         AppSpacing.gapSm,
-        Text(label, style: AppTextStyles.body(context.colors.textPrimary)),
+        ...o.items.map(
+          (item) => Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: Container(
+              padding: AppSpacing.cardPaddingSm,
+              decoration: BoxDecoration(
+                color: context.colors.bgSurface,
+                borderRadius: AppSpacing.radiusLg,
+                border: Border.all(color: context.colors.border),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${item.itemType == 'product' ? 'منتج' : 'خدمة'} × ${item.quantity}',
+                        style: AppTextStyles.body(context.colors.textPrimary),
+                      ),
+                      if (item.includeInstallation) ...[
+                        AppSpacing.gapXs,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                            vertical: AppSpacing.xs / 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.colors.success.withValues(alpha: 0.1),
+                            borderRadius: AppSpacing.radiusXs,
+                          ),
+                          child: Text(
+                            'شامل التركيب',
+                            style: AppTextStyles.caption(context.colors.success),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  Text(
+                    item.totalPrice > 0
+                        ? '${item.totalPrice.toInt()} ر.س'
+                        : 'عرض سعر',
+                    style: AppTextStyles.body(context.colors.textPrimary),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Color _getStatusColor(Order o) {
-    if (o.orderType == 'quote_request') {
-      return switch (o.quoteStatus) {
-        'pending' => context.colors.warning,
-        'sent' => context.colors.bluePrimary,
-        'accepted' => context.colors.success,
-        'rejected' => context.colors.error,
-        _ => context.colors.textSecond,
-      };
+  // ─── Total ──────────────────────────────────────────────────────────────────
+
+  Widget _buildTotalRow(BuildContext context, Order o) {
+    final amount = o.orderType == 'quote_request'
+        ? (o.quotePrice ?? 0)
+        : o.totalAmount;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'المجموع',
+          style: AppTextStyles.body(context.colors.textPrimary),
+        ),
+        Text(
+          '${amount.toInt()} ر.س',
+          style: AppTextStyles.body(
+            context.colors.textPrimary,
+          ).copyWith(fontWeight: AppTextStyles.semiBold),
+        ),
+      ],
+    );
+  }
+
+  // ─── Bottom action bar ──────────────────────────────────────────────────────
+
+  Widget? _buildBottomBar(BuildContext context, Order o) {
+    if (o.orderType == 'quote_request' && o.quoteStatus == 'sent') {
+      return _BottomActionBar(
+        child: TammButton(
+          label: 'عرض التفاصيل والرد',
+          icon: Icons.reply_outlined,
+          onPressed: () => context.push('/customer/quote-response/${o.id}'),
+        ),
+      );
     }
-    return switch (o.status) {
-      'pending' => context.colors.warning,
-      'confirmed' => context.colors.bluePrimary,
-      'assigned' || 'on_the_way' => context.colors.blueLight,
-      'in_progress' => context.colors.bluePrimary,
-      'completed' => context.colors.success,
-      'cancelled' => context.colors.error,
-      _ => context.colors.textSecond,
-    };
+    if (o.status == 'completed') {
+      return _BottomActionBar(
+        child: TammButton(
+          label: 'طلب خدمة جديدة',
+          icon: Icons.add_circle_outlined,
+          onPressed: () => context.go('/customer/home'),
+        ),
+      );
+    }
+    if (o.status == 'cancelled') {
+      return _BottomActionBar(
+        child: TammButton(
+          label: 'تقديم طلب جديد',
+          icon: Icons.refresh_outlined,
+          onPressed: () => context.go('/customer/home'),
+        ),
+      );
+    }
+    return null;
   }
 }
+
+// ─── Info card (quote states) ─────────────────────────────────────────────────
+
+class _InfoCard extends StatelessWidget {
+  final Color color;
+  final IconData icon;
+  final String title;
+  final String body;
+
+  const _InfoCard({
+    required this.color,
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: AppSpacing.iconLg),
+          AppSpacing.hGapSm2,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.body(context.colors.textPrimary)
+                      .copyWith(fontWeight: AppTextStyles.bold),
+                ),
+                AppSpacing.gapXs,
+                Text(
+                  body,
+                  style: AppTextStyles.bodySmall(context.colors.textSecond),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Info row ─────────────────────────────────────────────────────────────────
 
 class _InfoRow extends StatelessWidget {
   final IconData icon;
@@ -561,11 +534,11 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: context.colors.textSecond),
+          Icon(icon, size: AppSpacing.iconXs + 2, color: context.colors.textSecond),
           AppSpacing.hGapSm,
           Expanded(
             child: Text(
@@ -579,13 +552,33 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
+// ─── Bottom action bar container ──────────────────────────────────────────────
+
+class _BottomActionBar extends StatelessWidget {
+  final Widget child;
+  const _BottomActionBar({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: AppSpacing.pagePadding,
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        border: Border(top: BorderSide(color: context.colors.border)),
+      ),
+      child: SafeArea(top: false, child: child),
+    );
+  }
+}
+
+// ─── Payment section ──────────────────────────────────────────────────────────
+
 class _PaymentSection extends ConsumerWidget {
   final Order order;
   const _PaymentSection({required this.order});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isCash = order.paymentType == 'cash';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -602,110 +595,204 @@ class _PaymentSection extends ConsumerWidget {
             borderRadius: AppSpacing.radius,
             border: Border.all(color: context.colors.border),
           ),
-          child: isCash
-              ? Row(
-                  children: [
-                    Icon(
-                      Icons.payments_outlined,
-                      color: context.colors.bluePrimary,
-                      size: AppSpacing.iconMd,
-                    ),
-                    AppSpacing.hGapSm2,
-                    Text(
-                      'كاش عند الاستلام',
-                      style: AppTextStyles.body(context.colors.textPrimary)
-                          .copyWith(fontWeight: AppTextStyles.semiBold),
-                    ),
-                  ],
-                )
+          child: order.paymentType == 'cash'
+              ? _CashRow()
               : order.paymentMethodId != null
                   ? _MethodDisplay(
                       methodId: order.paymentMethodId!,
                       type: order.paymentType,
                     )
-                  : Row(
-                      children: [
-                        Icon(
-                          order.paymentType == 'bank'
-                              ? Icons.account_balance_outlined
-                              : Icons.account_balance_wallet_outlined,
-                          color: context.colors.bluePrimary,
-                          size: AppSpacing.iconMd,
-                        ),
-                        AppSpacing.hGapSm2,
-                        Text(
-                          order.paymentType == 'bank'
-                              ? 'تحويل بنكي'
-                              : 'محفظة إلكترونية',
-                          style: AppTextStyles.body(context.colors.textPrimary),
-                        ),
-                      ],
-                    ),
+                  : _FallbackPaymentRow(type: order.paymentType),
         ),
       ],
     );
   }
 }
 
-class _MethodDisplay extends ConsumerWidget {
+class _CashRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          Icons.payments_outlined,
+          color: context.colors.success,
+          size: AppSpacing.iconMd,
+        ),
+        AppSpacing.hGapSm2,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'كاش عند الاستلام',
+              style: AppTextStyles.body(
+                context.colors.textPrimary,
+              ).copyWith(fontWeight: AppTextStyles.semiBold),
+            ),
+            AppSpacing.gapXs,
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.xs / 2,
+              ),
+              decoration: BoxDecoration(
+                color: context.colors.success.withValues(alpha: 0.1),
+                borderRadius: AppSpacing.radiusFull,
+              ),
+              child: Text(
+                'لا يلزم تحويل',
+                style: AppTextStyles.caption(context.colors.success),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _FallbackPaymentRow extends StatelessWidget {
+  final String type;
+  const _FallbackPaymentRow({required this.type});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          type == 'bank'
+              ? Icons.account_balance_outlined
+              : Icons.account_balance_wallet_outlined,
+          color: context.colors.bluePrimary,
+          size: AppSpacing.iconMd,
+        ),
+        AppSpacing.hGapSm2,
+        Text(
+          type == 'bank' ? 'تحويل بنكي' : 'محفظة إلكترونية',
+          style: AppTextStyles.body(context.colors.textPrimary),
+        ),
+      ],
+    );
+  }
+}
+
+class _MethodDisplay extends ConsumerStatefulWidget {
   final String methodId;
   final String type;
   const _MethodDisplay({required this.methodId, required this.type});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final methodAsync = ref.watch(paymentMethodByIdProvider(methodId));
+  ConsumerState<_MethodDisplay> createState() => _MethodDisplayState();
+}
+
+class _MethodDisplayState extends ConsumerState<_MethodDisplay> {
+  bool _copied = false;
+
+  void _copy(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    setState(() => _copied = true);
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted) setState(() => _copied = false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final methodAsync = ref.watch(paymentMethodByIdProvider(widget.methodId));
     final fallbackLabel =
-        type == 'bank' ? 'تحويل بنكي' : 'محفظة إلكترونية';
-    final fallbackIcon = type == 'bank'
+        widget.type == 'bank' ? 'تحويل بنكي' : 'محفظة إلكترونية';
+    final fallbackIcon = widget.type == 'bank'
         ? Icons.account_balance_outlined
         : Icons.account_balance_wallet_outlined;
 
     return methodAsync.when(
-      data: (method) => Row(
-        children: [
-          Icon(fallbackIcon, color: context.colors.bluePrimary, size: AppSpacing.iconMd),
-          AppSpacing.hGapSm2,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  method?['name'] as String? ?? fallbackLabel,
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.semiBold),
-                ),
-                if (method?['account_number'] != null)
-                  Text(
-                    method!['account_number'] as String,
-                    style: AppTextStyles.caption(context.colors.textSecond),
-                  ),
-                if (method?['account_name'] != null)
-                  Text(
-                    method!['account_name'] as String,
-                    style: AppTextStyles.caption(context.colors.textSecond),
-                  ),
-              ],
+      data: (method) {
+        final accountNumber = method?['account_number'] as String?;
+        return Row(
+          children: [
+            Icon(
+              fallbackIcon,
+              color: context.colors.bluePrimary,
+              size: AppSpacing.iconMd,
             ),
-          ),
-        ],
-      ),
+            AppSpacing.hGapSm2,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    method?['name'] as String? ?? fallbackLabel,
+                    style: AppTextStyles.body(
+                      context.colors.textPrimary,
+                    ).copyWith(fontWeight: AppTextStyles.semiBold),
+                  ),
+                  if (accountNumber != null)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          accountNumber,
+                          style: AppTextStyles.caption(
+                            context.colors.textSecond,
+                          ),
+                        ),
+                        AppSpacing.hGapXs,
+                        GestureDetector(
+                          onTap: () => _copy(accountNumber),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: Icon(
+                              _copied
+                                  ? Icons.check_circle_outlined
+                                  : Icons.copy_outlined,
+                              key: ValueKey(_copied),
+                              size: AppSpacing.iconXs,
+                              color: _copied
+                                  ? context.colors.success
+                                  : context.colors.textFaint,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (method?['account_name'] != null)
+                    Text(
+                      method!['account_name'] as String,
+                      style: AppTextStyles.caption(context.colors.textSecond),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
       loading: () => Row(
         children: [
-          Icon(fallbackIcon, color: context.colors.bluePrimary, size: AppSpacing.iconMd),
+          Icon(
+            fallbackIcon,
+            color: context.colors.bluePrimary,
+            size: AppSpacing.iconMd,
+          ),
           AppSpacing.hGapSm2,
           const SizedBox(
-            width: 16,
-            height: 16,
+            width: AppSpacing.iconMd,
+            height: AppSpacing.iconMd,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
         ],
       ),
       error: (_, __) => Row(
         children: [
-          Icon(fallbackIcon, color: context.colors.bluePrimary, size: AppSpacing.iconMd),
+          Icon(
+            fallbackIcon,
+            color: context.colors.bluePrimary,
+            size: AppSpacing.iconMd,
+          ),
           AppSpacing.hGapSm2,
-          Text(fallbackLabel, style: AppTextStyles.body(context.colors.textPrimary)),
+          Text(
+            fallbackLabel,
+            style: AppTextStyles.body(context.colors.textPrimary),
+          ),
         ],
       ),
     );

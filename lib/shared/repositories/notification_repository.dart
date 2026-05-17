@@ -49,6 +49,31 @@ class NotificationRepository {
     }
   }
 
+  Future<void> notifyManagerReceiptUploaded({
+    required String orderId,
+    required String orderNumber,
+  }) async {
+    try {
+      final managers = await _client
+          .from('profiles')
+          .select('id')
+          .eq('role', 'manager')
+          .limit(1);
+      if (managers.isEmpty) return;
+      final managerId = managers.first['id'] as String;
+      await _client.from('notifications').insert({
+        'user_id': managerId,
+        'title': 'سند تحويل جديد',
+        'body': 'قام العميل بإرفاق سند التحويل للطلب #$orderNumber',
+        'notification_type': 'payment_receipt',
+        'order_id': orderId,
+        'is_read': false,
+      });
+    } catch (_) {
+      // Non-critical — don't block the user
+    }
+  }
+
   Future<int> getUnreadCount() async {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return 0;

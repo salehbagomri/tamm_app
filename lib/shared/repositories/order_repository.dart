@@ -161,10 +161,11 @@ class OrderRepository {
   Future<String> uploadReceipt({
     required String orderId,
     required Uint8List bytes,
+    String extension = 'jpg',
   }) async {
     try {
       final path =
-          'receipts/$orderId/${DateTime.now().millisecondsSinceEpoch}.jpg';
+          'receipts/$orderId/${DateTime.now().millisecondsSinceEpoch}.$extension';
       await _client.storage.from('receipts').uploadBinary(path, bytes);
       final url = _client.storage.from('receipts').getPublicUrl(path);
       await _client

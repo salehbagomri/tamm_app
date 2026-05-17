@@ -1,19 +1,26 @@
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../shared/providers/notification_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
+enum _PickSource { gallery, camera, pdf }
+
 class ReceiptUploadWidget extends ConsumerStatefulWidget {
   final String orderId;
+  final String orderNumber;
   final String? initialReceiptUrl;
 
   const ReceiptUploadWidget({
     super.key,
     required this.orderId,
+    required this.orderNumber,
     this.initialReceiptUrl,
   });
 
@@ -33,27 +40,59 @@ class _ReceiptUploadWidgetState extends ConsumerState<ReceiptUploadWidget> {
   }
 
   Future<void> _pickAndUpload() async {
-    final source = await showModalBottomSheet<ImageSource>(
+    final source = await showModalBottomSheet<_PickSource>(
       context: context,
       backgroundColor: context.colors.bgSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => _SourcePickerSheet(),
+      builder: (_) => _SourcePickerSheet(),
     );
     if (source == null || !mounted) return;
 
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: source, imageQuality: 85);
-    if (picked == null || !mounted) return;
+    Uint8List? bytes;
+    String ext = 'jpg';
 
+    if (source == _PickSource.pdf) {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        withData: true,
+      );
+      if (result == null || result.files.single.bytes == null) return;
+      bytes = result.files.single.bytes!;
+      ext = 'pdf';
+    } else {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source == _PickSource.camera
+            ? ImageSource.camera
+            : ImageSource.gallery,
+        imageQuality: 85,
+      );
+      if (picked == null) return;
+      bytes = await picked.readAsBytes();
+    }
+
+    if (!mounted) return;
     setState(() => _isUploading = true);
+
     try {
-      final bytes = await picked.readAsBytes();
       final url = await ref.read(orderRepositoryProvider).uploadReceipt(
         orderId: widget.orderId,
         bytes: bytes,
+        extension: ext,
       );
+
+      // Notify manager — non-blocking
+      ref
+          .read(notificationRepositoryProvider)
+          .notifyManagerReceiptUploaded(
+            orderId: widget.orderId,
+            orderNumber: widget.orderNumber,
+          )
+          .ignore();
+
       if (mounted) {
         setState(() {
           _receiptUrl = url;
@@ -67,7 +106,7 @@ class _ReceiptUploadWidgetState extends ConsumerState<ReceiptUploadWidget> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              e is AppException ? e.message : 'فشل في رفع الصورة',
+              e is AppException ? e.message : 'فشل في رفع السند',
               style: AppTextStyles.body(context.colors.bgSurface),
             ),
             backgroundColor: context.colors.error,
@@ -88,23 +127,21 @@ class _ReceiptUploadWidgetState extends ConsumerState<ReceiptUploadWidget> {
           style: AppTextStyles.cardTitle(context.colors.textPrimary),
         ),
         AppSpacing.gapSm,
-        GestureDetector(
-          onTap: _isUploading ? null : _pickAndUpload,
-          child: _DashedBorderContainer(
-            color: _receiptUrl != null
-                ? context.colors.success
-                : context.colors.bluePrimary,
-            child: _buildContent(context),
-          ),
-        ),
+        _buildContent(context),
       ],
     );
   }
 
   Widget _buildContent(BuildContext context) {
     if (_isUploading) {
-      return SizedBox(
-        height: 120,
+      return Container(
+        width: double.infinity,
+        padding: AppSpacing.cardPadding,
+        decoration: BoxDecoration(
+          color: context.colors.bgSurface,
+          borderRadius: AppSpacing.radiusLg,
+          border: Border.all(color: context.colors.border),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -123,85 +160,100 @@ class _ReceiptUploadWidgetState extends ConsumerState<ReceiptUploadWidget> {
     }
 
     if (_receiptUrl != null) {
-      return SizedBox(
-        height: 160,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ClipRRect(
-              borderRadius: AppSpacing.radiusLg,
-              child: Image.network(
-                _receiptUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _UploadPlaceholder(
-                  hasReceipt: true,
-                  color: context.colors.success,
-                ),
-              ),
-            ),
-            Positioned(
-              top: AppSpacing.sm,
-              right: AppSpacing.sm,
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.xs),
-                decoration: BoxDecoration(
-                  color: context.colors.success,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check,
-                  color: context.colors.bgSurface,
-                  size: AppSpacing.iconXs,
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: AppSpacing.sm,
-                ),
-                decoration: BoxDecoration(
-                  color: context.colors.success.withValues(alpha: 0.85),
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(AppSpacing.radiusLgValue),
-                  ),
-                ),
-                child: Text(
-                  'تم رفع السند ✓  —  اضغط للتغيير',
-                  style: AppTextStyles.caption(context.colors.bgSurface),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+      return _buildSuccessCard(context);
     }
 
-    return SizedBox(
-      height: 120,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.upload_file_outlined,
-            size: AppSpacing.iconXxl,
-            color: context.colors.bluePrimary,
+    return GestureDetector(
+      onTap: _pickAndUpload,
+      child: _DashedBorderContainer(
+        color: context.colors.bluePrimary,
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.upload_file_outlined,
+                size: AppSpacing.iconXxl,
+                color: context.colors.bluePrimary,
+              ),
+              AppSpacing.gapSm,
+              Text(
+                'إرفاق سند التحويل',
+                style: AppTextStyles.body(
+                  context.colors.bluePrimary,
+                ).copyWith(fontWeight: AppTextStyles.semiBold),
+              ),
+              AppSpacing.gapXs,
+              Text(
+                'اضغط لرفع صورة أو ملف PDF',
+                style: AppTextStyles.caption(context.colors.textSecond),
+              ),
+              AppSpacing.gapMd,
+            ],
           ),
-          AppSpacing.gapSm,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuccessCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: context.colors.success.withValues(alpha: 0.07),
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(
+          color: context.colors.success.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: context.colors.success,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.check_circle_outline,
+              color: context.colors.bgSurface,
+              size: AppSpacing.iconLg,
+            ),
+          ),
+          AppSpacing.gapSm2,
           Text(
-            'إرفاق سند التحويل',
-            style: AppTextStyles.body(
-              context.colors.bluePrimary,
-            ).copyWith(fontWeight: AppTextStyles.semiBold),
+            'تم إرفاق السند بنجاح ✓',
+            style: AppTextStyles.cardTitle(
+              context.colors.success,
+            ),
+            textAlign: TextAlign.center,
           ),
           AppSpacing.gapXs,
           Text(
-            'اضغط لرفع صورة السند',
-            style: AppTextStyles.caption(context.colors.textSecond),
+            'سيتم مراجعته من قبل الفريق',
+            style: AppTextStyles.bodySmall(context.colors.textSecond),
+            textAlign: TextAlign.center,
+          ),
+          AppSpacing.gapMd,
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: _pickAndUpload,
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: context.colors.success),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: AppSpacing.radius,
+                ),
+                minimumSize: const Size(0, AppSpacing.buttonHeightSm),
+              ),
+              child: Text(
+                'استبدال السند',
+                style: AppTextStyles.button(context.colors.success),
+              ),
+            ),
           ),
         ],
       ),
@@ -209,7 +261,7 @@ class _ReceiptUploadWidgetState extends ConsumerState<ReceiptUploadWidget> {
   }
 }
 
-// ─── Dashed border container ─────────────────────────────────────────────────
+// ─── Dashed border container ──────────────────────────────────────────────────
 
 class _DashedBorderContainer extends StatelessWidget {
   final Widget child;
@@ -227,7 +279,10 @@ class _DashedBorderContainer extends StatelessWidget {
           color: color.withValues(alpha: 0.05),
           borderRadius: AppSpacing.radiusLg,
         ),
-        child: child,
+        child: Padding(
+          padding: AppSpacing.cardPadding,
+          child: child,
+        ),
       ),
     );
   }
@@ -235,7 +290,6 @@ class _DashedBorderContainer extends StatelessWidget {
 
 class _DashedBorderPainter extends CustomPainter {
   final Color color;
-
   _DashedBorderPainter({required this.color});
 
   @override
@@ -260,8 +314,8 @@ class _DashedBorderPainter extends CustomPainter {
     double distance = 0;
     for (final metric in path.computeMetrics()) {
       while (distance < metric.length) {
-        final end = (distance + dashWidth).clamp(0, metric.length);
-        canvas.drawPath(metric.extractPath(distance, end.toDouble()), paint);
+        final end = (distance + dashWidth).clamp(0.0, metric.length);
+        canvas.drawPath(metric.extractPath(distance, end), paint);
         distance += dashWidth + dashGap;
       }
       distance = 0;
@@ -272,7 +326,7 @@ class _DashedBorderPainter extends CustomPainter {
   bool shouldRepaint(_DashedBorderPainter old) => old.color != color;
 }
 
-// ─── Source picker bottom sheet ───────────────────────────────────────────────
+// ─── Source picker sheet ──────────────────────────────────────────────────────
 
 class _SourcePickerSheet extends StatelessWidget {
   @override
@@ -293,20 +347,26 @@ class _SourcePickerSheet extends StatelessWidget {
             ),
             AppSpacing.gapMd,
             Text(
-              'اختر المصدر',
+              'إرفاق السند',
               style: AppTextStyles.cardTitle(context.colors.textPrimary),
             ),
             AppSpacing.gapMd,
             _SourceTile(
               icon: Icons.photo_library_outlined,
-              label: 'من المعرض 🖼',
-              onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              label: 'صورة من المعرض 🖼',
+              onTap: () => Navigator.of(context).pop(_PickSource.gallery),
             ),
             AppSpacing.gapSm2,
             _SourceTile(
               icon: Icons.camera_alt_outlined,
               label: 'التقاط صورة 📷',
-              onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              onTap: () => Navigator.of(context).pop(_PickSource.camera),
+            ),
+            AppSpacing.gapSm2,
+            _SourceTile(
+              icon: Icons.picture_as_pdf_outlined,
+              label: 'ملف PDF 📄',
+              onTap: () => Navigator.of(context).pop(_PickSource.pdf),
             ),
             AppSpacing.gapSm,
           ],
@@ -342,7 +402,11 @@ class _SourceTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: context.colors.bluePrimary, size: AppSpacing.iconMd),
+            Icon(
+              icon,
+              color: context.colors.bluePrimary,
+              size: AppSpacing.iconMd,
+            ),
             AppSpacing.hGapSm2,
             Text(
               label,
@@ -357,25 +421,3 @@ class _SourceTile extends StatelessWidget {
   }
 }
 
-// ─── Fallback placeholder ─────────────────────────────────────────────────────
-
-class _UploadPlaceholder extends StatelessWidget {
-  final bool hasReceipt;
-  final Color color;
-
-  const _UploadPlaceholder({required this.hasReceipt, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: color.withValues(alpha: 0.08),
-      child: Center(
-        child: Icon(
-          hasReceipt ? Icons.broken_image_outlined : Icons.upload_file_outlined,
-          size: AppSpacing.iconXl,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
