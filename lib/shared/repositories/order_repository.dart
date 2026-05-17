@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/order.dart';
 import '../../core/errors/error_mapper.dart';
@@ -91,7 +90,6 @@ class OrderRepository {
         if (latitude != null) 'latitude': latitude,
         if (longitude != null) 'longitude': longitude,
       };
-      debugPrint('=== ORDER PAYLOAD: ${payload.toString()}');
       final orderData = await _client
           .from('orders')
           .insert(payload)
@@ -114,13 +112,6 @@ class OrderRepository {
 
       return orderId;
     } catch (e) {
-      debugPrint('=== ORDER ERROR TYPE: ${e.runtimeType}');
-      debugPrint('=== ORDER ERROR: $e');
-      if (e is PostgrestException) {
-        debugPrint('=== POSTGREST CODE: ${e.code}');
-        debugPrint('=== POSTGREST MESSAGE: ${e.message}');
-        debugPrint('=== POSTGREST DETAILS: ${e.details}');
-      }
       // لا تُغلِّف AppException مرة أخرى
       if (e is AppException) rethrow;
       throw ErrorMapper.from(e);
