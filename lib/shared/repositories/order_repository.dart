@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/order.dart';
 import '../../core/errors/error_mapper.dart';
@@ -72,26 +73,28 @@ class OrderRepository {
   }) async {
     try {
       final userId = _client.auth.currentUser!.id;
+      final payload = {
+        'customer_id': userId,
+        'order_type': orderType,
+        'total_amount': total,
+        'address': address,
+        'preferred_date': preferredDate?.toIso8601String().split('T')[0],
+        'preferred_time_slot': timeSlot,
+        'notes': notes,
+        'include_installation': includeInstall,
+        'scheduled_period': scheduledPeriod,
+        'scheduled_hour': scheduledHour,
+        'payment_type': paymentType,
+        if (paymentMethodId != null) 'payment_method_id': paymentMethodId,
+        if (quoteStatus != null) 'quote_status': quoteStatus,
+        if (city != null) 'city': city,
+        if (latitude != null) 'latitude': latitude,
+        if (longitude != null) 'longitude': longitude,
+      };
+      debugPrint('=== ORDER PAYLOAD: ${payload.toString()}');
       final orderData = await _client
           .from('orders')
-          .insert({
-            'customer_id': userId,
-            'order_type': orderType,
-            'total_amount': total,
-            'address': address,
-            'preferred_date': preferredDate?.toIso8601String().split('T')[0],
-            'preferred_time_slot': timeSlot,
-            'notes': notes,
-            'include_installation': includeInstall,
-            'scheduled_period': scheduledPeriod,
-            'scheduled_hour': scheduledHour,
-            'payment_type': paymentType,
-            if (paymentMethodId != null) 'payment_method_id': paymentMethodId,
-            if (quoteStatus != null) 'quote_status': quoteStatus,
-            if (city != null) 'city': city,
-            if (latitude != null) 'latitude': latitude,
-            if (longitude != null) 'longitude': longitude,
-          })
+          .insert(payload)
           .select()
           .single();
 
@@ -111,6 +114,12 @@ class OrderRepository {
 
       return orderId;
     } catch (e) {
+      debugPrint('=== ORDER ERROR: ${e.toString()}');
+      if (e is PostgrestException) {
+        debugPrint('=== POSTGREST CODE: ${e.code}');
+        debugPrint('=== POSTGREST MESSAGE: ${e.message}');
+        debugPrint('=== POSTGREST DETAILS: ${e.details}');
+      }
       // لا تُغلِّف AppException مرة أخرى
       if (e is AppException) rethrow;
       throw ErrorMapper.from(e);
