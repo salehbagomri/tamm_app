@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/order.dart';
 import '../../core/errors/error_mapper.dart';
@@ -154,6 +155,28 @@ class OrderRepository {
       await _client.from('orders').update(updates).eq('id', orderId);
     } catch (e) {
       throw ErrorMapper.from(e);
+    }
+  }
+
+  Future<String> uploadReceipt({
+    required String orderId,
+    required Uint8List bytes,
+  }) async {
+    try {
+      final path =
+          'receipts/$orderId/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      await _client.storage.from('receipts').uploadBinary(path, bytes);
+      final url = _client.storage.from('receipts').getPublicUrl(path);
+      await _client
+          .from('orders')
+          .update({'receipt_url': url})
+          .eq('id', orderId);
+      return url;
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw const ServerException(
+        message: 'فشل في رفع الصورة، تحقق من اتصالك',
+      );
     }
   }
 }

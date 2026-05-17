@@ -33,6 +33,7 @@ class Order {
   final String? city;
   final double? latitude;
   final double? longitude;
+  final String? receiptUrl;
 
   const Order({
     required this.id,
@@ -66,6 +67,7 @@ class Order {
     this.city,
     this.latitude,
     this.longitude,
+    this.receiptUrl,
   });
 
   factory Order.fromMap(Map<String, dynamic> m) {
@@ -124,6 +126,7 @@ class Order {
       city: m['city'] as String?,
       latitude: (m['latitude'] as num?)?.toDouble(),
       longitude: (m['longitude'] as num?)?.toDouble(),
+      receiptUrl: m['receipt_url'] as String?,
     );
   }
 

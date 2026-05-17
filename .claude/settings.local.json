@@ -10,7 +10,8 @@
       "PowerShell(git *)",
       "Bash(Get-ChildItem \"C:\\\\flutterprojects\\\\tamm_app\\\\supabase\\\\migrations\" -Filter \"*.sql\")",
       "Bash(Select-Object Name)",
-      "Bash(Sort-Object Name)"
+      "Bash(Sort-Object Name)",
+      "Bash(not exist *)"
     ]
   }
 }

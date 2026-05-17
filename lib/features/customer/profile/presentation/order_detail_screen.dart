@@ -14,6 +14,7 @@ import '../../../../core/widgets/error_state_widget.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
+import '../widgets/receipt_upload_widget.dart';
 
 class OrderDetailScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -437,6 +438,13 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 if (o.orderType != 'quote_request') ...[
                   AppSpacing.gapMd,
                   _PaymentSection(order: o),
+                  if (o.paymentType == 'bank' || o.paymentType == 'wallet') ...[
+                    AppSpacing.gapMd,
+                    ReceiptUploadWidget(
+                      orderId: o.id,
+                      initialReceiptUrl: o.receiptUrl,
+                    ),
+                  ],
                 ],
               ],
             ),
