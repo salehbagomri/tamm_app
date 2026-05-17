@@ -120,7 +120,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
     setState(() => _isSubmitting = true);
     try {
       final repo = ref.read(orderRepositoryProvider);
-      final orderId = await repo.createOrder(
+      final orderResult = await repo.createOrder(
         orderType: 'quote_request',
         address: _addressController.text.trim(),
         total: 0.0,
@@ -139,6 +139,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
           },
         ],
       );
+      final orderId = orderResult.id;
       ref.invalidate(myOrdersProvider);
       ref.invalidate(allOrdersProvider(null));
       if (mounted) {

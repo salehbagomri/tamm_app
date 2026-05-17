@@ -52,7 +52,7 @@ class OrderRepository {
     }
   }
 
-  Future<String> createOrder({
+  Future<({String id, String orderNumber})> createOrder({
     required String orderType,
     required String address,
     required double total,
@@ -97,6 +97,7 @@ class OrderRepository {
           .single();
 
       final orderId = orderData['id'] as String;
+      final orderNumber = orderData['order_number'] as String;
 
       // إدخال عناصر الطلب — try/catch مستقل برسالة مخصصة
       try {
@@ -110,7 +111,7 @@ class OrderRepository {
         );
       }
 
-      return orderId;
+      return (id: orderId, orderNumber: orderNumber);
     } catch (e) {
       // لا تُغلِّف AppException مرة أخرى
       if (e is AppException) rethrow;

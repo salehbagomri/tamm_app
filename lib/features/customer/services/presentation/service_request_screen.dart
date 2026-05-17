@@ -135,7 +135,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
     setState(() => _isSubmitting = true);
     try {
       final repo = ref.read(orderRepositoryProvider);
-      final orderId = await repo.createOrder(
+      final orderResult = await repo.createOrder(
         orderType: 'service',
         address: _addressController.text.trim(),
         total: service.basePrice ?? 0.0,
@@ -157,6 +157,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
           },
         ],
       );
+      final orderId = orderResult.id;
       ref.invalidate(myOrdersProvider);
       ref.invalidate(allOrdersProvider(null));
       if (mounted) {

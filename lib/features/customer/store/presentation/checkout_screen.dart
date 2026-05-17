@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -12,6 +11,7 @@ import '../../../../shared/providers/order_providers.dart';
 import '../../../../core/utils/auth_guard.dart';
 import '../../services/widgets/appointment_display_card.dart';
 import '../widgets/tamm_date_picker.dart';
+import '../widgets/order_success_dialog.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -212,7 +212,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         orElse: () => false,
       );
 
-      final orderId = await ref
+      final orderResult = await ref
           .read(orderRepositoryProvider)
           .createOrder(
             orderType: hasInstallation ? 'product_and_service' : 'product',
@@ -232,7 +232,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             items: items,
           );
       await notifier.clear();
-      if (mounted) context.go('/customer/order-success/$orderId');
+      if (mounted) {
+        await OrderSuccessDialog.show(
+          context,
+          orderId: orderResult.id,
+          orderNumber: orderResult.orderNumber,
+          paymentType: _paymentType,
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
