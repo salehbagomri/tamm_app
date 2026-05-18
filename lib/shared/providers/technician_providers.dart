@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/errors/app_exception.dart';
@@ -75,6 +76,7 @@ class TaskUpdateNotifier extends StateNotifier<TaskUpdateState> {
       state = const TaskUpdateState(status: TaskUpdateStatus.success);
       return true;
     } catch (e) {
+      debugPrint('=== TaskUpdateNotifier.updateStatus CATCH: $e');
       state = TaskUpdateState(
         status: TaskUpdateStatus.error,
         errorMessage: e is AppException ? e.message : 'فشل في تحديث الحالة',
