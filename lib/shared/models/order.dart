@@ -16,6 +16,7 @@ class Order {
   final Map<String, dynamic>? customerProfile;
   final String? technicianNotes;
   final String? technicianName;
+  final String? technicianId;
 
   // New Fields
   final String? scheduledPeriod;
@@ -52,6 +53,7 @@ class Order {
     this.customerProfile,
     this.technicianNotes,
     this.technicianName,
+    this.technicianId,
     this.scheduledPeriod,
     this.scheduledHour,
     this.quotePrice,
@@ -73,10 +75,12 @@ class Order {
   factory Order.fromMap(Map<String, dynamic> m) {
     String? tNotes;
     String? tName;
+    String? tId;
     final assignments = m['assignments'] as List?;
     if (assignments != null && assignments.isNotEmpty) {
       final a = assignments.first as Map<String, dynamic>;
       tNotes = a['technician_notes']?.toString();
+      tId = a['technician_id'] as String?;
       final t = a['technicians'] as Map<String, dynamic>?;
       if (t != null) {
         final p = t['profiles'] as Map<String, dynamic>?;
@@ -107,6 +111,7 @@ class Order {
       customerProfile: m['profiles'] as Map<String, dynamic>?,
       technicianNotes: tNotes,
       technicianName: tName,
+      technicianId: tId,
       scheduledPeriod: m['scheduled_period'],
       scheduledHour: m['scheduled_hour'],
       quotePrice: (m['quote_price'] as num?)?.toDouble(),

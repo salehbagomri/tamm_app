@@ -13,7 +13,7 @@ class OrderRepository {
       final data = await _client
           .from('orders')
           .select(
-            '*, order_items(*), assignments(technician_notes, technicians(profiles(full_name)))',
+            '*, order_items(*), assignments(technician_id, technician_notes, technicians(profiles(full_name)))',
           )
           .eq('customer_id', userId)
           .order('created_at', ascending: false);
@@ -28,7 +28,7 @@ class OrderRepository {
       var query = _client
           .from('orders')
           .select(
-            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_notes, technicians(profiles(full_name)))',
+            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_id, technician_notes, technicians(profiles(full_name)))',
           );
       if (status != null) query = query.eq('status', status);
       final data = await query.order('created_at', ascending: false);
@@ -43,7 +43,7 @@ class OrderRepository {
       final data = await _client
           .from('orders')
           .select(
-            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_notes, technicians(profiles(full_name)))',
+            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_id, technician_notes, technicians(profiles(full_name)))',
           )
           .eq('id', id)
           .single();

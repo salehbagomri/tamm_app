@@ -14,6 +14,7 @@ import '../../../../shared/models/order.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../widgets/order_timeline.dart';
 import '../widgets/receipt_upload_widget.dart';
+import '../widgets/review_card.dart';
 
 Color _orderStatusColor(BuildContext context, Order o) {
   if (o.orderType == 'quote_request') {
@@ -252,6 +253,15 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       initialReceiptUrl: o.receiptUrl,
                     ),
                   ],
+                ],
+
+                // Review card — only for completed orders
+                if (o.status == 'completed') ...[
+                  AppSpacing.gapMd,
+                  ReviewCard(
+                    orderId: o.id,
+                    technicianId: o.technicianId,
+                  ),
                 ],
 
                 AppSpacing.gapXl,
