@@ -558,6 +558,7 @@ class _PaymentSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint('=== paymentMethodId: ${order.paymentMethodId}  paymentType: ${order.paymentType}');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
