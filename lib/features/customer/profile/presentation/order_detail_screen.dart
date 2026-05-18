@@ -558,7 +558,6 @@ class _PaymentSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('=== paymentMethodId: ${order.paymentMethodId}  paymentType: ${order.paymentType}');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -741,11 +740,6 @@ class _MethodDisplayState extends ConsumerState<_MethodDisplay> {
                       style: AppTextStyles.caption(context.colors.textFaint),
                     ),
                   ],
-                  if (method?['account_name'] != null)
-                    Text(
-                      method!['account_name'] as String,
-                      style: AppTextStyles.caption(context.colors.textSecond),
-                    ),
                 ],
               ),
             ),
