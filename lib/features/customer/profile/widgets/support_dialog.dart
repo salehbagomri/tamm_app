@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -145,46 +144,6 @@ class _SupportSheet extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               _whatsApp();
-            },
-          ),
-          // Copy number
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                color: context.colors.bgPrimary,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.copy_outlined,
-                color: context.colors.textSecond,
-                size: AppSpacing.iconSm,
-              ),
-            ),
-            title: Text(
-              'نسخ الرقم',
-              style: AppTextStyles.body(context.colors.textPrimary),
-            ),
-            subtitle: Text(
-              AppConstants.supportPhone,
-              style: AppTextStyles.bodySmall(context.colors.textSecond),
-            ),
-            onTap: () {
-              Clipboard.setData(
-                const ClipboardData(text: AppConstants.supportPhone),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'تم نسخ الرقم ✓',
-                    style: AppTextStyles.body(Colors.white),
-                  ),
-                  backgroundColor: context.colors.success,
-                  behavior: SnackBarBehavior.floating,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-              Navigator.pop(context);
             },
           ),
           const SafeArea(top: false, child: AppSpacing.gapSm),

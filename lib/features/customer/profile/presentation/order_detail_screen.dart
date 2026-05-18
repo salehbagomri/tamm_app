@@ -42,29 +42,6 @@ class _OrderDetailAppBarState extends State<_OrderDetailAppBar> {
     });
   }
 
-  void _shareOrder() {
-    final o = widget.order;
-    final amount = o.orderType == 'quote_request'
-        ? (o.quotePrice != null ? '${o.quotePrice!.toInt()} ر.س' : 'عرض سعر')
-        : '${o.totalAmount.toInt()} ر.س';
-    Clipboard.setData(
-      ClipboardData(
-        text: 'طلب تمّ رقم: ${o.orderNumber}\nالحالة: ${o.statusLabel}\nالمبلغ: $amount',
-      ),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'تم نسخ تفاصيل الطلب',
-          style: AppTextStyles.body(Colors.white),
-        ),
-        backgroundColor: context.colors.success,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -109,15 +86,6 @@ class _OrderDetailAppBarState extends State<_OrderDetailAppBar> {
         ],
       ),
       actions: [
-        IconButton(
-          icon: Icon(
-            Icons.share_outlined,
-            color: context.colors.textSecond,
-            size: AppSpacing.iconMd,
-          ),
-          tooltip: 'مشاركة الطلب',
-          onPressed: _shareOrder,
-        ),
         IconButton(
           icon: Icon(
             Icons.headset_mic_outlined,
