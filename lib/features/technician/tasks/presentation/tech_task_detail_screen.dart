@@ -92,7 +92,6 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   // ─── Status update handlers ───────────────────────────────────────────────
 
   Future<void> _onStartHeading(String orderId) async {
-    debugPrint('=== _onStartHeading: orderId=$orderId  assignmentId=${widget.assignmentId}');
     final confirmed = await _confirm('هل أنت متأكد أنك بدأت التوجه للعميل؟');
     if (!confirmed || !mounted) return;
     final ok = await ref
