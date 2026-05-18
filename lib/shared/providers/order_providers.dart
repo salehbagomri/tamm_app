@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../repositories/order_repository.dart';
@@ -57,12 +58,23 @@ final orderDetailProvider = FutureProvider.autoDispose.family<Order, String>((
 
 final paymentMethodByIdProvider = FutureProvider.autoDispose
     .family<Map<String, dynamic>?, String>((ref, id) async {
-  if (id.isEmpty) return null;
-  return Supabase.instance.client
-      .from('payment_methods')
-      .select('id, name, type, account_number, account_name')
-      .eq('id', id)
-      .maybeSingle();
+  if (id.isEmpty) {
+    debugPrint('=== paymentMethodByIdProvider: id is empty — skipping fetch');
+    return null;
+  }
+  debugPrint('=== Fetching payment method: $id');
+  try {
+    final result = await Supabase.instance.client
+        .from('payment_methods')
+        .select('id, name, type, account_number, account_name')
+        .eq('id', id)
+        .maybeSingle();
+    debugPrint('=== Payment method result: $result');
+    return result;
+  } catch (e) {
+    debugPrint('=== Payment method error: $e');
+    rethrow;
+  }
 });
 
 final cartCountProvider = Provider<int>((ref) {
