@@ -15,27 +15,7 @@ import '../../../../shared/providers/order_providers.dart';
 import '../widgets/order_timeline.dart';
 import '../widgets/receipt_upload_widget.dart';
 import '../widgets/review_card.dart';
-
-Color _orderStatusColor(BuildContext context, Order o) {
-  if (o.orderType == 'quote_request') {
-    return switch (o.quoteStatus) {
-      'pending' => context.colors.warning,
-      'sent' => context.colors.bluePrimary,
-      'accepted' => context.colors.success,
-      'rejected' => context.colors.error,
-      _ => context.colors.textSecond,
-    };
-  }
-  return switch (o.status) {
-    'pending' => context.colors.warning,
-    'confirmed' => context.colors.bluePrimary,
-    'assigned' || 'on_the_way' => context.colors.blueLight,
-    'in_progress' => context.colors.bluePrimary,
-    'completed' => context.colors.success,
-    'cancelled' => context.colors.error,
-    _ => context.colors.textSecond,
-  };
-}
+import '../widgets/support_dialog.dart';
 
 // ─── Custom AppBar ────────────────────────────────────────────────────────────
 
@@ -62,9 +42,31 @@ class _OrderDetailAppBarState extends State<_OrderDetailAppBar> {
     });
   }
 
+  void _shareOrder() {
+    final o = widget.order;
+    final amount = o.orderType == 'quote_request'
+        ? (o.quotePrice != null ? '${o.quotePrice!.toInt()} ر.س' : 'عرض سعر')
+        : '${o.totalAmount.toInt()} ر.س';
+    Clipboard.setData(
+      ClipboardData(
+        text: 'طلب تمّ رقم: ${o.orderNumber}\nالحالة: ${o.statusLabel}\nالمبلغ: $amount',
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'تم نسخ تفاصيل الطلب',
+          style: AppTextStyles.body(Colors.white),
+        ),
+        backgroundColor: context.colors.success,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final statusColor = _orderStatusColor(context, widget.order);
     return AppBar(
       backgroundColor: context.colors.bgSurface,
       elevation: 0,
@@ -107,29 +109,28 @@ class _OrderDetailAppBarState extends State<_OrderDetailAppBar> {
         ],
       ),
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(
-            right: AppSpacing.md,
-            top: AppSpacing.sm,
-            bottom: AppSpacing.sm,
+        IconButton(
+          icon: Icon(
+            Icons.share_outlined,
+            color: context.colors.textSecond,
+            size: AppSpacing.iconMd,
           ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm2,
-              vertical: AppSpacing.xs,
-            ),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.12),
-              borderRadius: AppSpacing.radiusFull,
-            ),
-            child: Text(
-              widget.order.statusLabel,
-              style: AppTextStyles.caption(statusColor).copyWith(
-                fontWeight: AppTextStyles.bold,
-              ),
-            ),
+          tooltip: 'مشاركة الطلب',
+          onPressed: _shareOrder,
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.headset_mic_outlined,
+            color: context.colors.bluePrimary,
+            size: AppSpacing.iconMd,
+          ),
+          tooltip: 'الدعم الفني',
+          onPressed: () => showSupportDialog(
+            context,
+            orderNumber: widget.order.orderNumber,
           ),
         ),
+        const SizedBox(width: AppSpacing.xs),
       ],
     );
   }
@@ -736,7 +737,7 @@ class _MethodDisplayState extends ConsumerState<_MethodDisplay> {
                       context.colors.textPrimary,
                     ).copyWith(fontWeight: AppTextStyles.semiBold),
                   ),
-                  if (accountNumber != null)
+                  if (accountNumber != null) ...[
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -765,6 +766,12 @@ class _MethodDisplayState extends ConsumerState<_MethodDisplay> {
                         ),
                       ],
                     ),
+                    AppSpacing.gapXs,
+                    Text(
+                      'يرجى التحويل لهذا الرقم',
+                      style: AppTextStyles.caption(context.colors.textFaint),
+                    ),
+                  ],
                   if (method?['account_name'] != null)
                     Text(
                       method!['account_name'] as String,
