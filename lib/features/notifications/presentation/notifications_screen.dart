@@ -135,7 +135,8 @@ class _NotificationCard extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: AppTextStyles.body(context.colors.textPrimary),
+                          style: AppTextStyles.bodySmall(context.colors.textPrimary)
+                              .copyWith(fontWeight: AppTextStyles.semiBold),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -150,7 +151,7 @@ class _NotificationCard extends ConsumerWidget {
                   AppSpacing.gapXs,
                   Text(
                     body,
-                    style: AppTextStyles.bodySmall(context.colors.textSecond),
+                    style: AppTextStyles.caption(context.colors.textSecond),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

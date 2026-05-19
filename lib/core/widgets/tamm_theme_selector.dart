@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
+import 'package:tamm_app/core/constants/app_text_styles.dart';
 import '../../shared/providers/theme_provider.dart';
 import 'tamm_card.dart';
 
@@ -44,18 +44,12 @@ class TammThemeSelector extends ConsumerWidget {
           const SizedBox(width: 12),
           Text(
             'مظهر التطبيق',
-            style: GoogleFonts.alexandria(
-              fontSize: 16,
-              color: context.colors.textPrimary,
-            ),
+            style: AppTextStyles.body(context.colors.textPrimary),
           ),
           const Spacer(),
           Text(
             getThemeName(themeMode),
-            style: GoogleFonts.alexandria(
-              fontSize: 14,
-              color: context.colors.textSecond,
-            ),
+            style: AppTextStyles.bodySmall(context.colors.textSecond),
           ),
           const SizedBox(width: 8),
           Icon(Icons.chevron_left, color: context.colors.textFaint, size: 20),
@@ -83,11 +77,7 @@ class _ThemeSelectionSheet extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'اختر مظهر التطبيق',
-                style: GoogleFonts.alexandria(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: context.colors.textPrimary,
-                ),
+                style: AppTextStyles.cardTitle(context.colors.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
@@ -139,12 +129,10 @@ class _ThemeSelectionSheet extends ConsumerWidget {
       ),
       title: Text(
         title,
-        style: GoogleFonts.alexandria(
-          fontSize: 18,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected
-              ? context.colors.bluePrimary
-              : context.colors.textPrimary,
+        style: AppTextStyles.body(
+          isSelected ? context.colors.bluePrimary : context.colors.textPrimary,
+        ).copyWith(
+          fontWeight: isSelected ? AppTextStyles.semiBold : AppTextStyles.regular,
         ),
       ),
       trailing: isSelected

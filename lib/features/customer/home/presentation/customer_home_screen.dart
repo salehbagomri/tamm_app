@@ -46,7 +46,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                           profileAsync.when(
                             data: (p) => Text(
                               'أهلاً ${p?.fullName.isNotEmpty == true ? p!.fullName : 'بك'} 👋',
-                              style: AppTextStyles.h3(
+                              style: AppTextStyles.cardTitle(
                                 context.colors.textPrimary,
                               ),
                               maxLines: 1,
