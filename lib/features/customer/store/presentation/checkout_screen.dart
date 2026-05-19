@@ -25,6 +25,7 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _addressCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
 
   // Step navigation
@@ -223,7 +224,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             timeSlot: _selectedHour,
             scheduledPeriod: _selectedPeriod,
             scheduledHour: _selectedHour,
-            notes: _notesCtrl.text.isEmpty ? null : _notesCtrl.text,
+            notes: () {
+              final parts = [
+                if (_phoneCtrl.text.trim().isNotEmpty)
+                  'رقم التواصل: ${_phoneCtrl.text.trim()}',
+                if (_notesCtrl.text.trim().isNotEmpty) _notesCtrl.text.trim(),
+              ];
+              return parts.isEmpty ? null : parts.join('\n');
+            }(),
             includeInstall: hasInstallation,
             latitude: _latitude,
             longitude: _longitude,
@@ -262,6 +270,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   @override
   void dispose() {
     _addressCtrl.dispose();
+    _phoneCtrl.dispose();
     _notesCtrl.dispose();
     super.dispose();
   }
@@ -581,6 +590,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           controller: _addressCtrl,
           maxLines: 2,
           validator: (v) => v == null || v.isEmpty ? 'أدخل العنوان' : null,
+        ),
+        AppSpacing.gapLg,
+        Text(
+          'رقم التواصل',
+          style: AppTextStyles.label(context.colors.textPrimary),
+        ),
+        AppSpacing.gapSm,
+        TammTextField(
+          label: 'رقم الهاتف',
+          hint: '7XXXXXXXX',
+          controller: _phoneCtrl,
+          keyboardType: TextInputType.phone,
         ),
         AppSpacing.gapLg,
       ],
