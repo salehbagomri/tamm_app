@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
+import '../../store/widgets/product_card.dart';
 import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/providers/auth_providers.dart';
@@ -249,146 +249,12 @@ class CustomerHomeScreen extends ConsumerWidget {
     if (products.isEmpty) return const SizedBox.shrink();
 
     return SizedBox(
-      height: 200,
+      height: 220,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: products.length,
         separatorBuilder: (_, __) => AppSpacing.hGapSm2,
-        itemBuilder: (_, i) {
-          final p = products[i];
-          return GestureDetector(
-            onTap: () => context.push('/customer/product/${p.id}'),
-            child: Container(
-              width: 160,
-              padding: AppSpacing.cardPaddingSm,
-              decoration: BoxDecoration(
-                color: context.colors.bgSurface,
-                borderRadius: AppSpacing.radius,
-                border: Border.all(color: context.colors.border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: context.colors.bgSurface2,
-                            borderRadius: AppSpacing.radiusSm,
-                          ),
-                          child: p.imageUrl != null
-                              ? ClipRRect(
-                                  borderRadius: AppSpacing.radiusSm,
-                                  child: CachedNetworkImage(
-                                    imageUrl: p.imageUrl!,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    placeholder: (context, url) =>
-                                        const TammShimmer(
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          borderRadius: AppSpacing.radiusSm,
-                                        ),
-                                    errorWidget: (context, url, err) => Icon(
-                                      Icons.image_outlined,
-                                      color: context.colors.textFaint,
-                                      size: 40,
-                                    ),
-                                  ),
-                                )
-                              : Center(
-                                  child: Icon(
-                                    Icons.image_outlined,
-                                    color: context.colors.textFaint,
-                                    size: 40,
-                                  ),
-                                ),
-                        ),
-                        if (p.isFeatured && !p.hasDiscount)
-                          Positioned(
-                            top: 4,
-                            right: 4,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.colors.warning,
-                                borderRadius: AppSpacing.radiusXs,
-                              ),
-                              child: Text(
-                                'مميز',
-                                style: AppTextStyles.badge(
-                                  Colors.white,
-                                ).copyWith(fontWeight: AppTextStyles.bold),
-                              ),
-                            ),
-                          ),
-                        if (p.hasDiscount)
-                          Positioned(
-                            top: 4,
-                            right: 4,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.colors.error,
-                                borderRadius: AppSpacing.radiusXs,
-                              ),
-                              child: Text(
-                                'خصم ${p.discountPercentage}%',
-                                style: AppTextStyles.badge(
-                                  Colors.white,
-                                ).copyWith(fontWeight: AppTextStyles.bold),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  AppSpacing.gapSm,
-                  Text(
-                    p.name,
-                    style: AppTextStyles.bodySmall(
-                      context.colors.textPrimary,
-                    ).copyWith(fontWeight: AppTextStyles.semiBold),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  AppSpacing.gapXs,
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        p.price != null
-                            ? '${p.price!.toInt()} ر.س'
-                            : 'السعر غير محدد',
-                        style: AppTextStyles.bodySmall(
-                          context.colors.blueSky,
-                        ).copyWith(fontWeight: AppTextStyles.bold),
-                      ),
-                      if (p.hasDiscount && p.oldPrice != null) ...[
-                        AppSpacing.hGapXs,
-                        Text(
-                          '${p.oldPrice!.toInt()} ر.س',
-                          style: AppTextStyles.caption(
-                            context.colors.textFaint,
-                          ).copyWith(decoration: TextDecoration.lineThrough),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+        itemBuilder: (_, i) => ProductCard(product: products[i], width: 150),
       ),
     );
   }

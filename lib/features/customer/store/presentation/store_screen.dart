@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_loading.dart';
-import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../core/widgets/tamm_empty_state.dart';
 import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/responsive_wrapper.dart';
 import '../../../../core/utils/responsive.dart';
-import '../../../../shared/models/cart_item.dart';
 import '../../../../shared/providers/product_providers.dart';
-import '../../../../shared/providers/order_providers.dart';
-import '../../../../core/utils/auth_guard.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
-import 'buy_install_sheet.dart';
 import '../widgets/cart_icon_button.dart';
-import '../../../../core/widgets/cart_toast.dart';
+import '../widgets/product_card.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class StoreScreen extends ConsumerStatefulWidget {
@@ -289,239 +282,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                               : 0.62,
                         ),
                         itemCount: products.length,
-                        itemBuilder: (_, i) {
-                          final p = products[i];
-                          return GestureDetector(
-                            onTap: () =>
-                                context.push('/customer/product/${p.id}'),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: context.colors.bgSurface,
-                                borderRadius: AppSpacing.radius,
-                                border: Border.all(
-                                  color: context.colors.border,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.2),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: context.colors.bgSurface2,
-                                            borderRadius:
-                                                const BorderRadius.vertical(
-                                                  top: Radius.circular(11),
-                                                ),
-                                          ),
-                                          child: p.imageUrl != null
-                                              ? ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.vertical(
-                                                        top: Radius.circular(
-                                                          11,
-                                                        ),
-                                                      ),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: p.imageUrl!,
-                                                    fit: BoxFit.cover,
-                                                    placeholder:
-                                                        (
-                                                          context,
-                                                          url,
-                                                        ) => TammShimmer(
-                                                          width:
-                                                              double.infinity,
-                                                          height:
-                                                              double.infinity,
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                0,
-                                                              ),
-                                                        ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Icon(
-                                                              Icons.image_outlined,
-                                                              color: context
-                                                                  .colors
-                                                                  .textFaint,
-                                                              size: 40,
-                                                            ),
-                                                  ),
-                                                )
-                                              : Center(
-                                                  child: Icon(
-                                                    Icons.image_outlined,
-                                                    color: context
-                                                        .colors
-                                                        .textFaint,
-                                                    size: 40,
-                                                  ),
-                                                ),
-                                        ),
-                                        if (p.isFeatured && !p.hasDiscount)
-                                          Positioned(
-                                            top: 8,
-                                            right: 8,
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 6,
-                                                    vertical: 2,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: context.colors.warning,
-                                                borderRadius:
-                                                    AppSpacing.radiusXs,
-                                              ),
-                                              child: Text(
-                                                'مميز ⭐',
-                                                style: AppTextStyles.body(
-                                                  context.colors.textPrimary,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        if (p.hasDiscount)
-                                          Positioned(
-                                            top: 8,
-                                            right: 8,
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 6,
-                                                    vertical: 2,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: context.colors.error,
-                                                borderRadius:
-                                                    AppSpacing.radiusXs,
-                                              ),
-                                              child: Text(
-                                                'خصم ${p.discountPercentage}% 🏷️',
-                                                style: AppTextStyles.body(
-                                                  context.colors.textPrimary,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: AppSpacing.iconCirclePadding,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                        children: [
-                                          if (p.brand != null)
-                                            Text(
-                                              p.brand!,
-                                              style: AppTextStyles.body(
-                                                context.colors.textPrimary,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          Text(
-                                            p.name,
-                                            style: AppTextStyles.body(
-                                              context.colors.textPrimary,
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          AppSpacing.gapXs,
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    if (p.hasDiscount &&
-                                                        p.oldPrice != null)
-                                                      Text(
-                                                        '${p.oldPrice!.toInt()} ر.س',
-                                                        style:
-                                                            AppTextStyles.caption(
-                                                              context
-                                                                  .colors
-                                                                  .textFaint,
-                                                            ).copyWith(
-                                                              decoration: TextDecoration.lineThrough,
-                                                            ),
-                                                      ),
-                                                    Text(
-                                                      p.price != null
-                                                          ? '${p.price!.toInt()} ر.س'
-                                                          : 'السعر غير محدد',
-                                                      style: AppTextStyles.body(
-                                                        context
-                                                            .colors
-                                                            .blueSky,
-                                                      ).copyWith(fontWeight: AppTextStyles.bold),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              if (p.price != null)
-                                                InkWell(
-                                                  onTap: () => _quickAddToCart(
-                                                    context,
-                                                    p,
-                                                  ),
-                                                  borderRadius:
-                                                      AppSpacing.radiusSm,
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(6),
-                                                    decoration: BoxDecoration(
-                                                      color: context
-                                                          .colors
-                                                          .bluePrimary
-                                                          .withValues(
-                                                            alpha: 0.1,
-                                                          ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.add_shopping_cart_outlined,
-                                                      size: 20,
-                                                      color: context
-                                                          .colors
-                                                          .blueSky,
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                        itemBuilder: (_, i) =>
+                            ProductCard(product: products[i]),
                       );
                     },
                     loading: () => const TammLoading(),
@@ -548,40 +310,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
-  Future<void> _quickAddToCart(BuildContext context, dynamic p) async {
-    if (!await requireAuth(context, ref)) return;
-    bool wantsInstallation = false;
-    if (p.requiresInstallation) {
-      if (!context.mounted) return;
-      final result = await showModalBottomSheet<bool>(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (context) => const BuyInstallSheet(),
-      );
-      if (result == null) return;
-      wantsInstallation = result;
-    }
-    try {
-      await ref.read(cartProvider.notifier).addItem(
-        CartItem(product: p, includeInstallation: wantsInstallation),
-      );
-      if (context.mounted) CartToast.show(context, productName: p.name);
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              e is AppException ? e.message : 'تعذرت الإضافة للسلة',
-              style: AppTextStyles.body(context.colors.textPrimary),
-            ),
-            backgroundColor: context.colors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
 }
 
 class _FilterSheet extends ConsumerWidget {

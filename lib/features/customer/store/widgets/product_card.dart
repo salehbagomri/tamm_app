@@ -1,0 +1,305 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/utils/auth_guard.dart';
+import '../../../../core/widgets/cart_toast.dart';
+import '../../../../core/widgets/tamm_shimmer.dart';
+import '../../../../shared/models/cart_item.dart';
+import '../../../../shared/models/product.dart';
+import '../../../../shared/providers/order_providers.dart';
+import 'package:tamm_app/core/theme/tamm_colors.dart';
+import '../presentation/buy_install_sheet.dart';
+
+class ProductCard extends ConsumerStatefulWidget {
+  final Product product;
+
+  /// تحديد العرض — للقائمة الأفقية في الرئيسية. null = يمتد داخل الـ grid
+  final double? width;
+
+  const ProductCard({super.key, required this.product, this.width});
+
+  @override
+  ConsumerState<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends ConsumerState<ProductCard> {
+  bool _loading = false;
+
+  Future<void> _addToCart() async {
+    if (_loading) return;
+    if (!await requireAuth(context, ref)) return;
+    if (!mounted) return;
+
+    bool wantsInstallation = false;
+    if (widget.product.requiresInstallation) {
+      final result = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => const BuyInstallSheet(),
+      );
+      if (!mounted) return;
+      if (result == null) return;
+      wantsInstallation = result;
+    }
+
+    setState(() => _loading = true);
+    try {
+      await ref.read(cartProvider.notifier).addItem(
+            CartItem(
+                product: widget.product,
+                includeInstallation: wantsInstallation),
+          );
+      if (!mounted) return;
+      CartToast.show(context, productName: widget.product.name);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          e is AppException ? e.message : 'تعذرت الإضافة للسلة',
+          style: AppTextStyles.body(context.colors.textPrimary),
+        ),
+        backgroundColor: context.colors.error,
+        behavior: SnackBarBehavior.floating,
+      ));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = widget.product;
+    return GestureDetector(
+      onTap: () => context.push('/customer/product/${p.id}'),
+      child: Container(
+        width: widget.width,
+        decoration: BoxDecoration(
+          color: context.colors.bgSurface,
+          borderRadius: AppSpacing.radius,
+          border: Border.all(color: context.colors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.07),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _ProductImage(product: p),
+            _ProductInfo(product: p, loading: _loading, onAddToCart: _addToCart),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Image section ────────────────────────────────────────────────────────────
+
+class _ProductImage extends StatelessWidget {
+  final Product product;
+  const _ProductImage({required this.product});
+
+  static const _imageRadius = BorderRadius.vertical(
+    top: Radius.circular(AppSpacing.radiusValue),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: context.colors.bgSurface2,
+              borderRadius: _imageRadius,
+            ),
+            child: ClipRRect(
+              borderRadius: _imageRadius,
+              child: product.imageUrl != null
+                  ? CachedNetworkImage(
+                      imageUrl: product.imageUrl!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      placeholder: (_, __) => const TammShimmer(
+                        width: double.infinity,
+                        height: double.infinity,
+                        borderRadius: _imageRadius,
+                      ),
+                      errorWidget: (_, __, ___) => _PlaceholderIcon(),
+                    )
+                  : _PlaceholderIcon(),
+            ),
+          ),
+          if (product.hasDiscount)
+            Positioned(
+              top: 6,
+              right: 6,
+              child: _Badge(
+                label: 'خصم ${product.discountPercentage}%',
+                color: context.colors.error,
+              ),
+            )
+          else if (product.isFeatured)
+            Positioned(
+              top: 6,
+              right: 6,
+              child: _Badge(label: 'مميز', color: context.colors.warning),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlaceholderIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Icon(Icons.image_outlined,
+            color: context.colors.textFaint, size: 40),
+      );
+}
+
+class _Badge extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _Badge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: AppSpacing.radiusXs,
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.badge(Colors.white)
+            .copyWith(fontWeight: AppTextStyles.bold),
+      ),
+    );
+  }
+}
+
+// ─── Info section ─────────────────────────────────────────────────────────────
+
+class _ProductInfo extends StatelessWidget {
+  final Product product;
+  final bool loading;
+  final VoidCallback onAddToCart;
+
+  const _ProductInfo({
+    required this.product,
+    required this.loading,
+    required this.onAddToCart,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final p = product;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.sm2, AppSpacing.sm, AppSpacing.sm2, AppSpacing.sm2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            p.name,
+            style: AppTextStyles.bodySmall(context.colors.textPrimary)
+                .copyWith(fontWeight: AppTextStyles.semiBold),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: _PriceSection(product: p)),
+              if (p.price != null) ...[
+                const SizedBox(width: 6),
+                _AddToCartButton(loading: loading, onTap: onAddToCart),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PriceSection extends StatelessWidget {
+  final Product product;
+  const _PriceSection({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    final p = product;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (p.hasDiscount && p.oldPrice != null)
+          Text(
+            '${p.oldPrice!.toInt()} ر.ي',
+            style: AppTextStyles.bodySmall(context.colors.textSecond).copyWith(
+              decoration: TextDecoration.lineThrough,
+              decorationThickness: 1.8,
+              decorationColor: context.colors.textSecond,
+            ),
+          ),
+        Text(
+          p.price != null ? '${p.price!.toInt()} ر.ي' : 'السعر غير محدد',
+          style: AppTextStyles.label(context.colors.blueSky)
+              .copyWith(fontWeight: AppTextStyles.bold),
+        ),
+      ],
+    );
+  }
+}
+
+class _AddToCartButton extends StatelessWidget {
+  final bool loading;
+  final VoidCallback onTap;
+  const _AddToCartButton({required this.loading, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: loading ? null : onTap,
+      borderRadius: AppSpacing.radiusSm,
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: context.colors.bluePrimary.withValues(alpha: 0.1),
+          borderRadius: AppSpacing.radiusSm,
+        ),
+        child: loading
+            ? SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: context.colors.blueSky,
+                ),
+              )
+            : Icon(
+                Icons.add_shopping_cart_outlined,
+                size: 18,
+                color: context.colors.blueSky,
+              ),
+      ),
+    );
+  }
+}
