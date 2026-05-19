@@ -13,11 +13,11 @@ import '../../../../shared/providers/product_providers.dart';
 import '../../../../shared/models/product.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/models/cart_item.dart';
-import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/auth_guard.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'buy_install_sheet.dart';
+import '../widgets/cart_icon_button.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
@@ -29,31 +29,9 @@ class ProductDetailScreen extends ConsumerWidget {
     final productAsync = ref.watch(productDetailProvider(productId));
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
-      appBar: TammAppBar(
+      appBar: const TammAppBar(
         title: 'تفاصيل المنتج',
-        actions: [
-          Consumer(
-            builder: (context, ref, child) {
-              final count = ref.watch(cartCountProvider);
-              return Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: IconButton(
-                  icon: Badge(
-                    isLabelVisible: count > 0,
-                    label: Text('$count'),
-                    backgroundColor: context.colors.error,
-                    child: Icon(
-                      Icons.shopping_cart_outlined,
-                      color: context.colors.textPrimary,
-                    ),
-                  ),
-                  onPressed: () => context.push('/customer/cart'),
-                  tooltip: 'السلة',
-                ),
-              );
-            },
-          ),
-        ],
+        actions: [CartIconButton()],
       ),
       body: productAsync.when(
         data: (p) => _buildBody(context, ref, p),
@@ -312,39 +290,9 @@ class ProductDetailScreen extends ConsumerWidget {
       wantsInstallation = result;
     }
     try {
-      final cartNotifier = ref.read(cartProvider.notifier);
-      await cartNotifier.addItem(
+      await ref.read(cartProvider.notifier).addItem(
         CartItem(product: p, includeInstallation: wantsInstallation),
       );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle_outline, color: Colors.white),
-                AppSpacing.hGapSm,
-                Expanded(
-                  child: Text(
-                    'تم الإضافة: ${p.name}',
-                    style: AppTextStyles.body(context.colors.textPrimary),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: context.colors.success,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: 'عرض السلة',
-              textColor: Colors.white,
-              onPressed: () =>
-                  ref.read(appRouterProvider).push('/customer/cart'),
-            ),
-          ),
-        );
-      }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
