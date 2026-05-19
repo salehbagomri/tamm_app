@@ -104,7 +104,8 @@ class OrderSuccessDialog extends StatelessWidget {
                 final router = GoRouter.of(context);
                 final id = orderId;
                 Navigator.of(context).pop();
-                router.go('/customer/order/$id');
+                router.go('/customer/orders');
+                router.push('/customer/order/$id');
               },
             ),
           ],
