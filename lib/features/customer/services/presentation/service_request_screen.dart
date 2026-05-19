@@ -572,7 +572,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
         AppSpacing.gapSm,
         TammTextField(
           label: AppStrings.address,
-          hint: 'مثال: حي الفيصلية، شارع الملك، بجانب...',
+          hint: 'مثال: الشرج، الشارع العام، بجانب جامع الشرج',
           controller: _addressCtrl,
           maxLines: 2,
           validator: (v) => v == null || v.isEmpty ? 'أدخل العنوان' : null,
