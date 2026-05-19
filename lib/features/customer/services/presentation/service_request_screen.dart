@@ -12,6 +12,7 @@ import '../../../../core/widgets/tamm_button.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/models/service_type.dart';
+import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/providers/service_providers.dart';
 import '../../store/presentation/payment_method_selector.dart';
@@ -258,6 +259,13 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(userProfileProvider, (_, next) {
+      next.whenData((profile) {
+        if (_phoneCtrl.text.isEmpty && (profile?.phone ?? '').isNotEmpty) {
+          _phoneCtrl.text = profile!.phone;
+        }
+      });
+    });
     final serviceAsync = ref.watch(serviceDetailProvider(widget.serviceTypeId));
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,

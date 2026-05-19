@@ -15,6 +15,7 @@ import '../widgets/order_success_dialog.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
+import '../../../../shared/providers/auth_providers.dart';
 import 'payment_method_selector.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
@@ -278,6 +279,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   // ─── Build ───────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    ref.listen(userProfileProvider, (_, next) {
+      next.whenData((profile) {
+        if (_phoneCtrl.text.isEmpty && (profile?.phone ?? '').isNotEmpty) {
+          _phoneCtrl.text = profile!.phone;
+        }
+      });
+    });
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
       appBar: const TammAppBar(title: 'إتمام الطلب'),
