@@ -18,6 +18,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'buy_install_sheet.dart';
 import '../widgets/cart_icon_button.dart';
+import '../widgets/product_card.dart';
 import '../../../../core/widgets/cart_toast.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
@@ -145,25 +146,26 @@ class ProductDetailScreen extends ConsumerWidget {
                   style: AppTextStyles.body(context.colors.textPrimary),
                 ),
                 AppSpacing.gapSm2,
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      p.price != null
-                          ? '${p.price!.toInt()} ر.س'
-                          : 'السعر غير محدد',
-                      style: AppTextStyles.body(context.colors.textPrimary),
-                    ),
-                    if (p.hasDiscount) ...[
-                      AppSpacing.hGapSm,
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          '${p.oldPrice!.toInt()}',
-                          style: AppTextStyles.body(context.colors.textPrimary),
+                    if (p.hasDiscount && p.oldPrice != null)
+                      Text(
+                        '${p.oldPrice!.toInt()} ر.ي',
+                        style: AppTextStyles.bodySmall(
+                          context.colors.textSecond,
+                        ).copyWith(
+                          decoration: TextDecoration.lineThrough,
+                          decorationThickness: 1.8,
+                          decorationColor: context.colors.textSecond,
                         ),
                       ),
-                    ],
+                    Text(
+                      p.price != null
+                          ? '${p.price!.toInt()} ر.ي'
+                          : 'السعر غير محدد',
+                      style: AppTextStyles.price(context.colors.bluePrimary),
+                    ),
                   ],
                 ),
                 if (p.description != null) ...[
@@ -173,10 +175,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     style: AppTextStyles.cardTitle(context.colors.textPrimary),
                   ),
                   AppSpacing.gapXs,
-                  Text(
-                    p.description!,
-                    style: AppTextStyles.body(context.colors.textPrimary),
-                  ),
+                  _ExpandableText(text: p.description!),
                 ],
                 if (p.specs.isNotEmpty) ...[
                   AppSpacing.gapLg,
@@ -201,7 +200,6 @@ class ProductDetailScreen extends ConsumerWidget {
                         final isLast = index == p.specs.length - 1;
                         final isEven = index % 2 == 0;
                         final specName = specsTranslation[spec.key] ?? spec.key;
-                        final icon = specsIcons[spec.key] ?? Icons.info_outline;
                         return Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -221,26 +219,20 @@ class ProductDetailScreen extends ConsumerWidget {
                           ),
                           child: Row(
                             children: [
-                              Icon(
-                                icon,
-                                size: 20,
-                                color: context.colors.bluePrimary,
-                              ),
-                              AppSpacing.hGapSm2,
                               Expanded(
                                 flex: 2,
                                 child: Text(
                                   specName,
-                                  style: AppTextStyles.body(
+                                  style: AppTextStyles.bodySmall(
                                     context.colors.textSecond,
-                                  ).copyWith(fontWeight: AppTextStyles.bold),
+                                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                                 ),
                               ),
                               Expanded(
                                 flex: 3,
                                 child: Text(
                                   '${spec.value}',
-                                  style: AppTextStyles.body(
+                                  style: AppTextStyles.bodySmall(
                                     context.colors.textPrimary,
                                   ),
                                   textAlign: TextAlign.start,
@@ -447,107 +439,8 @@ class _RelatedProducts extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: related.length,
                 separatorBuilder: (_, __) => AppSpacing.hGapSm2,
-                itemBuilder: (_, i) {
-                  final rp = related[i];
-                  return GestureDetector(
-                    onTap: () => context.push('/customer/product/${rp.id}'),
-                    child: Container(
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: context.colors.bgSurface,
-                        borderRadius: AppSpacing.radius,
-                        border: Border.all(color: context.colors.border),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 5,
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: context.colors.bgSurface2,
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(11),
-                                ),
-                              ),
-                              child: rp.imageUrl != null
-                                  ? ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(11),
-                                      ),
-                                      child: CachedNetworkImage(
-                                        imageUrl: rp.imageUrl!,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) =>
-                                            TammShimmer(
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                              borderRadius:
-                                                  BorderRadius.circular(0),
-                                            ),
-                                        errorWidget: (context, url, err) =>
-                                            Icon(
-                                              Icons.image_outlined,
-                                              color: context.colors.textFaint,
-                                            ),
-                                      ),
-                                    )
-                                  : Center(
-                                      child: Icon(
-                                        Icons.image_outlined,
-                                        color: context.colors.textFaint,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    rp.name,
-                                    style: AppTextStyles.body(
-                                      context.colors.textPrimary,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const Spacer(),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        rp.price != null
-                                            ? '${rp.price!.toInt()}'
-                                            : 'غير محدد',
-                                        style:
-                                            AppTextStyles.bodySmall(
-                                              context.colors.blueSky,
-                                            ).copyWith(
-                                              fontWeight: AppTextStyles.bold,
-                                            ),
-                                      ),
-                                      if (rp.price != null)
-                                        Text(
-                                          ' ر.س',
-                                          style: AppTextStyles.badge(
-                                            context.colors.blueSky,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                itemBuilder: (_, i) =>
+                    ProductCard(product: related[i], width: 150),
               ),
             ),
           ],
@@ -555,6 +448,53 @@ class _RelatedProducts extends ConsumerWidget {
       },
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _ExpandableText extends StatefulWidget {
+  final String text;
+  const _ExpandableText({required this.text});
+
+  @override
+  State<_ExpandableText> createState() => _ExpandableTextState();
+}
+
+class _ExpandableTextState extends State<_ExpandableText> {
+  bool _expanded = false;
+  static const int _collapsedLines = 3;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 250),
+          crossFadeState: _expanded
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          firstChild: Text(
+            widget.text,
+            style: AppTextStyles.body(context.colors.textSecond),
+            maxLines: _collapsedLines,
+            overflow: TextOverflow.ellipsis,
+          ),
+          secondChild: Text(
+            widget.text,
+            style: AppTextStyles.body(context.colors.textSecond),
+          ),
+        ),
+        const SizedBox(height: 6),
+        GestureDetector(
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Text(
+            _expanded ? 'إخفاء ▲' : 'اقرأ المزيد ▼',
+            style: AppTextStyles.bodySmall(context.colors.bluePrimary)
+                .copyWith(fontWeight: AppTextStyles.semiBold),
+          ),
+        ),
+      ],
     );
   }
 }
