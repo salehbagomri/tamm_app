@@ -184,66 +184,7 @@ class ProductDetailScreen extends ConsumerWidget {
                     style: AppTextStyles.body(context.colors.textPrimary),
                   ),
                   AppSpacing.gapSm2,
-                  Container(
-                    decoration: BoxDecoration(
-                      color: context.colors.bgSurface,
-                      borderRadius: AppSpacing.radius,
-                      border: Border.all(color: context.colors.border),
-                    ),
-                    clipBehavior: Clip.hardEdge,
-                    child: Column(
-                      children: p.specs.entries.toList().asMap().entries.map((
-                        entry,
-                      ) {
-                        final index = entry.key;
-                        final spec = entry.value;
-                        final isLast = index == p.specs.length - 1;
-                        final isEven = index % 2 == 0;
-                        final specName = specsTranslation[spec.key] ?? spec.key;
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isEven
-                                ? context.colors.bgSurface
-                                : context.colors.bgSurface2,
-                            border: isLast
-                                ? null
-                                : Border(
-                                    bottom: BorderSide(
-                                      color: context.colors.border,
-                                    ),
-                                  ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  specName,
-                                  style: AppTextStyles.bodySmall(
-                                    context.colors.textSecond,
-                                  ).copyWith(fontWeight: AppTextStyles.semiBold),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: Text(
-                                  '${spec.value}',
-                                  style: AppTextStyles.bodySmall(
-                                    context.colors.textPrimary,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                  _ExpandableSpecs(specs: p.specs),
                 ],
                 AppSpacing.gapXl,
                 _RelatedProducts(currentProductId: p.id, category: p.category),
@@ -494,6 +435,107 @@ class _ExpandableTextState extends State<_ExpandableText> {
                 .copyWith(fontWeight: AppTextStyles.semiBold),
           ),
         ),
+      ],
+    );
+  }
+}
+
+// ─── Expandable Specs ─────────────────────────────────────────────────────────
+
+class _ExpandableSpecs extends StatefulWidget {
+  final Map<String, dynamic> specs;
+  const _ExpandableSpecs({required this.specs});
+
+  @override
+  State<_ExpandableSpecs> createState() => _ExpandableSpecsState();
+}
+
+class _ExpandableSpecsState extends State<_ExpandableSpecs> {
+  static const int _defaultVisible = 4;
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = widget.specs.entries.toList();
+    final total = entries.length;
+    final showToggle = total > _defaultVisible;
+    final visible = _expanded ? entries : entries.take(_defaultVisible).toList();
+
+    return Column(
+      children: [
+        AnimatedSize(
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeInOut,
+          alignment: Alignment.topCenter,
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.colors.bgSurface,
+              borderRadius: AppSpacing.radius,
+              border: Border.all(color: context.colors.border),
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: Column(
+              children: visible.asMap().entries.map((entry) {
+                final index = entry.key;
+                final spec = entry.value;
+                final isLast = index == visible.length - 1;
+                final isEven = index % 2 == 0;
+                final specName = specsTranslation[spec.key] ?? spec.key;
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isEven
+                        ? context.colors.bgSurface
+                        : context.colors.bgSurface2,
+                    border: isLast
+                        ? null
+                        : Border(
+                            bottom: BorderSide(color: context.colors.border),
+                          ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          specName,
+                          style: AppTextStyles.bodySmall(
+                            context.colors.textSecond,
+                          ).copyWith(fontWeight: AppTextStyles.semiBold),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          '${spec.value}',
+                          style: AppTextStyles.bodySmall(
+                              context.colors.textPrimary),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        if (showToggle) ...[
+          const SizedBox(height: 6),
+          GestureDetector(
+            onTap: () => setState(() => _expanded = !_expanded),
+            child: Text(
+              _expanded
+                  ? 'إخفاء ▲'
+                  : 'عرض كل المواصفات ($total) ▼',
+              style: AppTextStyles.bodySmall(context.colors.bluePrimary)
+                  .copyWith(fontWeight: AppTextStyles.semiBold),
+            ),
+          ),
+        ],
       ],
     );
   }
