@@ -18,6 +18,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'buy_install_sheet.dart';
 import '../widgets/cart_icon_button.dart';
+import '../../../../core/widgets/cart_toast.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
@@ -293,6 +294,7 @@ class ProductDetailScreen extends ConsumerWidget {
       await ref.read(cartProvider.notifier).addItem(
         CartItem(product: p, includeInstallation: wantsInstallation),
       );
+      if (context.mounted) CartToast.show(context, productName: p.name);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
