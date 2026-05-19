@@ -34,6 +34,17 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
   final _phoneCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final profile = await ref.read(userProfileProvider.future);
+      if (mounted && _phoneCtrl.text.isEmpty && (profile?.phone ?? '').isNotEmpty) {
+        _phoneCtrl.text = profile!.phone;
+      }
+    });
+  }
+
   // Step navigation
   int _currentStep = 0;
   static const int _totalSteps = 4;
@@ -259,13 +270,6 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(userProfileProvider, (_, next) {
-      next.whenData((profile) {
-        if (_phoneCtrl.text.isEmpty && (profile?.phone ?? '').isNotEmpty) {
-          _phoneCtrl.text = profile!.phone;
-        }
-      });
-    });
     final serviceAsync = ref.watch(serviceDetailProvider(widget.serviceTypeId));
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
