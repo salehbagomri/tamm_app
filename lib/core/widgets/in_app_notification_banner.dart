@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../constants/app_text_styles.dart';
 import '../theme/tamm_colors.dart';
+import '../../shared/providers/auth_providers.dart';
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
@@ -110,7 +111,7 @@ class InAppNotificationBanner extends ConsumerWidget {
           final type = state.notificationType;
           ref.read(inAppNotificationProvider.notifier).hide();
           if (orderId != null && context.mounted) {
-            final route = _buildRoute(type, orderId);
+            final route = _buildRoute(ref, type, orderId);
             if (route != null) context.push(route);
           }
         },
@@ -193,10 +194,24 @@ class InAppNotificationBanner extends ConsumerWidget {
     );
   }
 
-  String? _buildRoute(String? type, String orderId) {
+  String? _buildRoute(WidgetRef ref, String? type, String orderId) {
     if (type == 'new_assignment') return '/technician/task/$orderId';
-    if (type == 'quote_sent') return '/customer/quote-response/$orderId';
-    return null; // let FcmService handle role-based routing
+
+    final role = ref.read(userProfileProvider).valueOrNull?.role ?? 'customer';
+
+    switch (role) {
+      case 'manager':
+        if (type == 'quote_sent' || type == 'quote_responded') {
+          return '/manager/quote/$orderId';
+        }
+        return '/manager/order/$orderId';
+      case 'technician':
+        return '/technician/task/$orderId';
+      case 'customer':
+      default:
+        if (type == 'quote_sent') return '/customer/quote-response/$orderId';
+        return '/customer/order/$orderId';
+    }
   }
 
   IconData _iconForType(String? type) {
