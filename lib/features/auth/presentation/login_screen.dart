@@ -2,6 +2,7 @@ import 'package:tamm_app/core/constants/app_text_styles.dart';
 import 'package:tamm_app/core/constants/app_spacing.dart';
 import '../../../core/utils/platform_utils.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -219,15 +220,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.network(
-                              'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                            SvgPicture.asset(
+                              'assets/icons/google_logo.svg',
                               width: 24,
                               height: 24,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                Icons.g_mobiledata,
-                                size: 28,
-                                color: Colors.red,
-                              ),
                             ),
                             AppSpacing.hGapSm2,
                             Text(
