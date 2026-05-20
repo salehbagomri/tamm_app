@@ -14,6 +14,7 @@ class InAppNotificationState {
   final String title;
   final String body;
   final String? orderId;
+  final String? assignmentId;
   final String? notificationType;
 
   const InAppNotificationState({
@@ -21,6 +22,7 @@ class InAppNotificationState {
     this.title = '',
     this.body = '',
     this.orderId,
+    this.assignmentId,
     this.notificationType,
   });
 
@@ -29,6 +31,7 @@ class InAppNotificationState {
     String? title,
     String? body,
     String? orderId,
+    String? assignmentId,
     String? notificationType,
   }) {
     return InAppNotificationState(
@@ -36,6 +39,7 @@ class InAppNotificationState {
       title: title ?? this.title,
       body: body ?? this.body,
       orderId: orderId ?? this.orderId,
+      assignmentId: assignmentId ?? this.assignmentId,
       notificationType: notificationType ?? this.notificationType,
     );
   }
@@ -52,6 +56,7 @@ class InAppNotificationNotifier extends StateNotifier<InAppNotificationState> {
     required String title,
     required String body,
     String? orderId,
+    String? assignmentId,
     String? notificationType,
   }) {
     _timer?.cancel();
@@ -60,6 +65,7 @@ class InAppNotificationNotifier extends StateNotifier<InAppNotificationState> {
       title: title,
       body: body,
       orderId: orderId,
+      assignmentId: assignmentId,
       notificationType: notificationType,
     );
     // Auto-dismiss after 4 seconds
@@ -109,9 +115,10 @@ class InAppNotificationBanner extends ConsumerWidget {
         },
         onTap: () {
           final orderId = state.orderId;
+          final assignmentId = state.assignmentId;
           final type = state.notificationType;
           ref.read(inAppNotificationProvider.notifier).hide();
-          final route = _buildRoute(ref, type, orderId);
+          final route = _buildRoute(ref, type, orderId, assignmentId);
           if (route != null) {
             ref.read(appRouterProvider).push(route);
           }
@@ -195,34 +202,34 @@ class InAppNotificationBanner extends ConsumerWidget {
     );
   }
 
-  String? _buildRoute(WidgetRef ref, String? type, String? orderId) {
+  String? _buildRoute(
+    WidgetRef ref,
+    String? type,
+    String? orderId,
+    String? assignmentId,
+  ) {
     final role = ref.read(userProfileProvider).valueOrNull?.role ?? 'customer';
 
-    if (orderId != null) {
-      if (type == 'new_assignment') return '/technician/task/$orderId';
-      switch (role) {
-        case 'manager':
-          if (type == 'quote_sent' || type == 'quote_responded') {
-            return '/manager/quote/$orderId';
-          }
-          return '/manager/order/$orderId';
-        case 'technician':
-          return '/technician/task/$orderId';
-        case 'customer':
-        default:
-          if (type == 'quote_sent') return '/customer/quote-response/$orderId';
-          return '/customer/order/$orderId';
-      }
+    if (type == 'new_assignment') {
+      final id = assignmentId ?? orderId;
+      return id != null ? '/technician/task/$id' : '/technician/tasks';
     }
 
-    // Fallback when order_id is null — navigate to relevant section
     switch (role) {
       case 'manager':
-        return '/manager/dashboard';
+        if (orderId == null) return '/manager/dashboard';
+        if (type == 'quote_sent' || type == 'quote_responded') {
+          return '/manager/quote/$orderId';
+        }
+        return '/manager/order/$orderId';
       case 'technician':
-        return '/technician/tasks';
+        final id = assignmentId ?? orderId;
+        return id != null ? '/technician/task/$id' : '/technician/tasks';
+      case 'customer':
       default:
-        return '/customer/orders';
+        if (orderId == null) return '/customer/orders';
+        if (type == 'quote_sent') return '/customer/quote-response/$orderId';
+        return '/customer/order/$orderId';
     }
   }
 

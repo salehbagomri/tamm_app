@@ -71,6 +71,7 @@ class _TammAppState extends ConsumerState<TammApp> {
         required String title,
         required String body,
         String? orderId,
+        String? assignmentId,
         String? notificationType,
       }) {
         ref
@@ -79,6 +80,7 @@ class _TammAppState extends ConsumerState<TammApp> {
               title: title,
               body: body,
               orderId: orderId,
+              assignmentId: assignmentId,
               notificationType: notificationType,
             );
       });

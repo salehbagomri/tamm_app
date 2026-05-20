@@ -25,6 +25,7 @@ class FcmService {
     required String title,
     required String body,
     String? orderId,
+    String? assignmentId,
     String? notificationType,
   })?
   _bannerCallback;
@@ -38,6 +39,7 @@ class FcmService {
       required String title,
       required String body,
       String? orderId,
+      String? assignmentId,
       String? notificationType,
     })
     cb,
@@ -90,6 +92,7 @@ class FcmService {
         title: notification.title ?? '',
         body: notification.body ?? '',
         orderId: data['order_id'],
+        assignmentId: data['assignment_id'],
         notificationType: data['notification_type'],
       );
     });
@@ -113,9 +116,10 @@ class FcmService {
   static Future<void> _handleMessageNavigation(RemoteMessage message) async {
     final data = message.data;
     final orderId = data['order_id'] as String?;
+    final assignmentId = data['assignment_id'] as String?;
     final notificationType = data['notification_type'] as String?;
 
-    if (orderId == null || _navigationCallback == null) return;
+    if (_navigationCallback == null) return;
 
     // جلب دور المستخدم مباشرة من Supabase
     final userId = _client.auth.currentUser?.id;
@@ -133,26 +137,42 @@ class FcmService {
       // استخدم الافتراضي
     }
 
-    final route = _buildRoute(notificationType, orderId, role);
+    final route = _buildRoute(
+      notificationType,
+      orderId,
+      role,
+      assignmentId: assignmentId,
+    );
     if (route != null) _navigationCallback!(route);
   }
 
   /// بناء المسار حسب نوع الإشعار والدور
-  static String? _buildRoute(String? type, String orderId, String role) {
+  static String? _buildRoute(
+    String? type,
+    String? orderId,
+    String role, {
+    String? assignmentId,
+  }) {
     if (type == 'new_assignment') {
-      return '/technician/task/$orderId';
+      final id = assignmentId ?? orderId;
+      if (id == null) return '/technician/tasks';
+      return '/technician/task/$id';
     }
 
     switch (role) {
       case 'manager':
+        if (orderId == null) return '/manager/dashboard';
         if (type == 'quote_sent' || type == 'quote_responded') {
           return '/manager/quote/$orderId';
         }
         return '/manager/order/$orderId';
       case 'technician':
-        return '/technician/task/$orderId';
+        final id = assignmentId ?? orderId;
+        if (id == null) return '/technician/tasks';
+        return '/technician/task/$id';
       case 'customer':
       default:
+        if (orderId == null) return '/customer/orders';
         if (type == 'quote_sent') {
           return '/customer/quote-response/$orderId';
         }

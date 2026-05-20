@@ -79,6 +79,8 @@ class _NotificationCard extends ConsumerWidget {
     final isRead = notification['is_read'] == true;
     final type = notification['notification_type'] as String?;
     final orderId = notification['order_id'] as String?;
+    final data = notification['data'] as Map<String, dynamic>?;
+    final assignmentId = data?['assignment_id'] as String?;
     final title = notification['title'] as String? ?? '';
     final body = notification['body'] as String? ?? '';
     final createdAt = notification['created_at'] as String?;
@@ -92,7 +94,7 @@ class _NotificationCard extends ConsumerWidget {
             .read(notificationsProvider.notifier)
             .markAsRead(notification['id'] as String);
         if (!context.mounted) return;
-        final route = _buildRoute(ref, type, orderId);
+        final route = _buildRoute(ref, type, orderId, assignmentId);
         if (route != null) context.push(route);
       },
       child: Container(
@@ -174,35 +176,35 @@ class _NotificationCard extends ConsumerWidget {
     );
   }
 
-  String? _buildRoute(WidgetRef ref, String? type, String? orderId) {
+  String? _buildRoute(
+    WidgetRef ref,
+    String? type,
+    String? orderId,
+    String? assignmentId,
+  ) {
     final role =
         ref.read(userProfileProvider).valueOrNull?.role ?? 'customer';
 
-    if (orderId != null) {
-      if (type == 'new_assignment') return '/technician/task/$orderId';
-      switch (role) {
-        case 'manager':
-          if (type == 'quote_sent' || type == 'quote_responded') {
-            return '/manager/quote/$orderId';
-          }
-          return '/manager/order/$orderId';
-        case 'technician':
-          return '/technician/task/$orderId';
-        case 'customer':
-        default:
-          if (type == 'quote_sent') return '/customer/quote-response/$orderId';
-          return '/customer/order/$orderId';
-      }
+    if (type == 'new_assignment') {
+      final id = assignmentId ?? orderId;
+      return id != null ? '/technician/task/$id' : '/technician/tasks';
     }
 
-    // Fallback when order_id is null
     switch (role) {
       case 'manager':
-        return '/manager/dashboard';
+        if (orderId == null) return '/manager/dashboard';
+        if (type == 'quote_sent' || type == 'quote_responded') {
+          return '/manager/quote/$orderId';
+        }
+        return '/manager/order/$orderId';
       case 'technician':
-        return '/technician/tasks';
+        final id = assignmentId ?? orderId;
+        return id != null ? '/technician/task/$id' : '/technician/tasks';
+      case 'customer':
       default:
-        return '/customer/orders';
+        if (orderId == null) return '/customer/orders';
+        if (type == 'quote_sent') return '/customer/quote-response/$orderId';
+        return '/customer/order/$orderId';
     }
   }
 
