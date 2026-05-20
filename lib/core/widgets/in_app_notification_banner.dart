@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 import '../constants/app_text_styles.dart';
+import '../router/app_router.dart';
 import '../theme/tamm_colors.dart';
 import '../../shared/providers/auth_providers.dart';
 
@@ -110,9 +111,9 @@ class InAppNotificationBanner extends ConsumerWidget {
           final orderId = state.orderId;
           final type = state.notificationType;
           ref.read(inAppNotificationProvider.notifier).hide();
-          if (orderId != null && context.mounted) {
-            final route = _buildRoute(ref, type, orderId);
-            if (route != null) context.push(route);
+          final route = _buildRoute(ref, type, orderId);
+          if (route != null) {
+            ref.read(appRouterProvider).push(route);
           }
         },
         child: Material(
@@ -194,23 +195,34 @@ class InAppNotificationBanner extends ConsumerWidget {
     );
   }
 
-  String? _buildRoute(WidgetRef ref, String? type, String orderId) {
-    if (type == 'new_assignment') return '/technician/task/$orderId';
-
+  String? _buildRoute(WidgetRef ref, String? type, String? orderId) {
     final role = ref.read(userProfileProvider).valueOrNull?.role ?? 'customer';
 
+    if (orderId != null) {
+      if (type == 'new_assignment') return '/technician/task/$orderId';
+      switch (role) {
+        case 'manager':
+          if (type == 'quote_sent' || type == 'quote_responded') {
+            return '/manager/quote/$orderId';
+          }
+          return '/manager/order/$orderId';
+        case 'technician':
+          return '/technician/task/$orderId';
+        case 'customer':
+        default:
+          if (type == 'quote_sent') return '/customer/quote-response/$orderId';
+          return '/customer/order/$orderId';
+      }
+    }
+
+    // Fallback when order_id is null — navigate to relevant section
     switch (role) {
       case 'manager':
-        if (type == 'quote_sent' || type == 'quote_responded') {
-          return '/manager/quote/$orderId';
-        }
-        return '/manager/order/$orderId';
+        return '/manager/dashboard';
       case 'technician':
-        return '/technician/task/$orderId';
-      case 'customer':
+        return '/technician/tasks';
       default:
-        if (type == 'quote_sent') return '/customer/quote-response/$orderId';
-        return '/customer/order/$orderId';
+        return '/customer/orders';
     }
   }
 
