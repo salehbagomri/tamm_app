@@ -16,7 +16,7 @@ final myAssignmentsProvider =
           .single();
       final techId = tech['id'] as String;
 
-      return await client
+      final rows = await client
           .from('assignments')
           .select(
             '*, orders(*, profiles!customer_id(full_name, phone, address), order_items(*))',
@@ -24,6 +24,14 @@ final myAssignmentsProvider =
           .eq('technician_id', techId)
           .inFilter('status', ['assigned', 'started'])
           .order('created_at', ascending: false);
+
+      // Safety filter: hide assignments whose order is already completed/cancelled
+      // in case the assignment status got out of sync with the order status.
+      return rows.where((a) {
+        final orderStatus =
+            (a['orders'] as Map<String, dynamic>?)?['status'] as String?;
+        return orderStatus != 'completed' && orderStatus != 'cancelled';
+      }).toList();
     });
 
 final myTechnicianProfileProvider =

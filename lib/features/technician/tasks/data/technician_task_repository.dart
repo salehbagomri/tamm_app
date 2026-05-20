@@ -6,29 +6,32 @@ class TechnicianTaskRepository {
 
   Future<void> updateOrderStatus(String orderId, String newStatus) async {
     try {
-      final updated = await _client
-          .from('orders')
-          .update({'status': newStatus})
-          .eq('id', orderId)
-          .select();
-
-      if (updated.isEmpty) {
-        throw const ServerException(message: 'فشل في تحديث حالة المهمة — تحقق من صلاحيات الحساب');
-      }
-
-      // Sync assignments so myAssignmentsProvider filter stays correct
-      final assignmentUpdates = <String, dynamic>{};
-      if (newStatus == 'in_progress') {
-        assignmentUpdates['status'] = 'started';
-      } else if (newStatus == 'completed') {
-        assignmentUpdates['status'] = 'completed';
-        assignmentUpdates['completed_at'] = DateTime.now().toIso8601String();
-      }
-      if (assignmentUpdates.isNotEmpty) {
-        await _client
+      if (newStatus == 'on_the_way') {
+        // on_the_way has no assignment status equivalent — update order directly
+        final updated = await _client
+            .from('orders')
+            .update({'status': 'on_the_way'})
+            .eq('id', orderId)
+            .select();
+        if (updated.isEmpty) {
+          throw const ServerException(message: 'فشل في تحديث حالة المهمة — تحقق من صلاحيات الحساب');
+        }
+      } else {
+        // For in_progress and completed: update ONLY the assignment.
+        // The trigger sync_workflow_on_assignment_update handles order status sync.
+        final assignmentStatus = newStatus == 'in_progress' ? 'started' : 'completed';
+        final updates = <String, dynamic>{'status': assignmentStatus};
+        if (newStatus == 'completed') {
+          updates['completed_at'] = DateTime.now().toIso8601String();
+        }
+        final updated = await _client
             .from('assignments')
-            .update(assignmentUpdates)
-            .eq('order_id', orderId);
+            .update(updates)
+            .eq('order_id', orderId)
+            .select();
+        if (updated.isEmpty) {
+          throw const ServerException(message: 'فشل في تحديث حالة المهمة — تحقق من صلاحيات الحساب');
+        }
       }
     } catch (e) {
       if (e is AppException) rethrow;
