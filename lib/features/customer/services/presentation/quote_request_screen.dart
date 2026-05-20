@@ -62,67 +62,44 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
   Future<void> _pickLocation() async {
     setState(() => _isLoadingLocation = true);
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('الرجاء تفعيل خدمات الموقع.')),
-        );
-        setState(() => _isLoadingLocation = false);
-        return;
-      }
-
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم رفض إذن الوصول للموقع.')),
-          );
-          setState(() => _isLoadingLocation = false);
-          return;
-        }
       }
-
-      if (permission == LocationPermission.deniedForever) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'إذن الوصول للموقع مرفوض نهائياً. تم التعيين كموقع افتراضي.',
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('يجب السماح بالوصول للموقع'),
+              behavior: SnackBarBehavior.floating,
             ),
-          ),
-        );
-        setState(() {
-          _lat = 24.7136;
-          _lng = 46.6753;
-          _locationPicked = true;
-          _isLoadingLocation = false;
-        });
+          );
+        }
         return;
       }
-
-      final position = await Geolocator.getCurrentPosition();
-      if (!mounted) return;
-      setState(() {
-        _lat = position.latitude;
-        _lng = position.longitude;
-        _locationPicked = true;
-        _isLoadingLocation = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'تعذر جلب الموقع، حاول مجدداً',
-            style: AppTextStyles.bodySmall(context.colors.textPrimary),
-          ),
-          behavior: SnackBarBehavior.floating,
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 15),
         ),
       );
-      setState(() => _isLoadingLocation = false);
+      setState(() {
+        _lat = pos.latitude;
+        _lng = pos.longitude;
+        _locationPicked = true;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تعذر تحديد الموقع: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoadingLocation = false);
     }
   }
 
