@@ -40,5 +40,5 @@ void main() {
       updatedCount++;
     }
   }
-  print('Updated core/widgets: ' + updatedCount.toString() + ' files.');
+  print('Updated core/widgets: $updatedCount files.');
 }

@@ -45,6 +45,7 @@ app.*.map.json
 /android/app/release
 
 # Secrets
+.mcp.json
 firebase-key.json
 clint_id*
 clint_id&clint_secret.txt
