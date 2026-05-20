@@ -22,6 +22,9 @@ class TechnicianTaskRepository {
         // The trigger sync_workflow_on_assignment_update handles order status sync.
         final assignmentStatus = newStatus == 'in_progress' ? 'started' : 'completed';
         final updates = <String, dynamic>{'status': assignmentStatus};
+        if (newStatus == 'in_progress') {
+          updates['started_at'] = DateTime.now().toIso8601String();
+        }
         if (newStatus == 'completed') {
           updates['completed_at'] = DateTime.now().toIso8601String();
         }
@@ -42,10 +45,16 @@ class TechnicianTaskRepository {
 
   Future<void> saveTechnicianNotes(String orderId, String notes) async {
     try {
+      // Update both orders and assignments to keep data in sync for Web Admin dashboard
       await _client
           .from('orders')
           .update({'technician_notes': notes})
           .eq('id', orderId);
+
+      await _client
+          .from('assignments')
+          .update({'technician_notes': notes})
+          .eq('order_id', orderId);
     } catch (e) {
       if (e is AppException) rethrow;
       throw const ServerException(message: 'فشل في حفظ الملاحظات');
@@ -74,11 +83,29 @@ class TechnicianTaskRepository {
       final url =
           _client.storage.from('order-photos').getPublicUrl(path);
 
+      // Check if this is the first photo being uploaded to set it as primary photo_url fallback
+      final assignment = await _client
+          .from('assignments')
+          .select('photo_url, photo_urls')
+          .eq('id', assignmentId)
+          .single();
+
+      final currentPhotoUrl = assignment['photo_url'] as String?;
+      final currentPhotoUrls = (assignment['photo_urls'] as List?)?.cast<String>() ?? [];
+      final bool isFirst = currentPhotoUrl == null || currentPhotoUrl.isEmpty || currentPhotoUrls.isEmpty;
+
       // أضف الـ URL لمصفوفة photo_urls
       await _client.rpc('append_photo_url', params: {
         'p_assignment_id': assignmentId,
         'p_url': url,
       });
+
+      if (isFirst) {
+        await _client
+            .from('assignments')
+            .update({'photo_url': url})
+            .eq('id', assignmentId);
+      }
 
       return url;
     } catch (e) {
