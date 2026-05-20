@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -171,6 +172,37 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     } catch (_) {}
   }
 
+  Future<void> _pickAndUploadPhoto(String assignmentId) async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 75,
+      maxWidth: 1280,
+    );
+    if (picked == null || !mounted) return;
+
+    final bytes = await picked.readAsBytes();
+    final ext = picked.name.split('.').last.toLowerCase();
+    final ok = await ref
+        .read(photoUploadProvider(assignmentId).notifier)
+        .upload(assignmentId: assignmentId, bytes: bytes, extension: ext);
+
+    if (!mounted) return;
+    if (ok) {
+      ref.invalidate(assignmentDetailProvider(widget.assignmentId));
+    } else {
+      final err = ref.read(photoUploadProvider(assignmentId)).errorMessage;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          err ?? 'فشل رفع الصورة',
+          style: AppTextStyles.body(Colors.white),
+        ),
+        backgroundColor: context.colors.error,
+        behavior: SnackBarBehavior.floating,
+      ));
+    }
+  }
+
   Future<void> _openMaps(String address, {double? lat, double? lng}) async {
     Uri uri;
     if (lat != null && lng != null) {
@@ -277,6 +309,20 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                           customerNotes.isNotEmpty) ...[
                         AppSpacing.gapMd,
                         _buildCustomerNotes(context, customerNotes),
+                      ],
+
+                      // ── صور العمل (أثناء التنفيذ وبعده) ─────────────────
+                      if (orderStatus == 'in_progress' ||
+                          orderStatus == 'completed') ...[
+                        AppSpacing.gapMd,
+                        _buildPhotosSection(
+                          context,
+                          assignmentId: assignment['id'] as String,
+                          photoUrls: (assignment['photo_urls'] as List?)
+                                  ?.cast<String>() ??
+                              [],
+                          canAdd: orderStatus == 'in_progress',
+                        ),
                       ],
 
                       // ── ملاحظات الفني (بعد الاكتمال) ────────────────────
@@ -704,6 +750,96 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     );
   }
 
+  // ─── صور العمل ───────────────────────────────────────────────────────────
+
+  Widget _buildPhotosSection(
+    BuildContext context, {
+    required String assignmentId,
+    required List<String> photoUrls,
+    required bool canAdd,
+  }) {
+    final uploadState = ref.watch(photoUploadProvider(assignmentId));
+    final isUploading = uploadState.status == PhotoUploadStatus.uploading;
+    const maxPhotos = 3;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'صور إنجاز العمل',
+              style: AppTextStyles.cardTitle(context.colors.textPrimary),
+            ),
+            if (canAdd && photoUrls.length < maxPhotos)
+              TextButton.icon(
+                onPressed: isUploading
+                    ? null
+                    : () => _pickAndUploadPhoto(assignmentId),
+                icon: isUploading
+                    ? SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.colors.bluePrimary,
+                        ),
+                      )
+                    : Icon(
+                        Icons.add_photo_alternate_outlined,
+                        size: 18,
+                        color: context.colors.bluePrimary,
+                      ),
+                label: Text(
+                  isUploading ? 'جاري الرفع...' : 'إضافة صورة',
+                  style: AppTextStyles.bodySmall(context.colors.bluePrimary),
+                ),
+              ),
+          ],
+        ),
+        AppSpacing.gapSm,
+        if (photoUrls.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: AppSpacing.cardPadding,
+            decoration: BoxDecoration(
+              color: context.colors.bgSurface,
+              borderRadius: AppSpacing.radiusLg,
+              border: Border.all(
+                color: context.colors.border,
+                style: canAdd ? BorderStyle.solid : BorderStyle.solid,
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.photo_camera_outlined,
+                  size: 32,
+                  color: context.colors.textFaint,
+                ),
+                AppSpacing.gapXs,
+                Text(
+                  canAdd ? 'أضف صورة لتوثيق العمل' : 'لا توجد صور مرفوعة',
+                  style: AppTextStyles.bodySmall(context.colors.textFaint),
+                ),
+              ],
+            ),
+          )
+        else
+          SizedBox(
+            height: 120,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: photoUrls.length,
+              separatorBuilder: (_, __) => AppSpacing.hGapSm2,
+              itemBuilder: (_, i) => _PhotoThumb(url: photoUrls[i]),
+            ),
+          ),
+      ],
+    );
+  }
+
   // ─── ملاحظات العميل ───────────────────────────────────────────────────────
 
   Widget _buildCustomerNotes(BuildContext context, String notes) {
@@ -926,6 +1062,78 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     final d = DateTime.tryParse(iso)?.toLocal();
     if (d == null) return '';
     return '${d.day}/${d.month}/${d.year}';
+  }
+}
+
+// ─── Photo Thumb ─────────────────────────────────────────────────────────────
+
+class _PhotoThumb extends StatelessWidget {
+  final String url;
+  const _PhotoThumb({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _showFullScreen(context),
+      child: ClipRRect(
+        borderRadius: AppSpacing.radiusLg,
+        child: Image.network(
+          url,
+          width: 120,
+          height: 120,
+          fit: BoxFit.cover,
+          loadingBuilder: (_, child, progress) => progress == null
+              ? child
+              : Container(
+                  width: 120,
+                  height: 120,
+                  color: context.colors.bgSurface,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: context.colors.bluePrimary,
+                    ),
+                  ),
+                ),
+          errorBuilder: (_, __, ___) => Container(
+            width: 120,
+            height: 120,
+            color: context.colors.bgSurface,
+            child: Icon(
+              Icons.broken_image_outlined,
+              color: context.colors.textFaint,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showFullScreen(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.black,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          children: [
+            Center(
+              child: InteractiveViewer(
+                child: Image.network(url, fit: BoxFit.contain),
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 16,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

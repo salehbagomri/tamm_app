@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/errors/app_exception.dart';
@@ -122,4 +123,52 @@ final taskUpdateProvider = StateNotifierProvider.autoDispose
     .family<TaskUpdateNotifier, TaskUpdateState, String>(
       (ref, orderId) =>
           TaskUpdateNotifier(ref.read(technicianTaskRepositoryProvider)),
+    );
+
+// ─── Photo upload provider ────────────────────────────────────────────────────
+
+enum PhotoUploadStatus { idle, uploading, done, error }
+
+class PhotoUploadState {
+  final PhotoUploadStatus status;
+  final String? errorMessage;
+  const PhotoUploadState({
+    this.status = PhotoUploadStatus.idle,
+    this.errorMessage,
+  });
+}
+
+class PhotoUploadNotifier extends StateNotifier<PhotoUploadState> {
+  final TechnicianTaskRepository _repo;
+  PhotoUploadNotifier(this._repo) : super(const PhotoUploadState());
+
+  Future<bool> upload({
+    required String assignmentId,
+    required List<int> bytes,
+    required String extension,
+  }) async {
+    state = const PhotoUploadState(status: PhotoUploadStatus.uploading);
+    try {
+      final data = Uint8List.fromList(bytes);
+      await _repo.uploadPhoto(
+        assignmentId: assignmentId,
+        bytes: data,
+        extension: extension,
+      );
+      state = const PhotoUploadState(status: PhotoUploadStatus.done);
+      return true;
+    } catch (e) {
+      state = PhotoUploadState(
+        status: PhotoUploadStatus.error,
+        errorMessage: e is AppException ? e.message : 'فشل رفع الصورة',
+      );
+      return false;
+    }
+  }
+}
+
+final photoUploadProvider = StateNotifierProvider.autoDispose
+    .family<PhotoUploadNotifier, PhotoUploadState, String>(
+      (ref, assignmentId) =>
+          PhotoUploadNotifier(ref.read(technicianTaskRepositoryProvider)),
     );

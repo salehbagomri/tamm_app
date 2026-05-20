@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/errors/app_exception.dart';
 
@@ -48,6 +49,41 @@ class TechnicianTaskRepository {
     } catch (e) {
       if (e is AppException) rethrow;
       throw const ServerException(message: 'فشل في حفظ الملاحظات');
+    }
+  }
+
+  // يرفع صورة واحدة ويُضيفها لمصفوفة photo_urls في assignment
+  Future<String> uploadPhoto({
+    required String assignmentId,
+    required Uint8List bytes,
+    required String extension,
+  }) async {
+    try {
+      final path =
+          'assignments/$assignmentId/${DateTime.now().millisecondsSinceEpoch}.$extension';
+
+      await _client.storage.from('order-photos').uploadBinary(
+            path,
+            bytes,
+            fileOptions: FileOptions(
+              contentType: 'image/$extension',
+              upsert: false,
+            ),
+          );
+
+      final url =
+          _client.storage.from('order-photos').getPublicUrl(path);
+
+      // أضف الـ URL لمصفوفة photo_urls
+      await _client.rpc('append_photo_url', params: {
+        'p_assignment_id': assignmentId,
+        'p_url': url,
+      });
+
+      return url;
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw const ServerException(message: 'فشل في رفع الصورة');
     }
   }
 }
