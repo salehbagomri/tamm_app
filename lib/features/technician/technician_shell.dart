@@ -16,7 +16,8 @@ class TechnicianShell extends ConsumerWidget {
   const TechnicianShell({super.key, required this.child});
   int _idx(BuildContext c) {
     final loc = GoRouterState.of(c).matchedLocation;
-    if (loc.startsWith('/technician/profile')) return 1;
+    if (loc.startsWith('/technician/history')) return 1;
+    if (loc.startsWith('/technician/profile')) return 2;
     return 0;
   }
 
@@ -95,12 +96,15 @@ class TechnicianShell extends ConsumerWidget {
             ref.invalidate(myAssignmentsProvider);
             context.go('/technician/tasks');
           case 1:
+            context.go('/technician/history');
+          case 2:
             ref.invalidate(userProfileProvider);
             context.go('/technician/profile');
         }
       },
       items: const [
         NavItem(icon: Icons.task_alt_outlined, label: AppStrings.myTasks),
+        NavItem(icon: Icons.history_outlined, label: 'السجل'),
         NavItem(icon: Icons.person_outlined, label: AppStrings.profile),
       ],
       child: child,

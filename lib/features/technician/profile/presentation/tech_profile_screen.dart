@@ -52,6 +52,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final techProfileAsync = ref.watch(myTechnicianProfileProvider);
+    final statsAsync = ref.watch(techStatsProvider);
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
       body: SafeArea(
@@ -61,7 +62,6 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
             data: (data) {
               final tech = data['technician'] as Map<String, dynamic>;
               final profile = tech['profiles'] as Map<String, dynamic>;
-              final completedCount = data['completed_count'] as int;
 
               final isAvailable = tech['status'] == 'available';
               final fullName = profile['full_name']?.toString() ?? 'غير معروف';
@@ -156,87 +156,120 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
 
                   AppSpacing.gapMd,
 
-                  // Stats Card
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: AppSpacing.cardPadding,
+                  // بطاقة التخصص
+                  Container(
+                    width: double.infinity,
+                    padding: AppSpacing.cardPadding,
+                    decoration: BoxDecoration(
+                      color: context.colors.bgSurface,
+                      borderRadius: AppSpacing.radiusLg,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: context.colors.bgSurface,
-                            borderRadius: AppSpacing.radiusLg,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                            color: context.colors.bluePrimary
+                                .withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
                           ),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.engineering_outlined,
-                                color: context.colors.bluePrimary,
-                                size: 32,
-                              ),
-                              AppSpacing.gapSm,
-                              Text(
-                                'التخصص',
-                                style: AppTextStyles.body(
-                                  context.colors.textSecond,
-                                ),
-                              ),
-                              Text(
-                                specialization,
-                                style: AppTextStyles.body(
-                                  context.colors.textPrimary,
-                                ),
-                              ),
-                            ],
+                          child: Icon(
+                            Icons.engineering_outlined,
+                            color: context.colors.bluePrimary,
+                            size: 22,
                           ),
                         ),
-                      ),
-                      AppSpacing.hGapMd,
-                      Expanded(
-                        child: Container(
-                          padding: AppSpacing.cardPadding,
-                          decoration: BoxDecoration(
-                            color: context.colors.bgSurface,
-                            borderRadius: AppSpacing.radiusLg,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
+                        AppSpacing.hGapSm2,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'التخصص',
+                              style: AppTextStyles.caption(
+                                context.colors.textSecond,
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.task_alt_outlined,
-                                color: context.colors.success,
-                                size: 32,
-                              ),
-                              AppSpacing.gapSm,
-                              Text(
-                                'المهام المنجزة',
-                                style: AppTextStyles.body(
-                                  context.colors.textSecond,
-                                ),
-                              ),
-                              Text(
-                                completedCount.toString(),
-                                style: AppTextStyles.body(
-                                  context.colors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                            Text(
+                              specialization,
+                              style: AppTextStyles.body(
+                                context.colors.textPrimary,
+                              ).copyWith(fontWeight: AppTextStyles.semiBold),
+                            ),
+                          ],
                         ),
+                      ],
+                    ),
+                  ),
+
+                  AppSpacing.gapMd,
+
+                  // إحصاءات الأداء
+                  statsAsync.when(
+                    loading: () => const SizedBox(
+                      height: 80,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (_, __) => const SizedBox.shrink(),
+                    data: (stats) => Container(
+                      padding: AppSpacing.cardPadding,
+                      decoration: BoxDecoration(
+                        color: context.colors.bgSurface,
+                        borderRadius: AppSpacing.radiusLg,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'إحصاءات الأداء',
+                            style: AppTextStyles.bodySmall(
+                              context.colors.textSecond,
+                            ),
+                          ),
+                          AppSpacing.gapSm2,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _StatCell(
+                                  label: 'اليوم',
+                                  value: stats.today.toString(),
+                                  color: context.colors.bluePrimary,
+                                ),
+                              ),
+                              _VerticalDivider(),
+                              Expanded(
+                                child: _StatCell(
+                                  label: 'هذا الأسبوع',
+                                  value: stats.thisWeek.toString(),
+                                  color: context.colors.warning,
+                                ),
+                              ),
+                              _VerticalDivider(),
+                              Expanded(
+                                child: _StatCell(
+                                  label: 'الإجمالي',
+                                  value: stats.total.toString(),
+                                  color: context.colors.success,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
 
                   AppSpacing.gapMd,
@@ -263,6 +296,48 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ─── خلية إحصاء ──────────────────────────────────────────────────────────────
+
+class _StatCell extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+  const _StatCell({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: AppTextStyles.sectionTitle(color),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: AppTextStyles.caption(context.colors.textSecond),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+class _VerticalDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 36,
+      color: context.colors.border,
     );
   }
 }

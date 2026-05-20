@@ -58,6 +58,92 @@ final myTechnicianProfileProvider =
       return {'technician': tech, 'completed_count': completed.count};
     });
 
+// ─── Completed assignments (history) ─────────────────────────────────────────
+
+final completedAssignmentsProvider =
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final client = Supabase.instance.client;
+  final userId = client.auth.currentUser!.id;
+
+  final tech = await client
+      .from('technicians')
+      .select('id')
+      .eq('profile_id', userId)
+      .single();
+  final techId = tech['id'] as String;
+
+  return await client
+      .from('assignments')
+      .select(
+        '*, orders(*, profiles!customer_id(full_name, phone, address))',
+      )
+      .eq('technician_id', techId)
+      .eq('status', 'completed')
+      .order('completed_at', ascending: false);
+});
+
+// ─── Performance stats (today / week / total) ─────────────────────────────────
+
+class TechStats {
+  final int total;
+  final int today;
+  final int thisWeek;
+  const TechStats({
+    required this.total,
+    required this.today,
+    required this.thisWeek,
+  });
+}
+
+final techStatsProvider =
+    FutureProvider.autoDispose<TechStats>((ref) async {
+  final client = Supabase.instance.client;
+  final userId = client.auth.currentUser!.id;
+
+  final tech = await client
+      .from('technicians')
+      .select('id')
+      .eq('profile_id', userId)
+      .single();
+  final techId = tech['id'] as String;
+
+  final now = DateTime.now().toLocal();
+  final todayStart =
+      DateTime(now.year, now.month, now.day).toUtc().toIso8601String();
+  final weekStart = DateTime(now.year, now.month, now.day - now.weekday + 1)
+      .toUtc()
+      .toIso8601String();
+
+  final totalRes = await client
+      .from('assignments')
+      .select()
+      .eq('technician_id', techId)
+      .eq('status', 'completed')
+      .count(CountOption.exact);
+
+  final todayRes = await client
+      .from('assignments')
+      .select()
+      .eq('technician_id', techId)
+      .eq('status', 'completed')
+      .gte('completed_at', todayStart)
+      .count(CountOption.exact);
+
+  final weekRes = await client
+      .from('assignments')
+      .select()
+      .eq('technician_id', techId)
+      .eq('status', 'completed')
+      .gte('completed_at', weekStart)
+      .count(CountOption.exact);
+
+  return TechStats(
+    total: totalRes.count,
+    today: todayRes.count,
+    thisWeek: weekRes.count,
+  );
+});
+
 // ─── Assignment detail provider (independent — works from notifications too) ──
 
 final assignmentDetailProvider = FutureProvider.autoDispose
