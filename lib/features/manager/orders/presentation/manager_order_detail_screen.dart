@@ -104,14 +104,34 @@ class _ManagerOrderDetailScreenState
                         ),
                       ),
                       onTap: () async {
-                        await ref
-                            .read(assignmentRepositoryProvider)
-                            .assignTechnician(
-                              orderId: widget.orderId,
-                              technicianId: t['id'],
+                        try {
+                          await ref
+                              .read(assignmentRepositoryProvider)
+                              .assignTechnician(
+                                orderId: widget.orderId,
+                                technicianId: t['id'],
+                              );
+                          ref.invalidate(orderDetailProvider(widget.orderId));
+                          ref.invalidate(allOrdersProvider(null));
+                          if (context.mounted) Navigator.pop(context);
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e is AppException
+                                      ? e.message
+                                      : 'فشل تعيين الفني، حاول مجدداً',
+                                  style: AppTextStyles.bodySmall(
+                                    context.colors.textPrimary,
+                                  ),
+                                ),
+                                backgroundColor: context.colors.error,
+                                behavior: SnackBarBehavior.floating,
+                              ),
                             );
-                        ref.invalidate(orderDetailProvider(widget.orderId));
-                        if (context.mounted) Navigator.pop(context);
+                          }
+                        }
                       },
                     );
                   },
