@@ -19,6 +19,7 @@ class TammTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool readOnly;
   final int? maxLength;
+  final FocusNode? focusNode;
 
   const TammTextField({
     super.key,
@@ -36,6 +37,7 @@ class TammTextField extends StatelessWidget {
     this.inputFormatters,
     this.readOnly = false,
     this.maxLength,
+    this.focusNode,
   });
 
   @override
@@ -47,6 +49,7 @@ class TammTextField extends StatelessWidget {
         AppSpacing.gapXs,
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
           keyboardType: keyboardType,
           obscureText: obscureText,
           maxLines: maxLines,

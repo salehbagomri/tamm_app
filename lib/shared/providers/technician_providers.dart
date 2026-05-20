@@ -57,6 +57,21 @@ final myTechnicianProfileProvider =
       return {'technician': tech, 'completed_count': completed.count};
     });
 
+// ─── Assignment detail provider (independent — works from notifications too) ──
+
+final assignmentDetailProvider = FutureProvider.autoDispose
+    .family<Map<String, dynamic>, String>((ref, assignmentId) async {
+  final client = Supabase.instance.client;
+  return await client
+      .from('assignments')
+      .select(
+        '*, orders(*, profiles!customer_id(full_name, phone, address), '
+        'order_items(*, service_types(name), products(name)))',
+      )
+      .eq('id', assignmentId)
+      .single();
+});
+
 // ─── Task update provider ─────────────────────────────────────────────────────
 
 enum TaskUpdateStatus { idle, loading, success, error }

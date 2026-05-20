@@ -6,7 +6,10 @@ import 'package:tamm_app/core/theme/tamm_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/tamm_app_bar.dart';
+import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
+import '../../../../core/widgets/error_state_widget.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../shared/providers/technician_providers.dart';
 
 class TechTaskDetailScreen extends ConsumerStatefulWidget {
@@ -78,9 +81,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
               'تأكيد',
-              style: AppTextStyles.body(
-                context.colors.bluePrimary,
-              ).copyWith(fontWeight: AppTextStyles.bold),
+              style: AppTextStyles.body(context.colors.bluePrimary)
+                  .copyWith(fontWeight: AppTextStyles.bold),
             ),
           ),
         ],
@@ -97,22 +99,25 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     final ok = await ref
         .read(taskUpdateProvider(orderId).notifier)
         .updateStatus(orderId, 'on_the_way');
-    if (ok) ref.invalidate(myAssignmentsProvider);
+    if (ok) {
+      ref.invalidate(myAssignmentsProvider);
+      ref.invalidate(assignmentDetailProvider(widget.assignmentId));
+    }
   }
 
   Future<void> _onStartWork(String orderId) async {
-    final confirmed = await _confirm(
-      'هل وصلت لموقع العميل وبدأت العمل؟',
-    );
+    final confirmed = await _confirm('هل وصلت لموقع العميل وبدأت العمل؟');
     if (!confirmed || !mounted) return;
     final ok = await ref
         .read(taskUpdateProvider(orderId).notifier)
         .updateStatus(orderId, 'in_progress');
-    if (ok) ref.invalidate(myAssignmentsProvider);
+    if (ok) {
+      ref.invalidate(myAssignmentsProvider);
+      ref.invalidate(assignmentDetailProvider(widget.assignmentId));
+    }
   }
 
   Future<void> _onComplete(String orderId) async {
-    // Save notes first if any
     if (_notesCtrl.text.trim().isNotEmpty) {
       await ref
           .read(taskUpdateProvider(orderId).notifier)
@@ -188,137 +193,266 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tasksAsync = ref.watch(myAssignmentsProvider);
-    final assignmentList = tasksAsync.value ?? [];
-    final assignment = assignmentList.firstWhere(
-      (e) => e['id'] == widget.assignmentId,
-      orElse: () => <String, dynamic>{},
-    );
-
-    final order = (assignment['orders'] as Map<String, dynamic>?) ?? {};
-    final customer = (order['profiles'] as Map<String, dynamic>?) ?? {};
-    final customerName = customer['full_name']?.toString() ?? 'غير معروف';
-    final customerPhone = customer['phone']?.toString() ?? '';
-    final address = order['address']?.toString() ?? 'غير متوفر';
-    final orderLat = order['latitude'] as double?;
-    final orderLng = order['longitude'] as double?;
-    final orderNumber = order['order_number']?.toString() ?? '';
-    final customerNotes = order['notes']?.toString();
-    final orderStatus = order['status']?.toString() ?? 'assigned';
-    final orderId = order['id']?.toString() ?? '';
-
-    // Track orderId for focus-based auto-save
-    if (orderId.isNotEmpty) _orderId = orderId;
-
-    // Initialize notes controller once from existing data
-    if (!_notesInitialized && order['technician_notes'] != null) {
-      _notesCtrl.text = order['technician_notes'].toString();
-      _notesInitialized = true;
-    }
+    final assignmentAsync =
+        ref.watch(assignmentDetailProvider(widget.assignmentId));
 
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
-      appBar: TammAppBar(
-        title: orderNumber.isNotEmpty ? 'طلب #$orderNumber' : 'تفاصيل المهمة',
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: AppSpacing.pagePadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Status badge
-                  _buildStatusBadge(context, orderStatus),
-                  AppSpacing.gapMd,
+      appBar: const TammAppBar(title: 'تفاصيل المهمة'),
+      body: assignmentAsync.when(
+        loading: () => const TammLoading(),
+        error: (e, _) => ErrorStateWidget(
+          message: e is AppException ? e.message : 'تعذر تحميل تفاصيل المهمة',
+          onRetry: () =>
+              ref.invalidate(assignmentDetailProvider(widget.assignmentId)),
+        ),
+        data: (assignment) {
+          final order =
+              (assignment['orders'] as Map<String, dynamic>?) ?? {};
+          final customer =
+              (order['profiles'] as Map<String, dynamic>?) ?? {};
+          final customerName =
+              customer['full_name']?.toString() ?? 'غير معروف';
+          final customerPhone = customer['phone']?.toString() ?? '';
+          final address = order['address']?.toString() ?? 'غير متوفر';
+          final orderLat = order['latitude'] as double?;
+          final orderLng = order['longitude'] as double?;
+          final orderNumber = order['order_number']?.toString() ?? '';
+          final customerNotes = order['notes']?.toString();
+          final orderStatus = order['status']?.toString() ?? 'assigned';
+          final orderId = order['id']?.toString() ?? '';
+          final orderType = order['order_type']?.toString() ?? 'service';
+          final totalAmount =
+              (order['total_amount'] as num?)?.toDouble() ?? 0.0;
+          final preferredDate = order['preferred_date'] as String?;
 
-                  // Customer card
-                  _buildCustomerCard(context, customerName, customerPhone),
-                  AppSpacing.gapMd,
+          if (orderId.isNotEmpty) _orderId = orderId;
 
-                  // Address card
-                  _buildAddressCard(
-                    context,
-                    address,
-                    orderLat,
-                    orderLng,
+          if (!_notesInitialized && order['technician_notes'] != null) {
+            _notesCtrl.text = order['technician_notes'].toString();
+            _notesInitialized = true;
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: AppSpacing.pagePadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── ملخص الطلب ──────────────────────────────────────
+                      _buildOrderSummary(
+                        context,
+                        orderNumber: orderNumber,
+                        orderType: orderType,
+                        totalAmount: totalAmount,
+                        preferredDate: preferredDate,
+                      ),
+                      AppSpacing.gapMd,
+
+                      // ── Timeline ─────────────────────────────────────────
+                      _buildTimeline(context, orderStatus),
+                      AppSpacing.gapMd,
+
+                      // ── بطاقة العميل ─────────────────────────────────────
+                      _buildCustomerCard(
+                          context, customerName, customerPhone),
+                      AppSpacing.gapMd,
+
+                      // ── بطاقة العنوان ────────────────────────────────────
+                      _buildAddressCard(
+                          context, address, orderLat, orderLng),
+
+                      // ── عناصر الطلب ──────────────────────────────────────
+                      if (order['order_items'] != null &&
+                          (order['order_items'] as List).isNotEmpty) ...[
+                        AppSpacing.gapMd,
+                        _buildItemsSection(
+                            context, order['order_items'] as List),
+                      ],
+
+                      // ── ملاحظات العميل ───────────────────────────────────
+                      if (customerNotes != null &&
+                          customerNotes.isNotEmpty) ...[
+                        AppSpacing.gapMd,
+                        _buildCustomerNotes(context, customerNotes),
+                      ],
+
+                      // ── ملاحظات الفني (بعد الاكتمال) ────────────────────
+                      if (orderStatus == 'completed' &&
+                          order['technician_notes'] != null &&
+                          (order['technician_notes'] as String)
+                              .isNotEmpty) ...[
+                        AppSpacing.gapMd,
+                        _buildTechNotesSummary(
+                            context, order['technician_notes'] as String),
+                      ],
+
+                      AppSpacing.gapXl,
+                    ],
                   ),
+                ),
+              ),
 
-                  // Order items
-                  if (order['order_items'] != null &&
-                      (order['order_items'] as List).isNotEmpty) ...[
-                    AppSpacing.gapMd,
-                    _buildItemsSection(
-                      context,
-                      order['order_items'] as List,
-                    ),
-                  ],
+              // ── شريط الأفعال ──────────────────────────────────────────────
+              if (orderId.isNotEmpty)
+                _buildBottomBar(context, orderStatus, orderId),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
-                  // Customer notes
-                  if (customerNotes != null &&
-                      customerNotes.isNotEmpty) ...[
-                    AppSpacing.gapMd,
-                    _buildCustomerNotes(context, customerNotes),
-                  ],
+  // ─── ملخص الطلب ──────────────────────────────────────────────────────────
 
-                  // Completed: show existing technician notes
-                  if (orderStatus == 'completed' &&
-                      order['technician_notes'] != null &&
-                      (order['technician_notes'] as String).isNotEmpty) ...[
-                    AppSpacing.gapMd,
-                    _buildTechNotesSummary(
-                      context,
-                      order['technician_notes'] as String,
-                    ),
-                  ],
+  Widget _buildOrderSummary(
+    BuildContext context, {
+    required String orderNumber,
+    required String orderType,
+    required double totalAmount,
+    String? preferredDate,
+  }) {
+    final typeLabel = switch (orderType) {
+      'product' => 'منتج',
+      'quote_request' => 'عرض سعر',
+      _ => 'خدمة',
+    };
 
-                  AppSpacing.gapXl,
-                ],
+    final dateStr = preferredDate != null
+        ? _formatDate(preferredDate)
+        : null;
+
+    return Container(
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: context.colors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'طلب #$orderNumber',
+                style: AppTextStyles.cardTitle(context.colors.textPrimary),
+              ),
+              if (totalAmount > 0)
+                Text(
+                  '${totalAmount.toInt()} ر.س',
+                  style: AppTextStyles.cardTitle(context.colors.bluePrimary),
+                ),
+            ],
+          ),
+          AppSpacing.gapXs,
+          Row(
+            children: [
+              _InfoChip(
+                icon: Icons.build_circle_outlined,
+                label: typeLabel,
+                color: context.colors.bluePrimary,
+              ),
+              if (dateStr != null) ...[
+                AppSpacing.hGapSm,
+                _InfoChip(
+                  icon: Icons.calendar_today_outlined,
+                  label: dateStr,
+                  color: context.colors.textSecond,
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Timeline ─────────────────────────────────────────────────────────────
+
+  Widget _buildTimeline(BuildContext context, String orderStatus) {
+    const steps = [
+      ('assigned', 'تعيين', Icons.assignment_outlined),
+      ('on_the_way', 'في الطريق', Icons.directions_car_outlined),
+      ('in_progress', 'جاري التنفيذ', Icons.build_outlined),
+      ('completed', 'مكتمل', Icons.task_alt_outlined),
+    ];
+
+    final currentIdx = switch (orderStatus) {
+      'assigned' => 0,
+      'on_the_way' => 1,
+      'in_progress' => 2,
+      'completed' => 3,
+      _ => 0,
+    };
+
+    return Row(
+      children: List.generate(steps.length * 2 - 1, (i) {
+        if (i.isOdd) {
+          // خط الوصل
+          final lineIdx = i ~/ 2;
+          final done = lineIdx < currentIdx;
+          return Expanded(
+            child: Container(
+              height: 2,
+              color: done
+                  ? context.colors.bluePrimary
+                  : context.colors.border,
+            ),
+          );
+        }
+        final stepIdx = i ~/ 2;
+        final (_, label, icon) = steps[stepIdx];
+        final isDone = stepIdx < currentIdx;
+        final isCurrent = stepIdx == currentIdx;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDone || isCurrent
+                    ? context.colors.bluePrimary
+                    : context.colors.border.withValues(alpha: 0.4),
+              ),
+              child: Icon(
+                icon,
+                size: 18,
+                color: isDone || isCurrent
+                    ? Colors.white
+                    : context.colors.textFaint,
               ),
             ),
-          ),
-
-          // Fixed bottom action bar
-          if (orderId.isNotEmpty)
-            _buildBottomBar(context, orderStatus, orderId),
-        ],
-      ),
-    );
-  }
-
-  // ─── Section widgets ──────────────────────────────────────────────────────
-
-  Widget _buildStatusBadge(BuildContext context, String status) {
-    final (label, color) = _statusMeta(context, status);
-    return Container(
-      width: double.infinity,
-      padding: AppSpacing.cardPaddingSm,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: AppSpacing.radiusLg,
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.info_outlined, color: color, size: AppSpacing.iconMd),
-          AppSpacing.hGapSm2,
-          Text(
-            label,
-            style: AppTextStyles.body(color).copyWith(
-              fontWeight: AppTextStyles.semiBold,
+            AppSpacing.gapXs,
+            Text(
+              label,
+              style: AppTextStyles.caption(
+                isCurrent
+                    ? context.colors.bluePrimary
+                    : isDone
+                        ? context.colors.textSecond
+                        : context.colors.textFaint,
+              ).copyWith(
+                fontWeight:
+                    isCurrent ? AppTextStyles.semiBold : FontWeight.normal,
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
+
+  // ─── بطاقة العميل ────────────────────────────────────────────────────────
 
   Widget _buildCustomerCard(
-    BuildContext context,
-    String name,
-    String phone,
-  ) {
+      BuildContext context, String name, String phone) {
     return Container(
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
@@ -348,18 +482,17 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               children: [
                 Text(
                   name,
-                  style: AppTextStyles.body(
-                    context.colors.textPrimary,
-                  ).copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(context.colors.textPrimary)
+                      .copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
-                if (phone.isNotEmpty) ...[
-                  AppSpacing.gapXs,
+                if (phone.isNotEmpty)
                   Text(
                     phone,
-                    style: AppTextStyles.bodySmall(context.colors.textSecond),
+                    style:
+                        AppTextStyles.bodySmall(context.colors.textSecond),
                     textDirection: TextDirection.ltr,
-                  ),
-                ] else
+                  )
+                else
                   Text(
                     'لا يوجد رقم هاتف',
                     style: AppTextStyles.bodySmall(context.colors.textFaint),
@@ -380,6 +513,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
       ),
     );
   }
+
+  // ─── بطاقة العنوان ────────────────────────────────────────────────────────
 
   Widget _buildAddressCard(
     BuildContext context,
@@ -432,7 +567,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     ),
                     child: Text(
                       '📍 موقع GPS متوفر',
-                      style: AppTextStyles.caption(context.colors.success),
+                      style:
+                          AppTextStyles.caption(context.colors.success),
                     ),
                   ),
                 ],
@@ -441,7 +577,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           ),
           IconButton(
             icon: Icon(
-              hasCoords ? Icons.navigation_outlined : Icons.map_outlined,
+              hasCoords
+                  ? Icons.navigation_outlined
+                  : Icons.map_outlined,
               color: hasCoords
                   ? context.colors.success
                   : context.colors.bluePrimary,
@@ -455,6 +593,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     );
   }
 
+  // ─── عناصر الطلب ──────────────────────────────────────────────────────────
+
   Widget _buildItemsSection(BuildContext context, List items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -467,6 +607,17 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
         ...items.map((item) {
           final isProduct = item['item_type'] == 'product';
           final includeInst = item['include_installation'] ?? false;
+
+          // اسم الخدمة أو المنتج الفعلي
+          final serviceName = (item['service_types'] as Map<String, dynamic>?)?['name'] as String?;
+          final productName = (item['products'] as Map<String, dynamic>?)?['name'] as String?;
+          final itemName = isProduct
+              ? (productName ?? 'منتج')
+              : (serviceName ?? 'خدمة');
+
+          final qty = item['quantity'] as int? ?? 1;
+          final unitPrice = (item['unit_price'] as num?)?.toDouble();
+
           return Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: Container(
@@ -478,40 +629,72 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               ),
               child: Row(
                 children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: context.colors.bluePrimary
+                          .withValues(alpha: 0.08),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isProduct
+                          ? Icons.inventory_2_outlined
+                          : Icons.build_outlined,
+                      color: context.colors.bluePrimary,
+                      size: 16,
+                    ),
+                  ),
+                  AppSpacing.hGapSm2,
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${isProduct ? 'منتج' : 'خدمة'} × ${item['quantity']}',
+                          itemName,
                           style: AppTextStyles.body(
                             context.colors.textPrimary,
                           ).copyWith(fontWeight: AppTextStyles.semiBold),
                         ),
-                        if (includeInst) ...[
-                          AppSpacing.gapXs,
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.sm,
-                              vertical: AppSpacing.xs / 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: context.colors.success.withValues(
-                                alpha: 0.1,
-                              ),
-                              borderRadius: AppSpacing.radiusXs,
-                            ),
-                            child: Text(
-                              'شامل التركيب',
+                        Row(
+                          children: [
+                            Text(
+                              'الكمية: $qty',
                               style: AppTextStyles.caption(
-                                context.colors.success,
+                                context.colors.textSecond,
                               ),
                             ),
-                          ),
-                        ],
+                            if (includeInst) ...[
+                              AppSpacing.hGapSm,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 1,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: context.colors.success
+                                      .withValues(alpha: 0.1),
+                                  borderRadius: AppSpacing.radiusFull,
+                                ),
+                                child: Text(
+                                  'شامل التركيب',
+                                  style: AppTextStyles.caption(
+                                    context.colors.success,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
                       ],
                     ),
                   ),
+                  if (unitPrice != null && unitPrice > 0)
+                    Text(
+                      '${unitPrice.toInt()} ر.س',
+                      style: AppTextStyles.bodySmall(
+                        context.colors.textSecond,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -520,6 +703,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
       ],
     );
   }
+
+  // ─── ملاحظات العميل ───────────────────────────────────────────────────────
 
   Widget _buildCustomerNotes(BuildContext context, String notes) {
     return Container(
@@ -544,9 +729,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               children: [
                 Text(
                   'ملاحظات العميل:',
-                  style: AppTextStyles.body(
-                    context.colors.textPrimary,
-                  ).copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(context.colors.textPrimary)
+                      .copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
                 AppSpacing.gapXs,
                 Text(
@@ -560,6 +744,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
       ),
     );
   }
+
+  // ─── ملاحظات الفني بعد الإكمال ───────────────────────────────────────────
 
   Widget _buildTechNotesSummary(BuildContext context, String notes) {
     return Container(
@@ -586,9 +772,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               children: [
                 Text(
                   'ملاحظات الفني:',
-                  style: AppTextStyles.body(
-                    context.colors.textPrimary,
-                  ).copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(context.colors.textPrimary)
+                      .copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
                 AppSpacing.gapXs,
                 Text(
@@ -603,7 +788,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     );
   }
 
-  // ─── Bottom action bar ────────────────────────────────────────────────────
+  // ─── شريط الأفعال ────────────────────────────────────────────────────────
 
   Widget _buildBottomBar(
     BuildContext context,
@@ -683,6 +868,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
         children: [
           TammTextField(
             controller: _notesCtrl,
+            focusNode: _notesFocus,
             label: 'ملاحظات ميدانية',
             hint: 'اكتب ملاحظاتك عن العمل المنجز...',
             maxLines: 4,
@@ -724,9 +910,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             AppSpacing.hGapSm,
             Text(
               '✅ تم إنجاز هذه المهمة',
-              style: AppTextStyles.body(
-                context.colors.success,
-              ).copyWith(fontWeight: AppTextStyles.semiBold),
+              style: AppTextStyles.body(context.colors.success)
+                  .copyWith(fontWeight: AppTextStyles.semiBold),
             ),
           ],
         ),
@@ -737,17 +922,43 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
 
-  (String, Color) _statusMeta(BuildContext context, String status) =>
-      switch (status) {
-        'assigned' => ('تم التعيين — في انتظار توجهك', context.colors.bluePrimary),
-        'on_the_way' => ('أنت في الطريق للعميل', context.colors.warning),
-        'in_progress' => ('جاري تنفيذ المهمة', context.colors.bluePrimary),
-        'completed' => ('تمت المهمة بنجاح', context.colors.success),
-        _ => ('حالة غير معروفة', context.colors.textFaint),
-      };
+  String _formatDate(String iso) {
+    final d = DateTime.tryParse(iso)?.toLocal();
+    if (d == null) return '';
+    return '${d.day}/${d.month}/${d.year}';
+  }
 }
 
-// ─── Gradient button ──────────────────────────────────────────────────────────
+// ─── Info Chip ────────────────────────────────────────────────────────────────
+
+class _InfoChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _InfoChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 13, color: color),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: AppTextStyles.caption(color),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Gradient Button ──────────────────────────────────────────────────────────
 
 class _GradientButton extends StatelessWidget {
   final String label;
