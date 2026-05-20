@@ -17,6 +17,10 @@ class FcmService {
   static final _localNotifications = FlutterLocalNotificationsPlugin();
   static final _client = Supabase.instance.client;
 
+  /// Cached role — set at registerToken(), cleared at unregisterToken()
+  static String? _cachedRole;
+  static String? get cachedRole => _cachedRole;
+
   /// Navigation callback: يُضبط من app.dart بعد إنشاء الـ router
   static Function(String route)? _navigationCallback;
 
@@ -186,6 +190,16 @@ class FcmService {
       final user = _client.auth.currentUser;
       if (user == null) return;
 
+      // Cache role for banner routing (avoids reading a potentially-disposed provider later)
+      try {
+        final res = await _client
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+        _cachedRole = res['role'] as String?;
+      } catch (_) {}
+
       final token = await _messaging.getToken();
       if (token == null) return;
 
@@ -214,6 +228,7 @@ class FcmService {
 
   /// يُستدعى عند تسجيل الخروج
   static Future<void> unregisterToken() async {
+    _cachedRole = null;
     try {
       final user = _client.auth.currentUser;
       if (user == null) return;

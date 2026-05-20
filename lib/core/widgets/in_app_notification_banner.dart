@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/app_text_styles.dart';
 import '../router/app_router.dart';
+import '../services/fcm_service.dart';
 import '../theme/tamm_colors.dart';
-import '../../shared/providers/auth_providers.dart';
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
@@ -118,7 +118,7 @@ class InAppNotificationBanner extends ConsumerWidget {
           final assignmentId = state.assignmentId;
           final type = state.notificationType;
           ref.read(inAppNotificationProvider.notifier).hide();
-          final route = _buildRoute(ref, type, orderId, assignmentId);
+          final route = _buildRoute(type, orderId, assignmentId);
           if (route != null) {
             ref.read(appRouterProvider).push(route);
           }
@@ -203,12 +203,11 @@ class InAppNotificationBanner extends ConsumerWidget {
   }
 
   String? _buildRoute(
-    WidgetRef ref,
     String? type,
     String? orderId,
     String? assignmentId,
   ) {
-    final role = ref.read(userProfileProvider).valueOrNull?.role ?? 'customer';
+    final role = FcmService.cachedRole ?? 'customer';
 
     if (type == 'new_assignment') {
       final id = assignmentId ?? orderId;
