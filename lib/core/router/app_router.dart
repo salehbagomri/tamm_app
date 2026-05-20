@@ -33,24 +33,9 @@ import '../../features/customer/profile/presentation/order_detail_screen.dart';
 import '../../features/customer/profile/presentation/my_devices_screen.dart';
 import '../../features/profile/screens/edit_profile_screen.dart';
 
-// Manager
-import '../../features/manager/manager_shell.dart';
-import '../../features/manager/dashboard/presentation/manager_dashboard_screen.dart';
-import '../../features/manager/orders/presentation/manager_orders_screen.dart';
-import '../../features/manager/technicians/presentation/technicians_screen.dart';
-import '../../features/manager/technicians/presentation/add_technician_screen.dart';
-import '../../features/manager/technicians/presentation/manager_technician_detail_screen.dart';
-import '../../features/manager/products/presentation/manage_products_screen.dart';
-import '../../features/manager/products/presentation/product_form_screen.dart';
-import '../../features/manager/services/presentation/manage_services_screen.dart';
-import '../../features/manager/services/presentation/service_form_screen.dart';
-import '../../features/manager/orders/presentation/manager_order_detail_screen.dart';
-import '../../features/manager/quotes/presentation/manager_quotes_screen.dart';
-import '../../features/manager/quotes/presentation/manager_quote_detail_screen.dart';
-import '../../features/manager/promotions/presentation/manage_promotions_screen.dart';
-import '../../features/manager/promotions/presentation/promotion_form_screen.dart';
-import '../../shared/models/promotion.dart';
-import '../../shared/models/service_type.dart';
+// Manager (web-only redirect)
+import '../../features/manager/manager_web_only_screen.dart';
+
 // Technician
 import '../../features/technician/technician_shell.dart';
 import '../../features/technician/tasks/presentation/tech_tasks_screen.dart';
@@ -66,7 +51,6 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _customerShellKey = GlobalKey<NavigatorState>(
   debugLabel: 'customerShell',
 );
-final _managerShellKey = GlobalKey<NavigatorState>(debugLabel: 'managerShell');
 final _technicianShellKey = GlobalKey<NavigatorState>(debugLabel: 'techShell');
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -97,6 +81,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         path: '/notifications',
         builder: (_, __) => const NotificationsScreen(),
+      ),
+
+      // ========== MANAGER (web-only redirect) ==========
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/manager/web-only',
+        builder: (_, __) => const ManagerWebOnlyScreen(),
       ),
 
       // ========== CUSTOMER ==========
@@ -215,86 +206,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         path: '/profile/edit',
         builder: (_, __) => const EditProfileScreen(),
-      ),
-
-      // ========== MANAGER ==========
-      ShellRoute(
-        navigatorKey: _managerShellKey,
-        builder: (_, __, child) => ManagerShell(child: child),
-        routes: [
-          GoRoute(
-            path: '/manager/dashboard',
-            builder: (_, __) => const ManagerDashboardScreen(),
-          ),
-          GoRoute(
-            path: '/manager/orders',
-            builder: (_, __) => const ManagerOrdersScreen(),
-          ),
-          GoRoute(
-            path: '/manager/technicians',
-            builder: (_, __) => const TechniciansScreen(),
-          ),
-          GoRoute(
-            path: '/manager/products',
-            builder: (_, __) => const ManageProductsScreen(),
-          ),
-          GoRoute(
-            path: '/manager/services',
-            builder: (_, __) => const ManageServicesScreen(),
-          ),
-          GoRoute(
-            path: '/manager/quotes',
-            builder: (_, __) => const ManagerQuotesScreen(),
-          ),
-        ],
-      ),
-      // Manager routes outside shell
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/order/:id',
-        builder: (_, state) =>
-            ManagerOrderDetailScreen(orderId: state.pathParameters['id']!),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/quote/:id',
-        builder: (_, state) =>
-            ManagerQuoteDetailScreen(orderId: state.pathParameters['id']!),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/add-technician',
-        builder: (_, __) => const AddTechnicianScreen(),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/technicians/:id',
-        builder: (_, state) => ManagerTechnicianDetailScreen(
-          technicianId: state.pathParameters['id']!,
-        ),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/product/form',
-        builder: (_, state) =>
-            ProductFormScreen(productId: state.extra as String?),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/promotions',
-        builder: (_, __) => const ManagePromotionsScreen(),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/promotion/form',
-        builder: (_, state) =>
-            PromotionFormScreen(promotion: state.extra as Promotion?),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/service/form',
-        builder: (_, state) =>
-            ServiceFormScreen(service: state.extra as ServiceType?),
       ),
 
       // ========== TECHNICIAN ==========

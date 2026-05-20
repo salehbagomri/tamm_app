@@ -191,12 +191,6 @@ class _NotificationCard extends ConsumerWidget {
     }
 
     switch (role) {
-      case 'manager':
-        if (orderId == null) return '/manager/dashboard';
-        if (type == 'quote_sent' || type == 'quote_responded') {
-          return '/manager/quote/$orderId';
-        }
-        return '/manager/order/$orderId';
       case 'technician':
         final id = assignmentId ?? orderId;
         return id != null ? '/technician/task/$id' : '/technician/tasks';

@@ -164,12 +164,6 @@ class FcmService {
     }
 
     switch (role) {
-      case 'manager':
-        if (orderId == null) return '/manager/dashboard';
-        if (type == 'quote_sent' || type == 'quote_responded') {
-          return '/manager/quote/$orderId';
-        }
-        return '/manager/order/$orderId';
       case 'technician':
         final id = assignmentId ?? orderId;
         if (id == null) return '/technician/tasks';
