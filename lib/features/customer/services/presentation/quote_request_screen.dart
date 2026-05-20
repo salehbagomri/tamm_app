@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
@@ -13,6 +12,7 @@ import '../../../../core/widgets/tamm_card.dart';
 import '../../../../core/widgets/tamm_loading.dart';
 import '../../../../core/widgets/tamm_text_field.dart';
 import '../../../../shared/models/service_type.dart';
+import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/service_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
@@ -29,6 +29,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
   final _descriptionController = TextEditingController();
   final _addressController = TextEditingController();
   final _notesController = TextEditingController();
+  final _phoneCtrl = TextEditingController();
 
   bool _isLoadingLocation = false;
   double? _lat, _lng;
@@ -36,10 +37,22 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
   bool _isSubmitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final profile = await ref.read(userProfileProvider.future);
+      if (mounted && _phoneCtrl.text.isEmpty && (profile?.phone ?? '').isNotEmpty) {
+        _phoneCtrl.text = profile!.phone;
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _descriptionController.dispose();
     _addressController.dispose();
     _notesController.dispose();
+    _phoneCtrl.dispose();
     super.dispose();
   }
 
@@ -119,12 +132,19 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
     if (!_isFormValid()) return;
     setState(() => _isSubmitting = true);
     try {
+      final phoneText = _phoneCtrl.text.trim();
+      final notesText = _notesController.text.trim();
+      final parts = [
+        if (phoneText.isNotEmpty) 'رقم التواصل: $phoneText',
+        _descriptionController.text.trim(),
+        if (notesText.isNotEmpty) notesText,
+      ];
       final repo = ref.read(orderRepositoryProvider);
       final orderResult = await repo.createOrder(
         orderType: 'quote_request',
         address: _addressController.text.trim(),
         total: 0.0,
-        notes: _descriptionController.text.trim(),
+        notes: parts.join('\n'),
         latitude: _lat,
         longitude: _lng,
         includeInstall: false,
@@ -198,7 +218,6 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
   @override
   Widget build(BuildContext context) {
     final serviceAsync = ref.watch(serviceDetailProvider(widget.serviceTypeId));
-    final user = Supabase.instance.client.auth.currentUser;
 
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
@@ -362,7 +381,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                     AppSpacing.gapMd,
                     TammTextField(
                       label: 'العنوان بالتفصيل',
-                      hint: 'المدينة، الحي، الشارع، رقم المبنى...',
+                      hint: 'مثال: الشرج، الشارع العام، بجانب جامع الشرج',
                       controller: _addressController,
                       maxLines: 2,
                       onChanged: (val) => setState(() {}),
@@ -376,12 +395,10 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                     ),
                     AppSpacing.gapSm,
                     TammTextField(
-                      label: 'الرقم المسجل في النظام',
-                      hint: '',
-                      controller: TextEditingController(
-                        text: user?.phone ?? '',
-                      ),
-                      readOnly: true,
+                      label: 'رقم الهاتف',
+                      hint: '7XXXXXXXX',
+                      controller: _phoneCtrl,
+                      keyboardType: TextInputType.phone,
                     ),
                     AppSpacing.gapLg,
                     TammTextField(

@@ -164,7 +164,7 @@ class QuoteOfferCard extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.file_present,
+                        Icons.description_outlined,
                         color: context.colors.bluePrimary,
                         size: 20,
                       ),
@@ -228,7 +228,14 @@ class _BuildInfoRow extends StatelessWidget {
         AppSpacing.hGapSm2,
         Text(title, style: AppTextStyles.body(context.colors.textSecond)),
         const Spacer(),
-        Text(value, style: AppTextStyles.body(context.colors.textPrimary)),
+        Text(
+          value,
+          style: AppTextStyles.body(
+            valueColor ?? context.colors.textPrimary,
+          ).copyWith(
+            fontWeight: isBold ? AppTextStyles.semiBold : AppTextStyles.regular,
+          ),
+        ),
       ],
     );
   }

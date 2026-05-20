@@ -41,9 +41,13 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
           context: context,
           barrierDismissible: false,
           builder: (context) => AlertDialog(
-            title: const Text('تم قبول العرض'),
-            content: const Text(
+            title: Text(
+              'تم قبول العرض',
+              style: AppTextStyles.cardTitle(context.colors.textPrimary),
+            ),
+            content: Text(
               'تم تأكيد طلبك بنجاح. سنتواصل معك لترتيب موعد التنفيذ قريباً.',
+              style: AppTextStyles.body(context.colors.textSecond),
             ),
             actions: [
               TammButton(
@@ -134,9 +138,13 @@ class _QuoteResponseScreenState extends ConsumerState<QuoteResponseScreen> {
             context: context,
             barrierDismissible: false,
             builder: (context) => AlertDialog(
-              title: const Text('تم إرسال الرفض'),
-              content: const Text(
+              title: Text(
+                'تم إرسال الرفض',
+                style: AppTextStyles.cardTitle(context.colors.textPrimary),
+              ),
+              content: Text(
                 'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
+                style: AppTextStyles.body(context.colors.textSecond),
               ),
               actions: [
                 TammButton(

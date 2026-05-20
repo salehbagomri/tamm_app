@@ -112,13 +112,22 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     }
 
                     if (filtered.isEmpty) {
-                      return const TammEmptyState(
-                        icon: Icons.miscellaneous_services_outlined,
-                        message: 'لا توجد خدمات في هذا التصنيف حالياً',
+                      return RefreshIndicator(
+                        onRefresh: () async => ref.invalidate(serviceTypesProvider),
+                        child: ListView(
+                          children: const [
+                            TammEmptyState(
+                              icon: Icons.miscellaneous_services_outlined,
+                              message: 'لا توجد خدمات في هذا التصنيف حالياً',
+                            ),
+                          ],
+                        ),
                       );
                     }
 
-                    return ListView.separated(
+                    return RefreshIndicator(
+                      onRefresh: () async => ref.invalidate(serviceTypesProvider),
+                      child: ListView.separated(
                       padding: AppSpacing.pagePadding,
                       itemCount: filtered.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -182,6 +191,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                           ),
                         );
                       },
+                    ),
                     );
                   },
                   loading: () => ListView.separated(

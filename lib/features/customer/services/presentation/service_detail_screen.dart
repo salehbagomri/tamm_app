@@ -79,7 +79,9 @@ class ServiceDetailScreen extends ConsumerWidget {
                       service.isQuoteBased || service.basePrice == null
                           ? 'تتطلب عرض سعر'
                           : '${service.basePrice!.toInt()} ر.س',
-                      style: AppTextStyles.body(context.colors.textPrimary),
+                      style: service.isQuoteBased || service.basePrice == null
+                          ? AppTextStyles.body(context.colors.textSecond)
+                          : AppTextStyles.price(context.colors.bluePrimary),
                     ),
                     if (service.estimatedDuration != null) ...[
                       const Spacer(),

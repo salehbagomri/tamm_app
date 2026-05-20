@@ -70,9 +70,9 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
   };
 
   List<String> _hoursForPeriod(String period) {
-    if (period == 'صباحاً') return ['٠٨:٠٠', '٠٩:٠٠', '١٠:٠٠', '١١:٠٠'];
-    if (period == 'ظهراً') return ['١٢:٠٠', '٠١:٠٠', '٠٢:٠٠', '٠٣:٠٠'];
-    if (period == 'مساءً') return ['٠٤:٠٠', '٠٥:٠٠', '٠٦:٠٠', '٠٧:٠٠'];
+    if (period == 'صباحاً') return ['٨:٠٠ص', '٩:٠٠ص', '١٠:٠٠ص', '١١:٠٠ص'];
+    if (period == 'ظهراً') return ['١٢:٠٠م', '١:٠٠م', '٢:٠٠م', '٣:٠٠م'];
+    if (period == 'مساءً') return ['٤:٠٠م', '٥:٠٠م', '٦:٠٠م', '٧:٠٠م'];
     return [];
   }
 

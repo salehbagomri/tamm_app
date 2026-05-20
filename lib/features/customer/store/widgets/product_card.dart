@@ -252,7 +252,7 @@ class _PriceSection extends StatelessWidget {
       children: [
         if (p.hasDiscount && p.oldPrice != null)
           Text(
-            '${p.oldPrice!.toInt()} ر.ي',
+            '${p.oldPrice!.toInt()} ر.س',
             style: AppTextStyles.bodySmall(context.colors.textSecond).copyWith(
               decoration: TextDecoration.lineThrough,
               decorationThickness: 1.8,
@@ -260,7 +260,7 @@ class _PriceSection extends StatelessWidget {
             ),
           ),
         Text(
-          p.price != null ? '${p.price!.toInt()} ر.ي' : 'السعر غير محدد',
+          p.price != null ? '${p.price!.toInt()} ر.س' : 'السعر غير محدد',
           style: AppTextStyles.label(context.colors.blueSky)
               .copyWith(fontWeight: AppTextStyles.bold),
         ),

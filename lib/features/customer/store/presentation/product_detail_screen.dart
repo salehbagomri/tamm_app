@@ -151,7 +151,7 @@ class ProductDetailScreen extends ConsumerWidget {
                   children: [
                     if (p.hasDiscount && p.oldPrice != null)
                       Text(
-                        '${p.oldPrice!.toInt()} ر.ي',
+                        '${p.oldPrice!.toInt()} ر.س',
                         style: AppTextStyles.bodySmall(
                           context.colors.textSecond,
                         ).copyWith(
@@ -162,7 +162,7 @@ class ProductDetailScreen extends ConsumerWidget {
                       ),
                     Text(
                       p.price != null
-                          ? '${p.price!.toInt()} ر.ي'
+                          ? '${p.price!.toInt()} ر.س'
                           : 'السعر غير محدد',
                       style: AppTextStyles.price(context.colors.bluePrimary),
                     ),
