@@ -167,6 +167,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      context.colors.bluePrimary,
+                      context.colors.blueLight,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: context.colors.bluePrimary.withValues(alpha: 0.4),
@@ -175,12 +183,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
                 ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/icons/tamm-logo.png',
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.cover,
+                child: Center(
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/icons/tamm-logo.png',
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
