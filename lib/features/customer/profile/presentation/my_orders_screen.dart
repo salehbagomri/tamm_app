@@ -62,12 +62,32 @@ class MyOrdersScreen extends ConsumerWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
-                          o.orderType == 'quote_request' && o.totalAmount == 0
-                              ? o.statusLabel
-                              : '${o.totalAmount.toInt()} ر.س',
-                          style: AppTextStyles.body(context.colors.textPrimary),
-                        ),
+                        if (o.orderType == 'quote_request' && o.quotePrice == null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: context.colors.warning.withValues(alpha: 0.12),
+                              borderRadius: AppSpacing.radiusFull,
+                              border: Border.all(
+                                color: context.colors.warning.withValues(alpha: 0.4),
+                              ),
+                            ),
+                            child: Text(
+                              'سعر حسب الطلب',
+                              style: AppTextStyles.caption(context.colors.warning)
+                                  .copyWith(fontWeight: AppTextStyles.semiBold),
+                            ),
+                          )
+                        else
+                          Text(
+                            '${(o.orderType == 'quote_request' ? (o.quotePrice ?? 0) : o.totalAmount).toInt()} ر.س',
+                            style: AppTextStyles.body(context.colors.textPrimary)
+                                .copyWith(fontWeight: AppTextStyles.semiBold),
+                          ),
+                        const SizedBox(height: 2),
                         Text(
                           o.statusLabel,
                           style: AppTextStyles.caption(

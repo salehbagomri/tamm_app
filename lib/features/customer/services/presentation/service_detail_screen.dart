@@ -75,14 +75,30 @@ class ServiceDetailScreen extends ConsumerWidget {
                 AppSpacing.gapSm,
                 Row(
                   children: [
-                    Text(
-                      service.isQuoteBased || service.basePrice == null
-                          ? 'تتطلب عرض سعر'
-                          : '${service.basePrice!.toInt()} ر.س',
-                      style: service.isQuoteBased || service.basePrice == null
-                          ? AppTextStyles.body(context.colors.textSecond)
-                          : AppTextStyles.price(context.colors.bluePrimary),
-                    ),
+                    if (service.isQuoteBased || service.basePrice == null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: context.colors.warning.withValues(alpha: 0.12),
+                          borderRadius: AppSpacing.radiusFull,
+                          border: Border.all(
+                            color: context.colors.warning.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        child: Text(
+                          '🏷️ سعر حسب الطلب',
+                          style: AppTextStyles.bodySmall(context.colors.warning)
+                              .copyWith(fontWeight: AppTextStyles.semiBold),
+                        ),
+                      )
+                    else
+                      Text(
+                        '${service.basePrice!.toInt()} ر.س',
+                        style: AppTextStyles.price(context.colors.bluePrimary),
+                      ),
                     if (service.estimatedDuration != null) ...[
                       const Spacer(),
                       Icon(

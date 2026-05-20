@@ -179,14 +179,14 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                                   ],
                                 ),
                               ),
-                              Text(
-                                s.basePrice != null
-                                    ? '${s.basePrice!.toInt()} ر.س'
-                                    : 'عرض سعر',
-                                style: AppTextStyles.bodySmall(
-                                  context.colors.blueSky,
-                                ).copyWith(fontWeight: AppTextStyles.bold),
-                              ),
+                              s.isQuoteBased || s.basePrice == null
+                                  ? _QuotePriceBadge()
+                                  : Text(
+                                      '${s.basePrice!.toInt()} ر.س',
+                                      style: AppTextStyles.bodySmall(
+                                        context.colors.blueSky,
+                                      ).copyWith(fontWeight: AppTextStyles.bold),
+                                    ),
                             ],
                           ),
                         );
@@ -215,6 +215,27 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _QuotePriceBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: context.colors.warning.withValues(alpha: 0.12),
+        borderRadius: AppSpacing.radiusFull,
+        border: Border.all(
+          color: context.colors.warning.withValues(alpha: 0.4),
+        ),
+      ),
+      child: Text(
+        'سعر حسب الطلب',
+        style: AppTextStyles.caption(context.colors.warning)
+            .copyWith(fontWeight: AppTextStyles.semiBold),
       ),
     );
   }
