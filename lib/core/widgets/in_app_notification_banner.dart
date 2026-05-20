@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_text_styles.dart';
 import '../theme/tamm_colors.dart';
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -159,20 +159,14 @@ class InAppNotificationBanner extends ConsumerWidget {
                     children: [
                       Text(
                         state.title,
-                        style: GoogleFonts.alexandria(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: context.colors.textPrimary,
-                        ),
+                        style: AppTextStyles.bodySmall(context.colors.textPrimary)
+                            .copyWith(fontWeight: AppTextStyles.semiBold),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         state.body,
-                        style: GoogleFonts.alexandria(
-                          fontSize: 13,
-                          color: context.colors.textSecond,
-                        ),
+                        style: AppTextStyles.caption(context.colors.textSecond),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
