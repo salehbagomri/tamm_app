@@ -43,21 +43,27 @@ class TechnicianTaskRepository {
     }
   }
 
-  Future<void> saveTechnicianNotes(String orderId, String notes) async {
+  Future<void> saveTechnicianNotes(String assignmentId, String notes) async {
     try {
-      // Update both orders and assignments to keep data in sync for Web Admin dashboard
-      await _client
-          .from('orders')
-          .update({'technician_notes': notes})
-          .eq('id', orderId);
-
       await _client
           .from('assignments')
           .update({'technician_notes': notes})
-          .eq('order_id', orderId);
+          .eq('id', assignmentId);
     } catch (e) {
       if (e is AppException) rethrow;
       throw const ServerException(message: 'فشل في حفظ الملاحظات');
+    }
+  }
+
+  Future<void> confirmCashCollected(String assignmentId) async {
+    try {
+      await _client.from('assignments').update({
+        'cash_collected': true,
+        'cash_collected_at': DateTime.now().toUtc().toIso8601String(),
+      }).eq('id', assignmentId);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw const ServerException(message: 'فشل في تأكيد استلام المبلغ');
     }
   }
 

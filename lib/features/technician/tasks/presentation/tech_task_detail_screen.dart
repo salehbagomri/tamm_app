@@ -27,6 +27,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   final _notesFocus = FocusNode();
   String? _orderId;
   bool _notesInitialized = false;
+  bool _cashCollected = false;
+  bool _cashCollecting = false;
+  bool _cashInitialized = false;
 
   @override
   void initState() {
@@ -40,7 +43,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
         _orderId != null) {
       ref
           .read(taskUpdateProvider(_orderId!).notifier)
-          .saveNotes(_orderId!, _notesCtrl.text.trim());
+          .saveNotes(widget.assignmentId, _notesCtrl.text.trim());
     }
   }
 
@@ -122,7 +125,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     if (_notesCtrl.text.trim().isNotEmpty) {
       await ref
           .read(taskUpdateProvider(orderId).notifier)
-          .saveNotes(orderId, _notesCtrl.text.trim());
+          .saveNotes(widget.assignmentId, _notesCtrl.text.trim());
     }
     if (!mounted) return;
     final confirmed = await _confirm(
@@ -147,6 +150,43 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
         ),
       );
       context.pop();
+    }
+  }
+
+  Future<void> _confirmCashCollected() async {
+    final confirmed = await _confirm('هل استلمت المبلغ النقدي من العميل؟');
+    if (!confirmed || !mounted) return;
+    setState(() => _cashCollecting = true);
+    try {
+      await ref
+          .read(technicianTaskRepositoryProvider)
+          .confirmCashCollected(widget.assignmentId);
+      if (mounted) {
+        setState(() {
+          _cashCollected = true;
+          _cashCollecting = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'تم تأكيد استلام المبلغ ✅',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.success,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _cashCollecting = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'فشل تأكيد استلام المبلغ',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
     }
   }
 
@@ -257,11 +297,33 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           final totalAmount =
               (order['total_amount'] as num?)?.toDouble() ?? 0.0;
           final preferredDate = order['preferred_date'] as String?;
+          final paymentType = order['payment_type']?.toString() ?? 'cash';
+          final contactPhone = order['contact_phone']?.toString() ?? '';
+          final scheduledPeriod = order['scheduled_period']?.toString();
+          final scheduledHour = order['scheduled_hour']?.toString();
+          final managerNotes = assignment['manager_notes']?.toString();
+          final cashCollectedDb = assignment['cash_collected'] as bool? ?? false;
 
           if (orderId.isNotEmpty) _orderId = orderId;
 
-          if (!_notesInitialized && order['technician_notes'] != null) {
-            _notesCtrl.text = order['technician_notes'].toString();
+          if (!_cashInitialized) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _cashCollected = cashCollectedDb;
+                  _cashInitialized = true;
+                });
+              }
+            });
+          }
+
+          final showCashCard = paymentType == 'cash' &&
+              (orderStatus == 'on_the_way' ||
+                  orderStatus == 'in_progress' ||
+                  orderStatus == 'completed');
+
+          if (!_notesInitialized && assignment['technician_notes'] != null) {
+            _notesCtrl.text = assignment['technician_notes'].toString();
             _notesInitialized = true;
           }
 
@@ -280,8 +342,16 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         orderType: orderType,
                         totalAmount: totalAmount,
                         preferredDate: preferredDate,
+                        scheduledPeriod: scheduledPeriod,
+                        scheduledHour: scheduledHour,
                       ),
                       AppSpacing.gapMd,
+
+                      // ── تعليمات المشرف (خاصة بالفني) ────────────────────
+                      if (managerNotes != null && managerNotes.isNotEmpty) ...[
+                        _buildManagerNotes(context, managerNotes),
+                        AppSpacing.gapMd,
+                      ],
 
                       // ── Timeline ─────────────────────────────────────────
                       _buildTimeline(context, orderStatus),
@@ -289,7 +359,11 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
                       // ── بطاقة العميل ─────────────────────────────────────
                       _buildCustomerCard(
-                          context, customerName, customerPhone),
+                        context,
+                        customerName,
+                        customerPhone,
+                        contactPhone,
+                      ),
                       AppSpacing.gapMd,
 
                       // ── بطاقة العنوان ────────────────────────────────────
@@ -311,6 +385,12 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         _buildCustomerNotes(context, customerNotes),
                       ],
 
+                      // ── الدفع النقدي عند الاستلام ────────────────────────
+                      if (showCashCard) ...[
+                        AppSpacing.gapMd,
+                        _buildCashPaymentCard(context, totalAmount),
+                      ],
+
                       // ── صور العمل (أثناء التنفيذ وبعده) ─────────────────
                       if (orderStatus == 'in_progress' ||
                           orderStatus == 'completed') ...[
@@ -325,14 +405,15 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         ),
                       ],
 
-                      // ── ملاحظات الفني (بعد الاكتمال) ────────────────────
+                      // ── ملاحظات الفني بعد الإكمال ────────────────────────
                       if (orderStatus == 'completed' &&
-                          order['technician_notes'] != null &&
-                          (order['technician_notes'] as String)
+                          assignment['technician_notes'] != null &&
+                          (assignment['technician_notes'] as String)
                               .isNotEmpty) ...[
                         AppSpacing.gapMd,
                         _buildTechNotesSummary(
-                            context, order['technician_notes'] as String),
+                            context,
+                            assignment['technician_notes'] as String),
                       ],
 
                       AppSpacing.gapXl,
@@ -359,6 +440,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     required String orderType,
     required double totalAmount,
     String? preferredDate,
+    String? scheduledPeriod,
+    String? scheduledHour,
   }) {
     final typeLabel = switch (orderType) {
       'product' => 'منتج',
@@ -366,9 +449,11 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
       _ => 'خدمة',
     };
 
-    final dateStr = preferredDate != null
-        ? _formatDate(preferredDate)
-        : null;
+    final dateStr = preferredDate != null ? _formatDate(preferredDate) : null;
+    final hasAppointment = scheduledPeriod != null &&
+        scheduledHour != null &&
+        scheduledPeriod.isNotEmpty &&
+        scheduledHour.isNotEmpty;
 
     return Container(
       padding: AppSpacing.cardPadding,
@@ -395,21 +480,27 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             ],
           ),
           AppSpacing.gapXs,
-          Row(
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.xs,
             children: [
               _InfoChip(
                 icon: Icons.build_circle_outlined,
                 label: typeLabel,
                 color: context.colors.bluePrimary,
               ),
-              if (dateStr != null) ...[
-                AppSpacing.hGapSm,
+              if (dateStr != null)
                 _InfoChip(
                   icon: Icons.calendar_today_outlined,
                   label: dateStr,
                   color: context.colors.textSecond,
                 ),
-              ],
+              if (hasAppointment)
+                _InfoChip(
+                  icon: Icons.schedule_outlined,
+                  label: '$scheduledHour $scheduledPeriod',
+                  color: context.colors.textSecond,
+                ),
             ],
           ),
         ],
@@ -498,7 +589,16 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   // ─── بطاقة العميل ────────────────────────────────────────────────────────
 
   Widget _buildCustomerCard(
-      BuildContext context, String name, String phone) {
+    BuildContext context,
+    String name,
+    String phone,
+    String contactPhone,
+  ) {
+    // Prefer contact_phone from order if present and different from profile phone
+    final showContact = contactPhone.isNotEmpty && contactPhone != phone;
+    final displayPhone = showContact ? contactPhone : phone;
+    final hasPhone = displayPhone.isNotEmpty;
+
     return Container(
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
@@ -531,11 +631,10 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                   style: AppTextStyles.body(context.colors.textPrimary)
                       .copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
-                if (phone.isNotEmpty)
+                if (hasPhone)
                   Text(
-                    phone,
-                    style:
-                        AppTextStyles.bodySmall(context.colors.textSecond),
+                    displayPhone,
+                    style: AppTextStyles.bodySmall(context.colors.textSecond),
                     textDirection: TextDirection.ltr,
                   )
                 else
@@ -543,17 +642,23 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     'لا يوجد رقم هاتف',
                     style: AppTextStyles.bodySmall(context.colors.textFaint),
                   ),
+                if (showContact && phone.isNotEmpty)
+                  Text(
+                    'رقم الملف: $phone',
+                    style: AppTextStyles.caption(context.colors.textFaint),
+                    textDirection: TextDirection.ltr,
+                  ),
               ],
             ),
           ),
-          if (phone.isNotEmpty)
+          if (hasPhone)
             IconButton(
               icon: Icon(
                 Icons.call_outlined,
                 color: context.colors.success,
                 size: AppSpacing.iconMd,
               ),
-              onPressed: () => _makePhoneCall(phone),
+              onPressed: () => _makePhoneCall(displayPhone),
             ),
         ],
       ),
@@ -876,6 +981,145 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  // ─── تعليمات المشرف ───────────────────────────────────────────────────────
+
+  Widget _buildManagerNotes(BuildContext context, String notes) {
+    return Container(
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: context.colors.warning.withValues(alpha: 0.08),
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(
+          color: context.colors.warning.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            color: context.colors.warning,
+            size: AppSpacing.iconXs + 2,
+          ),
+          AppSpacing.hGapSm,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'تعليمات المشرف:',
+                  style: AppTextStyles.body(context.colors.textPrimary)
+                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                ),
+                AppSpacing.gapXs,
+                Text(
+                  notes,
+                  style: AppTextStyles.body(context.colors.textSecond),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── بطاقة الدفع النقدي ───────────────────────────────────────────────────
+
+  Widget _buildCashPaymentCard(BuildContext context, double totalAmount) {
+    return Container(
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: _cashCollected
+            ? context.colors.success.withValues(alpha: 0.06)
+            : context.colors.bgSurface,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(
+          color: _cashCollected
+              ? context.colors.success.withValues(alpha: 0.3)
+              : context.colors.border,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.payments_outlined,
+                color: _cashCollected
+                    ? context.colors.success
+                    : context.colors.warning,
+                size: AppSpacing.iconXs + 2,
+              ),
+              AppSpacing.hGapSm,
+              Text(
+                'الدفع النقدي عند الاستلام',
+                style: AppTextStyles.body(context.colors.textPrimary)
+                    .copyWith(fontWeight: AppTextStyles.semiBold),
+              ),
+              const Spacer(),
+              if (totalAmount > 0)
+                Text(
+                  '${totalAmount.toInt()} ر.س',
+                  style: AppTextStyles.cardTitle(context.colors.bluePrimary),
+                ),
+            ],
+          ),
+          AppSpacing.gapSm,
+          if (_cashCollected)
+            Row(
+              children: [
+                Icon(
+                  Icons.check_circle_outlined,
+                  color: context.colors.success,
+                  size: 16,
+                ),
+                AppSpacing.hGapXs,
+                Text(
+                  'تم استلام المبلغ النقدي',
+                  style: AppTextStyles.bodySmall(context.colors.success),
+                ),
+              ],
+            )
+          else
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _cashCollecting ? null : _confirmCashCollected,
+                icon: _cashCollecting
+                    ? SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.colors.bluePrimary,
+                        ),
+                      )
+                    : Icon(
+                        Icons.check_outlined,
+                        size: 16,
+                        color: context.colors.bluePrimary,
+                      ),
+                label: Text(
+                  _cashCollecting
+                      ? 'جاري التأكيد...'
+                      : 'تأكيد استلام المبلغ النقدي',
+                  style: AppTextStyles.bodySmall(context.colors.bluePrimary),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: context.colors.bluePrimary),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: AppSpacing.radiusLg,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

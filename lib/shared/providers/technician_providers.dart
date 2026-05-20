@@ -193,11 +193,57 @@ class TaskUpdateNotifier extends StateNotifier<TaskUpdateState> {
     }
   }
 
-  Future<void> saveNotes(String orderId, String notes) async {
+  Future<void> saveNotes(String assignmentId, String notes) async {
     try {
-      await _repo.saveTechnicianNotes(orderId, notes);
+      await _repo.saveTechnicianNotes(assignmentId, notes);
     } catch (_) {
       // Silent fail — auto-save is best-effort
+    }
+  }
+}
+
+// ─── Cash collected confirmation provider ────────────────────────────────────
+
+enum CashCollectedStatus { idle, loading, success, error }
+
+class CashCollectedState {
+  final CashCollectedStatus status;
+  final bool collected;
+  final String? errorMessage;
+
+  const CashCollectedState({
+    this.status = CashCollectedStatus.idle,
+    this.collected = false,
+    this.errorMessage,
+  });
+}
+
+class CashCollectedNotifier extends StateNotifier<CashCollectedState> {
+  final TechnicianTaskRepository _repo;
+
+  CashCollectedNotifier(this._repo, {required bool initialValue})
+      : super(CashCollectedState(collected: initialValue));
+
+  Future<bool> confirm(String assignmentId) async {
+    state = CashCollectedState(
+      status: CashCollectedStatus.loading,
+      collected: state.collected,
+    );
+    try {
+      await _repo.confirmCashCollected(assignmentId);
+      state = const CashCollectedState(
+        status: CashCollectedStatus.success,
+        collected: true,
+      );
+      return true;
+    } catch (e) {
+      state = CashCollectedState(
+        status: CashCollectedStatus.error,
+        collected: false,
+        errorMessage:
+            e is AppException ? e.message : 'فشل في تأكيد استلام المبلغ',
+      );
+      return false;
     }
   }
 }
@@ -209,6 +255,14 @@ final taskUpdateProvider = StateNotifierProvider.autoDispose
     .family<TaskUpdateNotifier, TaskUpdateState, String>(
       (ref, orderId) =>
           TaskUpdateNotifier(ref.read(technicianTaskRepositoryProvider)),
+    );
+
+final cashCollectedProvider = StateNotifierProvider.autoDispose
+    .family<CashCollectedNotifier, CashCollectedState, ({String assignmentId, bool initialValue})>(
+      (ref, args) => CashCollectedNotifier(
+        ref.read(technicianTaskRepositoryProvider),
+        initialValue: args.initialValue,
+      ),
     );
 
 // ─── Photo upload provider ────────────────────────────────────────────────────
