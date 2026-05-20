@@ -69,7 +69,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
       switch (profile.role) {
         case 'manager':
-          _navigate('/manager/web-only');
+          _navigate('/manager/dashboard');
         case 'technician':
           _navigate('/technician/tasks');
         default:

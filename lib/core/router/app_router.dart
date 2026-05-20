@@ -86,7 +86,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // ========== MANAGER (web-only redirect) ==========
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
-        path: '/manager/web-only',
+        path: '/manager/dashboard',
         builder: (_, __) => const ManagerWebOnlyScreen(),
       ),
 
