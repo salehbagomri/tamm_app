@@ -31,6 +31,9 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
   final _notesController = TextEditingController();
   final _phoneCtrl = TextEditingController();
 
+  final List<String> _cities = ['المكلا'];
+  String _selectedCity = 'المكلا';
+
   bool _isLoadingLocation = false;
   double? _lat, _lng;
   bool _locationPicked = false;
@@ -143,6 +146,7 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
       final orderResult = await repo.createOrder(
         orderType: 'quote_request',
         address: _addressController.text.trim(),
+        city: _selectedCity,
         total: 0.0,
         notes: parts.join('\n'),
         latitude: _lat,
@@ -291,42 +295,133 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                     ),
                     AppSpacing.gapLg,
                     Text(
-                      'الموقع',
-                      style: AppTextStyles.cardTitle(
-                        context.colors.textPrimary,
-                      ),
+                      'المدينة',
+                      style: AppTextStyles.label(context.colors.textPrimary),
                     ),
                     AppSpacing.gapSm,
-                    Container(
-                      padding: AppSpacing.cardPaddingSm,
-                      decoration: BoxDecoration(
-                        color: _locationPicked
-                            ? context.colors.success.withValues(alpha: 0.1)
-                            : context.colors.bgSurface,
-                        borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(
-                          color: _locationPicked
-                              ? context.colors.success
-                              : context.colors.border,
+                    ..._cities.map((city) {
+                      final isSelected = _selectedCity == city;
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedCity = city),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          padding: AppSpacing.cardPadding,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? context.colors.success.withValues(alpha: 0.08)
+                                : context.colors.bgSurface,
+                            borderRadius: AppSpacing.radiusLg,
+                            border: Border.all(
+                              color: isSelected
+                                  ? context.colors.success
+                                  : context.colors.border,
+                              width: isSelected ? 1.5 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_city_outlined,
+                                color: isSelected
+                                    ? context.colors.success
+                                    : context.colors.textSecond,
+                                size: AppSpacing.iconMd,
+                              ),
+                              AppSpacing.hGapSm2,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '📍 $city — الخدمة متاحة',
+                                      style: AppTextStyles.body(
+                                        isSelected
+                                            ? context.colors.success
+                                            : context.colors.textPrimary,
+                                      ).copyWith(fontWeight: AppTextStyles.semiBold),
+                                    ),
+                                    if (isSelected) ...[
+                                      AppSpacing.gapXs,
+                                      Text(
+                                        'الخدمة متاحة في المكلا حالياً',
+                                        style: AppTextStyles.caption(
+                                          context.colors.textSecond,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              if (isSelected)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.sm,
+                                    vertical: AppSpacing.xs,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: context.colors.success,
+                                    borderRadius: AppSpacing.radiusFull,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.check,
+                                        size: AppSpacing.iconXs - 4,
+                                        color: context.colors.bgSurface,
+                                      ),
+                                      AppSpacing.hGapXs,
+                                      Text(
+                                        'محدد',
+                                        style: AppTextStyles.caption(
+                                          context.colors.bgSurface,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                      child: InkWell(
-                        onTap: _isLoadingLocation ? null : _pickLocation,
-                        borderRadius: AppSpacing.radiusSm,
-                        child: Row(
+                      );
+                    }),
+                    AppSpacing.gapLg,
+                    Text(
+                      'الموقع الجغرافي',
+                      style: AppTextStyles.label(context.colors.textPrimary),
+                    ),
+                    AppSpacing.gapSm,
+                    GestureDetector(
+                      onTap: _isLoadingLocation ? null : _pickLocation,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        decoration: BoxDecoration(
+                          color: _locationPicked
+                              ? context.colors.success.withValues(alpha: 0.08)
+                              : context.colors.bluePrimary.withValues(alpha: 0.06),
+                          borderRadius: AppSpacing.radiusLg,
+                          border: Border.all(
+                            color: _locationPicked
+                                ? context.colors.success
+                                : context.colors.bluePrimary,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Column(
                           children: [
                             Container(
-                              padding: AppSpacing.iconCirclePadding,
+                              width: 56,
+                              height: 56,
                               decoration: BoxDecoration(
                                 color: _locationPicked
                                     ? context.colors.success
                                     : context.colors.bluePrimary,
-                                borderRadius: AppSpacing.radius,
+                                shape: BoxShape.circle,
                               ),
                               child: _isLoadingLocation
-                                  ? const SizedBox(
-                                      width: 24,
-                                      height: 24,
+                                  ? const Padding(
+                                      padding: AppSpacing.iconCirclePadding,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         color: Colors.white,
@@ -336,49 +431,53 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                       _locationPicked
                                           ? Icons.check_circle_outline
                                           : Icons.my_location,
-                                      color: Colors.white,
+                                      color: context.colors.bgSurface,
+                                      size: AppSpacing.iconLg,
                                     ),
                             ),
-                            AppSpacing.hGapSm2,
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _locationPicked
-                                        ? 'تم تحديد الموقع ✓'
-                                        : '📍 تحديد موقعي الحالي',
-                                    style: AppTextStyles.body(
-                                      _locationPicked
-                                          ? context.colors.success
-                                          : context.colors.textPrimary,
-                                    ).copyWith(fontWeight: AppTextStyles.bold),
-                                  ),
-                                  Text(
-                                    _locationPicked
-                                        ? '${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
-                                        : 'اضغط لإرسال موقعك الدقيق للفني',
-                                    style: AppTextStyles.caption(
-                                      context.colors.textSecond,
-                                    ),
-                                  ),
-                                ],
+                            AppSpacing.gapSm2,
+                            Text(
+                              _locationPicked
+                                  ? 'تم تحديد الموقع ✓'
+                                  : 'تحديد موقعي الحالي',
+                              style: AppTextStyles.cardTitle(
+                                _locationPicked
+                                    ? context.colors.success
+                                    : context.colors.bluePrimary,
                               ),
                             ),
-                            if (_locationPicked)
-                              IconButton(
+                            AppSpacing.gapXs,
+                            Text(
+                              _locationPicked
+                                  ? '${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
+                                  : 'اضغط لإرسال موقعك الدقيق للفني',
+                              style: AppTextStyles.caption(context.colors.textSecond),
+                            ),
+                            if (_locationPicked) ...[
+                              AppSpacing.gapSm,
+                              TextButton.icon(
+                                onPressed: _pickLocation,
                                 icon: Icon(
                                   Icons.refresh,
+                                  size: AppSpacing.iconXs,
                                   color: context.colors.textSecond,
                                 ),
-                                onPressed: _pickLocation,
-                                tooltip: 'تحديث الموقع',
+                                label: Text(
+                                  'تحديث الموقع',
+                                  style: AppTextStyles.caption(context.colors.textSecond),
+                                ),
                               ),
+                            ],
                           ],
                         ),
                       ),
                     ),
-                    AppSpacing.gapMd,
+                    AppSpacing.gapLg,
+                    Text(
+                      'تفاصيل العنوان',
+                      style: AppTextStyles.label(context.colors.textPrimary),
+                    ),
+                    AppSpacing.gapSm,
                     TammTextField(
                       label: 'العنوان بالتفصيل',
                       hint: 'مثال: الشرج، الشارع العام، بجانب جامع الشرج',
