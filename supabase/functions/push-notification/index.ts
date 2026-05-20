@@ -62,13 +62,15 @@ async function getAccessToken(): Promise<string> {
 
 // === Send FCM to a user ===
 // notificationType: the notification category (e.g. 'on_the_way', 'quote_sent')
-// referenceId: order_id for customer/manager, assignment_id for technician
+// referenceId: order_id for all notifications
+// extraData: additional key-value pairs merged into the FCM data payload
 async function sendToUser(
   userId: string,
   title: string,
   body: string,
   notificationType: string = "general",
   referenceId: string | null = null,
+  extraData: Record<string, string> = {},
 ) {
   const { data: tokens } = await supabase
     .from("device_tokens")
@@ -82,6 +84,7 @@ async function sendToUser(
   // Build data payload for deep linking
   const dataPayload: Record<string, string> = {
     notification_type: notificationType,
+    ...extraData,
   };
   if (referenceId) dataPayload.order_id = referenceId;
 
@@ -248,14 +251,15 @@ Deno.serve(async (req) => {
         .eq("id", record.technician_id)
         .single();
 
-      // Notify technician — referenceId = assignment_id (used for deep link)
+      // Notify technician — pass both assignment_id and order_id for deep linking
       if (tech) {
         await sendToUser(
           tech.profile_id,
           "👷 مهمة جديدة",
           "تم تعيينك لمهمة جديدة",
           "new_assignment",
-          record.id, // assignment_id for deep linking to /technician/task/:id
+          record.order_id,
+          { assignment_id: record.id },
         );
       }
 
