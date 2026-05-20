@@ -46,6 +46,13 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
     super.dispose();
   }
 
+  String _formatDate(String? iso) {
+    if (iso == null) return '';
+    final d = DateTime.tryParse(iso)?.toLocal();
+    if (d == null) return '';
+    return '${d.day}/${d.month}/${d.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final tasksAsync = ref.watch(myAssignmentsProvider);
@@ -92,6 +99,21 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                           final customer =
                               order['profiles'] as Map<String, dynamic>?;
                           final isStarted = a['status'] == 'started';
+
+                          // نوع الطلب
+                          final orderType =
+                              order['order_type'] as String? ?? 'service';
+                          final typeLabel = switch (orderType) {
+                            'product' => 'منتج',
+                            'quote_request' => 'عرض سعر',
+                            _ => 'خدمة',
+                          };
+
+                          // تاريخ الموعد أو تاريخ الإنشاء
+                          final rawDate = order['preferred_date'] as String? ??
+                              order['created_at'] as String?;
+                          final dateLabel = _formatDate(rawDate);
+
                           return TammCard(
                             onTap: () =>
                                 context.push('/technician/task/${a['id']}'),
@@ -100,10 +122,11 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                               children: [
                                 Row(
                                   children: [
+                                    // شارة الحالة
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 10,
-                                        vertical: 4,
+                                        vertical: 3,
                                       ),
                                       decoration: BoxDecoration(
                                         color: isStarted
@@ -116,16 +139,20 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                       ),
                                       child: Text(
                                         isStarted ? 'جاري التنفيذ' : 'جديدة',
-                                        style: AppTextStyles.body(
-                                          context.colors.textPrimary,
+                                        style: AppTextStyles.caption(
+                                          isStarted
+                                              ? context.colors.warning
+                                              : context.colors.bluePrimary,
+                                        ).copyWith(
+                                          fontWeight: AppTextStyles.semiBold,
                                         ),
                                       ),
                                     ),
                                     const Spacer(),
                                     Text(
                                       order['order_number'] ?? '',
-                                      style: AppTextStyles.body(
-                                        context.colors.textPrimary,
+                                      style: AppTextStyles.caption(
+                                        context.colors.textFaint,
                                       ),
                                     ),
                                   ],
@@ -142,20 +169,60 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                   children: [
                                     Icon(
                                       Icons.location_on_outlined,
-                                      size: 16,
+                                      size: 14,
                                       color: context.colors.textSecond,
                                     ),
                                     AppSpacing.hGapXs,
                                     Expanded(
                                       child: Text(
                                         order['address'] ?? '',
-                                        style: AppTextStyles.bodySmall(
+                                        style: AppTextStyles.caption(
                                           context.colors.textSecond,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
+                                  ],
+                                ),
+                                AppSpacing.gapXs,
+                                Row(
+                                  children: [
+                                    // نوع الطلب
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: context.colors.bgPrimary,
+                                        borderRadius: AppSpacing.radiusFull,
+                                        border: Border.all(
+                                          color: context.colors.border,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        typeLabel,
+                                        style: AppTextStyles.caption(
+                                          context.colors.textSecond,
+                                        ),
+                                      ),
+                                    ),
+                                    if (dateLabel.isNotEmpty) ...[
+                                      AppSpacing.hGapSm,
+                                      Icon(
+                                        Icons.calendar_today_outlined,
+                                        size: 12,
+                                        color: context.colors.textFaint,
+                                      ),
+                                      AppSpacing.hGapXs,
+                                      Text(
+                                        dateLabel,
+                                        style: AppTextStyles.caption(
+                                          context.colors.textFaint,
+                                        ),
+                                      ),
+                                    ],
                                   ],
                                 ),
                               ],

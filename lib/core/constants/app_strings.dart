@@ -63,5 +63,5 @@ class AppStrings {
   static const myTasks = 'مهامي';
   static const startTask = 'بدأت';
   static const endTask = 'أنهيت';
-  static const todayTasks = 'مهام اليوم';
+  static const todayTasks = 'مهامي النشطة';
 }

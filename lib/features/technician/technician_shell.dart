@@ -100,8 +100,8 @@ class TechnicianShell extends ConsumerWidget {
         }
       },
       items: const [
-        NavItem(icon: Icons.task_alt_rounded, label: AppStrings.myTasks),
-        NavItem(icon: Icons.person_rounded, label: AppStrings.profile),
+        NavItem(icon: Icons.task_alt_outlined, label: AppStrings.myTasks),
+        NavItem(icon: Icons.person_outlined, label: AppStrings.profile),
       ],
       child: child,
     );

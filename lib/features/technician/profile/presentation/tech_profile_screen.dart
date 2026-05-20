@@ -31,9 +31,16 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
       ref.invalidate(myTechnicianProfileProvider);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('تعذر تحديث الحالة: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is AppException ? e.message : 'تعذر تحديث الحالة',
+              style: AppTextStyles.body(context.colors.textPrimary),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -169,7 +176,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                           child: Column(
                             children: [
                               Icon(
-                                Icons.engineering_rounded,
+                                Icons.engineering_outlined,
                                 color: context.colors.bluePrimary,
                                 size: 32,
                               ),
@@ -208,7 +215,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                           child: Column(
                             children: [
                               Icon(
-                                Icons.task_alt_rounded,
+                                Icons.task_alt_outlined,
                                 color: context.colors.success,
                                 size: 32,
                               ),
@@ -238,7 +245,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                   TammButton(
                     label: 'تسجيل الخروج',
                     type: TammButtonType.secondary,
-                    icon: Icons.logout,
+                    icon: Icons.logout_outlined,
                     onPressed: () =>
                         AuthRepository.confirmSignOut(context, ref),
                   ),
