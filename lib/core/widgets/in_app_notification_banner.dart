@@ -106,7 +106,10 @@ class InAppNotificationBanner extends ConsumerWidget {
       top: state.isVisible ? 0 : -120,
       left: 0,
       right: 0,
-      child: GestureDetector(
+      child: IgnorePointer(
+        ignoring: !state.isVisible,
+        child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onPanUpdate: (details) {
           // Swipe up to dismiss
           if (details.delta.dy < -5) {
@@ -198,6 +201,7 @@ class InAppNotificationBanner extends ConsumerWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }
