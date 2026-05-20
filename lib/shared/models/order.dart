@@ -35,6 +35,7 @@ class Order {
   final double? latitude;
   final double? longitude;
   final String? receiptUrl;
+  final String? contactPhone;
 
   const Order({
     required this.id,
@@ -70,6 +71,7 @@ class Order {
     this.latitude,
     this.longitude,
     this.receiptUrl,
+    this.contactPhone,
   });
 
   factory Order.fromMap(Map<String, dynamic> m) {
@@ -132,23 +134,27 @@ class Order {
       latitude: (m['latitude'] as num?)?.toDouble(),
       longitude: (m['longitude'] as num?)?.toDouble(),
       receiptUrl: m['receipt_url'] as String?,
+      contactPhone: m['contact_phone'] as String?,
     );
   }
 
   String get statusLabel {
     if (orderType == 'quote_request') {
-      // بعد التعيين: نستخدم حالة الطلب العادية
       if ([
+        'confirmed',
         'assigned',
         'on_the_way',
         'in_progress',
         'completed',
+        'cancelled',
       ].contains(status)) {
         return switch (status) {
+          'confirmed' => 'مؤكد - بانتظار التعيين',
           'assigned' => 'تم التعيين',
           'on_the_way' => 'الفني في الطريق',
           'in_progress' => 'جاري التنفيذ',
           'completed' => 'مكتمل',
+          'cancelled' => 'ملغي',
           _ => status,
         };
       }
