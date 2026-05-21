@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -222,6 +223,12 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       initialReceiptUrl: o.receiptUrl,
                     ),
                   ],
+                ],
+
+                // Invoice button — only for completed orders
+                if (o.status == 'completed') ...[
+                  AppSpacing.gapMd,
+                  _InvoiceButton(orderId: o.id),
                 ],
 
                 // Review card — only for completed orders
@@ -546,6 +553,87 @@ class _BottomActionBar extends StatelessWidget {
         border: Border(top: BorderSide(color: context.colors.border)),
       ),
       child: SafeArea(top: false, child: child),
+    );
+  }
+}
+
+// ─── Invoice button ───────────────────────────────────────────────────────────
+
+class _InvoiceButton extends StatelessWidget {
+  final String orderId;
+  const _InvoiceButton({required this.orderId});
+
+  Future<void> _openInvoice(BuildContext context) async {
+    final uri = Uri.parse('https://tamm-web.vercel.app/orders/$orderId/invoice');
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'تعذر فتح الفاتورة',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _openInvoice(context),
+      child: Container(
+        width: double.infinity,
+        padding: AppSpacing.cardPadding,
+        decoration: BoxDecoration(
+          color: context.colors.bluePrimary.withValues(alpha: 0.06),
+          borderRadius: AppSpacing.radiusLg,
+          border: Border.all(
+            color: context.colors.bluePrimary.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              decoration: BoxDecoration(
+                color: context.colors.bluePrimary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.description_outlined,
+                color: context.colors.bluePrimary,
+                size: AppSpacing.iconMd,
+              ),
+            ),
+            AppSpacing.hGapSm2,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'عرض وتحميل الفاتورة',
+                    style: AppTextStyles.body(context.colors.bluePrimary)
+                        .copyWith(fontWeight: AppTextStyles.semiBold),
+                  ),
+                  Text(
+                    'افتح الفاتورة لمعاينتها أو حفظها كـ PDF',
+                    style: AppTextStyles.caption(context.colors.textSecond),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.open_in_new_outlined,
+              color: context.colors.bluePrimary,
+              size: AppSpacing.iconSm,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
