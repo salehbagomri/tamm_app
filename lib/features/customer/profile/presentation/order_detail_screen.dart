@@ -600,7 +600,9 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
 
       // 2. تحميل ملف PDF كـ bytes
       final response = await http.get(Uri.parse(pdfUrl));
-      if (response.statusCode != 200) throw Exception('download failed');
+      if (response.statusCode != 200) {
+        throw Exception('فشل التحميل — كود الخطأ: ${response.statusCode}');
+      }
 
       // 3. حفظه في مجلد مؤقت
       final invoiceNumber =
@@ -612,12 +614,19 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
       if (!mounted) return;
 
       // 4. فتحه بتطبيق PDF المثبت على الجهاز
-      await OpenFile.open(file.path, type: 'application/pdf');
-    } catch (_) {
+      final openResult = await OpenFile.open(
+        file.path,
+        type: 'application/pdf',
+      );
+      if (openResult.type != ResultType.done && mounted) {
+        throw Exception('فشل فتح الملف: ${openResult.message}');
+      }
+    } catch (e) {
+      debugPrint('Invoice open error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-            'تعذر فتح الفاتورة',
+            e.toString().replaceFirst('Exception: ', ''),
             style: AppTextStyles.body(Colors.white),
           ),
           backgroundColor: context.colors.error,
