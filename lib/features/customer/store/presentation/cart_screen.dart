@@ -188,21 +188,51 @@ class CartScreen extends ConsumerWidget {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    minHeight: 32,
-                                  ),
-                                  icon: Icon(
-                                    Icons.add_circle_outline,
-                                    color: context.colors.bluePrimary,
-                                    size: 24,
-                                  ),
-                                  onPressed: () => notifier.updateQuantity(
-                                    item.product.id,
-                                    item.quantity + 1,
-                                  ),
+                                Builder(
+                                  builder: (btnContext) {
+                                    final atMax = item.quantity >=
+                                        item.product.stockQuantity;
+                                    return IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(
+                                        minWidth: 32,
+                                        minHeight: 32,
+                                      ),
+                                      icon: Icon(
+                                        Icons.add_circle_outline,
+                                        color: atMax
+                                            ? context.colors.textFaint
+                                            : context.colors.bluePrimary,
+                                        size: 24,
+                                      ),
+                                      onPressed: atMax
+                                          ? () {
+                                              ScaffoldMessenger.of(btnContext)
+                                                ..hideCurrentSnackBar()
+                                                ..showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'وصلت للحد الأقصى للمخزون',
+                                                      style: AppTextStyles.body(
+                                                        Colors.white,
+                                                      ),
+                                                    ),
+                                                    backgroundColor: context
+                                                        .colors.warning,
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    duration: const Duration(
+                                                      seconds: 2,
+                                                    ),
+                                                  ),
+                                                );
+                                            }
+                                          : () => notifier.updateQuantity(
+                                                item.product.id,
+                                                item.quantity + 1,
+                                              ),
+                                    );
+                                  },
                                 ),
                                 Text(
                                   '${item.quantity}',

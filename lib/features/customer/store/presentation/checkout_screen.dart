@@ -220,6 +220,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         return;
       }
 
+      // فحص دفاعي للمخزون قبل إرسال الطلب (race-condition guard).
+      final cartItems = cartAsync.valueOrNull ?? [];
+      await ref
+          .read(orderRepositoryProvider)
+          .validateStockForCart(cartItems);
+
       final hasInstallation = cartAsync.maybeWhen(
         data: (cart) => cart.any((c) => c.includeInstallation),
         orElse: () => false,

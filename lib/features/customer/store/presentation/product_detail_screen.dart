@@ -168,6 +168,21 @@ class ProductDetailScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+                if (p.price != null && p.isOutOfStock) ...[
+                  AppSpacing.gapSm2,
+                  _StockBadge(
+                    label: 'نفدت الكمية',
+                    icon: Icons.remove_shopping_cart_outlined,
+                    color: context.colors.error,
+                  ),
+                ] else if (p.price != null && p.isLowStock) ...[
+                  AppSpacing.gapSm2,
+                  _StockBadge(
+                    label: 'متبقي عدد محدود — ${p.stockQuantity} قطع فقط',
+                    icon: Icons.warning_amber_outlined,
+                    color: context.colors.warning,
+                  ),
+                ],
                 if (p.description != null) ...[
                   AppSpacing.gapLg,
                   Text(
@@ -205,12 +220,51 @@ class ProductDetailScreen extends ConsumerWidget {
     );
   }
 
+  void _showStockError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: AppTextStyles.body(Colors.white),
+        ),
+        backgroundColor: context.colors.warning,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
   Future<void> _addToCart(
     BuildContext context,
     WidgetRef ref,
     Product p,
   ) async {
     if (!await requireAuth(context, ref)) return;
+
+    // فحص المخزون قبل أي خطوة
+    if (p.isOutOfStock) {
+      if (context.mounted) {
+        _showStockError(
+          context,
+          'عذراً، هذا المنتج غير متوفر حالياً في المخزن.',
+        );
+      }
+      return;
+    }
+    final cart = ref.read(cartProvider).valueOrNull ?? [];
+    final qtyInCart = cart
+        .where((c) => c.product.id == p.id)
+        .fold<int>(0, (s, c) => s + c.quantity);
+    if (qtyInCart + 1 > p.stockQuantity) {
+      if (context.mounted) {
+        _showStockError(
+          context,
+          'المتوفر في المخزن ${p.stockQuantity} قطعة فقط، ولديك $qtyInCart في السلة.',
+        );
+      }
+      return;
+    }
+
     bool wantsInstallation = false;
     if (p.requiresInstallation) {
       if (!context.mounted) return;
@@ -326,15 +380,22 @@ class _BottomPurchaseBar extends StatelessWidget {
           AppSpacing.hGapMd,
           Expanded(
             child: p.price != null
-                ? TammButton(
-                    label: p.requiresInstallation
-                        ? 'اشترِ وركّب 🛠'
-                        : 'أضف للسلة 🛒',
-                    icon: p.requiresInstallation
-                        ? Icons.build_outlined
-                        : Icons.shopping_cart_outlined,
-                    onPressed: onPressed,
-                  )
+                ? (p.isOutOfStock
+                    ? const TammButton(
+                        label: 'نفدت الكمية',
+                        icon: Icons.remove_shopping_cart_outlined,
+                        type: TammButtonType.secondary,
+                        onPressed: null,
+                      )
+                    : TammButton(
+                        label: p.requiresInstallation
+                            ? 'اشترِ وركّب 🛠'
+                            : 'أضف للسلة 🛒',
+                        icon: p.requiresInstallation
+                            ? Icons.build_outlined
+                            : Icons.shopping_cart_outlined,
+                        onPressed: onPressed,
+                      ))
                 : TammButton(
                     label: 'تواصل معنا للسعر',
                     icon: Icons.chat_outlined,
@@ -537,6 +598,41 @@ class _ExpandableSpecsState extends State<_ExpandableSpecs> {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _StockBadge extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  const _StockBadge({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: AppSpacing.radiusFull,
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          AppSpacing.hGapXs,
+          Text(
+            label,
+            style: AppTextStyles.caption(color)
+                .copyWith(fontWeight: AppTextStyles.semiBold),
+          ),
+        ],
+      ),
     );
   }
 }

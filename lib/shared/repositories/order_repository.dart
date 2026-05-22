@@ -1,11 +1,58 @@
 import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/cart_item.dart';
 import '../models/order.dart';
 import '../../core/errors/error_mapper.dart';
 import '../../core/errors/app_exception.dart';
 
 class OrderRepository {
   final _client = Supabase.instance.client;
+
+  /// تحقق دفاعي من المخزون قبل إنشاء الطلب.
+  /// يستعلم أحدث كميات المنتجات (race-condition guard) ويرمي [AppException]
+  /// في حال نفاد أي صنف. السيرفر يخصم المخزون فعلياً عبر trigger.
+  Future<void> validateStockForCart(List<CartItem> items) async {
+    final products = items
+        .where((i) => i.product.category != 'service')
+        .toList();
+    if (products.isEmpty) return;
+
+    try {
+      final productIds = products.map((i) => i.product.id).toList();
+      final rows = await _client
+          .from('products')
+          .select('id, name, stock_quantity, is_available')
+          .inFilter('id', productIds);
+
+      for (final item in products) {
+        final db = rows.firstWhere(
+          (r) => r['id'] == item.product.id,
+          orElse: () => <String, dynamic>{},
+        );
+        if (db.isEmpty) {
+          throw ValidationException(message:
+            'المنتج "${item.product.name}" لم يعد متوفراً في النظام.',
+          );
+        }
+        final stock = (db['stock_quantity'] as num?)?.toInt() ?? 0;
+        final available = (db['is_available'] as bool?) ?? true;
+        if (!available || stock <= 0) {
+          throw ValidationException(message:
+            'عذراً، "${item.product.name}" غير متوفر حالياً.',
+          );
+        }
+        if (stock < item.quantity) {
+          throw ValidationException(message:
+            'الكمية المطلوبة من "${item.product.name}" غير متوفرة. المتوفر: $stock قطعة فقط.',
+          );
+        }
+      }
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw ErrorMapper.from(e);
+    }
+  }
 
   Future<List<Order>> getMyOrders() async {
     try {

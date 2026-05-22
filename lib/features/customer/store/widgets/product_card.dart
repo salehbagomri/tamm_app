@@ -29,10 +29,41 @@ class ProductCard extends ConsumerStatefulWidget {
 class _ProductCardState extends ConsumerState<ProductCard> {
   bool _loading = false;
 
+  void _showStockError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: AppTextStyles.body(Colors.white),
+        ),
+        backgroundColor: context.colors.warning,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
   Future<void> _addToCart() async {
     if (_loading) return;
     if (!await requireAuth(context, ref)) return;
     if (!mounted) return;
+
+    // فحص المخزون
+    final p = widget.product;
+    if (p.isOutOfStock) {
+      _showStockError('عذراً، هذا المنتج غير متوفر حالياً في المخزن.');
+      return;
+    }
+    final cart = ref.read(cartProvider).valueOrNull ?? [];
+    final qtyInCart = cart
+        .where((c) => c.product.id == p.id)
+        .fold<int>(0, (s, c) => s + c.quantity);
+    if (qtyInCart + 1 > p.stockQuantity) {
+      _showStockError(
+        'المتوفر في المخزن ${p.stockQuantity} قطعة فقط، ولديك $qtyInCart في السلة.',
+      );
+      return;
+    }
 
     bool wantsInstallation = false;
     if (widget.product.requiresInstallation) {
@@ -155,6 +186,24 @@ class _ProductImage extends StatelessWidget {
               right: 6,
               child: _Badge(label: 'مميز', color: context.colors.warning),
             ),
+          if (product.isOutOfStock)
+            Positioned(
+              top: 6,
+              left: 6,
+              child: _Badge(
+                label: 'نفدت',
+                color: context.colors.error,
+              ),
+            )
+          else if (product.isLowStock)
+            Positioned(
+              top: 6,
+              left: 6,
+              child: _Badge(
+                label: '${product.stockQuantity} متبقية',
+                color: context.colors.warning,
+              ),
+            ),
         ],
       ),
     );
@@ -229,7 +278,11 @@ class _ProductInfo extends StatelessWidget {
               Expanded(child: _PriceSection(product: p)),
               if (p.price != null) ...[
                 const SizedBox(width: 6),
-                _AddToCartButton(loading: loading, onTap: onAddToCart),
+                _AddToCartButton(
+                  loading: loading,
+                  disabled: p.isOutOfStock,
+                  onTap: onAddToCart,
+                ),
               ],
             ],
           ),
@@ -271,18 +324,29 @@ class _PriceSection extends StatelessWidget {
 
 class _AddToCartButton extends StatelessWidget {
   final bool loading;
+  final bool disabled;
   final VoidCallback onTap;
-  const _AddToCartButton({required this.loading, required this.onTap});
+  const _AddToCartButton({
+    required this.loading,
+    required this.onTap,
+    this.disabled = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final iconColor = disabled
+        ? context.colors.textFaint
+        : context.colors.blueSky;
+    final bgColor = disabled
+        ? context.colors.textFaint.withValues(alpha: 0.1)
+        : context.colors.bluePrimary.withValues(alpha: 0.1);
     return InkWell(
-      onTap: loading ? null : onTap,
+      onTap: (loading || disabled) ? null : onTap,
       borderRadius: AppSpacing.radiusSm,
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: context.colors.bluePrimary.withValues(alpha: 0.1),
+          color: bgColor,
           borderRadius: AppSpacing.radiusSm,
         ),
         child: loading
@@ -291,13 +355,15 @@ class _AddToCartButton extends StatelessWidget {
                 height: 18,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: context.colors.blueSky,
+                  color: iconColor,
                 ),
               )
             : Icon(
-                Icons.add_shopping_cart_outlined,
+                disabled
+                    ? Icons.block_outlined
+                    : Icons.add_shopping_cart_outlined,
                 size: 18,
-                color: context.colors.blueSky,
+                color: iconColor,
               ),
       ),
     );

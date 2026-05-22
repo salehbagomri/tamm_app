@@ -15,6 +15,14 @@ class Product {
   final double installationPrice;
   final double? oldPrice;
 
+  // ─── حقول المخزون (Phase 1) ───
+  final int stockQuantity;
+  final int lowStockThreshold;
+  final bool autoHideWhenOut;
+  final double? costPrice;
+  final String? supplierName;
+  final String? supplierSku;
+
   const Product({
     required this.id,
     required this.name,
@@ -30,6 +38,12 @@ class Product {
     this.requiresInstallation = false,
     this.installationPrice = 0.0,
     this.oldPrice,
+    this.stockQuantity = 0,
+    this.lowStockThreshold = 3,
+    this.autoHideWhenOut = true,
+    this.costPrice,
+    this.supplierName,
+    this.supplierSku,
   });
 
   factory Product.fromMap(Map<String, dynamic> m) => Product(
@@ -47,6 +61,12 @@ class Product {
     requiresInstallation: m['requires_installation'] ?? false,
     installationPrice: (m['installation_price'] as num?)?.toDouble() ?? 0.0,
     oldPrice: (m['old_price'] as num?)?.toDouble(),
+    stockQuantity: (m['stock_quantity'] as num?)?.toInt() ?? 0,
+    lowStockThreshold: (m['low_stock_threshold'] as num?)?.toInt() ?? 3,
+    autoHideWhenOut: m['auto_hide_when_out'] ?? true,
+    costPrice: (m['cost_price'] as num?)?.toDouble(),
+    supplierName: m['supplier_name'],
+    supplierSku: m['supplier_sku'],
   );
 
   Map<String, dynamic> toMap() => {
@@ -63,12 +83,23 @@ class Product {
     'requires_installation': requiresInstallation,
     'installation_price': installationPrice,
     'old_price': oldPrice,
+    'stock_quantity': stockQuantity,
+    'low_stock_threshold': lowStockThreshold,
+    'auto_hide_when_out': autoHideWhenOut,
+    'cost_price': costPrice,
+    'supplier_name': supplierName,
+    'supplier_sku': supplierSku,
   };
 
   bool get hasDiscount =>
       oldPrice != null && price != null && oldPrice! > price!;
   int get discountPercentage =>
       hasDiscount ? (((oldPrice! - price!) / oldPrice!) * 100).round() : 0;
+
+  // ─── Stock helpers ───
+  bool get isInStock => stockQuantity > 0;
+  bool get isOutOfStock => !isAvailable || stockQuantity <= 0;
+  bool get isLowStock => isInStock && stockQuantity <= lowStockThreshold;
 
   String get categoryLabel => switch (category) {
     'ac' => 'مكيفات',
