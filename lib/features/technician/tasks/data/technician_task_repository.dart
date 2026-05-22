@@ -119,4 +119,51 @@ class TechnicianTaskRepository {
       throw const ServerException(message: 'فشل في رفع الصورة');
     }
   }
+
+  /// يحذف صورة من assignment: يُزيلها من مصفوفة photo_urls، ويعدّل photo_url
+  /// إذا كانت الصورة الرئيسية، ثم يحاول حذف الملف من Storage (best-effort).
+  Future<void> removePhoto({
+    required String assignmentId,
+    required String url,
+  }) async {
+    try {
+      final row = await _client
+          .from('assignments')
+          .select('photo_urls, photo_url')
+          .eq('id', assignmentId)
+          .single();
+
+      final urls = (row['photo_urls'] as List?)?.cast<String>() ?? [];
+      urls.remove(url);
+
+      final updates = <String, dynamic>{'photo_urls': urls};
+      if (row['photo_url'] == url) {
+        updates['photo_url'] = urls.isNotEmpty ? urls.first : null;
+      }
+
+      await _client
+          .from('assignments')
+          .update(updates)
+          .eq('id', assignmentId);
+
+      final path = _extractStoragePath(url);
+      if (path != null) {
+        try {
+          await _client.storage.from('order-photos').remove([path]);
+        } catch (_) {
+          // best-effort — DB هو مصدر الحقيقة
+        }
+      }
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw const ServerException(message: 'فشل في حذف الصورة');
+    }
+  }
+
+  String? _extractStoragePath(String publicUrl) {
+    const marker = '/order-photos/';
+    final idx = publicUrl.indexOf(marker);
+    if (idx < 0) return null;
+    return publicUrl.substring(idx + marker.length);
+  }
 }

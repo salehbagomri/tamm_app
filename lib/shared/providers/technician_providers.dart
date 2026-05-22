@@ -97,7 +97,7 @@ class TechStats {
 }
 
 final techStatsProvider =
-    FutureProvider.autoDispose<TechStats>((ref) async {
+    FutureProvider<TechStats>((ref) async {
   final client = Supabase.instance.client;
   final userId = client.auth.currentUser!.id;
 
@@ -273,9 +273,13 @@ enum PhotoUploadStatus { idle, uploading, done, error }
 class PhotoUploadState {
   final PhotoUploadStatus status;
   final String? errorMessage;
+  final int total;
+  final int done;
   const PhotoUploadState({
     this.status = PhotoUploadStatus.idle,
     this.errorMessage,
+    this.total = 0,
+    this.done = 0,
   });
 }
 
@@ -288,7 +292,11 @@ class PhotoUploadNotifier extends StateNotifier<PhotoUploadState> {
     required List<int> bytes,
     required String extension,
   }) async {
-    state = const PhotoUploadState(status: PhotoUploadStatus.uploading);
+    state = const PhotoUploadState(
+      status: PhotoUploadStatus.uploading,
+      total: 1,
+      done: 0,
+    );
     try {
       final data = Uint8List.fromList(bytes);
       await _repo.uploadPhoto(
@@ -296,13 +304,92 @@ class PhotoUploadNotifier extends StateNotifier<PhotoUploadState> {
         bytes: data,
         extension: extension,
       );
-      state = const PhotoUploadState(status: PhotoUploadStatus.done);
+      state = const PhotoUploadState(
+        status: PhotoUploadStatus.done,
+        total: 1,
+        done: 1,
+      );
       return true;
     } catch (e) {
       state = PhotoUploadState(
         status: PhotoUploadStatus.error,
         errorMessage: e is AppException ? e.message : 'فشل رفع الصورة',
       );
+      return false;
+    }
+  }
+
+  /// رفع مجموعة صور بشكل متوازٍ. يُحدّث done تدريجياً عند انتهاء كل صورة.
+  /// يُرجع عدد الصور المرفوعة بنجاح.
+  Future<int> uploadBatch({
+    required String assignmentId,
+    required List<({Uint8List bytes, String extension})> files,
+  }) async {
+    if (files.isEmpty) return 0;
+
+    state = PhotoUploadState(
+      status: PhotoUploadStatus.uploading,
+      total: files.length,
+      done: 0,
+    );
+
+    int successCount = 0;
+    String? firstError;
+
+    final futures = files.map((f) async {
+      try {
+        await _repo.uploadPhoto(
+          assignmentId: assignmentId,
+          bytes: f.bytes,
+          extension: f.extension,
+        );
+        successCount++;
+        state = PhotoUploadState(
+          status: PhotoUploadStatus.uploading,
+          total: files.length,
+          done: successCount,
+        );
+      } catch (e) {
+        firstError ??= e is AppException ? e.message : 'فشل رفع إحدى الصور';
+      }
+    }).toList();
+
+    await Future.wait(futures);
+
+    if (successCount == files.length) {
+      state = PhotoUploadState(
+        status: PhotoUploadStatus.done,
+        total: files.length,
+        done: successCount,
+      );
+    } else if (successCount == 0) {
+      state = PhotoUploadState(
+        status: PhotoUploadStatus.error,
+        total: files.length,
+        done: 0,
+        errorMessage: firstError ?? 'فشل رفع الصور',
+      );
+    } else {
+      // نجاح جزئي — نضع status=done مع رسالة
+      state = PhotoUploadState(
+        status: PhotoUploadStatus.done,
+        total: files.length,
+        done: successCount,
+        errorMessage:
+            'رُفعت $successCount من ${files.length} صور؛ فشل بعضها',
+      );
+    }
+    return successCount;
+  }
+
+  Future<bool> remove({
+    required String assignmentId,
+    required String url,
+  }) async {
+    try {
+      await _repo.removePhoto(assignmentId: assignmentId, url: url);
+      return true;
+    } catch (_) {
       return false;
     }
   }

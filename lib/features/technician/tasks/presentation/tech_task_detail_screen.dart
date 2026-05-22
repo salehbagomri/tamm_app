@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -138,6 +139,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     if (!mounted) return;
     if (ok) {
       ref.invalidate(myAssignmentsProvider);
+      ref.invalidate(completedAssignmentsProvider);
+      ref.invalidate(techStatsProvider);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -212,29 +215,156 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     } catch (_) {}
   }
 
-  Future<void> _pickAndUploadPhoto(String assignmentId) async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 75,
-      maxWidth: 1280,
-    );
-    if (picked == null || !mounted) return;
+  // ─── منظومة رفع الصور ────────────────────────────────────────────────────
 
-    final bytes = await picked.readAsBytes();
-    final ext = picked.name.split('.').last.toLowerCase();
-    final ok = await ref
+  Future<void> _addPhotosFlow(String assignmentId, int remainingSlots) async {
+    if (remainingSlots <= 0) return;
+
+    final source = await showModalBottomSheet<_PhotoSource>(
+      context: context,
+      backgroundColor: context.colors.bgSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _PhotoSourceSheet(remainingSlots: remainingSlots),
+    );
+    if (source == null || !mounted) return;
+
+    final picker = ImagePicker();
+    final List<XFile> picked = [];
+
+    if (source == _PhotoSource.camera) {
+      final shot = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+        maxWidth: 1600,
+      );
+      if (shot != null) picked.add(shot);
+    } else {
+      final many = await picker.pickMultiImage(
+        imageQuality: 80,
+        maxWidth: 1600,
+      );
+      picked.addAll(many.take(remainingSlots));
+    }
+
+    if (picked.isEmpty || !mounted) return;
+
+    // معاينة وتأكيد قبل الرفع
+    final confirmed = await _showPreviewSheet(picked);
+    if (confirmed == null || confirmed.isEmpty || !mounted) return;
+
+    final files = <({Uint8List bytes, String extension})>[];
+    for (final x in confirmed) {
+      final bytes = await x.readAsBytes();
+      final ext = x.name.contains('.')
+          ? x.name.split('.').last.toLowerCase()
+          : 'jpg';
+      files.add((bytes: bytes, extension: ext));
+    }
+
+    final count = await ref
         .read(photoUploadProvider(assignmentId).notifier)
-        .upload(assignmentId: assignmentId, bytes: bytes, extension: ext);
+        .uploadBatch(assignmentId: assignmentId, files: files);
 
     if (!mounted) return;
-    if (ok) {
-      ref.invalidate(assignmentDetailProvider(widget.assignmentId));
-    } else {
-      final err = ref.read(photoUploadProvider(assignmentId)).errorMessage;
+    ref.invalidate(assignmentDetailProvider(widget.assignmentId));
+
+    final state = ref.read(photoUploadProvider(assignmentId));
+    if (count == files.length) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-          err ?? 'فشل رفع الصورة',
+          count == 1 ? 'تم رفع الصورة' : 'تم رفع $count صور',
+          style: AppTextStyles.body(Colors.white),
+        ),
+        backgroundColor: context.colors.success,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          state.errorMessage ?? 'فشل رفع الصور',
+          style: AppTextStyles.body(Colors.white),
+        ),
+        backgroundColor: context.colors.error,
+        behavior: SnackBarBehavior.floating,
+      ));
+    }
+  }
+
+  Future<List<XFile>?> _showPreviewSheet(List<XFile> initial) async {
+    return showModalBottomSheet<List<XFile>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.colors.bgSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => _PhotoPreviewSheet(initial: initial),
+    );
+  }
+
+  Future<void> _confirmAndDeletePhoto(
+    String assignmentId,
+    String url,
+  ) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: context.colors.bgSurface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppSpacing.radiusLg,
+        ),
+        title: Text(
+          'حذف الصورة',
+          style: AppTextStyles.cardTitle(context.colors.textPrimary),
+        ),
+        content: Text(
+          'هل تريد حذف هذه الصورة نهائياً؟',
+          style: AppTextStyles.body(context.colors.textSecond),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              'إلغاء',
+              style: AppTextStyles.body(context.colors.textSecond),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              'حذف',
+              style: AppTextStyles.body(context.colors.error)
+                  .copyWith(fontWeight: AppTextStyles.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    final success = await ref
+        .read(photoUploadProvider(assignmentId).notifier)
+        .remove(assignmentId: assignmentId, url: url);
+
+    if (!mounted) return;
+    if (success) {
+      ref.invalidate(assignmentDetailProvider(widget.assignmentId));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'تم حذف الصورة',
+          style: AppTextStyles.body(Colors.white),
+        ),
+        backgroundColor: context.colors.success,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'فشل حذف الصورة',
           style: AppTextStyles.body(Colors.white),
         ),
         backgroundColor: context.colors.error,
@@ -857,6 +987,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
   // ─── صور العمل ───────────────────────────────────────────────────────────
 
+  static const _maxPhotos = 6;
+
   Widget _buildPhotosSection(
     BuildContext context, {
     required String assignmentId,
@@ -865,23 +997,39 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   }) {
     final uploadState = ref.watch(photoUploadProvider(assignmentId));
     final isUploading = uploadState.status == PhotoUploadStatus.uploading;
-    const maxPhotos = 3;
+    final remaining = _maxPhotos - photoUrls.length;
+    final canStillAdd = canAdd && remaining > 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'صور إنجاز العمل',
               style: AppTextStyles.cardTitle(context.colors.textPrimary),
             ),
-            if (canAdd && photoUrls.length < maxPhotos)
+            AppSpacing.hGapSm,
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: 2,
+              ),
+              decoration: BoxDecoration(
+                color: context.colors.bgSurface2,
+                borderRadius: AppSpacing.radiusFull,
+              ),
+              child: Text(
+                '${photoUrls.length} / $_maxPhotos',
+                style: AppTextStyles.caption(context.colors.textSecond),
+              ),
+            ),
+            const Spacer(),
+            if (canStillAdd)
               TextButton.icon(
                 onPressed: isUploading
                     ? null
-                    : () => _pickAndUploadPhoto(assignmentId),
+                    : () => _addPhotosFlow(assignmentId, remaining),
                 icon: isUploading
                     ? SizedBox(
                         width: 14,
@@ -892,12 +1040,14 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         ),
                       )
                     : Icon(
-                        Icons.add_photo_alternate_outlined,
+                        Icons.add_a_photo_outlined,
                         size: 18,
                         color: context.colors.bluePrimary,
                       ),
                 label: Text(
-                  isUploading ? 'جاري الرفع...' : 'إضافة صورة',
+                  isUploading
+                      ? 'جاري الرفع ${uploadState.done}/${uploadState.total}'
+                      : 'إضافة',
                   style: AppTextStyles.bodySmall(context.colors.bluePrimary),
                 ),
               ),
@@ -905,31 +1055,10 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
         ),
         AppSpacing.gapSm,
         if (photoUrls.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: AppSpacing.cardPadding,
-            decoration: BoxDecoration(
-              color: context.colors.bgSurface,
-              borderRadius: AppSpacing.radiusLg,
-              border: Border.all(
-                color: context.colors.border,
-                style: canAdd ? BorderStyle.solid : BorderStyle.solid,
-              ),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.photo_camera_outlined,
-                  size: 32,
-                  color: context.colors.textFaint,
-                ),
-                AppSpacing.gapXs,
-                Text(
-                  canAdd ? 'أضف صورة لتوثيق العمل' : 'لا توجد صور مرفوعة',
-                  style: AppTextStyles.bodySmall(context.colors.textFaint),
-                ),
-              ],
-            ),
+          _EmptyPhotosCard(
+            canAdd: canStillAdd,
+            isUploading: isUploading,
+            onAdd: () => _addPhotosFlow(assignmentId, remaining),
           )
         else
           SizedBox(
@@ -938,9 +1067,21 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               scrollDirection: Axis.horizontal,
               itemCount: photoUrls.length,
               separatorBuilder: (_, __) => AppSpacing.hGapSm2,
-              itemBuilder: (_, i) => _PhotoThumb(url: photoUrls[i]),
+              itemBuilder: (_, i) => _PhotoThumb(
+                url: photoUrls[i],
+                onLongPress: canAdd
+                    ? () => _confirmAndDeletePhoto(assignmentId, photoUrls[i])
+                    : null,
+              ),
             ),
           ),
+        if (canAdd && photoUrls.isNotEmpty) ...[
+          AppSpacing.gapXs,
+          Text(
+            '💡 اضغط مطوّلاً على الصورة للحذف',
+            style: AppTextStyles.caption(context.colors.textFaint),
+          ),
+        ],
       ],
     );
   }
@@ -1313,43 +1454,69 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
 class _PhotoThumb extends StatelessWidget {
   final String url;
-  const _PhotoThumb({required this.url});
+  final VoidCallback? onLongPress;
+  const _PhotoThumb({required this.url, this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _showFullScreen(context),
-      child: ClipRRect(
-        borderRadius: AppSpacing.radiusLg,
-        child: Image.network(
-          url,
-          width: 120,
-          height: 120,
-          fit: BoxFit.cover,
-          loadingBuilder: (_, child, progress) => progress == null
-              ? child
-              : Container(
-                  width: 120,
-                  height: 120,
-                  color: context.colors.bgSurface,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: context.colors.bluePrimary,
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => _showFullScreen(context),
+          onLongPress: onLongPress,
+          child: ClipRRect(
+            borderRadius: AppSpacing.radiusLg,
+            child: Image.network(
+              url,
+              width: 120,
+              height: 120,
+              fit: BoxFit.cover,
+              loadingBuilder: (_, child, progress) => progress == null
+                  ? child
+                  : Container(
+                      width: 120,
+                      height: 120,
+                      color: context.colors.bgSurface,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.colors.bluePrimary,
+                        ),
+                      ),
                     ),
-                  ),
+              errorBuilder: (_, __, ___) => Container(
+                width: 120,
+                height: 120,
+                color: context.colors.bgSurface,
+                child: Icon(
+                  Icons.broken_image_outlined,
+                  color: context.colors.textFaint,
                 ),
-          errorBuilder: (_, __, ___) => Container(
-            width: 120,
-            height: 120,
-            color: context.colors.bgSurface,
-            child: Icon(
-              Icons.broken_image_outlined,
-              color: context.colors.textFaint,
+              ),
             ),
           ),
         ),
-      ),
+        if (onLongPress != null)
+          Positioned(
+            top: 4,
+            right: 4,
+            child: GestureDetector(
+              onTap: onLongPress,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.55),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.close_outlined,
+                  color: Colors.white,
+                  size: 14,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -1373,6 +1540,387 @@ class _PhotoThumb extends StatelessWidget {
                 icon: const Icon(Icons.close, color: Colors.white, size: 28),
                 onPressed: () => Navigator.of(context).pop(),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Empty photos card ────────────────────────────────────────────────────────
+
+class _EmptyPhotosCard extends StatelessWidget {
+  final bool canAdd;
+  final bool isUploading;
+  final VoidCallback onAdd;
+  const _EmptyPhotosCard({
+    required this.canAdd,
+    required this.isUploading,
+    required this.onAdd,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: context.colors.border),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.photo_camera_outlined,
+            size: 36,
+            color: context.colors.textFaint,
+          ),
+          AppSpacing.gapSm,
+          Text(
+            canAdd ? 'وثّق العمل بصور قبل الإنهاء' : 'لا توجد صور مرفوعة',
+            style: AppTextStyles.bodySmall(context.colors.textSecond),
+            textAlign: TextAlign.center,
+          ),
+          if (canAdd) ...[
+            AppSpacing.gapSm,
+            OutlinedButton.icon(
+              onPressed: isUploading ? null : onAdd,
+              icon: Icon(
+                Icons.add_a_photo_outlined,
+                size: 18,
+                color: context.colors.bluePrimary,
+              ),
+              label: Text(
+                'التقط أول صورة',
+                style: AppTextStyles.bodySmall(context.colors.bluePrimary),
+              ),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: context.colors.bluePrimary),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: AppSpacing.radiusLg,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Source picker bottom sheet ───────────────────────────────────────────────
+
+enum _PhotoSource { camera, gallery }
+
+class _PhotoSourceSheet extends StatelessWidget {
+  final int remainingSlots;
+  const _PhotoSourceSheet({required this.remainingSlots});
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: AppSpacing.cardPadding,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: context.colors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              'أضف صورة لتوثيق العمل',
+              style: AppTextStyles.cardTitle(context.colors.textPrimary),
+              textAlign: TextAlign.center,
+            ),
+            AppSpacing.gapXs,
+            Text(
+              'يمكنك إضافة حتى $remainingSlots ${remainingSlots == 1 ? "صورة" : "صور"} إضافية',
+              style: AppTextStyles.caption(context.colors.textSecond),
+              textAlign: TextAlign.center,
+            ),
+            AppSpacing.gapMd,
+            _SourceOption(
+              icon: Icons.photo_camera_outlined,
+              label: 'الكاميرا',
+              hint: 'التقط صورة الآن',
+              color: context.colors.bluePrimary,
+              onTap: () =>
+                  Navigator.of(context).pop(_PhotoSource.camera),
+            ),
+            AppSpacing.gapSm,
+            _SourceOption(
+              icon: Icons.photo_library_outlined,
+              label: 'المعرض',
+              hint: 'اختر صوراً (متعدد)',
+              color: context.colors.success,
+              onTap: () =>
+                  Navigator.of(context).pop(_PhotoSource.gallery),
+            ),
+            AppSpacing.gapSm,
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'إلغاء',
+                style: AppTextStyles.body(context.colors.textSecond),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SourceOption extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String hint;
+  final Color color;
+  final VoidCallback onTap;
+  const _SourceOption({
+    required this.icon,
+    required this.label,
+    required this.hint,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: AppSpacing.radiusLg,
+        onTap: onTap,
+        child: Container(
+          padding: AppSpacing.cardPadding,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.06),
+            borderRadius: AppSpacing.radiusLg,
+            border: Border.all(color: color.withValues(alpha: 0.25)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: AppSpacing.iconMd),
+              ),
+              AppSpacing.hGapSm2,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: AppTextStyles.body(context.colors.textPrimary)
+                          .copyWith(fontWeight: AppTextStyles.semiBold),
+                    ),
+                    Text(
+                      hint,
+                      style: AppTextStyles.caption(context.colors.textSecond),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_left_outlined,
+                color: context.colors.textFaint,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Preview sheet (before upload) ────────────────────────────────────────────
+
+class _PhotoPreviewSheet extends StatefulWidget {
+  final List<XFile> initial;
+  const _PhotoPreviewSheet({required this.initial});
+
+  @override
+  State<_PhotoPreviewSheet> createState() => _PhotoPreviewSheetState();
+}
+
+class _PhotoPreviewSheetState extends State<_PhotoPreviewSheet> {
+  late final List<XFile> _files = List<XFile>.from(widget.initial);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: AppSpacing.cardPadding,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: context.colors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                Text(
+                  'معاينة قبل الرفع',
+                  style: AppTextStyles.cardTitle(context.colors.textPrimary),
+                ),
+                AppSpacing.hGapSm,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.colors.bluePrimary.withValues(alpha: 0.12),
+                    borderRadius: AppSpacing.radiusFull,
+                  ),
+                  child: Text(
+                    '${_files.length}',
+                    style: AppTextStyles.caption(context.colors.bluePrimary)
+                        .copyWith(fontWeight: AppTextStyles.bold),
+                  ),
+                ),
+              ],
+            ),
+            AppSpacing.gapSm,
+            SizedBox(
+              height: 130,
+              child: _files.isEmpty
+                  ? Center(
+                      child: Text(
+                        'لم تتبقَّ صور',
+                        style:
+                            AppTextStyles.bodySmall(context.colors.textFaint),
+                      ),
+                    )
+                  : ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _files.length,
+                      separatorBuilder: (_, __) => AppSpacing.hGapSm2,
+                      itemBuilder: (_, i) {
+                        final x = _files[i];
+                        return Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: AppSpacing.radiusLg,
+                              child: FutureBuilder<Uint8List>(
+                                future: x.readAsBytes(),
+                                builder: (_, snap) {
+                                  if (!snap.hasData) {
+                                    return Container(
+                                      width: 120,
+                                      height: 120,
+                                      color: context.colors.bgSurface2,
+                                      child: const Center(
+                                        child: SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return Image.memory(
+                                    snap.data!,
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () =>
+                                    setState(() => _files.removeAt(i)),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.6),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close_outlined,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+            ),
+            AppSpacing.gapMd,
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(<XFile>[]),
+                    style: OutlinedButton.styleFrom(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: AppSpacing.radiusLg,
+                      ),
+                    ),
+                    child: Text(
+                      'إلغاء',
+                      style: AppTextStyles.body(context.colors.textSecond),
+                    ),
+                  ),
+                ),
+                AppSpacing.hGapSm,
+                Expanded(
+                  flex: 2,
+                  child: FilledButton.icon(
+                    onPressed: _files.isEmpty
+                        ? null
+                        : () => Navigator.of(context).pop(_files),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: context.colors.bluePrimary,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: AppSpacing.radiusLg,
+                      ),
+                    ),
+                    icon: const Icon(
+                      Icons.cloud_upload_outlined,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    label: Text(
+                      'رفع ${_files.length} ${_files.length == 1 ? "صورة" : "صور"}',
+                      style: AppTextStyles.button(Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
