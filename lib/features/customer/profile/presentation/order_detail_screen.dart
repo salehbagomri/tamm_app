@@ -559,16 +559,44 @@ class _BottomActionBar extends StatelessWidget {
 
 // ─── Invoice button ───────────────────────────────────────────────────────────
 
-class _InvoiceButton extends StatelessWidget {
+class _InvoiceButton extends StatefulWidget {
   final String orderId;
   const _InvoiceButton({required this.orderId});
 
-  Future<void> _openInvoice(BuildContext context) async {
-    final uri = Uri.parse('https://tamm-web.vercel.app/orders/$orderId/invoice');
+  @override
+  State<_InvoiceButton> createState() => _InvoiceButtonState();
+}
+
+class _InvoiceButtonState extends State<_InvoiceButton> {
+  bool _loading = false;
+
+  Future<void> _openInvoice() async {
+    setState(() => _loading = true);
     try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final result = await Supabase.instance.client
+          .from('invoices')
+          .select('pdf_url')
+          .eq('order_id', widget.orderId)
+          .maybeSingle();
+
+      if (!mounted) return;
+      final pdfUrl = result?['pdf_url'] as String?;
+
+      if (pdfUrl == null || pdfUrl.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'الفاتورة غير متاحة بعد، يرجى المحاولة لاحقاً',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.textSecond,
+          behavior: SnackBarBehavior.floating,
+        ));
+        return;
+      }
+
+      await launchUrl(Uri.parse(pdfUrl), mode: LaunchMode.externalApplication);
     } catch (_) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
             'تعذر فتح الفاتورة',
@@ -578,13 +606,15 @@ class _InvoiceButton extends StatelessWidget {
           behavior: SnackBarBehavior.floating,
         ));
       }
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _openInvoice(context),
+      onTap: _loading ? null : _openInvoice,
       child: Container(
         width: double.infinity,
         padding: AppSpacing.cardPadding,
@@ -626,11 +656,21 @@ class _InvoiceButton extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.open_in_new_outlined,
-              color: context.colors.bluePrimary,
-              size: AppSpacing.iconSm,
-            ),
+            if (_loading)
+              SizedBox(
+                width: AppSpacing.iconSm,
+                height: AppSpacing.iconSm,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: context.colors.bluePrimary,
+                ),
+              )
+            else
+              Icon(
+                Icons.download_outlined,
+                color: context.colors.bluePrimary,
+                size: AppSpacing.iconSm,
+              ),
           ],
         ),
       ),
