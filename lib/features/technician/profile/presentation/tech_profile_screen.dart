@@ -70,7 +70,8 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
               final specialization =
                   tech['specialization']?.toString() ?? 'فني';
 
-              return Column(
+              return SingleChildScrollView(
+                child: Column(
                 children: [
                   const SizedBox(height: 20),
                   if (profile['avatar_url'] != null &&
@@ -344,7 +345,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
 
                   AppSpacing.gapMd,
                   const TammThemeSelector(),
-                  const Spacer(),
+                  AppSpacing.gapLg,
                   TammButton(
                     label: 'تسجيل الخروج',
                     type: TammButtonType.secondary,
@@ -354,6 +355,7 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                   ),
                   AppSpacing.gapMd,
                 ],
+              ),
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
