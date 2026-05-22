@@ -2,6 +2,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../shared/repositories/auth_repository.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/tamm_button.dart';
@@ -268,6 +269,75 @@ class _TechProfileScreenState extends ConsumerState<TechProfileScreen> {
                             ],
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+
+                  AppSpacing.gapMd,
+
+                  // بطاقة "أرباحي والعمولات" — نقطة الدخول لشاشة الأرباح
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: AppSpacing.radiusLg,
+                      onTap: () => context.push('/technician/earnings'),
+                      child: Container(
+                        width: double.infinity,
+                        padding: AppSpacing.cardPadding,
+                        decoration: BoxDecoration(
+                          color: context.colors.bgSurface,
+                          borderRadius: AppSpacing.radiusLg,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: context.colors.success
+                                    .withValues(alpha: 0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.payments_outlined,
+                                color: context.colors.success,
+                                size: 22,
+                              ),
+                            ),
+                            AppSpacing.hGapSm2,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'أرباحي والعمولات',
+                                    style: AppTextStyles.body(
+                                      context.colors.textPrimary,
+                                    ).copyWith(
+                                      fontWeight: AppTextStyles.semiBold,
+                                    ),
+                                  ),
+                                  Text(
+                                    'عرض العمولات المستحقة والمدفوعة',
+                                    style: AppTextStyles.caption(
+                                      context.colors.textSecond,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.chevron_left_outlined,
+                              color: context.colors.textFaint,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/errors/app_exception.dart';
 import '../../features/technician/tasks/data/technician_task_repository.dart';
+import '../models/technician_earning.dart';
 
 final myAssignmentsProvider =
     FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
@@ -312,3 +313,30 @@ final photoUploadProvider = StateNotifierProvider.autoDispose
       (ref, assignmentId) =>
           PhotoUploadNotifier(ref.read(technicianTaskRepositoryProvider)),
     );
+
+// ─── Technician earnings (commission) ─────────────────────────────────────────
+
+final myEarningsProvider =
+    FutureProvider.autoDispose<List<TechnicianEarning>>((ref) async {
+  final client = Supabase.instance.client;
+  final userId = client.auth.currentUser!.id;
+
+  final tech = await client
+      .from('technicians')
+      .select('id')
+      .eq('profile_id', userId)
+      .single();
+  final techId = tech['id'] as String;
+
+  final rows = await client
+      .from('technician_earnings')
+      .select('*, orders(order_number)')
+      .eq('technician_id', techId)
+      .order('created_at', ascending: false);
+
+  return rows
+      .map<TechnicianEarning>(
+        (m) => TechnicianEarning.fromMap(m),
+      )
+      .toList();
+});

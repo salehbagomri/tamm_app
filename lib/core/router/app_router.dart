@@ -42,6 +42,7 @@ import '../../features/technician/tasks/presentation/tech_tasks_screen.dart';
 import '../../features/technician/tasks/presentation/tech_task_detail_screen.dart';
 import '../../features/technician/profile/presentation/tech_profile_screen.dart';
 import '../../features/technician/history/presentation/tech_history_screen.dart';
+import '../../features/technician/earnings/presentation/tech_earnings_screen.dart';
 
 // Notifications
 import '../../features/notifications/presentation/notifications_screen.dart';
@@ -233,6 +234,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/technician/task/:id',
         builder: (_, state) =>
             TechTaskDetailScreen(assignmentId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/technician/earnings',
+        builder: (_, __) => const TechEarningsScreen(),
       ),
     ],
   );
