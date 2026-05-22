@@ -16,11 +16,28 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
-class CustomerHomeScreen extends ConsumerWidget {
+import 'package:tamm_app/core/widgets/beta_disclaimer_dialog.dart';
+
+class CustomerHomeScreen extends ConsumerStatefulWidget {
   const CustomerHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
+}
+
+class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        BetaDisclaimerDialog.show(context);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profileAsync = ref.watch(userProfileProvider);
     final featuredAsync = ref.watch(featuredProductsProvider);
     final dealsAsync = ref.watch(dealsProvider);
@@ -220,10 +237,10 @@ class CustomerHomeScreen extends ConsumerWidget {
                               onPressed: () =>
                                   context.push('/customer/catalog/deals'),
                               child: Text(
-                                'تصفح العروض',
-                                style: AppTextStyles.body(
-                                  context.colors.blueLight,
-                                ),
+                                  'تصفح العروض',
+                                  style: AppTextStyles.body(
+                                    context.colors.blueLight,
+                                  ),
                               ),
                             ),
                           ],
