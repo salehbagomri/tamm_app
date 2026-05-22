@@ -594,7 +594,7 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
         return;
       }
 
-      await launchUrl(Uri.parse(pdfUrl), mode: LaunchMode.externalApplication);
+      await launchUrl(Uri.parse(pdfUrl), mode: LaunchMode.inAppBrowserView);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
