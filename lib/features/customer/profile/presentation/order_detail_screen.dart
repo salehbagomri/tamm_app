@@ -3,7 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'dart:io' as io;
+import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -573,9 +576,10 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
   Future<void> _openInvoice() async {
     setState(() => _loading = true);
     try {
+      // 1. جلب رابط PDF من جدول invoices
       final result = await Supabase.instance.client
           .from('invoices')
-          .select('pdf_url')
+          .select('pdf_url, invoice_number')
           .eq('order_id', widget.orderId)
           .maybeSingle();
 
@@ -594,7 +598,21 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
         return;
       }
 
-      await launchUrl(Uri.parse(pdfUrl), mode: LaunchMode.externalApplication);
+      // 2. تحميل ملف PDF كـ bytes
+      final response = await http.get(Uri.parse(pdfUrl));
+      if (response.statusCode != 200) throw Exception('download failed');
+
+      // 3. حفظه في مجلد مؤقت
+      final invoiceNumber =
+          result?['invoice_number'] as String? ?? 'invoice';
+      final dir = await getTemporaryDirectory();
+      final file = io.File('${dir.path}/$invoiceNumber.pdf');
+      await file.writeAsBytes(response.bodyBytes);
+
+      if (!mounted) return;
+
+      // 4. فتحه بتطبيق PDF المثبت على الجهاز
+      await OpenFile.open(file.path, type: 'application/pdf');
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
