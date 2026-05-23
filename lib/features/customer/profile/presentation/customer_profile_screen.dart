@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
@@ -192,12 +193,126 @@ class _SectionHeader extends StatelessWidget {
 
 // ─── بطاقة رأس الملف الشخصي ──────────────────────────────────────────────────
 
-class _ProfileHeader extends StatelessWidget {
+class _ProfileHeader extends ConsumerStatefulWidget {
   final dynamic profile;
   const _ProfileHeader({required this.profile});
 
   @override
+  ConsumerState<_ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends ConsumerState<_ProfileHeader> {
+  bool _uploading = false;
+
+  Future<void> _changeAvatar() async {
+    if (_uploading) return;
+
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: context.colors.bgSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: AppSpacing.cardPadding,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: context.colors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                'صورة الحساب',
+                style: AppTextStyles.cardTitle(context.colors.textPrimary),
+              ),
+              AppSpacing.gapMd,
+              _SourceTile(
+                icon: Icons.photo_camera_outlined,
+                label: 'الكاميرا',
+                color: context.colors.bluePrimary,
+                onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
+              ),
+              AppSpacing.gapSm,
+              _SourceTile(
+                icon: Icons.photo_library_outlined,
+                label: 'المعرض',
+                color: context.colors.success,
+                onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
+              ),
+              AppSpacing.gapSm,
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(
+                  'إلغاء',
+                  style: AppTextStyles.body(context.colors.textSecond),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (source == null || !mounted) return;
+
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: source,
+      imageQuality: 80,
+      maxWidth: 800,
+      maxHeight: 800,
+    );
+    if (picked == null || !mounted) return;
+
+    setState(() => _uploading = true);
+    try {
+      final bytes = await picked.readAsBytes();
+      final ext = picked.name.contains('.')
+          ? picked.name.split('.').last.toLowerCase()
+          : 'jpg';
+      await ref.read(authRepositoryProvider).uploadAvatar(
+            bytes: bytes,
+            extension: ext == 'jpeg' ? 'jpg' : ext,
+          );
+      if (!mounted) return;
+      ref.invalidate(userProfileProvider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'تم تحديث الصورة',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.success,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e is AppException ? e.message : 'تعذّر رفع الصورة',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final profile = widget.profile;
     final fullName = profile?.fullName?.toString() ?? '';
     final phone = profile?.phone?.toString() ?? '';
     final avatarUrl = profile?.avatarUrl?.toString();
@@ -219,7 +334,7 @@ class _ProfileHeader extends StatelessWidget {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => context.push('/profile/edit'),
+            onTap: _changeAvatar,
             child: Stack(
               children: [
                 if (avatarUrl != null && avatarUrl.isNotEmpty)
@@ -252,11 +367,20 @@ class _ProfileHeader extends StatelessWidget {
                         width: 2,
                       ),
                     ),
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      color: Colors.white,
-                      size: 14,
-                    ),
+                    child: _uploading
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.camera_alt_outlined,
+                            color: Colors.white,
+                            size: 14,
+                          ),
                   ),
                 ),
               ],
@@ -295,6 +419,57 @@ class _ProfileHeader extends StatelessWidget {
             tooltip: 'تعديل الحساب',
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SourceTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _SourceTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: AppSpacing.radiusLg,
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          padding: AppSpacing.cardPadding,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.06),
+            borderRadius: AppSpacing.radiusLg,
+            border: Border.all(color: color.withValues(alpha: 0.25)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: AppSpacing.iconMd),
+              ),
+              AppSpacing.hGapSm2,
+              Text(
+                label,
+                style: AppTextStyles.body(context.colors.textPrimary)
+                    .copyWith(fontWeight: AppTextStyles.semiBold),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

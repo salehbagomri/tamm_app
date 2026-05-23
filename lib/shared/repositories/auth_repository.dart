@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:tamm_app/core/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
@@ -168,6 +169,45 @@ class AuthRepository {
           .update(profile.toMap())
           .eq('id', profile.id);
     } catch (e) {
+      throw ErrorMapper.from(e);
+    }
+  }
+
+  /// رفع صورة المستخدم إلى storage بـ bucket "avatars" وتحديث profiles.avatar_url.
+  /// تُرجع الـ public URL النهائي. تستبدل الصورة السابقة (upsert).
+  Future<String> uploadAvatar({
+    required Uint8List bytes,
+    required String extension,
+  }) async {
+    try {
+      final user = _client.auth.currentUser;
+      if (user == null) {
+        throw const AuthException();
+      }
+      final cleanExt = extension.toLowerCase().replaceAll('.', '');
+      final path = '${user.id}/avatar.$cleanExt';
+
+      await _client.storage.from('avatars').uploadBinary(
+            path,
+            bytes,
+            fileOptions: FileOptions(
+              contentType: 'image/$cleanExt',
+              upsert: true,
+            ),
+          );
+
+      // cache-buster timestamp يضمن أن CachedNetworkImage يحدّث الصورة فوراً
+      final url = _client.storage.from('avatars').getPublicUrl(path);
+      final bustedUrl = '$url?v=${DateTime.now().millisecondsSinceEpoch}';
+
+      await _client
+          .from('profiles')
+          .update({'avatar_url': bustedUrl})
+          .eq('id', user.id);
+
+      return bustedUrl;
+    } catch (e) {
+      if (e is AppException) rethrow;
       throw ErrorMapper.from(e);
     }
   }
