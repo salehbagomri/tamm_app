@@ -25,6 +25,54 @@ final recentOrdersProvider = FutureProvider.autoDispose<List<Order>>((
   return all.take(3).toList();
 });
 
+/// إحصاءات سريعة للعميل لشاشة "حسابي".
+/// لا autoDispose — تُحفظ بين التنقّلات لتجنّب الفلكر. يُستدعى invalidate
+/// عند إنشاء/إلغاء طلب جديد.
+class CustomerStats {
+  final int active; // pending/confirmed/assigned/on_the_way/in_progress
+  final int completed;
+  final double totalSpent; // مجموع total_amount للمكتملة
+  const CustomerStats({
+    required this.active,
+    required this.completed,
+    required this.totalSpent,
+  });
+
+  static const empty = CustomerStats(active: 0, completed: 0, totalSpent: 0);
+}
+
+final customerStatsProvider = FutureProvider<CustomerStats>((ref) async {
+  final client = Supabase.instance.client;
+  final userId = client.auth.currentUser?.id;
+  if (userId == null) return CustomerStats.empty;
+
+  final rows = await client
+      .from('orders')
+      .select('status, total_amount')
+      .eq('customer_id', userId);
+
+  int active = 0;
+  int completed = 0;
+  double total = 0;
+  const activeStatuses = {
+    'pending',
+    'confirmed',
+    'assigned',
+    'on_the_way',
+    'in_progress',
+  };
+  for (final r in rows) {
+    final status = r['status'] as String?;
+    if (status == null) continue;
+    if (activeStatuses.contains(status)) active++;
+    if (status == 'completed') {
+      completed++;
+      total += (r['total_amount'] as num?)?.toDouble() ?? 0;
+    }
+  }
+  return CustomerStats(active: active, completed: completed, totalSpent: total);
+});
+
 final activeOrderStreamProvider = StreamProvider.autoDispose<Order?>((ref) {
   final supabase = Supabase.instance.client;
   final userId = supabase.auth.currentUser?.id;
