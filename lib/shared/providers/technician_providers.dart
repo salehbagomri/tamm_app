@@ -48,7 +48,8 @@ bool _isDeliveryOnly(Map<String, dynamic> order) {
   final type = order['order_type'] as String?;
   if (type != 'product') return false;
   final items = (order['order_items'] as List?) ?? const [];
-  if (items.isEmpty) return true;
+  // إذا items فارغة لأي سبب (RLS، select بدونها) نعرض الطلب — لا نخفيه بافتراض.
+  if (items.isEmpty) return false;
   final anyInstall = items
       .any((i) => (i as Map<String, dynamic>)['include_installation'] == true);
   return !anyInstall;
