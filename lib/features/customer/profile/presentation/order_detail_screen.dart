@@ -200,6 +200,13 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   AppSpacing.gapMd,
                 ],
 
+                // 1.7 Cash acknowledgment (completed cash orders)
+                if (o.paymentType == 'cash' &&
+                    o.status == 'completed') ...[
+                  _CashAcknowledgmentCard(order: o),
+                  AppSpacing.gapMd,
+                ],
+
                 // 2. Quote section (quote_request orders only)
                 if (o.orderType == 'quote_request') ...[
                   _buildQuoteSection(context, o),
@@ -949,6 +956,257 @@ bool _isDeliveryOnly(Order o) {
   if (o.includeInstallation) return false;
   if (o.items.any((i) => i.includeInstallation)) return false;
   return true;
+}
+
+// ─── Cash acknowledgment card ───────────────────────────────────────────────
+
+class _CashAcknowledgmentCard extends ConsumerStatefulWidget {
+  final Order order;
+  const _CashAcknowledgmentCard({required this.order});
+
+  @override
+  ConsumerState<_CashAcknowledgmentCard> createState() =>
+      _CashAcknowledgmentCardState();
+}
+
+class _CashAcknowledgmentCardState
+    extends ConsumerState<_CashAcknowledgmentCard> {
+  bool _submitting = false;
+
+  Future<void> _submit(bool acknowledged) async {
+    setState(() => _submitting = true);
+    try {
+      await ref
+          .read(orderRepositoryProvider)
+          .acknowledgeCashPayment(
+            orderId: widget.order.id,
+            acknowledged: acknowledged,
+          );
+      if (!mounted) return;
+      ref.invalidate(orderDetailProvider(widget.order.id));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            acknowledged
+                ? 'شكراً لك! تم تأكيد استلام الطلب.'
+                : 'تم تسجيل ملاحظتك، سيتواصل معك الفريق.',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: acknowledged
+              ? context.colors.success
+              : context.colors.warning,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e is AppException ? e.message : 'تعذر تسجيل الإجابة',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ack = widget.order.cashAcknowledgedByCustomer;
+
+    // الحالة 1: تم التأكيد بنعم
+    if (ack == true) {
+      return _AckResultBanner(
+        icon: Icons.check_circle_outlined,
+        color: context.colors.success,
+        title: 'تم تأكيد استلام الطلب',
+        body: 'شكراً لتأكيدك تسليم المبلغ النقدي للفني.',
+      );
+    }
+    // الحالة 2: تم الإبلاغ بمشكلة
+    if (ack == false) {
+      return _AckResultBanner(
+        icon: Icons.report_problem_outlined,
+        color: context.colors.warning,
+        title: 'تم تسجيل إبلاغك',
+        body: 'سيتواصل معك الفريق لمتابعة المشكلة.',
+      );
+    }
+
+    // الحالة 3: لم يجب بعد — اعرض البطاقة بزرين
+    final total = widget.order.totalAmount.toInt();
+    return Container(
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: context.colors.bluePrimary.withValues(alpha: 0.06),
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(
+          color: context.colors.bluePrimary.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color:
+                      context.colors.bluePrimary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.payments_outlined,
+                  color: context.colors.bluePrimary,
+                  size: AppSpacing.iconMd,
+                ),
+              ),
+              AppSpacing.hGapSm2,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'تأكيد استلام الطلب',
+                      style: AppTextStyles.body(context.colors.textPrimary)
+                          .copyWith(fontWeight: AppTextStyles.semiBold),
+                    ),
+                    Text(
+                      total > 0
+                          ? 'هل سلّمت الفني المبلغ $total ر.س؟'
+                          : 'هل سلّمت الفني المبلغ المتفق عليه؟',
+                      style: AppTextStyles.bodySmall(
+                        context.colors.textSecond,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          AppSpacing.gapMd,
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _submitting ? null : () => _submit(false),
+                  icon: Icon(
+                    Icons.close_outlined,
+                    size: 16,
+                    color: context.colors.error,
+                  ),
+                  label: Text(
+                    'لا، حدثت مشكلة',
+                    style: AppTextStyles.bodySmall(context.colors.error),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: context.colors.error),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppSpacing.radiusLg,
+                    ),
+                  ),
+                ),
+              ),
+              AppSpacing.hGapSm,
+              Expanded(
+                flex: 2,
+                child: FilledButton.icon(
+                  onPressed: _submitting ? null : () => _submit(true),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: context.colors.success,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppSpacing.radiusLg,
+                    ),
+                  ),
+                  icon: _submitting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.check_outlined,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                  label: Text(
+                    _submitting ? 'جاري التسجيل...' : 'نعم، سلّمت المبلغ',
+                    style: AppTextStyles.button(Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AckResultBanner extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String body;
+  const _AckResultBanner({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.body,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: AppSpacing.iconMd),
+          ),
+          AppSpacing.hGapSm2,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.body(context.colors.textPrimary)
+                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                ),
+                AppSpacing.gapXs,
+                Text(
+                  body,
+                  style: AppTextStyles.bodySmall(context.colors.textSecond),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _DeliveryFromSupplierCard extends StatelessWidget {

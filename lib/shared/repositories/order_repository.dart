@@ -11,6 +11,23 @@ class OrderRepository {
   /// تحقق دفاعي من المخزون قبل إنشاء الطلب.
   /// يستعلم أحدث كميات المنتجات (race-condition guard) ويرمي [AppException]
   /// في حال نفاد أي صنف. السيرفر يخصم المخزون فعلياً عبر trigger.
+  /// تأكيد العميل لاستلام الفني المبلغ النقدي (أو إنكاره).
+  /// يستدعي RPC في DB يتولى التحقق من الصلاحية ويحدّث assignments.
+  Future<void> acknowledgeCashPayment({
+    required String orderId,
+    required bool acknowledged,
+  }) async {
+    try {
+      await _client.rpc('acknowledge_cash_payment', params: {
+        'p_order_id': orderId,
+        'p_acknowledged': acknowledged,
+      });
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ErrorMapper.from(e);
+    }
+  }
+
   Future<void> validateStockForCart(List<CartItem> items) async {
     final products = items
         .where((i) => i.product.category != 'service')
@@ -60,7 +77,7 @@ class OrderRepository {
       final data = await _client
           .from('orders')
           .select(
-            '*, order_items(*), assignments(technician_id, technician_notes, technicians(profiles(full_name)))',
+            '*, order_items(*), assignments(technician_id, technician_notes, cash_acknowledged_by_customer, cash_acknowledged_at, technicians(profiles(full_name)))',
           )
           .eq('customer_id', userId)
           .order('created_at', ascending: false);
@@ -75,7 +92,7 @@ class OrderRepository {
       var query = _client
           .from('orders')
           .select(
-            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_id, technician_notes, technicians(profiles(full_name)))',
+            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_id, technician_notes, cash_acknowledged_by_customer, cash_acknowledged_at, technicians(profiles(full_name)))',
           );
       if (status != null) query = query.eq('status', status);
       final data = await query.order('created_at', ascending: false);
@@ -90,7 +107,7 @@ class OrderRepository {
       final data = await _client
           .from('orders')
           .select(
-            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_id, technician_notes, technicians(profiles(full_name)))',
+            '*, order_items(*), profiles!customer_id(full_name, phone), assignments(technician_id, technician_notes, cash_acknowledged_by_customer, cash_acknowledged_at, technicians(profiles(full_name)))',
           )
           .eq('id', id)
           .single();

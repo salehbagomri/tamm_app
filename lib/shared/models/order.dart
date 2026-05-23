@@ -36,6 +36,8 @@ class Order {
   final double? longitude;
   final String? receiptUrl;
   final String? contactPhone;
+  final bool? cashAcknowledgedByCustomer;
+  final DateTime? cashAcknowledgedAt;
 
   const Order({
     required this.id,
@@ -72,12 +74,16 @@ class Order {
     this.longitude,
     this.receiptUrl,
     this.contactPhone,
+    this.cashAcknowledgedByCustomer,
+    this.cashAcknowledgedAt,
   });
 
   factory Order.fromMap(Map<String, dynamic> m) {
     String? tNotes;
     String? tName;
     String? tId;
+    bool? cashAck;
+    DateTime? cashAckAt;
     final assignments = m['assignments'] as List?;
     if (assignments != null && assignments.isNotEmpty) {
       final a = assignments.first as Map<String, dynamic>;
@@ -88,6 +94,9 @@ class Order {
         final p = t['profiles'] as Map<String, dynamic>?;
         tName = p?['full_name']?.toString();
       }
+      cashAck = a['cash_acknowledged_by_customer'] as bool?;
+      final ackAtRaw = a['cash_acknowledged_at'] as String?;
+      if (ackAtRaw != null) cashAckAt = DateTime.tryParse(ackAtRaw);
     }
 
     return Order(
@@ -135,6 +144,8 @@ class Order {
       longitude: (m['longitude'] as num?)?.toDouble(),
       receiptUrl: m['receipt_url'] as String?,
       contactPhone: m['contact_phone'] as String?,
+      cashAcknowledgedByCustomer: cashAck,
+      cashAcknowledgedAt: cashAckAt,
     );
   }
 
