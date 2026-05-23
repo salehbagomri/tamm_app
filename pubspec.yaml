@@ -45,6 +45,8 @@ dependencies:
   path_provider: ^2.1.4
   open_file: ^3.3.2
   package_info_plus: ^8.0.2
+  in_app_review: ^2.0.9
+  share_plus: ^10.1.2
 
   # Forms & Validation
   reactive_forms: ^17.0.1

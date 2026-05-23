@@ -2,7 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -145,6 +147,11 @@ class _LoggedInView extends ConsumerWidget {
             const _SectionHeader(label: 'الإعدادات'),
             AppSpacing.gapSm,
             const _SettingsCard(),
+
+            AppSpacing.gapLg,
+            const _SectionHeader(label: 'ساعدنا ننمو'),
+            AppSpacing.gapSm,
+            const _GrowthCard(),
 
             AppSpacing.gapLg,
             const _SectionHeader(label: 'الحساب والقانوني'),
@@ -548,6 +555,97 @@ class _SettingsCard extends StatelessWidget {
               ),
             ),
             enabled: false,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── بطاقة "ساعدنا ننمو" (تقييم + مشاركة) ────────────────────────────────────
+
+class _GrowthCard extends StatelessWidget {
+  const _GrowthCard();
+
+  Future<void> _rate(BuildContext context) async {
+    try {
+      final review = InAppReview.instance;
+      if (await review.isAvailable()) {
+        await review.requestReview();
+      } else {
+        await review.openStoreListing(
+          appStoreId: null,
+          microsoftStoreId: null,
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        final uri = Uri.parse(LegalUrls.playStore);
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    }
+  }
+
+  Future<void> _share() async {
+    await Share.share(
+      'جرّب تطبيق تَمّ — لخدمات التكييف والطاقة الشمسية في اليمن.\n'
+      '${LegalUrls.playStore}',
+      subject: 'تطبيق تَمّ',
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: AppSpacing.radius,
+        border: Border.all(color: context.colors.border),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            onTap: () => _rate(context),
+            leading: Icon(
+              Icons.star_outline_rounded,
+              color: context.colors.warning,
+              size: 22,
+            ),
+            title: Text(
+              'قيّم التطبيق',
+              style: AppTextStyles.body(context.colors.textPrimary),
+            ),
+            subtitle: Text(
+              'دقيقة واحدة تساعدنا كثيراً',
+              style: AppTextStyles.caption(context.colors.textSecond),
+            ),
+            trailing: Icon(
+              Icons.chevron_left_outlined,
+              color: context.colors.textFaint,
+              size: 20,
+            ),
+          ),
+          Divider(height: 1, color: context.colors.border),
+          ListTile(
+            onTap: _share,
+            leading: Icon(
+              Icons.share_outlined,
+              color: context.colors.bluePrimary,
+              size: 20,
+            ),
+            title: Text(
+              'شارك التطبيق',
+              style: AppTextStyles.body(context.colors.textPrimary),
+            ),
+            subtitle: Text(
+              'انشر فائدة "تَمّ" بين معارفك',
+              style: AppTextStyles.caption(context.colors.textSecond),
+            ),
+            trailing: Icon(
+              Icons.chevron_left_outlined,
+              color: context.colors.textFaint,
+              size: 20,
+            ),
           ),
         ],
       ),
