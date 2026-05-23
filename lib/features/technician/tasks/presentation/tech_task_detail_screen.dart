@@ -122,7 +122,21 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     }
   }
 
-  Future<void> _onComplete(String orderId) async {
+  Future<void> _onComplete(String orderId, String paymentType) async {
+    // P0.1: للطلبات النقدية، لا يُسمح بالإكمال قبل تأكيد استلام المبلغ.
+    if (paymentType == 'cash' && !_cashCollected) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'أكّد استلام المبلغ النقدي أولاً قبل إكمال المهمة',
+          style: AppTextStyles.body(Colors.white),
+        ),
+        backgroundColor: context.colors.warning,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ));
+      return;
+    }
+
     if (_notesCtrl.text.trim().isNotEmpty) {
       await ref
           .read(taskUpdateProvider(orderId).notifier)
@@ -447,10 +461,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             });
           }
 
+          // يظهر زر تأكيد النقد فقط بعد وصول الفني وبدء العمل (لا في on_the_way).
           final showCashCard = paymentType == 'cash' &&
-              (orderStatus == 'on_the_way' ||
-                  orderStatus == 'in_progress' ||
-                  orderStatus == 'completed');
+              (orderStatus == 'in_progress' || orderStatus == 'completed');
 
           if (!_notesInitialized && assignment['technician_notes'] != null) {
             _notesCtrl.text = assignment['technician_notes'].toString();
@@ -554,7 +567,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
               // ── شريط الأفعال ──────────────────────────────────────────────
               if (orderId.isNotEmpty)
-                _buildBottomBar(context, orderStatus, orderId),
+                _buildBottomBar(context, orderStatus, orderId, paymentType),
             ],
           );
         },
@@ -1317,6 +1330,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     BuildContext context,
     String orderStatus,
     String orderId,
+    String paymentType,
   ) {
     final submitState = ref.watch(taskUpdateProvider(orderId));
     final isLoading = submitState.status == TaskUpdateStatus.loading;
@@ -1348,7 +1362,13 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                 ),
                 AppSpacing.gapSm,
               ],
-              _buildStatusAction(context, orderStatus, orderId, isLoading),
+              _buildStatusAction(
+                context,
+                orderStatus,
+                orderId,
+                isLoading,
+                paymentType,
+              ),
             ],
           ),
         ),
@@ -1361,7 +1381,10 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     String orderStatus,
     String orderId,
     bool isLoading,
+    String paymentType,
   ) {
+    final blockedForCash =
+        paymentType == 'cash' && !_cashCollected;
     return switch (orderStatus) {
       'assigned' => _GradientButton(
         label: 'بدأت التوجه 🚗',
@@ -1388,6 +1411,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
       ),
       'in_progress' => Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TammTextField(
             controller: _notesCtrl,
@@ -1397,18 +1421,50 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             maxLines: 4,
           ),
           AppSpacing.gapMd,
-          _GradientButton(
-            label: 'اكتملت المهمة ✅',
-            gradient: LinearGradient(
-              colors: [
-                context.colors.success,
-                context.colors.success.withValues(alpha: 0.8),
+          if (blockedForCash) ...[
+            Row(
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 16,
+                  color: context.colors.warning,
+                ),
+                AppSpacing.hGapXs,
+                Expanded(
+                  child: Text(
+                    'أكّد استلام المبلغ النقدي أولاً لإكمال المهمة',
+                    style: AppTextStyles.caption(context.colors.warning),
+                  ),
+                ),
               ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
             ),
+            AppSpacing.gapSm,
+          ],
+          _GradientButton(
+            label: blockedForCash
+                ? 'أكّد استلام النقد أولاً'
+                : 'اكتملت المهمة ✅',
+            gradient: blockedForCash
+                ? LinearGradient(
+                    colors: [
+                      context.colors.textFaint,
+                      context.colors.textFaint.withValues(alpha: 0.8),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : LinearGradient(
+                    colors: [
+                      context.colors.success,
+                      context.colors.success.withValues(alpha: 0.8),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
             isLoading: isLoading,
-            onPressed: isLoading ? null : () => _onComplete(orderId),
+            onPressed: (isLoading || blockedForCash)
+                ? null
+                : () => _onComplete(orderId, paymentType),
           ),
         ],
       ),
