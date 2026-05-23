@@ -21,7 +21,6 @@ import '../../../../core/widgets/tamm_theme_selector.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/repositories/auth_repository.dart';
-import '../widgets/support_dialog.dart';
 
 class CustomerProfileScreen extends ConsumerWidget {
   const CustomerProfileScreen({super.key});
@@ -875,10 +874,22 @@ class _AccountLegalCard extends StatelessWidget {
             onTap: () => _open(context, LegalUrls.terms),
           ),
           Divider(height: 1, color: context.colors.border),
-          _LegalRow(
-            icon: Icons.support_agent_outlined,
-            label: 'تواصل معنا',
-            onTap: () => showSupportDialog(context),
+          ListTile(
+            onTap: () => context.push('/customer/help-center'),
+            leading: Icon(
+              Icons.support_agent_outlined,
+              color: context.colors.bluePrimary,
+              size: 20,
+            ),
+            title: Text(
+              'مركز المساعدة',
+              style: AppTextStyles.body(context.colors.textPrimary),
+            ),
+            trailing: Icon(
+              Icons.chevron_left_outlined,
+              color: context.colors.textFaint,
+              size: 20,
+            ),
           ),
           Divider(height: 1, color: context.colors.border),
           const _AboutRow(),

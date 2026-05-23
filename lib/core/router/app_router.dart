@@ -31,6 +31,7 @@ import '../../features/customer/profile/presentation/customer_profile_screen.dar
 import '../../features/customer/profile/presentation/my_orders_screen.dart';
 import '../../features/customer/profile/presentation/order_detail_screen.dart';
 import '../../features/customer/profile/presentation/my_devices_screen.dart';
+import '../../features/customer/profile/presentation/help_center_screen.dart';
 import '../../features/profile/screens/edit_profile_screen.dart';
 
 // Manager (web-only redirect)
@@ -200,6 +201,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/devices',
         builder: (_, __) => const MyDevicesScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/customer/help-center',
+        builder: (_, __) => const HelpCenterScreen(),
       ),
 
       // Edit Profile
