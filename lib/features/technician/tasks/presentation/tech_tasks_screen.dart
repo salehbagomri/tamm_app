@@ -104,9 +104,11 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                           final orderType =
                               order['order_type'] as String? ?? 'service';
                           final typeLabel = switch (orderType) {
-                            'product' => 'منتج',
+                            'product' => 'توصيل منتج',
+                            'product_and_service' => 'منتج مع تركيب',
                             'quote_request' => 'عرض سعر',
-                            _ => 'خدمة',
+                            'service' => 'خدمة',
+                            _ => 'مهمة',
                           };
 
                           // تاريخ الموعد أو تاريخ الإنشاء

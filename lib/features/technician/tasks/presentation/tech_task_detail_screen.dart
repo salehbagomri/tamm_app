@@ -574,9 +574,11 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     String? scheduledHour,
   }) {
     final typeLabel = switch (orderType) {
-      'product' => 'منتج',
+      'product' => 'توصيل منتج',
+      'product_and_service' => 'منتج مع تركيب',
       'quote_request' => 'عرض سعر',
-      _ => 'خدمة',
+      'service' => 'خدمة',
+      _ => 'مهمة',
     };
 
     final dateStr = preferredDate != null ? _formatDate(preferredDate) : null;

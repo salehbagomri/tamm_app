@@ -91,9 +91,11 @@ class _HistoryCard extends StatelessWidget {
         (assignment['photo_urls'] as List?)?.cast<String>() ?? [];
 
     final typeLabel = switch (orderType) {
-      'product' => 'منتج',
+      'product' => 'توصيل منتج',
+      'product_and_service' => 'منتج مع تركيب',
       'quote_request' => 'عرض سعر',
-      _ => 'خدمة',
+      'service' => 'خدمة',
+      _ => 'مهمة',
     };
 
     return TammCard(

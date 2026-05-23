@@ -192,6 +192,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 OrderTimeline(currentStatus: o.status),
                 AppSpacing.gapMd,
 
+                // 1.5 Delivery-from-supplier notice (product-only, not done yet)
+                if (_isDeliveryOnly(o) &&
+                    o.status != 'completed' &&
+                    o.status != 'cancelled') ...[
+                  _DeliveryFromSupplierCard(),
+                  AppSpacing.gapMd,
+                ],
+
                 // 2. Quote section (quote_request orders only)
                 if (o.orderType == 'quote_request') ...[
                   _buildQuoteSection(context, o),
@@ -927,6 +935,67 @@ class _MethodDisplayState extends ConsumerState<_MethodDisplay> {
           Text(
             fallbackLabel,
             style: AppTextStyles.body(context.colors.textPrimary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Delivery-from-supplier helpers ─────────────────────────────────────────
+
+bool _isDeliveryOnly(Order o) {
+  if (o.orderType != 'product') return false;
+  if (o.includeInstallation) return false;
+  if (o.items.any((i) => i.includeInstallation)) return false;
+  return true;
+}
+
+class _DeliveryFromSupplierCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: AppSpacing.cardPadding,
+      decoration: BoxDecoration(
+        color: context.colors.bluePrimary.withValues(alpha: 0.06),
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(
+          color: context.colors.bluePrimary.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: context.colors.bluePrimary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.local_shipping_outlined,
+              color: context.colors.bluePrimary,
+              size: AppSpacing.iconMd,
+            ),
+          ),
+          AppSpacing.hGapSm2,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'توصيل من المورد',
+                  style: AppTextStyles.body(context.colors.textPrimary)
+                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                ),
+                AppSpacing.gapXs,
+                Text(
+                  'سيتواصل معك المدير لتأكيد موعد التوصيل وإرسال موصل الشركة المورّدة بالمنتج.',
+                  style: AppTextStyles.bodySmall(context.colors.textSecond),
+                ),
+              ],
+            ),
           ),
         ],
       ),

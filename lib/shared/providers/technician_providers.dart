@@ -27,14 +27,32 @@ final myAssignmentsProvider =
           .inFilter('status', ['assigned', 'started'])
           .order('created_at', ascending: false);
 
-      // Safety filter: hide assignments whose order is already completed/cancelled
-      // in case the assignment status got out of sync with the order status.
+      // Defensive filters:
+      // 1) hide completed/cancelled (assignment status may drift from order status)
+      // 2) hide delivery-only orders (product without installation) — those should
+      //    never be assigned to a technician; manager handles them with the
+      //    supplier's own courier.
       return rows.where((a) {
-        final orderStatus =
-            (a['orders'] as Map<String, dynamic>?)?['status'] as String?;
-        return orderStatus != 'completed' && orderStatus != 'cancelled';
+        final order = a['orders'] as Map<String, dynamic>?;
+        if (order == null) return false;
+        final orderStatus = order['status'] as String?;
+        if (orderStatus == 'completed' || orderStatus == 'cancelled') {
+          return false;
+        }
+        if (_isDeliveryOnly(order)) return false;
+        return true;
       }).toList();
     });
+
+bool _isDeliveryOnly(Map<String, dynamic> order) {
+  final type = order['order_type'] as String?;
+  if (type != 'product') return false;
+  final items = (order['order_items'] as List?) ?? const [];
+  if (items.isEmpty) return true;
+  final anyInstall = items
+      .any((i) => (i as Map<String, dynamic>)['include_installation'] == true);
+  return !anyInstall;
+}
 
 final myTechnicianProfileProvider =
     FutureProvider.autoDispose<Map<String, dynamic>>((ref) async {
@@ -73,14 +91,21 @@ final completedAssignmentsProvider =
       .single();
   final techId = tech['id'] as String;
 
-  return await client
+  final rows = await client
       .from('assignments')
       .select(
-        '*, orders(*, profiles!customer_id(full_name, phone, address))',
+        '*, orders(*, profiles!customer_id(full_name, phone, address), order_items(*))',
       )
       .eq('technician_id', techId)
       .eq('status', 'completed')
       .order('completed_at', ascending: false);
+
+  // Hide delivery-only orders here too (in case any were assigned by mistake).
+  return rows.where((a) {
+    final order = a['orders'] as Map<String, dynamic>?;
+    if (order == null) return false;
+    return !_isDeliveryOnly(order);
+  }).toList();
 });
 
 // ─── Performance stats (today / week / total) ─────────────────────────────────
