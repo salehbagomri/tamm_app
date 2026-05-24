@@ -1031,70 +1031,74 @@ class _SavedAddressPicker extends ConsumerWidget {
       error: (_, __) => const SizedBox.shrink(),
       data: (addresses) {
         if (addresses.isEmpty) return const SizedBox.shrink();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppSpacing.gapLg, // تباعد علوي متسق يظهر فقط عند وجود عناوين
-            Text(
-              'عناويني المحفوظة',
-              style: AppTextStyles.label(context.colors.textPrimary),
-            ),
-            AppSpacing.gapSm,
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: addresses.map((a) {
-                  return GestureDetector(
-                    onTap: () => onPick(a.address, a.lat, a.lng),
-                    child: Container(
-                      margin: const EdgeInsets.only(left: AppSpacing.sm),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm2,
-                        vertical: AppSpacing.sm,
-                      ),
-                      decoration: BoxDecoration(
-                        color: a.isDefault
-                            ? context.colors.bluePrimary.withValues(alpha: 0.08)
-                            : context.colors.bgSurface,
-                        borderRadius: AppSpacing.radiusFull,
-                        border: Border.all(
-                          color: a.isDefault
-                              ? context.colors.bluePrimary
-                              : context.colors.border,
+        return Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'عناويني المحفوظة',
+                style: AppTextStyles.label(context.colors.textPrimary),
+              ),
+              AppSpacing.gapSm,
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: addresses.map((a) {
+                    return GestureDetector(
+                      onTap: () => onPick(a.address, a.lat, a.lng),
+                      child: Container(
+                        margin: const EdgeInsets.only(left: AppSpacing.sm),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm2,
+                          vertical: AppSpacing.sm,
                         ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 14,
+                        decoration: BoxDecoration(
+                          color: a.isDefault
+                              ? context.colors.bluePrimary.withValues(
+                                  alpha: 0.08,
+                                )
+                              : context.colors.bgSurface,
+                          borderRadius: AppSpacing.radiusFull,
+                          border: Border.all(
                             color: a.isDefault
                                 ? context.colors.bluePrimary
-                                : context.colors.textSecond,
+                                : context.colors.border,
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            a.label,
-                            style:
-                                AppTextStyles.bodySmall(
-                                  a.isDefault
-                                      ? context.colors.bluePrimary
-                                      : context.colors.textPrimary,
-                                ).copyWith(
-                                  fontWeight: a.isDefault
-                                      ? AppTextStyles.semiBold
-                                      : AppTextStyles.regular,
-                                ),
-                          ),
-                        ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 14,
+                              color: a.isDefault
+                                  ? context.colors.bluePrimary
+                                  : context.colors.textSecond,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              a.label,
+                              style:
+                                  AppTextStyles.bodySmall(
+                                    a.isDefault
+                                        ? context.colors.bluePrimary
+                                        : context.colors.textPrimary,
+                                  ).copyWith(
+                                    fontWeight: a.isDefault
+                                        ? AppTextStyles.semiBold
+                                        : AppTextStyles.regular,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
