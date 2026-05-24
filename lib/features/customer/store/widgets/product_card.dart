@@ -195,13 +195,13 @@ class _ProductImage extends StatelessWidget {
             ),
           if (product.isOutOfStock)
             Positioned(
-              top: 6,
+              bottom: 6,
               left: 6,
               child: _Badge(label: 'نفدت', color: context.colors.error),
             )
           else if (product.isLowStock)
             Positioned(
-              top: 6,
+              bottom: 6,
               left: 6,
               child: _Badge(
                 label: '${product.stockQuantity} متبقية',
@@ -209,7 +209,7 @@ class _ProductImage extends StatelessWidget {
               ),
             ),
           Positioned(
-            bottom: 6,
+            top: 6,
             left: 6,
             child: _FavoriteButton(productId: product.id),
           ),
