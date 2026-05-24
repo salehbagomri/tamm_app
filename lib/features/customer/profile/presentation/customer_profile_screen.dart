@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -707,8 +708,17 @@ class _GrowthCard extends StatelessWidget {
   Future<void> _rate(BuildContext context) async {
     try {
       final review = InAppReview.instance;
-      // نفتح صفحة المتجر مباشرة للتقييم لضمان العمل في جميع الحالات
-      await review.openStoreListing();
+      if (kDebugMode) {
+        // في وضع التطوير (Debug)، نفتح صفحة المتجر مباشرة للتحقق من العمل
+        await review.openStoreListing();
+      } else {
+        // في وضع الإنتاج، نحاول إظهار تقييم داخلي أولاً دون مغادرة التطبيق
+        if (await review.isAvailable()) {
+          await review.requestReview();
+        } else {
+          await review.openStoreListing();
+        }
+      }
     } catch (_) {
       try {
         final uri = Uri.parse(LegalUrls.playStore);
