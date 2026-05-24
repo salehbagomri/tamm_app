@@ -6,9 +6,9 @@ class LegalUrls {
   static const String privacy =
       'https://salehbagomri.github.io/tamm-app-privacy/';
 
-  /// شروط الاستخدام — مؤقتاً تفتح صفحة الخصوصية حتى جاهزية المستودع المستقل.
-  // TODO: استبدل بـ https://github.com/salehbagomri/tamm-app-terms عند إنشائه.
-  static const String terms = privacy;
+  /// شروط الاستخدام
+  static const String terms =
+      'https://salehbagomri.github.io/tamm-app-privacy/terms.html';
 
   /// رابط التطبيق على Google Play — يُستخدم للمشاركة والتقييم.
   static const String playStore =
