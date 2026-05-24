@@ -178,36 +178,33 @@ class _ProductImage extends StatelessWidget {
                   : _PlaceholderIcon(),
             ),
           ),
-          if (product.hasDiscount)
-            Positioned(
-              top: 6,
-              right: 6,
-              child: _Badge(
-                label: 'خصم ${product.discountPercentage}%',
-                color: context.colors.error,
-              ),
-            )
-          else if (product.isFeatured)
-            Positioned(
-              top: 6,
-              right: 6,
-              child: _Badge(label: 'مميز', color: context.colors.warning),
+          Positioned(
+            top: 6,
+            right: 6,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (product.hasDiscount)
+                  _Badge(
+                    label: 'خصم ${product.discountPercentage}%',
+                    color: context.colors.error,
+                  )
+                else if (product.isFeatured)
+                  _Badge(label: 'مميز', color: context.colors.warning),
+                if (product.isOutOfStock || product.isLowStock) ...[
+                  const SizedBox(height: 4),
+                  if (product.isOutOfStock)
+                    _Badge(label: 'نفدت', color: context.colors.error)
+                  else if (product.isLowStock)
+                    _Badge(
+                      label: '${product.stockQuantity} متبقية',
+                      color: context.colors.warning,
+                    ),
+                ],
+              ],
             ),
-          if (product.isOutOfStock)
-            Positioned(
-              bottom: 6,
-              left: 6,
-              child: _Badge(label: 'نفدت', color: context.colors.error),
-            )
-          else if (product.isLowStock)
-            Positioned(
-              bottom: 6,
-              left: 6,
-              child: _Badge(
-                label: '${product.stockQuantity} متبقية',
-                color: context.colors.warning,
-              ),
-            ),
+          ),
           Positioned(
             top: 6,
             left: 6,
