@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../widgets/support_dialog.dart';
 
 class HelpCenterScreen extends StatelessWidget {
@@ -334,13 +335,26 @@ class _FaqItemState extends State<_FaqItem> {
 class _ContactPromptCard extends StatelessWidget {
   const _ContactPromptCard();
 
-  Future<void> _whatsapp(BuildContext context) async {
-    // رقم WhatsApp يمكن تخصيصه لاحقاً في constants
-    final uri = Uri.parse('https://wa.me/967770727055');
+  Future<void> _email(BuildContext context) async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: AppConstants.supportEmail,
+      queryParameters: {'subject': 'طلب دعم / استفسار من تطبيق تمّ'},
+    );
     try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      await launchUrl(uri);
     } catch (_) {
-      if (context.mounted) showSupportDialog(context);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'لا يمكن فتح تطبيق البريد الإلكتروني حالياً. البريد: ${AppConstants.supportEmail}',
+              style: AppTextStyles.bodySmall(Colors.white),
+            ),
+            backgroundColor: context.colors.error,
+          ),
+        );
+      }
     }
   }
 
@@ -398,18 +412,18 @@ class _ContactPromptCard extends StatelessWidget {
               AppSpacing.hGapSm,
               Expanded(
                 child: FilledButton.icon(
-                  onPressed: () => _whatsapp(context),
+                  onPressed: () => _email(context),
                   icon: const Icon(
-                    Icons.chat_outlined,
+                    Icons.mail_outline,
                     color: Colors.white,
                     size: 18,
                   ),
                   label: Text(
-                    'واتساب',
+                    'اترك رسالة',
                     style: AppTextStyles.button(Colors.white),
                   ),
                   style: FilledButton.styleFrom(
-                    backgroundColor: context.colors.success,
+                    backgroundColor: context.colors.bluePrimary,
                     shape: const RoundedRectangleBorder(
                       borderRadius: AppSpacing.radiusLg,
                     ),
