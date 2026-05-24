@@ -138,12 +138,6 @@ class _LoggedInView extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             _QuickAction(
-              icon: Icons.devices_outlined,
-              label: AppStrings.myDevices,
-              onTap: () => context.push('/customer/devices'),
-            ),
-            const SizedBox(height: 8),
-            _QuickAction(
               icon: Icons.location_on_outlined,
               label: 'عناويني المحفوظة',
               onTap: () => context.push('/customer/saved-addresses'),
@@ -679,61 +673,27 @@ class _SettingsCard extends StatelessWidget {
         borderRadius: AppSpacing.radius,
         border: Border.all(color: context.colors.border),
       ),
-      child: Column(
-        children: [
-          Theme(
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-            child: ExpansionTile(
-              tilePadding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-              ),
-              childrenPadding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                0,
-                AppSpacing.md,
-                AppSpacing.md,
-              ),
-              leading: Icon(
-                Icons.palette_outlined,
-                color: context.colors.bluePrimary,
-                size: 20,
-              ),
-              title: Text(
-                'مظهر التطبيق',
-                style: AppTextStyles.body(context.colors.textPrimary),
-              ),
-              children: const [TammThemeSelector()],
-            ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          childrenPadding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.md,
           ),
-          Divider(height: 1, color: context.colors.border),
-          ListTile(
-            leading: Icon(
-              Icons.language_outlined,
-              color: context.colors.textFaint,
-              size: 20,
-            ),
-            title: Text(
-              'اللغة',
-              style: AppTextStyles.body(context.colors.textPrimary),
-            ),
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: 2,
-              ),
-              decoration: BoxDecoration(
-                color: context.colors.bgPrimary,
-                borderRadius: AppSpacing.radiusFull,
-                border: Border.all(color: context.colors.border),
-              ),
-              child: Text(
-                'العربية — قريباً',
-                style: AppTextStyles.caption(context.colors.textFaint),
-              ),
-            ),
-            enabled: false,
+          leading: Icon(
+            Icons.palette_outlined,
+            color: context.colors.bluePrimary,
+            size: 20,
           ),
-        ],
+          title: Text(
+            'مظهر التطبيق',
+            style: AppTextStyles.body(context.colors.textPrimary),
+          ),
+          children: const [TammThemeSelector()],
+        ),
       ),
     );
   }
@@ -747,15 +707,25 @@ class _GrowthCard extends StatelessWidget {
   Future<void> _rate(BuildContext context) async {
     try {
       final review = InAppReview.instance;
-      if (await review.isAvailable()) {
-        await review.requestReview();
-      } else {
-        await review.openStoreListing(appStoreId: null, microsoftStoreId: null);
-      }
+      // نفتح صفحة المتجر مباشرة للتقييم لضمان العمل في جميع الحالات
+      await review.openStoreListing();
     } catch (_) {
-      if (context.mounted) {
+      try {
         final uri = Uri.parse(LegalUrls.playStore);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } catch (_) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'تعذّر فتح متجر التطبيقات',
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Theme.of(context).colorScheme.error,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
       }
     }
   }

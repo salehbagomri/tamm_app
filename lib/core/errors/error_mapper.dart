@@ -1,10 +1,10 @@
 import 'dart:async' show TimeoutException;
 import 'package:supabase_flutter/supabase_flutter.dart'
     as supabase
-    show AuthException, PostgrestException;
+    show AuthException, PostgrestException, StorageException;
 import 'app_exception.dart';
 
-/// يُحوّل أي خطأ خام إلى [AppException] منظّم.
+/// يُحوّل أي خطأ خام إلى [AppException] منظم.
 ///
 /// الاستخدام:
 /// ```dart
@@ -28,6 +28,17 @@ abstract final class ErrorMapper {
         return const PermissionException();
       }
       return const ServerException();
+    }
+
+    // ── 1.5 StorageException من Supabase ─────────────────────────────────────
+    if (error is supabase.StorageException) {
+      final msg = error.message;
+      if (msg.contains('Bucket not found') || msg.contains('not found')) {
+        return const ServerException(
+          message: 'مجلد الصور (avatars) غير موجود في التخزين، يرجى تهيئته من لوحة التحكم',
+        );
+      }
+      return ServerException(message: 'خطأ في التخزين السحابي: $msg');
     }
 
     // ── 2. AuthException من Supabase ─────────────────────────────────────────
