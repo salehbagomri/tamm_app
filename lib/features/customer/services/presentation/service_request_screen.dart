@@ -15,6 +15,7 @@ import '../../../../shared/models/service_type.dart';
 import '../../../../shared/providers/auth_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import '../../../../shared/providers/service_providers.dart';
+import '../../../../shared/providers/saved_addresses_providers.dart';
 import '../../store/presentation/payment_method_selector.dart';
 import '../../store/widgets/order_success_dialog.dart';
 import '../../store/widgets/tamm_date_picker.dart';
@@ -497,98 +498,116 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
           );
         }),
         AppSpacing.gapLg,
-        Text(
-          'الموقع الجغرافي',
-          style: AppTextStyles.label(context.colors.textPrimary),
+        Row(
+          children: [
+            Text(
+              'الموقع الجغرافي',
+              style: AppTextStyles.label(context.colors.textPrimary),
+            ),
+            AppSpacing.hGapXs,
+            Text(
+              '(اختياري)',
+              style: AppTextStyles.bodySmall(context.colors.textSecond),
+            ),
+          ],
         ),
         AppSpacing.gapSm,
         GestureDetector(
           onTap: _locationLoading ? null : _pickLocation,
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: AppSpacing.cardPaddingSm,
             decoration: BoxDecoration(
               color: _locationPicked
                   ? context.colors.success.withValues(alpha: 0.08)
-                  : context.colors.bluePrimary.withValues(alpha: 0.06),
-              borderRadius: AppSpacing.radiusLg,
+                  : context.colors.bgSurface2,
+              borderRadius: AppSpacing.radiusSm,
               border: Border.all(
                 color: _locationPicked
                     ? context.colors.success
-                    : context.colors.bluePrimary,
-                width: 1.5,
+                    : context.colors.border,
               ),
             ),
-            child: Column(
+            child: Row(
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: _locationPicked
-                        ? context.colors.success
-                        : context.colors.bluePrimary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: _locationLoading
-                      ? const Padding(
-                          padding: AppSpacing.iconCirclePadding,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Icon(
-                          _locationPicked
-                              ? Icons.check_circle_outline
-                              : Icons.my_location,
-                          color: context.colors.bgSurface,
-                          size: AppSpacing.iconLg,
+                _locationLoading
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.colors.bluePrimary,
                         ),
-                ),
-                AppSpacing.gapSm2,
-                Text(
-                  _locationPicked ? 'تم تحديد الموقع ✓' : 'تحديد موقعي الحالي',
-                  style: AppTextStyles.cardTitle(
+                      )
+                    : Icon(
+                        _locationPicked
+                            ? Icons.check_circle_outline
+                            : Icons.my_location,
+                        color: _locationPicked
+                            ? context.colors.success
+                            : context.colors.bluePrimary,
+                        size: 20,
+                      ),
+                AppSpacing.hGapSm,
+                Expanded(
+                  child: Text(
                     _locationPicked
-                        ? context.colors.success
-                        : context.colors.bluePrimary,
-                  ),
-                ),
-                AppSpacing.gapXs,
-                Text(
-                  _locationPicked
-                      ? '${_latitude!.toStringAsFixed(5)}, ${_longitude!.toStringAsFixed(5)}'
-                      : 'اضغط لإرسال موقعك الدقيق للفني',
-                  style: AppTextStyles.caption(context.colors.textSecond),
-                ),
-                if (_locationPicked) ...[
-                  AppSpacing.gapSm,
-                  TextButton.icon(
-                    onPressed: _pickLocation,
-                    icon: Icon(
-                      Icons.refresh,
-                      size: AppSpacing.iconXs,
-                      color: context.colors.textSecond,
-                    ),
-                    label: Text(
-                      'تحديث الموقع',
-                      style: AppTextStyles.caption(context.colors.textSecond),
+                        ? '${_latitude!.toStringAsFixed(5)}, ${_longitude!.toStringAsFixed(5)}'
+                        : 'تحديد موقعي الحالي',
+                    style: AppTextStyles.bodySmall(
+                      _locationPicked
+                          ? context.colors.success
+                          : context.colors.bluePrimary,
                     ),
                   ),
-                ],
+                ),
+                if (_locationPicked)
+                  GestureDetector(
+                    onTap: () => setState(() {
+                      _latitude = null;
+                      _longitude = null;
+                      _locationPicked = false;
+                    }),
+                    child: Icon(
+                      Icons.close,
+                      size: 16,
+                      color: context.colors.textFaint,
+                    ),
+                  ),
               ],
             ),
           ),
         ),
         AppSpacing.gapLg,
-        Text(
-          'تفاصيل العنوان',
-          style: AppTextStyles.label(context.colors.textPrimary),
+        _SavedAddressPicker(
+          onPick: (address, lat, lng) {
+            setState(() {
+              _addressCtrl.text = address;
+              if (lat != null && lng != null) {
+                _latitude = lat;
+                _longitude = lng;
+                _locationPicked = true;
+              }
+            });
+          },
+        ),
+        AppSpacing.gapMd,
+        Row(
+          children: [
+            Text(
+              'تفاصيل العنوان',
+              style: AppTextStyles.label(context.colors.textPrimary),
+            ),
+            AppSpacing.hGapXs,
+            Text(
+              '(إلزامي)',
+              style: AppTextStyles.bodySmall(context.colors.error),
+            ),
+          ],
         ),
         AppSpacing.gapSm,
         TammTextField(
-          label: AppStrings.address,
+          label: '',
           hint: 'مثال: الشرج، الشارع العام، بجانب جامع الشرج',
           controller: _addressCtrl,
           maxLines: 2,
@@ -601,7 +620,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
         ),
         AppSpacing.gapSm,
         TammTextField(
-          label: 'رقم الهاتف',
+          label: '',
           hint: '7XXXXXXXX',
           controller: _phoneCtrl,
           keyboardType: TextInputType.phone,
@@ -995,6 +1014,89 @@ class _SummaryRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ─── عناويني المحفوظة — اختيار سريع ────────────────────────────────────────────
+
+class _SavedAddressPicker extends ConsumerWidget {
+  final void Function(String address, double? lat, double? lng) onPick;
+  const _SavedAddressPicker({required this.onPick});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncAddresses = ref.watch(savedAddressesProvider);
+    return asyncAddresses.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (addresses) {
+        if (addresses.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'عناويني المحفوظة',
+              style: AppTextStyles.label(context.colors.textPrimary),
+            ),
+            AppSpacing.gapSm,
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: addresses.map((a) {
+                  return GestureDetector(
+                    onTap: () => onPick(a.address, a.lat, a.lng),
+                    child: Container(
+                      margin: const EdgeInsets.only(left: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm2,
+                        vertical: AppSpacing.sm,
+                      ),
+                      decoration: BoxDecoration(
+                        color: a.isDefault
+                            ? context.colors.bluePrimary.withValues(alpha: 0.08)
+                            : context.colors.bgSurface,
+                        borderRadius: AppSpacing.radiusFull,
+                        border: Border.all(
+                          color: a.isDefault
+                              ? context.colors.bluePrimary
+                              : context.colors.border,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: a.isDefault
+                                ? context.colors.bluePrimary
+                                : context.colors.textSecond,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            a.label,
+                            style:
+                                AppTextStyles.bodySmall(
+                                  a.isDefault
+                                      ? context.colors.bluePrimary
+                                      : context.colors.textPrimary,
+                                ).copyWith(
+                                  fontWeight: a.isDefault
+                                      ? AppTextStyles.semiBold
+                                      : AppTextStyles.regular,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
