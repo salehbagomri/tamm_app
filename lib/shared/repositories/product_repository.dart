@@ -8,7 +8,10 @@ class ProductRepository {
     String? category,
     bool? featuredOnly,
   }) async {
-    var query = _client.from('products').select().eq('is_available', true);
+    var query = _client
+        .from('products')
+        .select('*, product_images(*)')
+        .eq('is_available', true);
     if (category != null) query = query.eq('category', category);
     if (featuredOnly == true) query = query.eq('is_featured', true);
     final data = await query.order('sort_order');
@@ -16,7 +19,11 @@ class ProductRepository {
   }
 
   Future<Product> getProduct(String id) async {
-    final data = await _client.from('products').select().eq('id', id).single();
+    final data = await _client
+        .from('products')
+        .select('*, product_images(*)')
+        .eq('id', id)
+        .single();
     return Product.fromMap(data);
   }
 
