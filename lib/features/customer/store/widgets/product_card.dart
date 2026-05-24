@@ -10,6 +10,7 @@ import '../../../../core/widgets/cart_toast.dart';
 import '../../../../core/widgets/tamm_shimmer.dart';
 import '../../../../shared/models/cart_item.dart';
 import '../../../../shared/models/product.dart';
+import '../../../../shared/providers/favorites_providers.dart';
 import '../../../../shared/providers/order_providers.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 import '../presentation/buy_install_sheet.dart';
@@ -204,6 +205,11 @@ class _ProductImage extends StatelessWidget {
                 color: context.colors.warning,
               ),
             ),
+          Positioned(
+            bottom: 6,
+            left: 6,
+            child: _FavoriteButton(productId: product.id),
+          ),
         ],
       ),
     );
@@ -235,6 +241,67 @@ class _Badge extends StatelessWidget {
         label,
         style: AppTextStyles.badge(Colors.white)
             .copyWith(fontWeight: AppTextStyles.bold),
+      ),
+    );
+  }
+}
+
+// ─── Favorite heart button ────────────────────────────────────────────────────
+
+class _FavoriteButton extends ConsumerStatefulWidget {
+  final String productId;
+  const _FavoriteButton({required this.productId});
+
+  @override
+  ConsumerState<_FavoriteButton> createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends ConsumerState<_FavoriteButton> {
+  bool? _optimistic; // null = follow provider, bool = local override
+  bool _busy = false;
+
+  Future<void> _toggle(bool currentlyFav) async {
+    if (_busy) return;
+    setState(() {
+      _optimistic = !currentlyFav;
+      _busy = true;
+    });
+    try {
+      final repo = ref.read(favoritesRepositoryProvider);
+      if (currentlyFav) {
+        await repo.remove(widget.productId);
+      } else {
+        await repo.add(widget.productId);
+      }
+      ref.invalidate(favoritedIdsProvider);
+      ref.invalidate(favoriteProductsProvider);
+    } catch (_) {
+      if (mounted) setState(() => _optimistic = currentlyFav);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final idsAsync = ref.watch(favoritedIdsProvider);
+    final isFav = _optimistic ??
+        idsAsync.whenOrNull(data: (ids) => ids.contains(widget.productId)) ??
+        false;
+
+    return GestureDetector(
+      onTap: () => _toggle(isFav),
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: context.colors.bgSurface.withValues(alpha: 0.85),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          isFav ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
+          size: 18,
+          color: isFav ? context.colors.error : context.colors.textSecond,
+        ),
       ),
     );
   }
