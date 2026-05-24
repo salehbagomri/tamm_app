@@ -578,7 +578,6 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
             ),
           ),
         ),
-        AppSpacing.gapLg,
         _SavedAddressPicker(
           onPick: (address, lat, lng) {
             setState(() {
@@ -591,7 +590,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
             });
           },
         ),
-        AppSpacing.gapMd,
+        AppSpacing.gapLg,
         Row(
           children: [
             Text(
@@ -1035,6 +1034,7 @@ class _SavedAddressPicker extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            AppSpacing.gapLg, // تباعد علوي متسق يظهر فقط عند وجود عناوين
             Text(
               'عناويني المحفوظة',
               style: AppTextStyles.label(context.colors.textPrimary),
