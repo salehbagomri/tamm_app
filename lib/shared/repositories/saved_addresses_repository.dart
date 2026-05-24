@@ -30,9 +30,11 @@ class SavedAddressesRepository {
   Future<SavedAddress> add(SavedAddress address) async {
     try {
       if (address.isDefault) await _clearDefault();
+      final insertData = address.toInsertMap();
+      insertData['user_id'] = _userId; // تأكيد إدخال معرف المستخدم الفعلي
       final row = await _db
           .from('saved_addresses')
-          .insert(address.toInsertMap())
+          .insert(insertData)
           .select()
           .single();
       return SavedAddress.fromMap(row);

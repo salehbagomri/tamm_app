@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 import '../../../../core/constants/app_spacing.dart';
@@ -512,9 +513,11 @@ class _AddressFormState extends ConsumerState<_AddressForm> {
       final repo = ref.read(savedAddressesRepositoryProvider);
       if (widget.existing == null) {
         // new
+        final currentUserId =
+            Supabase.instance.client.auth.currentUser?.id ?? '';
         final draft = SavedAddress(
           id: '',
-          userId: '',
+          userId: currentUserId,
           label: label,
           address: address,
           city: 'المكلا',
