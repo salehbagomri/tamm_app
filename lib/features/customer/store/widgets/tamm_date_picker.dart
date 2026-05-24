@@ -102,10 +102,7 @@ class _TammDatePickerState extends State<TammDatePicker> {
               IconButton(
                 onPressed: _canGoPrev() ? _prevMonth : null,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 36,
-                  minHeight: 36,
-                ),
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                 icon: Icon(
                   Icons.chevron_right,
                   color: _canGoPrev()
@@ -121,10 +118,7 @@ class _TammDatePickerState extends State<TammDatePicker> {
               IconButton(
                 onPressed: _nextMonth,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 36,
-                  minHeight: 36,
-                ),
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                 icon: Icon(
                   Icons.chevron_left,
                   color: context.colors.textPrimary,
@@ -142,8 +136,9 @@ class _TammDatePickerState extends State<TammDatePicker> {
                     child: Center(
                       child: Text(
                         d,
-                        style: AppTextStyles.caption(context.colors.textSecond)
-                            .copyWith(fontWeight: AppTextStyles.medium),
+                        style: AppTextStyles.caption(
+                          context.colors.textSecond,
+                        ).copyWith(fontWeight: AppTextStyles.medium),
                       ),
                     ),
                   ),

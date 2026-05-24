@@ -6,8 +6,9 @@ final savedAddressesRepositoryProvider = Provider<SavedAddressesRepository>(
   (_) => SavedAddressesRepository(),
 );
 
-final savedAddressesProvider =
-    FutureProvider.autoDispose<List<SavedAddress>>((ref) async {
+final savedAddressesProvider = FutureProvider.autoDispose<List<SavedAddress>>((
+  ref,
+) async {
   final repo = ref.read(savedAddressesRepositoryProvider);
   return repo.fetchAll();
 });

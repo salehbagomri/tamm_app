@@ -35,15 +35,17 @@ class _ReviewCardState extends ConsumerState<ReviewCard> {
     final userId = Supabase.instance.client.auth.currentUser?.id;
     if (userId == null || _selectedRating == 0) return;
 
-    await ref.read(reviewSubmitProvider(widget.orderId).notifier).submit(
-      orderId: widget.orderId,
-      customerId: userId,
-      technicianId: widget.technicianId,
-      rating: _selectedRating,
-      comment: _commentCtrl.text.trim().isEmpty
-          ? null
-          : _commentCtrl.text.trim(),
-    );
+    await ref
+        .read(reviewSubmitProvider(widget.orderId).notifier)
+        .submit(
+          orderId: widget.orderId,
+          customerId: userId,
+          technicianId: widget.technicianId,
+          rating: _selectedRating,
+          comment: _commentCtrl.text.trim().isEmpty
+              ? null
+              : _commentCtrl.text.trim(),
+        );
 
     if (!mounted) return;
     final submitState = ref.read(reviewSubmitProvider(widget.orderId));
@@ -194,7 +196,9 @@ class _ReviewCardState extends ConsumerState<ReviewCard> {
           children: List.generate(
             5,
             (i) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs / 2),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xs / 2,
+              ),
               child: Icon(
                 i < review.rating ? Icons.star : Icons.star_outline,
                 color: i < review.rating

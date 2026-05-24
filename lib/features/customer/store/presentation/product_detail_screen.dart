@@ -55,178 +55,183 @@ class ProductDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-          Stack(
-            children: [
-              Container(
-                height: 300,
-                width: double.infinity,
-                color: context.colors.bgSurface2,
-                child: p.imageUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: p.imageUrl!,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => TammShimmer(
-                          width: double.infinity,
-                          height: double.infinity,
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        errorWidget: (context, url, error) => Icon(
-                          Icons.image_outlined,
-                          size: 80,
-                          color: context.colors.textFaint,
-                        ),
-                      )
-                    : Center(
-                        child: Icon(
-                          Icons.image_outlined,
-                          size: 80,
-                          color: context.colors.textFaint,
-                        ),
-                      ),
-              ),
-              if (p.isFeatured && !p.hasDiscount)
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.colors.warning,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'مميز ⭐',
-                      style: AppTextStyles.bodySmall(
-                        Colors.white,
-                      ).copyWith(fontWeight: AppTextStyles.bold),
-                    ),
-                  ),
-                ),
-              if (p.hasDiscount)
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.colors.error,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'عرض خاص: خصم ${p.discountPercentage}% 🏷️',
-                      style: AppTextStyles.bodySmall(
-                        Colors.white,
-                      ).copyWith(fontWeight: AppTextStyles.bold),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          Padding(
-            padding: AppSpacing.pagePadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppSpacing.gapMd,
-                if (p.brand != null)
-                  Text(
-                    p.brand!,
-                    style: AppTextStyles.body(
-                      context.colors.textSecond,
-                    ).copyWith(fontWeight: AppTextStyles.bold),
-                  ),
-                Text(
-                  p.name,
-                  style: AppTextStyles.body(context.colors.textPrimary),
-                ),
-                AppSpacing.gapSm2,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Stack(
                   children: [
-                    if (p.hasDiscount && p.oldPrice != null)
-                      Text(
-                        '${p.oldPrice!.toInt()} ر.س',
-                        style: AppTextStyles.bodySmall(
-                          context.colors.textSecond,
-                        ).copyWith(
-                          decoration: TextDecoration.lineThrough,
-                          decorationThickness: 1.8,
-                          decorationColor: context.colors.textSecond,
+                    Container(
+                      height: 300,
+                      width: double.infinity,
+                      color: context.colors.bgSurface2,
+                      child: p.imageUrl != null
+                          ? CachedNetworkImage(
+                              imageUrl: p.imageUrl!,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => TammShimmer(
+                                width: double.infinity,
+                                height: double.infinity,
+                                borderRadius: BorderRadius.circular(0),
+                              ),
+                              errorWidget: (context, url, error) => Icon(
+                                Icons.image_outlined,
+                                size: 80,
+                                color: context.colors.textFaint,
+                              ),
+                            )
+                          : Center(
+                              child: Icon(
+                                Icons.image_outlined,
+                                size: 80,
+                                color: context.colors.textFaint,
+                              ),
+                            ),
+                    ),
+                    if (p.isFeatured && !p.hasDiscount)
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.colors.warning,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'مميز ⭐',
+                            style: AppTextStyles.bodySmall(
+                              Colors.white,
+                            ).copyWith(fontWeight: AppTextStyles.bold),
+                          ),
                         ),
                       ),
-                    Text(
-                      p.price != null
-                          ? '${p.price!.toInt()} ر.س'
-                          : 'السعر غير محدد',
-                      style: AppTextStyles.price(context.colors.bluePrimary),
-                    ),
+                    if (p.hasDiscount)
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.colors.error,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'عرض خاص: خصم ${p.discountPercentage}% 🏷️',
+                            style: AppTextStyles.bodySmall(
+                              Colors.white,
+                            ).copyWith(fontWeight: AppTextStyles.bold),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
-                if (p.price != null && p.isOutOfStock) ...[
-                  AppSpacing.gapSm2,
-                  _StockBadge(
-                    label: 'نفدت الكمية',
-                    icon: Icons.remove_shopping_cart_outlined,
-                    color: context.colors.error,
+                Padding(
+                  padding: AppSpacing.pagePadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppSpacing.gapMd,
+                      if (p.brand != null)
+                        Text(
+                          p.brand!,
+                          style: AppTextStyles.body(
+                            context.colors.textSecond,
+                          ).copyWith(fontWeight: AppTextStyles.bold),
+                        ),
+                      Text(
+                        p.name,
+                        style: AppTextStyles.body(context.colors.textPrimary),
+                      ),
+                      AppSpacing.gapSm2,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (p.hasDiscount && p.oldPrice != null)
+                            Text(
+                              '${p.oldPrice!.toInt()} ر.س',
+                              style:
+                                  AppTextStyles.bodySmall(
+                                    context.colors.textSecond,
+                                  ).copyWith(
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationThickness: 1.8,
+                                    decorationColor: context.colors.textSecond,
+                                  ),
+                            ),
+                          Text(
+                            p.price != null
+                                ? '${p.price!.toInt()} ر.س'
+                                : 'السعر غير محدد',
+                            style: AppTextStyles.price(
+                              context.colors.bluePrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (p.price != null && p.isOutOfStock) ...[
+                        AppSpacing.gapSm2,
+                        _StockBadge(
+                          label: 'نفدت الكمية',
+                          icon: Icons.remove_shopping_cart_outlined,
+                          color: context.colors.error,
+                        ),
+                      ] else if (p.price != null && p.isLowStock) ...[
+                        AppSpacing.gapSm2,
+                        _StockBadge(
+                          label: 'متبقي عدد محدود — ${p.stockQuantity} قطع فقط',
+                          icon: Icons.warning_amber_outlined,
+                          color: context.colors.warning,
+                        ),
+                      ],
+                      if (p.description != null) ...[
+                        AppSpacing.gapLg,
+                        Text(
+                          'وصف المنتج',
+                          style: AppTextStyles.cardTitle(
+                            context.colors.textPrimary,
+                          ),
+                        ),
+                        AppSpacing.gapXs,
+                        _ExpandableText(text: p.description!),
+                      ],
+                      if (p.specs.isNotEmpty) ...[
+                        AppSpacing.gapLg,
+                        Text(
+                          'المواصفات التقنية',
+                          style: AppTextStyles.body(context.colors.textPrimary),
+                        ),
+                        AppSpacing.gapSm2,
+                        _ExpandableSpecs(specs: p.specs),
+                      ],
+                      AppSpacing.gapXl,
+                      _RelatedProducts(
+                        currentProductId: p.id,
+                        category: p.category,
+                      ),
+                      AppSpacing.gapXl,
+                    ],
                   ),
-                ] else if (p.price != null && p.isLowStock) ...[
-                  AppSpacing.gapSm2,
-                  _StockBadge(
-                    label: 'متبقي عدد محدود — ${p.stockQuantity} قطع فقط',
-                    icon: Icons.warning_amber_outlined,
-                    color: context.colors.warning,
-                  ),
-                ],
-                if (p.description != null) ...[
-                  AppSpacing.gapLg,
-                  Text(
-                    'وصف المنتج',
-                    style: AppTextStyles.cardTitle(context.colors.textPrimary),
-                  ),
-                  AppSpacing.gapXs,
-                  _ExpandableText(text: p.description!),
-                ],
-                if (p.specs.isNotEmpty) ...[
-                  AppSpacing.gapLg,
-                  Text(
-                    'المواصفات التقنية',
-                    style: AppTextStyles.body(context.colors.textPrimary),
-                  ),
-                  AppSpacing.gapSm2,
-                  _ExpandableSpecs(specs: p.specs),
-                ],
-                AppSpacing.gapXl,
-                _RelatedProducts(currentProductId: p.id, category: p.category),
-                AppSpacing.gapXl,
+                ),
               ],
             ),
           ),
-        ],
         ),
-      ),
-    ),
-    _BottomPurchaseBar(
-      product: p,
-      bottomPadding: bottomPadding,
-      onPressed: () => _addToCart(context, ref, p),
-    ),
-  ],
+        _BottomPurchaseBar(
+          product: p,
+          bottomPadding: bottomPadding,
+          onPressed: () => _addToCart(context, ref, p),
+        ),
+      ],
     );
   }
 
   void _showStockError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          message,
-          style: AppTextStyles.body(Colors.white),
-        ),
+        content: Text(message, style: AppTextStyles.body(Colors.white)),
         backgroundColor: context.colors.warning,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 4),
@@ -278,9 +283,11 @@ class ProductDetailScreen extends ConsumerWidget {
       wantsInstallation = result;
     }
     try {
-      await ref.read(cartProvider.notifier).addItem(
-        CartItem(product: p, includeInstallation: wantsInstallation),
-      );
+      await ref
+          .read(cartProvider.notifier)
+          .addItem(
+            CartItem(product: p, includeInstallation: wantsInstallation),
+          );
       if (context.mounted) CartToast.show(context, productName: p.name);
     } catch (e) {
       if (context.mounted) {
@@ -317,9 +324,7 @@ class _BottomPurchaseBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
-        border: Border(
-          top: BorderSide(color: context.colors.border),
-        ),
+        border: Border(top: BorderSide(color: context.colors.border)),
         boxShadow: [
           BoxShadow(
             color: context.colors.textPrimary.withValues(alpha: 0.06),
@@ -347,9 +352,7 @@ class _BottomPurchaseBar extends StatelessWidget {
                           '${p.oldPrice!.toInt()} ر.س',
                           style: AppTextStyles.caption(
                             context.colors.textFaint,
-                          ).copyWith(
-                            decoration: TextDecoration.lineThrough,
-                          ),
+                          ).copyWith(decoration: TextDecoration.lineThrough),
                         ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -381,21 +384,21 @@ class _BottomPurchaseBar extends StatelessWidget {
           Expanded(
             child: p.price != null
                 ? (p.isOutOfStock
-                    ? const TammButton(
-                        label: 'نفدت الكمية',
-                        icon: Icons.remove_shopping_cart_outlined,
-                        type: TammButtonType.secondary,
-                        onPressed: null,
-                      )
-                    : TammButton(
-                        label: p.requiresInstallation
-                            ? 'اشترِ وركّب 🛠'
-                            : 'أضف للسلة 🛒',
-                        icon: p.requiresInstallation
-                            ? Icons.build_outlined
-                            : Icons.shopping_cart_outlined,
-                        onPressed: onPressed,
-                      ))
+                      ? const TammButton(
+                          label: 'نفدت الكمية',
+                          icon: Icons.remove_shopping_cart_outlined,
+                          type: TammButtonType.secondary,
+                          onPressed: null,
+                        )
+                      : TammButton(
+                          label: p.requiresInstallation
+                              ? 'اشترِ وركّب 🛠'
+                              : 'أضف للسلة 🛒',
+                          icon: p.requiresInstallation
+                              ? Icons.build_outlined
+                              : Icons.shopping_cart_outlined,
+                          onPressed: onPressed,
+                        ))
                 : TammButton(
                     label: 'تواصل معنا للسعر',
                     icon: Icons.chat_outlined,
@@ -492,8 +495,9 @@ class _ExpandableTextState extends State<_ExpandableText> {
           onTap: () => setState(() => _expanded = !_expanded),
           child: Text(
             _expanded ? 'إخفاء ▲' : 'اقرأ المزيد ▼',
-            style: AppTextStyles.bodySmall(context.colors.bluePrimary)
-                .copyWith(fontWeight: AppTextStyles.semiBold),
+            style: AppTextStyles.bodySmall(
+              context.colors.bluePrimary,
+            ).copyWith(fontWeight: AppTextStyles.semiBold),
           ),
         ),
       ],
@@ -520,7 +524,9 @@ class _ExpandableSpecsState extends State<_ExpandableSpecs> {
     final entries = widget.specs.entries.toList();
     final total = entries.length;
     final showToggle = total > _defaultVisible;
-    final visible = _expanded ? entries : entries.take(_defaultVisible).toList();
+    final visible = _expanded
+        ? entries
+        : entries.take(_defaultVisible).toList();
 
     return Column(
       children: [
@@ -573,7 +579,8 @@ class _ExpandableSpecsState extends State<_ExpandableSpecs> {
                         child: Text(
                           '${spec.value}',
                           style: AppTextStyles.bodySmall(
-                              context.colors.textPrimary),
+                            context.colors.textPrimary,
+                          ),
                           textAlign: TextAlign.start,
                         ),
                       ),
@@ -589,11 +596,10 @@ class _ExpandableSpecsState extends State<_ExpandableSpecs> {
           GestureDetector(
             onTap: () => setState(() => _expanded = !_expanded),
             child: Text(
-              _expanded
-                  ? 'إخفاء ▲'
-                  : 'عرض كل المواصفات ($total) ▼',
-              style: AppTextStyles.bodySmall(context.colors.bluePrimary)
-                  .copyWith(fontWeight: AppTextStyles.semiBold),
+              _expanded ? 'إخفاء ▲' : 'عرض كل المواصفات ($total) ▼',
+              style: AppTextStyles.bodySmall(
+                context.colors.bluePrimary,
+              ).copyWith(fontWeight: AppTextStyles.semiBold),
             ),
           ),
         ],
@@ -628,8 +634,9 @@ class _StockBadge extends StatelessWidget {
           AppSpacing.hGapXs,
           Text(
             label,
-            style: AppTextStyles.caption(color)
-                .copyWith(fontWeight: AppTextStyles.semiBold),
+            style: AppTextStyles.caption(
+              color,
+            ).copyWith(fontWeight: AppTextStyles.semiBold),
           ),
         ],
       ),

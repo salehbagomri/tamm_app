@@ -109,108 +109,107 @@ class InAppNotificationBanner extends ConsumerWidget {
       child: IgnorePointer(
         ignoring: !state.isVisible,
         child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onPanUpdate: (details) {
-          // Swipe up to dismiss
-          if (details.delta.dy < -5) {
+          behavior: HitTestBehavior.opaque,
+          onPanUpdate: (details) {
+            // Swipe up to dismiss
+            if (details.delta.dy < -5) {
+              ref.read(inAppNotificationProvider.notifier).hide();
+            }
+          },
+          onTap: () {
+            final orderId = state.orderId;
+            final assignmentId = state.assignmentId;
+            final type = state.notificationType;
             ref.read(inAppNotificationProvider.notifier).hide();
-          }
-        },
-        onTap: () {
-          final orderId = state.orderId;
-          final assignmentId = state.assignmentId;
-          final type = state.notificationType;
-          ref.read(inAppNotificationProvider.notifier).hide();
-          final route = _buildRoute(type, orderId, assignmentId);
-          if (route != null) {
-            ref.read(appRouterProvider).push(route);
-          }
-        },
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            margin: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 8,
-              left: 12,
-              right: 12,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: context.colors.bgSurface,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.12),
-                  blurRadius: 20,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-              border: Border.all(color: context.colors.border),
-            ),
-            child: Row(
-              children: [
-                // Icon
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: context.colors.bluePrimary.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
+            final route = _buildRoute(type, orderId, assignmentId);
+            if (route != null) {
+              ref.read(appRouterProvider).push(route);
+            }
+          },
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              margin: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 8,
+                left: 12,
+                right: 12,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: context.colors.bgSurface,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
                   ),
-                  child: Icon(
-                    _iconForType(state.notificationType),
-                    color: context.colors.bluePrimary,
-                    size: 20,
+                ],
+                border: Border.all(color: context.colors.border),
+              ),
+              child: Row(
+                children: [
+                  // Icon
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: context.colors.bluePrimary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      _iconForType(state.notificationType),
+                      color: context.colors.bluePrimary,
+                      size: 20,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                // Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        state.title,
-                        style: AppTextStyles.bodySmall(context.colors.textPrimary)
-                            .copyWith(fontWeight: AppTextStyles.semiBold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        state.body,
-                        style: AppTextStyles.caption(context.colors.textSecond),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                  const SizedBox(width: 12),
+                  // Content
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          state.title,
+                          style: AppTextStyles.bodySmall(
+                            context.colors.textPrimary,
+                          ).copyWith(fontWeight: AppTextStyles.semiBold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          state.body,
+                          style: AppTextStyles.caption(
+                            context.colors.textSecond,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                // Close button
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: Icon(
-                    Icons.close,
-                    size: 18,
-                    color: context.colors.textFaint,
+                  // Close button
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: Icon(
+                      Icons.close,
+                      size: 18,
+                      color: context.colors.textFaint,
+                    ),
+                    onPressed: () =>
+                        ref.read(inAppNotificationProvider.notifier).hide(),
                   ),
-                  onPressed: () =>
-                      ref.read(inAppNotificationProvider.notifier).hide(),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-      ),
     );
   }
 
-  String? _buildRoute(
-    String? type,
-    String? orderId,
-    String? assignmentId,
-  ) {
+  String? _buildRoute(String? type, String? orderId, String? assignmentId) {
     final role = FcmService.cachedRole ?? 'customer';
 
     if (type == 'new_assignment') {

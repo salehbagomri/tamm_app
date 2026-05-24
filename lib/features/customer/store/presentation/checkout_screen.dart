@@ -35,7 +35,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     super.initState();
     Future.microtask(() async {
       final profile = await ref.read(userProfileProvider.future);
-      if (mounted && _phoneCtrl.text.isEmpty && (profile?.phone ?? '').isNotEmpty) {
+      if (mounted &&
+          _phoneCtrl.text.isEmpty &&
+          (profile?.phone ?? '').isNotEmpty) {
         _phoneCtrl.text = profile!.phone;
       }
     });
@@ -223,9 +225,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
       // فحص دفاعي للمخزون قبل إرسال الطلب (race-condition guard).
       final cartItems = cartAsync.valueOrNull ?? [];
-      await ref
-          .read(orderRepositoryProvider)
-          .validateStockForCart(cartItems);
+      await ref.read(orderRepositoryProvider).validateStockForCart(cartItems);
 
       final hasInstallation = cartAsync.maybeWhen(
         data: (cart) => cart.any((c) => c.includeInstallation),
@@ -361,15 +361,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   color: isCompleted
                       ? context.colors.success
                       : isActive
-                          ? context.colors.bluePrimary
-                          : context.colors.bgSurface2,
+                      ? context.colors.bluePrimary
+                      : context.colors.bgSurface2,
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isCompleted
                         ? context.colors.success
                         : isActive
-                            ? context.colors.bluePrimary
-                            : context.colors.border,
+                        ? context.colors.bluePrimary
+                        : context.colors.border,
                     width: 2,
                   ),
                 ),
@@ -384,16 +384,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               AppSpacing.gapXs,
               Text(
                 step.label,
-                style: AppTextStyles.caption(
-                  isCompleted
-                      ? context.colors.success
-                      : isActive
+                style:
+                    AppTextStyles.caption(
+                      isCompleted
+                          ? context.colors.success
+                          : isActive
                           ? context.colors.bluePrimary
                           : context.colors.textSecond,
-                ).copyWith(
-                  fontWeight:
-                      isActive ? AppTextStyles.semiBold : AppTextStyles.regular,
-                ),
+                    ).copyWith(
+                      fontWeight: isActive
+                          ? AppTextStyles.semiBold
+                          : AppTextStyles.regular,
+                    ),
               ),
             ],
           );
@@ -778,9 +780,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               children: _hoursForPeriod(_selectedPeriod!).map((hour) {
                 final isSelected = _selectedHour == hour;
                 return GestureDetector(
-                  onTap: () => setState(
-                    () => _selectedHour = isSelected ? null : hour,
-                  ),
+                  onTap: () =>
+                      setState(() => _selectedHour = isSelected ? null : hour),
                   child: Container(
                     width:
                         (MediaQuery.of(context).size.width -
@@ -999,8 +1000,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => ErrorStateWidget(
-              message:
-                  e is AppException ? e.message : 'حدث خطأ في تحميل السلة',
+              message: e is AppException ? e.message : 'حدث خطأ في تحميل السلة',
               onRetry: () => ref.invalidate(cartProvider),
             ),
           ),
@@ -1084,15 +1084,16 @@ class _SavedAddressPicker extends ConsumerWidget {
                           const SizedBox(width: 4),
                           Text(
                             a.label,
-                            style: AppTextStyles.bodySmall(
-                              a.isDefault
-                                  ? context.colors.bluePrimary
-                                  : context.colors.textPrimary,
-                            ).copyWith(
-                              fontWeight: a.isDefault
-                                  ? AppTextStyles.semiBold
-                                  : AppTextStyles.regular,
-                            ),
+                            style:
+                                AppTextStyles.bodySmall(
+                                  a.isDefault
+                                      ? context.colors.bluePrimary
+                                      : context.colors.textPrimary,
+                                ).copyWith(
+                                  fontWeight: a.isDefault
+                                      ? AppTextStyles.semiBold
+                                      : AppTextStyles.regular,
+                                ),
                           ),
                         ],
                       ),

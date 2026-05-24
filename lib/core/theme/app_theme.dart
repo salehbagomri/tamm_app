@@ -20,10 +20,11 @@ class AppTheme {
       onSurface: TammColors.dark.textPrimary,
       onError: Colors.white,
     ),
-    textTheme: GoogleFonts.alexandriaTextTheme(ThemeData.dark().textTheme).apply(
-      bodyColor: TammColors.dark.textPrimary,
-      displayColor: TammColors.dark.textPrimary,
-    ),
+    textTheme: GoogleFonts.alexandriaTextTheme(ThemeData.dark().textTheme)
+        .apply(
+          bodyColor: TammColors.dark.textPrimary,
+          displayColor: TammColors.dark.textPrimary,
+        ),
     appBarTheme: AppBarTheme(
       backgroundColor: TammColors.dark.bgPrimary,
       elevation: 0,

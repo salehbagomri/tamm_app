@@ -18,10 +18,10 @@ class OrderRepository {
     required bool acknowledged,
   }) async {
     try {
-      await _client.rpc('acknowledge_cash_payment', params: {
-        'p_order_id': orderId,
-        'p_acknowledged': acknowledged,
-      });
+      await _client.rpc(
+        'acknowledge_cash_payment',
+        params: {'p_order_id': orderId, 'p_acknowledged': acknowledged},
+      );
     } catch (e) {
       if (e is AppException) rethrow;
       throw ErrorMapper.from(e);
@@ -47,20 +47,21 @@ class OrderRepository {
           orElse: () => <String, dynamic>{},
         );
         if (db.isEmpty) {
-          throw ValidationException(message:
-            'المنتج "${item.product.name}" لم يعد متوفراً في النظام.',
+          throw ValidationException(
+            message: 'المنتج "${item.product.name}" لم يعد متوفراً في النظام.',
           );
         }
         final stock = (db['stock_quantity'] as num?)?.toInt() ?? 0;
         final available = (db['is_available'] as bool?) ?? true;
         if (!available || stock <= 0) {
-          throw ValidationException(message:
-            'عذراً، "${item.product.name}" غير متوفر حالياً.',
+          throw ValidationException(
+            message: 'عذراً، "${item.product.name}" غير متوفر حالياً.',
           );
         }
         if (stock < item.quantity) {
-          throw ValidationException(message:
-            'الكمية المطلوبة من "${item.product.name}" غير متوفرة. المتوفر: $stock قطعة فقط.',
+          throw ValidationException(
+            message:
+                'الكمية المطلوبة من "${item.product.name}" غير متوفرة. المتوفر: $stock قطعة فقط.',
           );
         }
       }
@@ -239,9 +240,7 @@ class OrderRepository {
       return url;
     } catch (e) {
       if (e is AppException) rethrow;
-      throw const ServerException(
-        message: 'فشل في رفع الصورة، تحقق من اتصالك',
-      );
+      throw const ServerException(message: 'فشل في رفع الصورة، تحقق من اتصالك');
     }
   }
 }

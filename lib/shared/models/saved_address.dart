@@ -22,26 +22,26 @@ class SavedAddress {
   });
 
   factory SavedAddress.fromMap(Map<String, dynamic> m) => SavedAddress(
-        id: m['id'] as String,
-        userId: m['user_id'] as String,
-        label: m['label'] as String? ?? 'المنزل',
-        address: m['address'] as String,
-        city: m['city'] as String? ?? 'المكلا',
-        lat: (m['lat'] as num?)?.toDouble(),
-        lng: (m['lng'] as num?)?.toDouble(),
-        isDefault: m['is_default'] as bool? ?? false,
-        createdAt: DateTime.parse(m['created_at'] as String),
-      );
+    id: m['id'] as String,
+    userId: m['user_id'] as String,
+    label: m['label'] as String? ?? 'المنزل',
+    address: m['address'] as String,
+    city: m['city'] as String? ?? 'المكلا',
+    lat: (m['lat'] as num?)?.toDouble(),
+    lng: (m['lng'] as num?)?.toDouble(),
+    isDefault: m['is_default'] as bool? ?? false,
+    createdAt: DateTime.parse(m['created_at'] as String),
+  );
 
   Map<String, dynamic> toInsertMap() => {
-        'user_id': userId,
-        'label': label,
-        'address': address,
-        'city': city,
-        if (lat != null) 'lat': lat,
-        if (lng != null) 'lng': lng,
-        'is_default': isDefault,
-      };
+    'user_id': userId,
+    'label': label,
+    'address': address,
+    'city': city,
+    if (lat != null) 'lat': lat,
+    if (lng != null) 'lng': lng,
+    'is_default': isDefault,
+  };
 
   SavedAddress copyWith({
     String? label,
@@ -50,16 +50,15 @@ class SavedAddress {
     double? lat,
     double? lng,
     bool? isDefault,
-  }) =>
-      SavedAddress(
-        id: id,
-        userId: userId,
-        label: label ?? this.label,
-        address: address ?? this.address,
-        city: city ?? this.city,
-        lat: lat ?? this.lat,
-        lng: lng ?? this.lng,
-        isDefault: isDefault ?? this.isDefault,
-        createdAt: createdAt,
-      );
+  }) => SavedAddress(
+    id: id,
+    userId: userId,
+    label: label ?? this.label,
+    address: address ?? this.address,
+    city: city ?? this.city,
+    lat: lat ?? this.lat,
+    lng: lng ?? this.lng,
+    isDefault: isDefault ?? this.isDefault,
+    createdAt: createdAt,
+  );
 }

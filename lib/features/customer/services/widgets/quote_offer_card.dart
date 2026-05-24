@@ -230,11 +230,12 @@ class _BuildInfoRow extends StatelessWidget {
         const Spacer(),
         Text(
           value,
-          style: AppTextStyles.body(
-            valueColor ?? context.colors.textPrimary,
-          ).copyWith(
-            fontWeight: isBold ? AppTextStyles.semiBold : AppTextStyles.regular,
-          ),
+          style: AppTextStyles.body(valueColor ?? context.colors.textPrimary)
+              .copyWith(
+                fontWeight: isBold
+                    ? AppTextStyles.semiBold
+                    : AppTextStyles.regular,
+              ),
         ),
       ],
     );

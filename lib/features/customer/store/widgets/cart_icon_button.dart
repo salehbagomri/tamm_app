@@ -23,9 +23,10 @@ class _CartIconButtonState extends ConsumerState<CartIconButton>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _scale = Tween<double>(begin: 1.0, end: 1.35).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut),
-    );
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 1.35,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut));
   }
 
   @override

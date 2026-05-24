@@ -134,8 +134,9 @@ class _NotificationCard extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: AppTextStyles.bodySmall(context.colors.textPrimary)
-                              .copyWith(fontWeight: AppTextStyles.semiBold),
+                          style: AppTextStyles.bodySmall(
+                            context.colors.textPrimary,
+                          ).copyWith(fontWeight: AppTextStyles.semiBold),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -182,8 +183,7 @@ class _NotificationCard extends ConsumerWidget {
     String? orderId,
     String? assignmentId,
   ) {
-    final role =
-        ref.read(userProfileProvider).valueOrNull?.role ?? 'customer';
+    final role = ref.read(userProfileProvider).valueOrNull?.role ?? 'customer';
 
     if (type == 'new_assignment') {
       final id = assignmentId ?? orderId;

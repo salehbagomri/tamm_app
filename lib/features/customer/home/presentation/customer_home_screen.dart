@@ -127,7 +127,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.search_outlined, color: context.colors.textSecond),
+                        Icon(
+                          Icons.search_outlined,
+                          color: context.colors.textSecond,
+                        ),
                         AppSpacing.hGapSm,
                         Text(
                           'ابحث عن منتجات، مكيفات، ألواح...',
@@ -237,10 +240,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                               onPressed: () =>
                                   context.push('/customer/catalog/deals'),
                               child: Text(
-                                  'تصفح العروض',
-                                  style: AppTextStyles.body(
-                                    context.colors.blueLight,
-                                  ),
+                                'تصفح العروض',
+                                style: AppTextStyles.body(
+                                  context.colors.blueLight,
+                                ),
                               ),
                             ),
                           ],

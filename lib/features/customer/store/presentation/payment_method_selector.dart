@@ -41,17 +41,16 @@ class PaymentMethod {
 // Providers
 // ---------------------------------------------------------------------------
 
-final _paymentMethodsProvider = FutureProvider.family<List<PaymentMethod>, String>(
-  (ref, type) async {
-    final data = await Supabase.instance.client
-        .from('payment_methods')
-        .select()
-        .eq('type', type)
-        .eq('is_active', true)
-        .order('sort_order');
-    return (data as List).map((e) => PaymentMethod.fromMap(e)).toList();
-  },
-);
+final _paymentMethodsProvider =
+    FutureProvider.family<List<PaymentMethod>, String>((ref, type) async {
+      final data = await Supabase.instance.client
+          .from('payment_methods')
+          .select()
+          .eq('type', type)
+          .eq('is_active', true)
+          .order('sort_order');
+      return (data as List).map((e) => PaymentMethod.fromMap(e)).toList();
+    });
 
 // ---------------------------------------------------------------------------
 // PaymentMethodSelector — public widget
@@ -152,7 +151,9 @@ class _TypeTile extends StatelessWidget {
                 : context.colors.bgSurface,
             borderRadius: AppSpacing.radius,
             border: Border.all(
-              color: selected ? context.colors.bluePrimary : context.colors.border,
+              color: selected
+                  ? context.colors.bluePrimary
+                  : context.colors.border,
               width: selected ? 2 : 1,
             ),
           ),
@@ -169,14 +170,16 @@ class _TypeTile extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 label,
-                style: AppTextStyles.bodySmall(
-                  selected
-                      ? context.colors.bluePrimary
-                      : context.colors.textSecond,
-                ).copyWith(
-                  fontWeight:
-                      selected ? AppTextStyles.semiBold : AppTextStyles.regular,
-                ),
+                style:
+                    AppTextStyles.bodySmall(
+                      selected
+                          ? context.colors.bluePrimary
+                          : context.colors.textSecond,
+                    ).copyWith(
+                      fontWeight: selected
+                          ? AppTextStyles.semiBold
+                          : AppTextStyles.regular,
+                    ),
               ),
             ],
           ),
@@ -250,11 +253,7 @@ class _MethodListState extends ConsumerState<_MethodList> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _MethodCard(
-                method: selectedMethod,
-                selected: true,
-                onTap: () {},
-              ),
+              _MethodCard(method: selectedMethod, selected: true, onTap: () {}),
               TextButton.icon(
                 onPressed: () => setState(() => _expanded = true),
                 icon: Icon(
@@ -375,8 +374,9 @@ class _MethodCardState extends State<_MethodCard> {
                 children: [
                   Text(
                     m.name,
-                    style: AppTextStyles.body(context.colors.textPrimary)
-                        .copyWith(fontWeight: AppTextStyles.semiBold),
+                    style: AppTextStyles.body(
+                      context.colors.textPrimary,
+                    ).copyWith(fontWeight: AppTextStyles.semiBold),
                   ),
                   if (m.accountNumber != null)
                     GestureDetector(

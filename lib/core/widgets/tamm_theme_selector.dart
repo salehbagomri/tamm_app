@@ -129,11 +129,16 @@ class _ThemeSelectionSheet extends ConsumerWidget {
       ),
       title: Text(
         title,
-        style: AppTextStyles.body(
-          isSelected ? context.colors.bluePrimary : context.colors.textPrimary,
-        ).copyWith(
-          fontWeight: isSelected ? AppTextStyles.semiBold : AppTextStyles.regular,
-        ),
+        style:
+            AppTextStyles.body(
+              isSelected
+                  ? context.colors.bluePrimary
+                  : context.colors.textPrimary,
+            ).copyWith(
+              fontWeight: isSelected
+                  ? AppTextStyles.semiBold
+                  : AppTextStyles.regular,
+            ),
       ),
       trailing: isSelected
           ? Icon(Icons.check_circle_outline, color: context.colors.bluePrimary)

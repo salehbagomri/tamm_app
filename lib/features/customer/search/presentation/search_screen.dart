@@ -227,8 +227,10 @@ class _ProductSearchResultItem extends StatelessWidget {
                     height: double.infinity,
                     borderRadius: AppSpacing.radiusSm,
                   ),
-                  errorWidget: (context, url, err) =>
-                      Icon(Icons.image_outlined, color: context.colors.textFaint),
+                  errorWidget: (context, url, err) => Icon(
+                    Icons.image_outlined,
+                    color: context.colors.textFaint,
+                  ),
                 ),
               )
             : Icon(Icons.image_outlined, color: context.colors.textFaint),

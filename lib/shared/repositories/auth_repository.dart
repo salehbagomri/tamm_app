@@ -187,7 +187,9 @@ class AuthRepository {
       final cleanExt = extension.toLowerCase().replaceAll('.', '');
       final path = '${user.id}/avatar.$cleanExt';
 
-      await _client.storage.from('avatars').uploadBinary(
+      await _client.storage
+          .from('avatars')
+          .uploadBinary(
             path,
             bytes,
             fileOptions: FileOptions(

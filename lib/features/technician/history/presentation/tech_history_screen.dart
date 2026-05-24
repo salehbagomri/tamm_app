@@ -38,8 +38,7 @@ class TechHistoryScreen extends ConsumerWidget {
                     message: e is AppException
                         ? e.message
                         : 'حدث خطأ في تحميل السجل',
-                    onRetry: () =>
-                        ref.invalidate(completedAssignmentsProvider),
+                    onRetry: () => ref.invalidate(completedAssignmentsProvider),
                   ),
                   data: (items) {
                     if (items.isEmpty) {
@@ -55,8 +54,7 @@ class TechHistoryScreen extends ConsumerWidget {
                       },
                       child: ListView.separated(
                         itemCount: items.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(height: 10),
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
                         itemBuilder: (_, i) =>
                             _HistoryCard(assignment: items[i]),
                       ),
@@ -87,11 +85,18 @@ class _HistoryCard extends StatelessWidget {
     final address = order['address']?.toString() ?? '';
     final orderType = order['order_type']?.toString() ?? 'service';
     final completedAt = assignment['completed_at'] as String?;
-    final photoUrls =
-        (assignment['photo_urls'] as List?)?.cast<String>() ?? [];
+    final photoUrls = (assignment['photo_urls'] as List?)?.cast<String>() ?? [];
+
+    final items = (order['order_items'] as List?) ?? const [];
+    final hasInstall =
+        (order['include_installation'] as bool? ?? false) ||
+        items.any(
+          (item) =>
+              (item as Map<String, dynamic>)['include_installation'] == true,
+        );
 
     final typeLabel = switch (orderType) {
-      'product' => 'توصيل منتج',
+      'product' => hasInstall ? 'توصيل وتركيب منتج' : 'توصيل منتج',
       'product_and_service' => 'منتج مع تركيب',
       'quote_request' => 'عرض سعر',
       'service' => 'خدمة',
@@ -107,16 +112,19 @@ class _HistoryCard extends StatelessWidget {
             children: [
               // شارة مكتملة
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 3,
+                ),
                 decoration: BoxDecoration(
                   color: context.colors.success.withValues(alpha: 0.12),
                   borderRadius: AppSpacing.radiusFull,
                 ),
                 child: Text(
                   'مكتملة',
-                  style: AppTextStyles.caption(context.colors.success)
-                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.caption(
+                    context.colors.success,
+                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
               ),
               const Spacer(),
@@ -155,8 +163,7 @@ class _HistoryCard extends StatelessWidget {
             children: [
               // نوع الطلب
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: context.colors.bgPrimary,
                   borderRadius: AppSpacing.radiusFull,
@@ -193,9 +200,7 @@ class _HistoryCard extends StatelessWidget {
                     AppSpacing.hGapXs,
                     Text(
                       '${photoUrls.length}',
-                      style: AppTextStyles.caption(
-                        context.colors.bluePrimary,
-                      ),
+                      style: AppTextStyles.caption(context.colors.bluePrimary),
                     ),
                   ],
                 ),

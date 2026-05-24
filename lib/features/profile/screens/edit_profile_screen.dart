@@ -152,7 +152,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       backgroundColor: context.colors.bgPrimary,
       appBar: AppBar(
         backgroundColor: context.colors.bgPrimary,
-        title: Text('تعديل الحساب', style: AppTextStyles.h2(context.colors.textPrimary)),
+        title: Text(
+          'تعديل الحساب',
+          style: AppTextStyles.h2(context.colors.textPrimary),
+        ),
         centerTitle: true,
         iconTheme: IconThemeData(color: context.colors.textPrimary),
       ),

@@ -125,8 +125,7 @@ class ProductCatalogScreen extends ConsumerWidget {
                             : 0.62,
                       ),
                       itemCount: products.length,
-                      itemBuilder: (_, i) =>
-                          ProductCard(product: products[i]),
+                      itemBuilder: (_, i) => ProductCard(product: products[i]),
                     ),
                   ),
                 ],
@@ -138,4 +137,3 @@ class ProductCatalogScreen extends ConsumerWidget {
     );
   }
 }
-

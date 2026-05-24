@@ -225,8 +225,9 @@ class _BetaDisclaimerDialogState extends State<BetaDisclaimerDialog> {
                               height: 24,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : Text(
@@ -256,18 +257,14 @@ class _DisclaimerItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: context.colors.textSecond,
-          size: AppSpacing.iconSm,
-        ),
+        Icon(icon, color: context.colors.textSecond, size: AppSpacing.iconSm),
         AppSpacing.hGapSm,
         Expanded(
           child: Text(
             text,
-            style: AppTextStyles.bodySmall(context.colors.textPrimary).copyWith(
-              height: AppTextStyles.lineHeightNormal,
-            ),
+            style: AppTextStyles.bodySmall(
+              context.colors.textPrimary,
+            ).copyWith(height: AppTextStyles.lineHeightNormal),
           ),
         ),
       ],

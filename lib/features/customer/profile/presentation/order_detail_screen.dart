@@ -23,8 +23,7 @@ import '../widgets/support_dialog.dart';
 
 // ─── Custom AppBar ────────────────────────────────────────────────────────────
 
-class _OrderDetailAppBar extends StatefulWidget
-    implements PreferredSizeWidget {
+class _OrderDetailAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Order order;
   const _OrderDetailAppBar({required this.order});
 
@@ -74,9 +73,7 @@ class _OrderDetailAppBarState extends State<_OrderDetailAppBar> {
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
                   child: Icon(
-                    _copied
-                        ? Icons.check_circle_outlined
-                        : Icons.copy_outlined,
+                    _copied ? Icons.check_circle_outlined : Icons.copy_outlined,
                     key: ValueKey(_copied),
                     size: AppSpacing.iconXs,
                     color: _copied
@@ -97,10 +94,8 @@ class _OrderDetailAppBarState extends State<_OrderDetailAppBar> {
             size: AppSpacing.iconMd,
           ),
           tooltip: 'الدعم الفني',
-          onPressed: () => showSupportDialog(
-            context,
-            orderNumber: widget.order.orderNumber,
-          ),
+          onPressed: () =>
+              showSupportDialog(context, orderNumber: widget.order.orderNumber),
         ),
         const SizedBox(width: AppSpacing.xs),
       ],
@@ -189,7 +184,10 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Timeline
-                OrderTimeline(currentStatus: o.status),
+                OrderTimeline(
+                  currentStatus: o.status,
+                  isDeliveryOnly: _isDeliveryOnly(o),
+                ),
                 AppSpacing.gapMd,
 
                 // 1.5 Delivery-from-supplier notice (product-only, not done yet)
@@ -201,8 +199,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 ],
 
                 // 1.7 Cash acknowledgment (completed cash orders)
-                if (o.paymentType == 'cash' &&
-                    o.status == 'completed') ...[
+                if (o.paymentType == 'cash' && o.status == 'completed') ...[
                   _CashAcknowledgmentCard(order: o),
                   AppSpacing.gapMd,
                 ],
@@ -232,8 +229,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 if (o.orderType != 'quote_request') ...[
                   AppSpacing.gapMd,
                   _PaymentSection(order: o),
-                  if (o.paymentType == 'bank' ||
-                      o.paymentType == 'wallet') ...[
+                  if (o.paymentType == 'bank' || o.paymentType == 'wallet') ...[
                     AppSpacing.gapMd,
                     ReceiptUploadWidget(
                       orderId: o.id,
@@ -252,10 +248,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 // Review card — only for completed orders
                 if (o.status == 'completed') ...[
                   AppSpacing.gapMd,
-                  ReviewCard(
-                    orderId: o.id,
-                    technicianId: o.technicianId,
-                  ),
+                  ReviewCard(orderId: o.id, technicianId: o.technicianId),
                 ],
 
                 AppSpacing.gapXl,
@@ -276,7 +269,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         color: context.colors.bluePrimary,
         icon: Icons.local_offer_outlined,
         title: 'تم استلام عرض السعر!',
-        body: 'السعر: ${o.quotePrice?.toInt() ?? 0} ر.س — اضغط على الزر أدناه للرد',
+        body:
+            'السعر: ${o.quotePrice?.toInt() ?? 0} ر.س — اضغط على الزر أدناه للرد',
       );
     }
     if (o.quoteStatus == 'accepted') {
@@ -292,8 +286,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         color: context.colors.error,
         icon: Icons.cancel_outlined,
         title: 'تم رفض العرض',
-        body:
-            'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
+        body: 'تم إرسال رفضك للمدير. سيتم مراجعته وإرسال عرض جديد قريباً.',
       );
     }
     // pending (default)
@@ -392,12 +385,16 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             vertical: AppSpacing.xs / 2,
                           ),
                           decoration: BoxDecoration(
-                            color: context.colors.success.withValues(alpha: 0.1),
+                            color: context.colors.success.withValues(
+                              alpha: 0.1,
+                            ),
                             borderRadius: AppSpacing.radiusXs,
                           ),
                           child: Text(
                             'شامل التركيب',
-                            style: AppTextStyles.caption(context.colors.success),
+                            style: AppTextStyles.caption(
+                              context.colors.success,
+                            ),
                           ),
                         ),
                       ],
@@ -427,10 +424,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'المجموع',
-          style: AppTextStyles.body(context.colors.textPrimary),
-        ),
+        Text('المجموع', style: AppTextStyles.body(context.colors.textPrimary)),
         Text(
           '${amount.toInt()} ر.س',
           style: AppTextStyles.body(
@@ -511,8 +505,9 @@ class _InfoCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.bold),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.bold),
                 ),
                 AppSpacing.gapXs,
                 Text(
@@ -542,7 +537,11 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: AppSpacing.iconXs + 2, color: context.colors.textSecond),
+          Icon(
+            icon,
+            size: AppSpacing.iconXs + 2,
+            color: context.colors.textSecond,
+          ),
           AppSpacing.hGapSm,
           Expanded(
             child: Text(
@@ -602,14 +601,16 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
       final pdfUrl = result?['pdf_url'] as String?;
 
       if (pdfUrl == null || pdfUrl.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            'الفاتورة غير متاحة بعد، يرجى المحاولة لاحقاً',
-            style: AppTextStyles.body(Colors.white),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'الفاتورة غير متاحة بعد، يرجى المحاولة لاحقاً',
+              style: AppTextStyles.body(Colors.white),
+            ),
+            backgroundColor: context.colors.textSecond,
+            behavior: SnackBarBehavior.floating,
           ),
-          backgroundColor: context.colors.textSecond,
-          behavior: SnackBarBehavior.floating,
-        ));
+        );
         return;
       }
 
@@ -620,8 +621,7 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
       }
 
       // 3. حفظه في مجلد مؤقت
-      final invoiceNumber =
-          result?['invoice_number'] as String? ?? 'invoice';
+      final invoiceNumber = result?['invoice_number'] as String? ?? 'invoice';
       final dir = await getTemporaryDirectory();
       final file = io.File('${dir.path}/$invoiceNumber.pdf');
       await file.writeAsBytes(response.bodyBytes);
@@ -639,14 +639,16 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
     } catch (e) {
       debugPrint('Invoice open error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            e.toString().replaceFirst('Exception: ', ''),
-            style: AppTextStyles.body(Colors.white),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString().replaceFirst('Exception: ', ''),
+              style: AppTextStyles.body(Colors.white),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
           ),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-        ));
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -688,8 +690,9 @@ class _InvoiceButtonState extends State<_InvoiceButton> {
                 children: [
                   Text(
                     'عرض وتحميل الفاتورة',
-                    style: AppTextStyles.body(context.colors.bluePrimary)
-                        .copyWith(fontWeight: AppTextStyles.semiBold),
+                    style: AppTextStyles.body(
+                      context.colors.bluePrimary,
+                    ).copyWith(fontWeight: AppTextStyles.semiBold),
                   ),
                   Text(
                     'افتح الفاتورة لمعاينتها أو حفظها كـ PDF',
@@ -747,11 +750,11 @@ class _PaymentSection extends ConsumerWidget {
           child: order.paymentType == 'cash'
               ? _CashRow()
               : order.paymentMethodId != null
-                  ? _MethodDisplay(
-                      methodId: order.paymentMethodId!,
-                      type: order.paymentType,
-                    )
-                  : _FallbackPaymentRow(type: order.paymentType),
+              ? _MethodDisplay(
+                  methodId: order.paymentMethodId!,
+                  type: order.paymentType,
+                )
+              : _FallbackPaymentRow(type: order.paymentType),
         ),
       ],
     );
@@ -848,8 +851,9 @@ class _MethodDisplayState extends ConsumerState<_MethodDisplay> {
   @override
   Widget build(BuildContext context) {
     final methodAsync = ref.watch(paymentMethodByIdProvider(widget.methodId));
-    final fallbackLabel =
-        widget.type == 'bank' ? 'تحويل بنكي' : 'محفظة إلكترونية';
+    final fallbackLabel = widget.type == 'bank'
+        ? 'تحويل بنكي'
+        : 'محفظة إلكترونية';
     final fallbackIcon = widget.type == 'bank'
         ? Icons.account_balance_outlined
         : Icons.account_balance_wallet_outlined;
@@ -1058,8 +1062,7 @@ class _CashAcknowledgmentCardState
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color:
-                      context.colors.bluePrimary.withValues(alpha: 0.12),
+                  color: context.colors.bluePrimary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -1075,16 +1078,15 @@ class _CashAcknowledgmentCardState
                   children: [
                     Text(
                       'تأكيد استلام الطلب',
-                      style: AppTextStyles.body(context.colors.textPrimary)
-                          .copyWith(fontWeight: AppTextStyles.semiBold),
+                      style: AppTextStyles.body(
+                        context.colors.textPrimary,
+                      ).copyWith(fontWeight: AppTextStyles.semiBold),
                     ),
                     Text(
                       total > 0
                           ? 'هل سلّمت الفني المبلغ $total ر.س؟'
                           : 'هل سلّمت الفني المبلغ المتفق عليه؟',
-                      style: AppTextStyles.bodySmall(
-                        context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textSecond),
                     ),
                   ],
                 ),
@@ -1192,8 +1194,9 @@ class _AckResultBanner extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
                 AppSpacing.gapXs,
                 Text(
@@ -1244,8 +1247,9 @@ class _DeliveryFromSupplierCard extends StatelessWidget {
               children: [
                 Text(
                   'توصيل من المورد',
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
                 AppSpacing.gapXs,
                 Text(

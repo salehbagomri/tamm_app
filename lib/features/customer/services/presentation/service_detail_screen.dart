@@ -85,13 +85,16 @@ class ServiceDetailScreen extends ConsumerWidget {
                           color: context.colors.warning.withValues(alpha: 0.12),
                           borderRadius: AppSpacing.radiusFull,
                           border: Border.all(
-                            color: context.colors.warning.withValues(alpha: 0.4),
+                            color: context.colors.warning.withValues(
+                              alpha: 0.4,
+                            ),
                           ),
                         ),
                         child: Text(
                           '🏷️ سعر حسب الطلب',
-                          style: AppTextStyles.bodySmall(context.colors.warning)
-                              .copyWith(fontWeight: AppTextStyles.semiBold),
+                          style: AppTextStyles.bodySmall(
+                            context.colors.warning,
+                          ).copyWith(fontWeight: AppTextStyles.semiBold),
                         ),
                       )
                     else

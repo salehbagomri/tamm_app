@@ -45,11 +45,7 @@ class SavedAddressesScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.error_outline,
-                color: context.colors.error,
-                size: 40,
-              ),
+              Icon(Icons.error_outline, color: context.colors.error, size: 40),
               AppSpacing.gapSm,
               Text(
                 e is AppException ? e.message : 'حدث خطأ في تحميل العناوين',
@@ -81,7 +77,8 @@ class SavedAddressesScreen extends ConsumerWidget {
                         label: 'إضافة عنوان جديد',
                         type: TammButtonType.secondary,
                         icon: Icons.add_location_alt_outlined,
-                        onPressed: () => _openForm(context, ref, existing: null),
+                        onPressed: () =>
+                            _openForm(context, ref, existing: null),
                       ),
                     );
                   }
@@ -89,8 +86,7 @@ class SavedAddressesScreen extends ConsumerWidget {
                     address: addresses[i],
                     onEdit: () =>
                         _openForm(context, ref, existing: addresses[i]),
-                    onDelete: () =>
-                        _confirmDelete(context, ref, addresses[i]),
+                    onDelete: () => _confirmDelete(context, ref, addresses[i]),
                     onSetDefault: addresses[i].isDefault
                         ? null
                         : () => _setDefault(context, ref, addresses[i].id),
@@ -129,9 +125,7 @@ class SavedAddressesScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.bgSurface,
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppSpacing.radiusLg,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
         title: Text(
           'حذف العنوان',
           style: AppTextStyles.cardTitle(context.colors.textPrimary),
@@ -152,8 +146,9 @@ class SavedAddressesScreen extends ConsumerWidget {
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
               'حذف',
-              style: AppTextStyles.body(context.colors.error)
-                  .copyWith(fontWeight: AppTextStyles.bold),
+              style: AppTextStyles.body(
+                context.colors.error,
+              ).copyWith(fontWeight: AppTextStyles.bold),
             ),
           ),
         ],
@@ -163,9 +158,7 @@ class SavedAddressesScreen extends ConsumerWidget {
     if (ok != true || !context.mounted) return;
 
     try {
-      await ref
-          .read(savedAddressesRepositoryProvider)
-          .delete(address.id);
+      await ref.read(savedAddressesRepositoryProvider).delete(address.id);
       if (context.mounted) ref.invalidate(savedAddressesProvider);
     } catch (e) {
       if (!context.mounted) return;
@@ -254,8 +247,9 @@ class _AddressCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     address.label,
-                    style: AppTextStyles.body(context.colors.textPrimary)
-                        .copyWith(fontWeight: AppTextStyles.semiBold),
+                    style: AppTextStyles.body(
+                      context.colors.textPrimary,
+                    ).copyWith(fontWeight: AppTextStyles.semiBold),
                   ),
                 ),
                 if (address.isDefault)

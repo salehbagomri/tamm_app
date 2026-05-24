@@ -80,7 +80,9 @@ class _SupportSheet extends StatelessWidget {
                   children: [
                     Text(
                       'تواصل مع الدعم الفني',
-                      style: AppTextStyles.cardTitle(context.colors.textPrimary),
+                      style: AppTextStyles.cardTitle(
+                        context.colors.textPrimary,
+                      ),
                     ),
                     Text(
                       'فريقنا جاهز لمساعدتك',

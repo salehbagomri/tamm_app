@@ -309,7 +309,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
       ),
     );
   }
-
 }
 
 class _FilterSheet extends ConsumerWidget {

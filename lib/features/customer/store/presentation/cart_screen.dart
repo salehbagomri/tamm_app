@@ -190,7 +190,8 @@ class CartScreen extends ConsumerWidget {
                               children: [
                                 Builder(
                                   builder: (btnContext) {
-                                    final atMax = item.quantity >=
+                                    final atMax =
+                                        item.quantity >=
                                         item.product.stockQuantity;
                                     return IconButton(
                                       padding: EdgeInsets.zero,
@@ -217,8 +218,8 @@ class CartScreen extends ConsumerWidget {
                                                         Colors.white,
                                                       ),
                                                     ),
-                                                    backgroundColor: context
-                                                        .colors.warning,
+                                                    backgroundColor:
+                                                        context.colors.warning,
                                                     behavior: SnackBarBehavior
                                                         .floating,
                                                     duration: const Duration(
@@ -228,9 +229,9 @@ class CartScreen extends ConsumerWidget {
                                                 );
                                             }
                                           : () => notifier.updateQuantity(
-                                                item.product.id,
-                                                item.quantity + 1,
-                                              ),
+                                              item.product.id,
+                                              item.quantity + 1,
+                                            ),
                                     );
                                   },
                                 ),

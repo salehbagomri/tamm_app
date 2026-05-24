@@ -15,12 +15,16 @@ class TechnicianTaskRepository {
             .eq('id', orderId)
             .select();
         if (updated.isEmpty) {
-          throw const ServerException(message: 'فشل في تحديث حالة المهمة — تحقق من صلاحيات الحساب');
+          throw const ServerException(
+            message: 'فشل في تحديث حالة المهمة — تحقق من صلاحيات الحساب',
+          );
         }
       } else {
         // For in_progress and completed: update ONLY the assignment.
         // The trigger sync_workflow_on_assignment_update handles order status sync.
-        final assignmentStatus = newStatus == 'in_progress' ? 'started' : 'completed';
+        final assignmentStatus = newStatus == 'in_progress'
+            ? 'started'
+            : 'completed';
         final updates = <String, dynamic>{'status': assignmentStatus};
         if (newStatus == 'in_progress') {
           updates['started_at'] = DateTime.now().toIso8601String();
@@ -34,7 +38,9 @@ class TechnicianTaskRepository {
             .eq('order_id', orderId)
             .select();
         if (updated.isEmpty) {
-          throw const ServerException(message: 'فشل في تحديث حالة المهمة — تحقق من صلاحيات الحساب');
+          throw const ServerException(
+            message: 'فشل في تحديث حالة المهمة — تحقق من صلاحيات الحساب',
+          );
         }
       }
     } catch (e) {
@@ -57,10 +63,13 @@ class TechnicianTaskRepository {
 
   Future<void> confirmCashCollected(String assignmentId) async {
     try {
-      await _client.from('assignments').update({
-        'cash_collected': true,
-        'cash_collected_at': DateTime.now().toUtc().toIso8601String(),
-      }).eq('id', assignmentId);
+      await _client
+          .from('assignments')
+          .update({
+            'cash_collected': true,
+            'cash_collected_at': DateTime.now().toUtc().toIso8601String(),
+          })
+          .eq('id', assignmentId);
     } catch (e) {
       if (e is AppException) rethrow;
       throw const ServerException(message: 'فشل في تأكيد استلام المبلغ');
@@ -77,7 +86,9 @@ class TechnicianTaskRepository {
       final path =
           'assignments/$assignmentId/${DateTime.now().millisecondsSinceEpoch}.$extension';
 
-      await _client.storage.from('order-photos').uploadBinary(
+      await _client.storage
+          .from('order-photos')
+          .uploadBinary(
             path,
             bytes,
             fileOptions: FileOptions(
@@ -86,8 +97,7 @@ class TechnicianTaskRepository {
             ),
           );
 
-      final url =
-          _client.storage.from('order-photos').getPublicUrl(path);
+      final url = _client.storage.from('order-photos').getPublicUrl(path);
 
       // Check if this is the first photo being uploaded to set it as primary photo_url fallback
       final assignment = await _client
@@ -97,14 +107,18 @@ class TechnicianTaskRepository {
           .single();
 
       final currentPhotoUrl = assignment['photo_url'] as String?;
-      final currentPhotoUrls = (assignment['photo_urls'] as List?)?.cast<String>() ?? [];
-      final bool isFirst = currentPhotoUrl == null || currentPhotoUrl.isEmpty || currentPhotoUrls.isEmpty;
+      final currentPhotoUrls =
+          (assignment['photo_urls'] as List?)?.cast<String>() ?? [];
+      final bool isFirst =
+          currentPhotoUrl == null ||
+          currentPhotoUrl.isEmpty ||
+          currentPhotoUrls.isEmpty;
 
       // أضف الـ URL لمصفوفة photo_urls
-      await _client.rpc('append_photo_url', params: {
-        'p_assignment_id': assignmentId,
-        'p_url': url,
-      });
+      await _client.rpc(
+        'append_photo_url',
+        params: {'p_assignment_id': assignmentId, 'p_url': url},
+      );
 
       if (isFirst) {
         await _client
@@ -141,10 +155,7 @@ class TechnicianTaskRepository {
         updates['photo_url'] = urls.isNotEmpty ? urls.first : null;
       }
 
-      await _client
-          .from('assignments')
-          .update(updates)
-          .eq('id', assignmentId);
+      await _client.from('assignments').update(updates).eq('id', assignmentId);
 
       final path = _extractStoragePath(url);
       if (path != null) {

@@ -63,9 +63,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.bgSurface,
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppSpacing.radiusLg,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
         title: Text(
           'تأكيد',
           style: AppTextStyles.cardTitle(context.colors.textPrimary),
@@ -86,8 +84,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
               'تأكيد',
-              style: AppTextStyles.body(context.colors.bluePrimary)
-                  .copyWith(fontWeight: AppTextStyles.bold),
+              style: AppTextStyles.body(
+                context.colors.bluePrimary,
+              ).copyWith(fontWeight: AppTextStyles.bold),
             ),
           ),
         ],
@@ -125,15 +124,17 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
   Future<void> _onComplete(String orderId, String paymentType) async {
     // P0.1: للطلبات النقدية، لا يُسمح بالإكمال قبل تأكيد استلام المبلغ.
     if (paymentType == 'cash' && !_cashCollected) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          'أكّد استلام المبلغ النقدي أولاً قبل إكمال المهمة',
-          style: AppTextStyles.body(Colors.white),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'أكّد استلام المبلغ النقدي أولاً قبل إكمال المهمة',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.warning,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
         ),
-        backgroundColor: context.colors.warning,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
-      ));
+      );
       return;
     }
 
@@ -183,26 +184,30 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           _cashCollected = true;
           _cashCollecting = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            'تم تأكيد استلام المبلغ ✅',
-            style: AppTextStyles.body(Colors.white),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'تم تأكيد استلام المبلغ ✅',
+              style: AppTextStyles.body(Colors.white),
+            ),
+            backgroundColor: context.colors.success,
+            behavior: SnackBarBehavior.floating,
           ),
-          backgroundColor: context.colors.success,
-          behavior: SnackBarBehavior.floating,
-        ));
+        );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _cashCollecting = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            'فشل تأكيد استلام المبلغ',
-            style: AppTextStyles.body(Colors.white),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'فشل تأكيد استلام المبلغ',
+              style: AppTextStyles.body(Colors.white),
+            ),
+            backgroundColor: context.colors.error,
+            behavior: SnackBarBehavior.floating,
           ),
-          backgroundColor: context.colors.error,
-          behavior: SnackBarBehavior.floating,
-        ));
+        );
       }
     }
   }
@@ -286,24 +291,28 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
     final state = ref.read(photoUploadProvider(assignmentId));
     if (count == files.length) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          count == 1 ? 'تم رفع الصورة' : 'تم رفع $count صور',
-          style: AppTextStyles.body(Colors.white),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            count == 1 ? 'تم رفع الصورة' : 'تم رفع $count صور',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.success,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
         ),
-        backgroundColor: context.colors.success,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ));
+      );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          state.errorMessage ?? 'فشل رفع الصور',
-          style: AppTextStyles.body(Colors.white),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            state.errorMessage ?? 'فشل رفع الصور',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
         ),
-        backgroundColor: context.colors.error,
-        behavior: SnackBarBehavior.floating,
-      ));
+      );
     }
   }
 
@@ -319,17 +328,12 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     );
   }
 
-  Future<void> _confirmAndDeletePhoto(
-    String assignmentId,
-    String url,
-  ) async {
+  Future<void> _confirmAndDeletePhoto(String assignmentId, String url) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.bgSurface,
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppSpacing.radiusLg,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
         title: Text(
           'حذف الصورة',
           style: AppTextStyles.cardTitle(context.colors.textPrimary),
@@ -350,8 +354,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
               'حذف',
-              style: AppTextStyles.body(context.colors.error)
-                  .copyWith(fontWeight: AppTextStyles.bold),
+              style: AppTextStyles.body(
+                context.colors.error,
+              ).copyWith(fontWeight: AppTextStyles.bold),
             ),
           ),
         ],
@@ -366,24 +371,28 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     if (!mounted) return;
     if (success) {
       ref.invalidate(assignmentDetailProvider(widget.assignmentId));
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          'تم حذف الصورة',
-          style: AppTextStyles.body(Colors.white),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'تم حذف الصورة',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.success,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
         ),
-        backgroundColor: context.colors.success,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ));
+      );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          'فشل حذف الصورة',
-          style: AppTextStyles.body(Colors.white),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'فشل حذف الصورة',
+            style: AppTextStyles.body(Colors.white),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
         ),
-        backgroundColor: context.colors.error,
-        behavior: SnackBarBehavior.floating,
-      ));
+      );
     }
   }
 
@@ -409,8 +418,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final assignmentAsync =
-        ref.watch(assignmentDetailProvider(widget.assignmentId));
+    final assignmentAsync = ref.watch(
+      assignmentDetailProvider(widget.assignmentId),
+    );
 
     return Scaffold(
       backgroundColor: context.colors.bgPrimary,
@@ -423,12 +433,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               ref.invalidate(assignmentDetailProvider(widget.assignmentId)),
         ),
         data: (assignment) {
-          final order =
-              (assignment['orders'] as Map<String, dynamic>?) ?? {};
-          final customer =
-              (order['profiles'] as Map<String, dynamic>?) ?? {};
-          final customerName =
-              customer['full_name']?.toString() ?? 'غير معروف';
+          final order = (assignment['orders'] as Map<String, dynamic>?) ?? {};
+          final customer = (order['profiles'] as Map<String, dynamic>?) ?? {};
+          final customerName = customer['full_name']?.toString() ?? 'غير معروف';
           final customerPhone = customer['phone']?.toString() ?? '';
           final address = order['address']?.toString() ?? 'غير متوفر';
           final orderLat = order['latitude'] as double?;
@@ -446,7 +453,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           final scheduledPeriod = order['scheduled_period']?.toString();
           final scheduledHour = order['scheduled_hour']?.toString();
           final managerNotes = assignment['manager_notes']?.toString();
-          final cashCollectedDb = assignment['cash_collected'] as bool? ?? false;
+          final cashCollectedDb =
+              assignment['cash_collected'] as bool? ?? false;
 
           if (orderId.isNotEmpty) _orderId = orderId;
 
@@ -462,7 +470,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           }
 
           // يظهر زر تأكيد النقد فقط بعد وصول الفني وبدء العمل (لا في on_the_way).
-          final showCashCard = paymentType == 'cash' &&
+          final showCashCard =
+              paymentType == 'cash' &&
               (orderStatus == 'in_progress' || orderStatus == 'completed');
 
           if (!_notesInitialized && assignment['technician_notes'] != null) {
@@ -484,6 +493,17 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         orderNumber: orderNumber,
                         orderType: orderType,
                         totalAmount: totalAmount,
+                        hasInstall:
+                            (order['include_installation'] as bool? ?? false) ||
+                            ((order['order_items'] as List?) ?? const []).any(
+                              (item) =>
+                                  (item
+                                      as Map<
+                                        String,
+                                        dynamic
+                                      >)['include_installation'] ==
+                                  true,
+                            ),
                         preferredDate: preferredDate,
                         scheduledPeriod: scheduledPeriod,
                         scheduledHour: scheduledHour,
@@ -510,15 +530,16 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                       AppSpacing.gapMd,
 
                       // ── بطاقة العنوان ────────────────────────────────────
-                      _buildAddressCard(
-                          context, address, orderLat, orderLng),
+                      _buildAddressCard(context, address, orderLat, orderLng),
 
                       // ── عناصر الطلب ──────────────────────────────────────
                       if (order['order_items'] != null &&
                           (order['order_items'] as List).isNotEmpty) ...[
                         AppSpacing.gapMd,
                         _buildItemsSection(
-                            context, order['order_items'] as List),
+                          context,
+                          order['order_items'] as List,
+                        ),
                       ],
 
                       // ── ملاحظات العميل ───────────────────────────────────
@@ -541,7 +562,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                         _buildPhotosSection(
                           context,
                           assignmentId: assignment['id'] as String,
-                          photoUrls: (assignment['photo_urls'] as List?)
+                          photoUrls:
+                              (assignment['photo_urls'] as List?)
                                   ?.cast<String>() ??
                               [],
                           canAdd: orderStatus == 'in_progress',
@@ -555,8 +577,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                               .isNotEmpty) ...[
                         AppSpacing.gapMd,
                         _buildTechNotesSummary(
-                            context,
-                            assignment['technician_notes'] as String),
+                          context,
+                          assignment['technician_notes'] as String,
+                        ),
                       ],
 
                       AppSpacing.gapXl,
@@ -582,12 +605,13 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     required String orderNumber,
     required String orderType,
     required double totalAmount,
+    required bool hasInstall,
     String? preferredDate,
     String? scheduledPeriod,
     String? scheduledHour,
   }) {
     final typeLabel = switch (orderType) {
-      'product' => 'توصيل منتج',
+      'product' => hasInstall ? 'توصيل وتركيب منتج' : 'توصيل منتج',
       'product_and_service' => 'منتج مع تركيب',
       'quote_request' => 'عرض سعر',
       'service' => 'خدمة',
@@ -595,7 +619,8 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     };
 
     final dateStr = preferredDate != null ? _formatDate(preferredDate) : null;
-    final hasAppointment = scheduledPeriod != null &&
+    final hasAppointment =
+        scheduledPeriod != null &&
         scheduledHour != null &&
         scheduledPeriod.isNotEmpty &&
         scheduledHour.isNotEmpty;
@@ -680,9 +705,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           return Expanded(
             child: Container(
               height: 2,
-              color: done
-                  ? context.colors.bluePrimary
-                  : context.colors.border,
+              color: done ? context.colors.bluePrimary : context.colors.border,
             ),
           );
         }
@@ -714,16 +737,18 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             AppSpacing.gapXs,
             Text(
               label,
-              style: AppTextStyles.caption(
-                isCurrent
-                    ? context.colors.bluePrimary
-                    : isDone
+              style:
+                  AppTextStyles.caption(
+                    isCurrent
+                        ? context.colors.bluePrimary
+                        : isDone
                         ? context.colors.textSecond
                         : context.colors.textFaint,
-              ).copyWith(
-                fontWeight:
-                    isCurrent ? AppTextStyles.semiBold : FontWeight.normal,
-              ),
+                  ).copyWith(
+                    fontWeight: isCurrent
+                        ? AppTextStyles.semiBold
+                        : FontWeight.normal,
+                  ),
             ),
           ],
         );
@@ -773,8 +798,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               children: [
                 Text(
                   name,
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
                 if (hasPhone)
                   Text(
@@ -863,8 +889,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                     ),
                     child: Text(
                       '📍 موقع GPS متوفر',
-                      style:
-                          AppTextStyles.caption(context.colors.success),
+                      style: AppTextStyles.caption(context.colors.success),
                     ),
                   ),
                 ],
@@ -873,9 +898,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           ),
           IconButton(
             icon: Icon(
-              hasCoords
-                  ? Icons.navigation_outlined
-                  : Icons.map_outlined,
+              hasCoords ? Icons.navigation_outlined : Icons.map_outlined,
               color: hasCoords
                   ? context.colors.success
                   : context.colors.bluePrimary,
@@ -905,8 +928,11 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
           final includeInst = item['include_installation'] ?? false;
 
           // اسم الخدمة أو المنتج الفعلي
-          final serviceName = (item['service_types'] as Map<String, dynamic>?)?['name'] as String?;
-          final productName = (item['products'] as Map<String, dynamic>?)?['name'] as String?;
+          final serviceName =
+              (item['service_types'] as Map<String, dynamic>?)?['name']
+                  as String?;
+          final productName =
+              (item['products'] as Map<String, dynamic>?)?['name'] as String?;
           final itemName = isProduct
               ? (productName ?? 'منتج')
               : (serviceName ?? 'خدمة');
@@ -928,8 +954,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: context.colors.bluePrimary
-                          .withValues(alpha: 0.08),
+                      color: context.colors.bluePrimary.withValues(alpha: 0.08),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -967,8 +992,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                                   vertical: 1,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: context.colors.success
-                                      .withValues(alpha: 0.1),
+                                  color: context.colors.success.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   borderRadius: AppSpacing.radiusFull,
                                 ),
                                 child: Text(
@@ -987,9 +1013,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
                   if (unitPrice != null && unitPrice > 0)
                     Text(
                       '${unitPrice.toInt()} ر.س',
-                      style: AppTextStyles.bodySmall(
-                        context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textSecond),
                     ),
                 ],
               ),
@@ -1126,8 +1150,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               children: [
                 Text(
                   'ملاحظات العميل:',
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
                 AppSpacing.gapXs,
                 Text(
@@ -1169,8 +1194,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               children: [
                 Text(
                   'تعليمات المشرف:',
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
                 AppSpacing.gapXs,
                 Text(
@@ -1216,8 +1242,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               AppSpacing.hGapSm,
               Text(
                 'الدفع النقدي عند الاستلام',
-                style: AppTextStyles.body(context.colors.textPrimary)
-                    .copyWith(fontWeight: AppTextStyles.semiBold),
+                style: AppTextStyles.body(
+                  context.colors.textPrimary,
+                ).copyWith(fontWeight: AppTextStyles.semiBold),
               ),
               const Spacer(),
               if (totalAmount > 0)
@@ -1308,8 +1335,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
               children: [
                 Text(
                   'ملاحظات الفني:',
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.semiBold),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.semiBold),
                 ),
                 AppSpacing.gapXs,
                 Text(
@@ -1383,8 +1411,7 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
     bool isLoading,
     String paymentType,
   ) {
-    final blockedForCash =
-        paymentType == 'cash' && !_cashCollected;
+    final blockedForCash = paymentType == 'cash' && !_cashCollected;
     return switch (orderStatus) {
       'assigned' => _GradientButton(
         label: 'بدأت التوجه 🚗',
@@ -1489,8 +1516,9 @@ class _TechTaskDetailScreenState extends ConsumerState<TechTaskDetailScreen> {
             AppSpacing.hGapSm,
             Text(
               '✅ تم إنجاز هذه المهمة',
-              style: AppTextStyles.body(context.colors.success)
-                  .copyWith(fontWeight: AppTextStyles.semiBold),
+              style: AppTextStyles.body(
+                context.colors.success,
+              ).copyWith(fontWeight: AppTextStyles.semiBold),
             ),
           ],
         ),
@@ -1713,8 +1741,7 @@ class _PhotoSourceSheet extends StatelessWidget {
               label: 'الكاميرا',
               hint: 'التقط صورة الآن',
               color: context.colors.bluePrimary,
-              onTap: () =>
-                  Navigator.of(context).pop(_PhotoSource.camera),
+              onTap: () => Navigator.of(context).pop(_PhotoSource.camera),
             ),
             AppSpacing.gapSm,
             _SourceOption(
@@ -1722,8 +1749,7 @@ class _PhotoSourceSheet extends StatelessWidget {
               label: 'المعرض',
               hint: 'اختر صوراً (متعدد)',
               color: context.colors.success,
-              onTap: () =>
-                  Navigator.of(context).pop(_PhotoSource.gallery),
+              onTap: () => Navigator.of(context).pop(_PhotoSource.gallery),
             ),
             AppSpacing.gapSm,
             TextButton(
@@ -1785,8 +1811,9 @@ class _SourceOption extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: AppTextStyles.body(context.colors.textPrimary)
-                          .copyWith(fontWeight: AppTextStyles.semiBold),
+                      style: AppTextStyles.body(
+                        context.colors.textPrimary,
+                      ).copyWith(fontWeight: AppTextStyles.semiBold),
                     ),
                     Text(
                       hint,
@@ -1857,8 +1884,9 @@ class _PhotoPreviewSheetState extends State<_PhotoPreviewSheet> {
                   ),
                   child: Text(
                     '${_files.length}',
-                    style: AppTextStyles.caption(context.colors.bluePrimary)
-                        .copyWith(fontWeight: AppTextStyles.bold),
+                    style: AppTextStyles.caption(
+                      context.colors.bluePrimary,
+                    ).copyWith(fontWeight: AppTextStyles.bold),
                   ),
                 ),
               ],
@@ -1870,8 +1898,9 @@ class _PhotoPreviewSheetState extends State<_PhotoPreviewSheet> {
                   ? Center(
                       child: Text(
                         'لم تتبقَّ صور',
-                        style:
-                            AppTextStyles.bodySmall(context.colors.textFaint),
+                        style: AppTextStyles.bodySmall(
+                          context.colors.textFaint,
+                        ),
                       ),
                     )
                   : ListView.separated(
@@ -1916,8 +1945,7 @@ class _PhotoPreviewSheetState extends State<_PhotoPreviewSheet> {
                               top: 4,
                               right: 4,
                               child: GestureDetector(
-                                onTap: () =>
-                                    setState(() => _files.removeAt(i)),
+                                onTap: () => setState(() => _files.removeAt(i)),
                                 child: Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
@@ -2007,10 +2035,7 @@ class _InfoChip extends StatelessWidget {
       children: [
         Icon(icon, size: 13, color: color),
         const SizedBox(width: 4),
-        Text(
-          label,
-          style: AppTextStyles.caption(color),
-        ),
+        Text(label, style: AppTextStyles.caption(color)),
       ],
     );
   }
@@ -2057,10 +2082,7 @@ class _GradientButton extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : Text(
-                      label,
-                      style: AppTextStyles.button(Colors.white),
-                    ),
+                  : Text(label, style: AppTextStyles.button(Colors.white)),
             ),
           ),
         ),

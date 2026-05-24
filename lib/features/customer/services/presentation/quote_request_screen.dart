@@ -44,7 +44,9 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
     super.initState();
     Future.microtask(() async {
       final profile = await ref.read(userProfileProvider.future);
-      if (mounted && _phoneCtrl.text.isEmpty && (profile?.phone ?? '').isNotEmpty) {
+      if (mounted &&
+          _phoneCtrl.text.isEmpty &&
+          (profile?.phone ?? '').isNotEmpty) {
         _phoneCtrl.text = profile!.phone;
       }
     });
@@ -311,11 +313,14 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                   children: [
                                     Text(
                                       '📍 $city — الخدمة متاحة',
-                                      style: AppTextStyles.body(
-                                        isSelected
-                                            ? context.colors.success
-                                            : context.colors.textPrimary,
-                                      ).copyWith(fontWeight: AppTextStyles.semiBold),
+                                      style:
+                                          AppTextStyles.body(
+                                            isSelected
+                                                ? context.colors.success
+                                                : context.colors.textPrimary,
+                                          ).copyWith(
+                                            fontWeight: AppTextStyles.semiBold,
+                                          ),
                                     ),
                                     if (isSelected) ...[
                                       AppSpacing.gapXs,
@@ -376,7 +381,9 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                         decoration: BoxDecoration(
                           color: _locationPicked
                               ? context.colors.success.withValues(alpha: 0.08)
-                              : context.colors.bluePrimary.withValues(alpha: 0.06),
+                              : context.colors.bluePrimary.withValues(
+                                  alpha: 0.06,
+                                ),
                           borderRadius: AppSpacing.radiusLg,
                           border: Border.all(
                             color: _locationPicked
@@ -428,7 +435,9 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                               _locationPicked
                                   ? '${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
                                   : 'اضغط لإرسال موقعك الدقيق للفني',
-                              style: AppTextStyles.caption(context.colors.textSecond),
+                              style: AppTextStyles.caption(
+                                context.colors.textSecond,
+                              ),
                             ),
                             if (_locationPicked) ...[
                               AppSpacing.gapSm,
@@ -441,7 +450,9 @@ class _QuoteRequestScreenState extends ConsumerState<QuoteRequestScreen> {
                                 ),
                                 label: Text(
                                   'تحديث الموقع',
-                                  style: AppTextStyles.caption(context.colors.textSecond),
+                                  style: AppTextStyles.caption(
+                                    context.colors.textSecond,
+                                  ),
                                 ),
                               ),
                             ],

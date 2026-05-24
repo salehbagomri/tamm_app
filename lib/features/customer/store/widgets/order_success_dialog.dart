@@ -40,8 +40,7 @@ class OrderSuccessDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final needsTransferProof =
-        paymentType == 'bank' || paymentType == 'wallet';
+    final needsTransferProof = paymentType == 'bank' || paymentType == 'wallet';
 
     return Container(
       decoration: BoxDecoration(
@@ -83,10 +82,7 @@ class OrderSuccessDialog extends StatelessWidget {
               style: AppTextStyles.bodySmall(context.colors.textSecond),
               textAlign: TextAlign.center,
             ),
-            if (needsTransferProof) ...[
-              AppSpacing.gapMd,
-              const _PaymentNote(),
-            ],
+            if (needsTransferProof) ...[AppSpacing.gapMd, const _PaymentNote()],
             AppSpacing.gapLg,
             TammButton(
               label: 'مواصلة التسوق 🛍',

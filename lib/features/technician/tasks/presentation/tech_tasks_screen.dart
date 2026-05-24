@@ -103,8 +103,24 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                           // نوع الطلب
                           final orderType =
                               order['order_type'] as String? ?? 'service';
+                          final items =
+                              (order['order_items'] as List?) ?? const [];
+                          final hasInstall =
+                              (order['include_installation'] as bool? ??
+                                  false) ||
+                              items.any(
+                                (item) =>
+                                    (item
+                                        as Map<
+                                          String,
+                                          dynamic
+                                        >)['include_installation'] ==
+                                    true,
+                              );
+
                           final typeLabel = switch (orderType) {
-                            'product' => 'توصيل منتج',
+                            'product' =>
+                              hasInstall ? 'توصيل وتركيب منتج' : 'توصيل منتج',
                             'product_and_service' => 'منتج مع تركيب',
                             'quote_request' => 'عرض سعر',
                             'service' => 'خدمة',
@@ -112,7 +128,8 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                           };
 
                           // تاريخ الموعد أو تاريخ الإنشاء
-                          final rawDate = order['preferred_date'] as String? ??
+                          final rawDate =
+                              order['preferred_date'] as String? ??
                               order['created_at'] as String?;
                           final dateLabel = _formatDate(rawDate);
 
@@ -141,13 +158,15 @@ class _TechTasksScreenState extends ConsumerState<TechTasksScreen> {
                                       ),
                                       child: Text(
                                         isStarted ? 'جاري التنفيذ' : 'جديدة',
-                                        style: AppTextStyles.caption(
-                                          isStarted
-                                              ? context.colors.warning
-                                              : context.colors.bluePrimary,
-                                        ).copyWith(
-                                          fontWeight: AppTextStyles.semiBold,
-                                        ),
+                                        style:
+                                            AppTextStyles.caption(
+                                              isStarted
+                                                  ? context.colors.warning
+                                                  : context.colors.bluePrimary,
+                                            ).copyWith(
+                                              fontWeight:
+                                                  AppTextStyles.semiBold,
+                                            ),
                                       ),
                                     ),
                                     const Spacer(),

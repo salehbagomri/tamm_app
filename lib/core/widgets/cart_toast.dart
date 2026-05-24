@@ -183,7 +183,9 @@ class _ToastCard extends StatelessWidget {
                 horizontal: AppSpacing.sm2,
                 vertical: AppSpacing.xs,
               ),
-              backgroundColor: context.colors.bluePrimary.withValues(alpha: 0.08),
+              backgroundColor: context.colors.bluePrimary.withValues(
+                alpha: 0.08,
+              ),
               shape: const RoundedRectangleBorder(
                 borderRadius: AppSpacing.radius,
               ),

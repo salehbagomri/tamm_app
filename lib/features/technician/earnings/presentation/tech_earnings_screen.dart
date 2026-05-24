@@ -70,9 +70,7 @@ class TechEarningsScreen extends ConsumerWidget {
                     AppSpacing.gapMd,
                     Text(
                       'سجل العمولات',
-                      style: AppTextStyles.bodySmall(
-                        context.colors.textSecond,
-                      ),
+                      style: AppTextStyles.bodySmall(context.colors.textSecond),
                     ),
                     AppSpacing.gapSm2,
                     ...List.generate(earnings.length, (i) {
@@ -98,10 +96,7 @@ class _SummaryCard extends StatelessWidget {
   final double totalEarned;
   final double totalPending;
 
-  const _SummaryCard({
-    required this.totalEarned,
-    required this.totalPending,
-  });
+  const _SummaryCard({required this.totalEarned, required this.totalPending});
 
   @override
   Widget build(BuildContext context) {
@@ -128,11 +123,7 @@ class _SummaryCard extends StatelessWidget {
               icon: Icons.payments_outlined,
             ),
           ),
-          Container(
-            width: 1,
-            height: 48,
-            color: context.colors.border,
-          ),
+          Container(width: 1, height: 48, color: context.colors.border),
           Expanded(
             child: _SummaryCell(
               label: 'المستحق حالياً',
@@ -166,10 +157,7 @@ class _SummaryCell extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: AppSpacing.iconMd),
         AppSpacing.gapXs,
-        Text(
-          '${_format(value)} ر.س',
-          style: AppTextStyles.sectionTitle(color),
-        ),
+        Text('${_format(value)} ر.س', style: AppTextStyles.sectionTitle(color)),
         const SizedBox(height: 2),
         Text(
           label,
@@ -198,8 +186,9 @@ class _EarningCard extends StatelessWidget {
     final paid = earning.isPaid;
     final statusColor = paid ? context.colors.success : context.colors.warning;
     final statusLabel = paid ? 'تم الاستلام' : 'مستحقة';
-    final statusIcon =
-        paid ? Icons.check_circle_outlined : Icons.schedule_outlined;
+    final statusIcon = paid
+        ? Icons.check_circle_outlined
+        : Icons.schedule_outlined;
 
     return TammCard(
       child: Column(
@@ -223,9 +212,9 @@ class _EarningCard extends StatelessWidget {
                     AppSpacing.hGapXs,
                     Text(
                       statusLabel,
-                      style: AppTextStyles.caption(statusColor).copyWith(
-                        fontWeight: AppTextStyles.semiBold,
-                      ),
+                      style: AppTextStyles.caption(
+                        statusColor,
+                      ).copyWith(fontWeight: AppTextStyles.semiBold),
                     ),
                   ],
                 ),
@@ -249,9 +238,9 @@ class _EarningCard extends StatelessWidget {
               AppSpacing.hGapXs,
               Text(
                 earning.taskTypeLabel,
-                style: AppTextStyles.body(context.colors.textPrimary).copyWith(
-                  fontWeight: AppTextStyles.semiBold,
-                ),
+                style: AppTextStyles.body(
+                  context.colors.textPrimary,
+                ).copyWith(fontWeight: AppTextStyles.semiBold),
               ),
             ],
           ),
@@ -265,9 +254,9 @@ class _EarningCard extends StatelessWidget {
               AppSpacing.hGapXs,
               Text(
                 '${_format(earning.commissionAmount)} ر.س',
-                style: AppTextStyles.body(context.colors.bluePrimary).copyWith(
-                  fontWeight: AppTextStyles.bold,
-                ),
+                style: AppTextStyles.body(
+                  context.colors.bluePrimary,
+                ).copyWith(fontWeight: AppTextStyles.bold),
               ),
               const Spacer(),
               Icon(

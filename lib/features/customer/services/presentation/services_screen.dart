@@ -113,7 +113,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
                     if (filtered.isEmpty) {
                       return RefreshIndicator(
-                        onRefresh: () async => ref.invalidate(serviceTypesProvider),
+                        onRefresh: () async =>
+                            ref.invalidate(serviceTypesProvider),
                         child: ListView(
                           children: const [
                             TammEmptyState(
@@ -126,72 +127,77 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     }
 
                     return RefreshIndicator(
-                      onRefresh: () async => ref.invalidate(serviceTypesProvider),
+                      onRefresh: () async =>
+                          ref.invalidate(serviceTypesProvider),
                       child: ListView.separated(
-                      padding: AppSpacing.pagePadding,
-                      itemCount: filtered.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
-                      itemBuilder: (_, i) {
-                        final s = filtered[i];
-                        return TammCard(
-                          onTap: () =>
-                              context.push('/customer/service-detail/${s.id}'),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: context.colors.bluePrimary.withValues(
-                                    alpha: 0.15,
+                        padding: AppSpacing.pagePadding,
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (_, i) {
+                          final s = filtered[i];
+                          return TammCard(
+                            onTap: () => context.push(
+                              '/customer/service-detail/${s.id}',
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: context.colors.bluePrimary
+                                        .withValues(alpha: 0.15),
+                                    borderRadius: AppSpacing.radiusSm,
                                   ),
-                                  borderRadius: AppSpacing.radiusSm,
+                                  child: Icon(
+                                    _getIcon(s.iconName),
+                                    color: context.colors.bluePrimary,
+                                    size: 26,
+                                  ),
                                 ),
-                                child: Icon(
-                                  _getIcon(s.iconName),
-                                  color: context.colors.bluePrimary,
-                                  size: 26,
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      s.name,
-                                      style:
-                                          AppTextStyles.body(
-                                            context.colors.textPrimary,
-                                          ).copyWith(
-                                            fontWeight: AppTextStyles.bold,
-                                          ),
-                                    ),
-                                    if (s.description != null)
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
                                       Text(
-                                        s.description!,
-                                        style: AppTextStyles.body(
-                                          context.colors.textPrimary,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        s.name,
+                                        style:
+                                            AppTextStyles.body(
+                                              context.colors.textPrimary,
+                                            ).copyWith(
+                                              fontWeight: AppTextStyles.bold,
+                                            ),
                                       ),
-                                  ],
+                                      if (s.description != null)
+                                        Text(
+                                          s.description!,
+                                          style: AppTextStyles.body(
+                                            context.colors.textPrimary,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              s.isQuoteBased || s.basePrice == null
-                                  ? _QuotePriceBadge()
-                                  : Text(
-                                      '${s.basePrice!.toInt()} ر.س',
-                                      style: AppTextStyles.bodySmall(
-                                        context.colors.blueSky,
-                                      ).copyWith(fontWeight: AppTextStyles.bold),
-                                    ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                                s.isQuoteBased || s.basePrice == null
+                                    ? _QuotePriceBadge()
+                                    : Text(
+                                        '${s.basePrice!.toInt()} ر.س',
+                                        style:
+                                            AppTextStyles.bodySmall(
+                                              context.colors.blueSky,
+                                            ).copyWith(
+                                              fontWeight: AppTextStyles.bold,
+                                            ),
+                                      ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                   loading: () => ListView.separated(
@@ -234,8 +240,9 @@ class _QuotePriceBadge extends StatelessWidget {
       ),
       child: Text(
         'سعر حسب الطلب',
-        style: AppTextStyles.caption(context.colors.warning)
-            .copyWith(fontWeight: AppTextStyles.semiBold),
+        style: AppTextStyles.caption(
+          context.colors.warning,
+        ).copyWith(fontWeight: AppTextStyles.semiBold),
       ),
     );
   }

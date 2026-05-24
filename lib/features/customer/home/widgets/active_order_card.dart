@@ -43,7 +43,10 @@ class ActiveOrderCard extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.electric_bolt_outlined, color: context.colors.blueSky),
+                      Icon(
+                        Icons.electric_bolt_outlined,
+                        color: context.colors.blueSky,
+                      ),
                       AppSpacing.hGapSm,
                       Text(
                         'طلب نشط',

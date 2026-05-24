@@ -5,7 +5,12 @@ import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class OrderTimeline extends StatefulWidget {
   final String currentStatus;
-  const OrderTimeline({super.key, required this.currentStatus});
+  final bool isDeliveryOnly;
+  const OrderTimeline({
+    super.key,
+    required this.currentStatus,
+    this.isDeliveryOnly = false,
+  });
 
   @override
   State<OrderTimeline> createState() => _OrderTimelineState();
@@ -15,47 +20,69 @@ class _OrderTimelineState extends State<OrderTimeline>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulseCtrl;
 
-  static const _stages = [
-    (
-      status: 'pending',
-      icon: Icons.receipt_outlined,
-      label: 'تم استلام الطلب',
-    ),
-    (
-      status: 'confirmed',
-      icon: Icons.check_circle_outline,
-      label: 'تم التأكيد',
-    ),
-    (
-      status: 'assigned',
-      icon: Icons.engineering_outlined,
-      label: 'تم تعيين الفني',
-    ),
-    (
-      status: 'on_the_way',
-      icon: Icons.directions_car_outlined,
-      label: 'الفني في الطريق',
-    ),
-    (
-      status: 'in_progress',
-      icon: Icons.build_outlined,
-      label: 'جاري التنفيذ',
-    ),
-    (
-      status: 'completed',
-      icon: Icons.done_all_outlined,
-      label: 'مكتمل',
-    ),
-  ];
+  List<({String status, IconData icon, String label})> get _stages {
+    if (widget.isDeliveryOnly) {
+      return const [
+        (
+          status: 'pending',
+          icon: Icons.receipt_outlined,
+          label: 'تم استلام الطلب',
+        ),
+        (
+          status: 'confirmed',
+          icon: Icons.local_shipping_outlined,
+          label: 'تم التأكيد وجاري التجهيز للتوصيل',
+        ),
+        (
+          status: 'completed',
+          icon: Icons.done_all_outlined,
+          label: 'تم التوصيل بنجاح',
+        ),
+      ];
+    }
+    return const [
+      (
+        status: 'pending',
+        icon: Icons.receipt_outlined,
+        label: 'تم استلام الطلب',
+      ),
+      (
+        status: 'confirmed',
+        icon: Icons.check_circle_outline,
+        label: 'تم التأكيد',
+      ),
+      (
+        status: 'assigned',
+        icon: Icons.engineering_outlined,
+        label: 'تم تعيين الفني',
+      ),
+      (
+        status: 'on_the_way',
+        icon: Icons.directions_car_outlined,
+        label: 'الفني في الطريق',
+      ),
+      (
+        status: 'in_progress',
+        icon: Icons.build_outlined,
+        label: 'جاري التنفيذ',
+      ),
+      (status: 'completed', icon: Icons.done_all_outlined, label: 'مكتمل'),
+    ];
+  }
 
-  static const _statusOrder = [
-    'pending',
-    'confirmed',
-    'assigned',
-    'on_the_way',
-    'in_progress',
-    'completed',
-  ];
+  List<String> get _statusOrder {
+    if (widget.isDeliveryOnly) {
+      return const ['pending', 'confirmed', 'completed'];
+    }
+    return const [
+      'pending',
+      'confirmed',
+      'assigned',
+      'on_the_way',
+      'in_progress',
+      'completed',
+    ];
+  }
 
   @override
   void initState() {
@@ -73,6 +100,11 @@ class _OrderTimelineState extends State<OrderTimeline>
   }
 
   int get _currentIdx {
+    if (widget.isDeliveryOnly) {
+      if (widget.currentStatus == 'completed') return 2;
+      if (widget.currentStatus == 'pending') return 0;
+      return 1; // confirmed (and on_the_way or any other status)
+    }
     final idx = _statusOrder.indexOf(widget.currentStatus);
     return idx == -1 ? 0 : idx;
   }
@@ -152,10 +184,10 @@ class _OrderTimelineState extends State<OrderTimeline>
                       context.colors.bluePrimary,
                     ).copyWith(fontWeight: AppTextStyles.semiBold)
                   : done
-                      ? AppTextStyles.body(
-                          context.colors.textPrimary,
-                        ).copyWith(fontWeight: AppTextStyles.medium)
-                      : AppTextStyles.body(context.colors.textFaint),
+                  ? AppTextStyles.body(
+                      context.colors.textPrimary,
+                    ).copyWith(fontWeight: AppTextStyles.medium)
+                  : AppTextStyles.body(context.colors.textFaint),
             ),
           ),
         ),
@@ -220,9 +252,7 @@ class _OrderTimelineState extends State<OrderTimeline>
       decoration: BoxDecoration(
         color: context.colors.error.withValues(alpha: 0.08),
         borderRadius: AppSpacing.radiusLg,
-        border: Border.all(
-          color: context.colors.error.withValues(alpha: 0.30),
-        ),
+        border: Border.all(color: context.colors.error.withValues(alpha: 0.30)),
       ),
       child: Row(
         children: [

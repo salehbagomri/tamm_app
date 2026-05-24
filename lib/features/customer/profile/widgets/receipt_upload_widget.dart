@@ -78,11 +78,9 @@ class _ReceiptUploadWidgetState extends ConsumerState<ReceiptUploadWidget> {
     setState(() => _isUploading = true);
 
     try {
-      final url = await ref.read(orderRepositoryProvider).uploadReceipt(
-        orderId: widget.orderId,
-        bytes: bytes,
-        extension: ext,
-      );
+      final url = await ref
+          .read(orderRepositoryProvider)
+          .uploadReceipt(orderId: widget.orderId, bytes: bytes, extension: ext);
 
       // Notify manager — non-blocking
       ref
@@ -226,9 +224,7 @@ class _ReceiptUploadWidgetState extends ConsumerState<ReceiptUploadWidget> {
           AppSpacing.gapSm2,
           Text(
             'تم إرفاق السند بنجاح ✓',
-            style: AppTextStyles.cardTitle(
-              context.colors.success,
-            ),
+            style: AppTextStyles.cardTitle(context.colors.success),
             textAlign: TextAlign.center,
           ),
           AppSpacing.gapXs,
@@ -279,10 +275,7 @@ class _DashedBorderContainer extends StatelessWidget {
           color: color.withValues(alpha: 0.05),
           borderRadius: AppSpacing.radiusLg,
         ),
-        child: Padding(
-          padding: AppSpacing.cardPadding,
-          child: child,
-        ),
+        child: Padding(padding: AppSpacing.cardPadding, child: child),
       ),
     );
   }
@@ -420,4 +413,3 @@ class _SourceTile extends StatelessWidget {
     );
   }
 }
-

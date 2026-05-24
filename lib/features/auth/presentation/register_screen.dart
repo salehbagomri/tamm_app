@@ -242,7 +242,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscureText: _obscurePass,
                   suffix: IconButton(
                     icon: Icon(
-                      _obscurePass ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      _obscurePass
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                       color: context.colors.textSecond,
                     ),
                     onPressed: () =>

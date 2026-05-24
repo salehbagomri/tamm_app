@@ -5,44 +5,45 @@ import '../../core/errors/app_exception.dart';
 import '../../features/technician/tasks/data/technician_task_repository.dart';
 import '../models/technician_earning.dart';
 
-final myAssignmentsProvider =
-    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
-      final client = Supabase.instance.client;
-      final userId = client.auth.currentUser!.id;
+final myAssignmentsProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>((
+  ref,
+) async {
+  final client = Supabase.instance.client;
+  final userId = client.auth.currentUser!.id;
 
-      // جلب technician_id من جدول technicians
-      final tech = await client
-          .from('technicians')
-          .select('id')
-          .eq('profile_id', userId)
-          .single();
-      final techId = tech['id'] as String;
+  // جلب technician_id من جدول technicians
+  final tech = await client
+      .from('technicians')
+      .select('id')
+      .eq('profile_id', userId)
+      .single();
+  final techId = tech['id'] as String;
 
-      final rows = await client
-          .from('assignments')
-          .select(
-            '*, orders(*, profiles!customer_id(full_name, phone, address), order_items(*))',
-          )
-          .eq('technician_id', techId)
-          .inFilter('status', ['assigned', 'started'])
-          .order('created_at', ascending: false);
+  final rows = await client
+      .from('assignments')
+      .select(
+        '*, orders(*, profiles!customer_id(full_name, phone, address), order_items(*))',
+      )
+      .eq('technician_id', techId)
+      .inFilter('status', ['assigned', 'started'])
+      .order('created_at', ascending: false);
 
-      // Defensive filters:
-      // 1) hide completed/cancelled (assignment status may drift from order status)
-      // 2) hide delivery-only orders (product without installation) — those should
-      //    never be assigned to a technician; manager handles them with the
-      //    supplier's own courier.
-      return rows.where((a) {
-        final order = a['orders'] as Map<String, dynamic>?;
-        if (order == null) return false;
-        final orderStatus = order['status'] as String?;
-        if (orderStatus == 'completed' || orderStatus == 'cancelled') {
-          return false;
-        }
-        if (_isDeliveryOnly(order)) return false;
-        return true;
-      }).toList();
-    });
+  // Defensive filters:
+  // 1) hide completed/cancelled (assignment status may drift from order status)
+  // 2) hide delivery-only orders (product without installation) — those should
+  //    never be assigned to a technician; manager handles them with the
+  //    supplier's own courier.
+  return rows.where((a) {
+    final order = a['orders'] as Map<String, dynamic>?;
+    if (order == null) return false;
+    final orderStatus = order['status'] as String?;
+    if (orderStatus == 'completed' || orderStatus == 'cancelled') {
+      return false;
+    }
+    if (_isDeliveryOnly(order)) return false;
+    return true;
+  }).toList();
+});
 
 bool _isDeliveryOnly(Map<String, dynamic> order) {
   final type = order['order_type'] as String?;
@@ -50,8 +51,9 @@ bool _isDeliveryOnly(Map<String, dynamic> order) {
   final items = (order['order_items'] as List?) ?? const [];
   // إذا items فارغة لأي سبب (RLS، select بدونها) نعرض الطلب — لا نخفيه بافتراض.
   if (items.isEmpty) return false;
-  final anyInstall = items
-      .any((i) => (i as Map<String, dynamic>)['include_installation'] == true);
+  final anyInstall = items.any(
+    (i) => (i as Map<String, dynamic>)['include_installation'] == true,
+  );
   return !anyInstall;
 }
 
@@ -82,32 +84,32 @@ final myTechnicianProfileProvider =
 
 final completedAssignmentsProvider =
     FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
-  final client = Supabase.instance.client;
-  final userId = client.auth.currentUser!.id;
+      final client = Supabase.instance.client;
+      final userId = client.auth.currentUser!.id;
 
-  final tech = await client
-      .from('technicians')
-      .select('id')
-      .eq('profile_id', userId)
-      .single();
-  final techId = tech['id'] as String;
+      final tech = await client
+          .from('technicians')
+          .select('id')
+          .eq('profile_id', userId)
+          .single();
+      final techId = tech['id'] as String;
 
-  final rows = await client
-      .from('assignments')
-      .select(
-        '*, orders(*, profiles!customer_id(full_name, phone, address), order_items(*))',
-      )
-      .eq('technician_id', techId)
-      .eq('status', 'completed')
-      .order('completed_at', ascending: false);
+      final rows = await client
+          .from('assignments')
+          .select(
+            '*, orders(*, profiles!customer_id(full_name, phone, address), order_items(*))',
+          )
+          .eq('technician_id', techId)
+          .eq('status', 'completed')
+          .order('completed_at', ascending: false);
 
-  // Hide delivery-only orders here too (in case any were assigned by mistake).
-  return rows.where((a) {
-    final order = a['orders'] as Map<String, dynamic>?;
-    if (order == null) return false;
-    return !_isDeliveryOnly(order);
-  }).toList();
-});
+      // Hide delivery-only orders here too (in case any were assigned by mistake).
+      return rows.where((a) {
+        final order = a['orders'] as Map<String, dynamic>?;
+        if (order == null) return false;
+        return !_isDeliveryOnly(order);
+      }).toList();
+    });
 
 // ─── Performance stats (today / week / total) ─────────────────────────────────
 
@@ -122,8 +124,7 @@ class TechStats {
   });
 }
 
-final techStatsProvider =
-    FutureProvider<TechStats>((ref) async {
+final techStatsProvider = FutureProvider<TechStats>((ref) async {
   final client = Supabase.instance.client;
   final userId = client.auth.currentUser!.id;
 
@@ -135,11 +136,16 @@ final techStatsProvider =
   final techId = tech['id'] as String;
 
   final now = DateTime.now().toLocal();
-  final todayStart =
-      DateTime(now.year, now.month, now.day).toUtc().toIso8601String();
-  final weekStart = DateTime(now.year, now.month, now.day - now.weekday + 1)
-      .toUtc()
-      .toIso8601String();
+  final todayStart = DateTime(
+    now.year,
+    now.month,
+    now.day,
+  ).toUtc().toIso8601String();
+  final weekStart = DateTime(
+    now.year,
+    now.month,
+    now.day - now.weekday + 1,
+  ).toUtc().toIso8601String();
 
   final totalRes = await client
       .from('assignments')
@@ -175,16 +181,16 @@ final techStatsProvider =
 
 final assignmentDetailProvider = FutureProvider.autoDispose
     .family<Map<String, dynamic>, String>((ref, assignmentId) async {
-  final client = Supabase.instance.client;
-  return await client
-      .from('assignments')
-      .select(
-        '*, orders(*, profiles!customer_id(full_name, phone, address), '
-        'order_items(*, service_types(name), products(name)))',
-      )
-      .eq('id', assignmentId)
-      .single();
-});
+      final client = Supabase.instance.client;
+      return await client
+          .from('assignments')
+          .select(
+            '*, orders(*, profiles!customer_id(full_name, phone, address), '
+            'order_items(*, service_types(name), products(name)))',
+          )
+          .eq('id', assignmentId)
+          .single();
+    });
 
 // ─── Task update provider ─────────────────────────────────────────────────────
 
@@ -249,7 +255,7 @@ class CashCollectedNotifier extends StateNotifier<CashCollectedState> {
   final TechnicianTaskRepository _repo;
 
   CashCollectedNotifier(this._repo, {required bool initialValue})
-      : super(CashCollectedState(collected: initialValue));
+    : super(CashCollectedState(collected: initialValue));
 
   Future<bool> confirm(String assignmentId) async {
     state = CashCollectedState(
@@ -267,16 +273,18 @@ class CashCollectedNotifier extends StateNotifier<CashCollectedState> {
       state = CashCollectedState(
         status: CashCollectedStatus.error,
         collected: false,
-        errorMessage:
-            e is AppException ? e.message : 'فشل في تأكيد استلام المبلغ',
+        errorMessage: e is AppException
+            ? e.message
+            : 'فشل في تأكيد استلام المبلغ',
       );
       return false;
     }
   }
 }
 
-final technicianTaskRepositoryProvider =
-    Provider((ref) => TechnicianTaskRepository());
+final technicianTaskRepositoryProvider = Provider(
+  (ref) => TechnicianTaskRepository(),
+);
 
 final taskUpdateProvider = StateNotifierProvider.autoDispose
     .family<TaskUpdateNotifier, TaskUpdateState, String>(
@@ -285,7 +293,11 @@ final taskUpdateProvider = StateNotifierProvider.autoDispose
     );
 
 final cashCollectedProvider = StateNotifierProvider.autoDispose
-    .family<CashCollectedNotifier, CashCollectedState, ({String assignmentId, bool initialValue})>(
+    .family<
+      CashCollectedNotifier,
+      CashCollectedState,
+      ({String assignmentId, bool initialValue})
+    >(
       (ref, args) => CashCollectedNotifier(
         ref.read(technicianTaskRepositoryProvider),
         initialValue: args.initialValue,
@@ -401,8 +413,7 @@ class PhotoUploadNotifier extends StateNotifier<PhotoUploadState> {
         status: PhotoUploadStatus.done,
         total: files.length,
         done: successCount,
-        errorMessage:
-            'رُفعت $successCount من ${files.length} صور؛ فشل بعضها',
+        errorMessage: 'رُفعت $successCount من ${files.length} صور؛ فشل بعضها',
       );
     }
     return successCount;
@@ -429,8 +440,9 @@ final photoUploadProvider = StateNotifierProvider.autoDispose
 
 // ─── Technician earnings (commission) ─────────────────────────────────────────
 
-final myEarningsProvider =
-    FutureProvider.autoDispose<List<TechnicianEarning>>((ref) async {
+final myEarningsProvider = FutureProvider.autoDispose<List<TechnicianEarning>>((
+  ref,
+) async {
   final client = Supabase.instance.client;
   final userId = client.auth.currentUser!.id;
 
@@ -448,8 +460,6 @@ final myEarningsProvider =
       .order('created_at', ascending: false);
 
   return rows
-      .map<TechnicianEarning>(
-        (m) => TechnicianEarning.fromMap(m),
-      )
+      .map<TechnicianEarning>((m) => TechnicianEarning.fromMap(m))
       .toList();
 });

@@ -33,10 +33,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
   void _showStockError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          message,
-          style: AppTextStyles.body(Colors.white),
-        ),
+        content: Text(message, style: AppTextStyles.body(Colors.white)),
         backgroundColor: context.colors.warning,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 4),
@@ -81,23 +78,28 @@ class _ProductCardState extends ConsumerState<ProductCard> {
 
     setState(() => _loading = true);
     try {
-      await ref.read(cartProvider.notifier).addItem(
+      await ref
+          .read(cartProvider.notifier)
+          .addItem(
             CartItem(
-                product: widget.product,
-                includeInstallation: wantsInstallation),
+              product: widget.product,
+              includeInstallation: wantsInstallation,
+            ),
           );
       if (!mounted) return;
       CartToast.show(context, productName: widget.product.name);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          e is AppException ? e.message : 'تعذرت الإضافة للسلة',
-          style: AppTextStyles.body(context.colors.textPrimary),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e is AppException ? e.message : 'تعذرت الإضافة للسلة',
+            style: AppTextStyles.body(context.colors.textPrimary),
+          ),
+          backgroundColor: context.colors.error,
+          behavior: SnackBarBehavior.floating,
         ),
-        backgroundColor: context.colors.error,
-        behavior: SnackBarBehavior.floating,
-      ));
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -126,7 +128,11 @@ class _ProductCardState extends ConsumerState<ProductCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _ProductImage(product: p),
-            _ProductInfo(product: p, loading: _loading, onAddToCart: _addToCart),
+            _ProductInfo(
+              product: p,
+              loading: _loading,
+              onAddToCart: _addToCart,
+            ),
           ],
         ),
       ),
@@ -191,10 +197,7 @@ class _ProductImage extends StatelessWidget {
             Positioned(
               top: 6,
               left: 6,
-              child: _Badge(
-                label: 'نفدت',
-                color: context.colors.error,
-              ),
+              child: _Badge(label: 'نفدت', color: context.colors.error),
             )
           else if (product.isLowStock)
             Positioned(
@@ -219,9 +222,12 @@ class _ProductImage extends StatelessWidget {
 class _PlaceholderIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Center(
-        child: Icon(Icons.image_outlined,
-            color: context.colors.textFaint, size: 40),
-      );
+    child: Icon(
+      Icons.image_outlined,
+      color: context.colors.textFaint,
+      size: 40,
+    ),
+  );
 }
 
 class _Badge extends StatelessWidget {
@@ -239,8 +245,9 @@ class _Badge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppTextStyles.badge(Colors.white)
-            .copyWith(fontWeight: AppTextStyles.bold),
+        style: AppTextStyles.badge(
+          Colors.white,
+        ).copyWith(fontWeight: AppTextStyles.bold),
       ),
     );
   }
@@ -285,7 +292,8 @@ class _FavoriteButtonState extends ConsumerState<_FavoriteButton> {
   @override
   Widget build(BuildContext context) {
     final idsAsync = ref.watch(favoritedIdsProvider);
-    final isFav = _optimistic ??
+    final isFav =
+        _optimistic ??
         idsAsync.whenOrNull(data: (ids) => ids.contains(widget.productId)) ??
         false;
 
@@ -325,15 +333,20 @@ class _ProductInfo extends StatelessWidget {
     final p = product;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.sm2, AppSpacing.sm, AppSpacing.sm2, AppSpacing.sm2),
+        AppSpacing.sm2,
+        AppSpacing.sm,
+        AppSpacing.sm2,
+        AppSpacing.sm2,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             p.name,
-            style: AppTextStyles.bodySmall(context.colors.textPrimary)
-                .copyWith(fontWeight: AppTextStyles.semiBold),
+            style: AppTextStyles.bodySmall(
+              context.colors.textPrimary,
+            ).copyWith(fontWeight: AppTextStyles.semiBold),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -381,8 +394,9 @@ class _PriceSection extends StatelessWidget {
           ),
         Text(
           p.price != null ? '${p.price!.toInt()} ر.س' : 'السعر غير محدد',
-          style: AppTextStyles.label(context.colors.blueSky)
-              .copyWith(fontWeight: AppTextStyles.bold),
+          style: AppTextStyles.label(
+            context.colors.blueSky,
+          ).copyWith(fontWeight: AppTextStyles.bold),
         ),
       ],
     );

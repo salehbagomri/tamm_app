@@ -39,7 +39,9 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
     super.initState();
     Future.microtask(() async {
       final profile = await ref.read(userProfileProvider.future);
-      if (mounted && _phoneCtrl.text.isEmpty && (profile?.phone ?? '').isNotEmpty) {
+      if (mounted &&
+          _phoneCtrl.text.isEmpty &&
+          (profile?.phone ?? '').isNotEmpty) {
         _phoneCtrl.text = profile!.phone;
       }
     });
@@ -289,8 +291,9 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
         ),
         loading: () => const TammLoading(),
         error: (err, _) => ErrorStateWidget(
-          message:
-              err is AppException ? err.message : 'حدث خطأ في تحميل الخدمة',
+          message: err is AppException
+              ? err.message
+              : 'حدث خطأ في تحميل الخدمة',
           onRetry: () =>
               ref.invalidate(serviceDetailProvider(widget.serviceTypeId)),
         ),
@@ -345,15 +348,15 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   color: isCompleted
                       ? context.colors.success
                       : isActive
-                          ? context.colors.bluePrimary
-                          : context.colors.bgSurface2,
+                      ? context.colors.bluePrimary
+                      : context.colors.bgSurface2,
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isCompleted
                         ? context.colors.success
                         : isActive
-                            ? context.colors.bluePrimary
-                            : context.colors.border,
+                        ? context.colors.bluePrimary
+                        : context.colors.border,
                     width: 2,
                   ),
                 ),
@@ -368,16 +371,18 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
               AppSpacing.gapXs,
               Text(
                 step.label,
-                style: AppTextStyles.caption(
-                  isCompleted
-                      ? context.colors.success
-                      : isActive
+                style:
+                    AppTextStyles.caption(
+                      isCompleted
+                          ? context.colors.success
+                          : isActive
                           ? context.colors.bluePrimary
                           : context.colors.textSecond,
-                ).copyWith(
-                  fontWeight:
-                      isActive ? AppTextStyles.semiBold : AppTextStyles.regular,
-                ),
+                    ).copyWith(
+                      fontWeight: isActive
+                          ? AppTextStyles.semiBold
+                          : AppTextStyles.regular,
+                    ),
               ),
             ],
           );
@@ -705,8 +710,9 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                             _periodTimes[period]!,
                             style: AppTextStyles.caption(
                               isSelected
-                                  ? context.colors.bgSurface
-                                      .withValues(alpha: 0.7)
+                                  ? context.colors.bgSurface.withValues(
+                                      alpha: 0.7,
+                                    )
                                   : context.colors.textSecond,
                             ),
                           ),
@@ -741,9 +747,8 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
               children: _hoursForPeriod(_selectedPeriod!).map((hour) {
                 final isSelected = _selectedHour == hour;
                 return GestureDetector(
-                  onTap: () => setState(
-                    () => _selectedHour = isSelected ? null : hour,
-                  ),
+                  onTap: () =>
+                      setState(() => _selectedHour = isSelected ? null : hour),
                   child: Container(
                     width:
                         (MediaQuery.of(context).size.width -
@@ -863,8 +868,8 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
                   service.category.contains('ac_')
                       ? Icons.ac_unit_outlined
                       : service.category.contains('solar')
-                          ? Icons.solar_power_outlined
-                          : Icons.miscellaneous_services_outlined,
+                      ? Icons.solar_power_outlined
+                      : Icons.miscellaneous_services_outlined,
                   color: context.colors.bluePrimary,
                   size: AppSpacing.iconMd,
                 ),
@@ -904,10 +909,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
             ),
           ],
           AppSpacing.gapSm,
-          _SummaryRow(
-            icon: Icons.payments_outlined,
-            label: paymentLabel(),
-          ),
+          _SummaryRow(icon: Icons.payments_outlined, label: paymentLabel()),
         ],
       ),
     );
@@ -980,10 +982,17 @@ class _SummaryRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: AppSpacing.iconXs + 2, color: context.colors.textSecond),
+        Icon(
+          icon,
+          size: AppSpacing.iconXs + 2,
+          color: context.colors.textSecond,
+        ),
         AppSpacing.hGapSm,
         Expanded(
-          child: Text(label, style: AppTextStyles.body(context.colors.textPrimary)),
+          child: Text(
+            label,
+            style: AppTextStyles.body(context.colors.textPrimary),
+          ),
         ),
       ],
     );

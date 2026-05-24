@@ -5,10 +5,12 @@ import '../models/review.dart';
 
 final reviewRepositoryProvider = Provider((ref) => ReviewRepository());
 
-final orderReviewProvider =
-    FutureProvider.autoDispose.family<Review?, String>((ref, orderId) async {
-      return ref.read(reviewRepositoryProvider).getReviewByOrderId(orderId);
-    });
+final orderReviewProvider = FutureProvider.autoDispose.family<Review?, String>((
+  ref,
+  orderId,
+) async {
+  return ref.read(reviewRepositoryProvider).getReviewByOrderId(orderId);
+});
 
 // ─── Submit state ─────────────────────────────────────────────────────────────
 

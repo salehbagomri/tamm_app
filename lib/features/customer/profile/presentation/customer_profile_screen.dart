@@ -194,9 +194,9 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(right: 4, bottom: 4),
       child: Text(
         label,
-        style: AppTextStyles.bodySmall(context.colors.textSecond).copyWith(
-          fontWeight: AppTextStyles.semiBold,
-        ),
+        style: AppTextStyles.bodySmall(
+          context.colors.textSecond,
+        ).copyWith(fontWeight: AppTextStyles.semiBold),
       ),
     );
   }
@@ -287,10 +287,9 @@ class _ProfileHeaderState extends ConsumerState<_ProfileHeader> {
       final ext = picked.name.contains('.')
           ? picked.name.split('.').last.toLowerCase()
           : 'jpg';
-      await ref.read(authRepositoryProvider).uploadAvatar(
-            bytes: bytes,
-            extension: ext == 'jpeg' ? 'jpg' : ext,
-          );
+      await ref
+          .read(authRepositoryProvider)
+          .uploadAvatar(bytes: bytes, extension: ext == 'jpeg' ? 'jpg' : ext);
       if (!mounted) return;
       ref.invalidate(userProfileProvider);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -360,9 +359,9 @@ class _ProfileHeaderState extends ConsumerState<_ProfileHeader> {
                     backgroundColor: context.colors.blueDark,
                     child: Text(
                       initial,
-                      style: AppTextStyles.cardTitle(Colors.white).copyWith(
-                        fontSize: 22,
-                      ),
+                      style: AppTextStyles.cardTitle(
+                        Colors.white,
+                      ).copyWith(fontSize: 22),
                     ),
                   ),
                 Positioned(
@@ -475,8 +474,9 @@ class _SourceTile extends StatelessWidget {
               AppSpacing.hGapSm2,
               Text(
                 label,
-                style: AppTextStyles.body(context.colors.textPrimary)
-                    .copyWith(fontWeight: AppTextStyles.semiBold),
+                style: AppTextStyles.body(
+                  context.colors.textPrimary,
+                ).copyWith(fontWeight: AppTextStyles.semiBold),
               ),
             ],
           ),
@@ -606,11 +606,8 @@ class _StatCell extends StatelessWidget {
 
 class _VerticalDivider extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Container(
-        width: 1,
-        height: 40,
-        color: context.colors.border,
-      );
+  Widget build(BuildContext context) =>
+      Container(width: 1, height: 40, color: context.colors.border);
 }
 
 // ─── إجراء سريع (بطاقة قابلة للضغط) ──────────────────────────────────────────
@@ -647,11 +644,7 @@ class _QuickAction extends StatelessWidget {
                   color: context.colors.bluePrimary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  color: context.colors.bluePrimary,
-                  size: 20,
-                ),
+                child: Icon(icon, color: context.colors.bluePrimary, size: 20),
               ),
               AppSpacing.hGapSm2,
               Expanded(
@@ -689,9 +682,7 @@ class _SettingsCard extends StatelessWidget {
       child: Column(
         children: [
           Theme(
-            data: Theme.of(context).copyWith(
-              dividerColor: Colors.transparent,
-            ),
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
               tilePadding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
@@ -759,10 +750,7 @@ class _GrowthCard extends StatelessWidget {
       if (await review.isAvailable()) {
         await review.requestReview();
       } else {
-        await review.openStoreListing(
-          appStoreId: null,
-          microsoftStoreId: null,
-        );
+        await review.openStoreListing(appStoreId: null, microsoftStoreId: null);
       }
     } catch (_) {
       if (context.mounted) {
@@ -847,8 +835,7 @@ class _AccountLegalCard extends StatelessWidget {
   Future<void> _open(BuildContext context, String url) async {
     final uri = Uri.parse(url);
     try {
-      final ok =
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!ok && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -926,10 +913,7 @@ class _LegalRow extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: Icon(icon, color: context.colors.bluePrimary, size: 20),
-      title: Text(
-        label,
-        style: AppTextStyles.body(context.colors.textPrimary),
-      ),
+      title: Text(label, style: AppTextStyles.body(context.colors.textPrimary)),
       trailing: Icon(
         Icons.open_in_new_outlined,
         color: context.colors.textFaint,
@@ -959,9 +943,7 @@ class _AboutRowState extends State<_AboutRow> {
     try {
       final info = await PackageInfo.fromPlatform();
       if (mounted) {
-        setState(
-          () => _version = '${info.version} (${info.buildNumber})',
-        );
+        setState(() => _version = '${info.version} (${info.buildNumber})');
       }
     } catch (_) {}
   }
@@ -1013,9 +995,7 @@ class _DeleteAccountLink extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.bgSurface,
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppSpacing.radiusLg,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
         title: Text(
           'حذف الحساب نهائياً',
           style: AppTextStyles.cardTitle(context.colors.textPrimary),
@@ -1037,8 +1017,9 @@ class _DeleteAccountLink extends ConsumerWidget {
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
               'حذف حسابي',
-              style: AppTextStyles.body(context.colors.error)
-                  .copyWith(fontWeight: AppTextStyles.bold),
+              style: AppTextStyles.body(
+                context.colors.error,
+              ).copyWith(fontWeight: AppTextStyles.bold),
             ),
           ),
         ],
