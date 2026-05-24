@@ -236,8 +236,9 @@ class _FaqSection extends StatelessWidget {
                 AppSpacing.hGapSm,
                 Text(
                   title,
-                  style: AppTextStyles.body(context.colors.textPrimary)
-                      .copyWith(fontWeight: AppTextStyles.bold),
+                  style: AppTextStyles.body(
+                    context.colors.textPrimary,
+                  ).copyWith(fontWeight: AppTextStyles.bold),
                 ),
               ],
             ),
@@ -248,8 +249,7 @@ class _FaqSection extends StatelessWidget {
             return Column(
               children: [
                 entry.value,
-                if (!isLast)
-                  Divider(height: 1, color: context.colors.border),
+                if (!isLast) Divider(height: 1, color: context.colors.border),
               ],
             );
           }),
@@ -290,8 +290,9 @@ class _FaqItemState extends State<_FaqItem> {
                   Expanded(
                     child: Text(
                       widget.question,
-                      style: AppTextStyles.body(context.colors.textPrimary)
-                          .copyWith(fontWeight: AppTextStyles.semiBold),
+                      style: AppTextStyles.body(
+                        context.colors.textPrimary,
+                      ).copyWith(fontWeight: AppTextStyles.semiBold),
                     ),
                   ),
                   AnimatedRotation(
@@ -310,8 +311,9 @@ class _FaqItemState extends State<_FaqItem> {
                   padding: const EdgeInsets.only(top: AppSpacing.sm),
                   child: Text(
                     widget.answer,
-                    style: AppTextStyles.bodySmall(context.colors.textSecond)
-                        .copyWith(height: 1.6),
+                    style: AppTextStyles.bodySmall(
+                      context.colors.textSecond,
+                    ).copyWith(height: 1.6),
                   ),
                 ),
                 crossFadeState: _open
@@ -334,7 +336,7 @@ class _ContactPromptCard extends StatelessWidget {
 
   Future<void> _whatsapp(BuildContext context) async {
     // رقم WhatsApp يمكن تخصيصه لاحقاً في constants
-    final uri = Uri.parse('https://wa.me/967777111222');
+    final uri = Uri.parse('https://wa.me/967770727055');
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {
@@ -383,9 +385,7 @@ class _ContactPromptCard extends StatelessWidget {
                   ),
                   label: Text(
                     'اتصل بنا',
-                    style: AppTextStyles.bodySmall(
-                      context.colors.bluePrimary,
-                    ),
+                    style: AppTextStyles.bodySmall(context.colors.bluePrimary),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: context.colors.bluePrimary),
