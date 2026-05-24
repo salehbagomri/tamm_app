@@ -45,8 +45,10 @@ class TammTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyles.label(context.colors.textSecond)),
-        AppSpacing.gapXs,
+        if (label.isNotEmpty) ...[
+          Text(label, style: AppTextStyles.label(context.colors.textSecond)),
+          AppSpacing.gapXs,
+        ],
         TextFormField(
           controller: controller,
           focusNode: focusNode,
