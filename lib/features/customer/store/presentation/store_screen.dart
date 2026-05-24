@@ -279,7 +279,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           mainAxisSpacing: 12,
                           childAspectRatio: Responsive.isDesktop(context)
                               ? 0.75
-                              : 0.62,
+                              : 0.68,
                         ),
                         itemCount: products.length,
                         itemBuilder: (_, i) =>
