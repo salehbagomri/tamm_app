@@ -16,6 +16,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 import '../../../../shared/providers/auth_providers.dart';
+import '../../../../shared/providers/saved_addresses_providers.dart';
 import 'payment_method_selector.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
@@ -597,6 +598,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ),
         ),
         AppSpacing.gapLg,
+        _SavedAddressPicker(
+          onPick: (address, lat, lng) {
+            setState(() {
+              _addressCtrl.text = address;
+              if (lat != null && lng != null) {
+                _latitude = lat;
+                _longitude = lng;
+                _locationPicked = true;
+              }
+            });
+          },
+        ),
+        AppSpacing.gapMd,
         Text(
           'تفاصيل العنوان',
           style: AppTextStyles.label(context.colors.textPrimary),
@@ -1008,6 +1022,88 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─── عناوين محفوظة — اختيار سريع ────────────────────────────────────────────
+
+class _SavedAddressPicker extends ConsumerWidget {
+  final void Function(String address, double? lat, double? lng) onPick;
+  const _SavedAddressPicker({required this.onPick});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncAddresses = ref.watch(savedAddressesProvider);
+    return asyncAddresses.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (addresses) {
+        if (addresses.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'عناويني المحفوظة',
+              style: AppTextStyles.label(context.colors.textPrimary),
+            ),
+            AppSpacing.gapSm,
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: addresses.map((a) {
+                  return GestureDetector(
+                    onTap: () => onPick(a.address, a.lat, a.lng),
+                    child: Container(
+                      margin: const EdgeInsets.only(left: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm2,
+                        vertical: AppSpacing.sm,
+                      ),
+                      decoration: BoxDecoration(
+                        color: a.isDefault
+                            ? context.colors.bluePrimary.withValues(alpha: 0.08)
+                            : context.colors.bgSurface,
+                        borderRadius: AppSpacing.radiusFull,
+                        border: Border.all(
+                          color: a.isDefault
+                              ? context.colors.bluePrimary
+                              : context.colors.border,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: a.isDefault
+                                ? context.colors.bluePrimary
+                                : context.colors.textSecond,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            a.label,
+                            style: AppTextStyles.bodySmall(
+                              a.isDefault
+                                  ? context.colors.bluePrimary
+                                  : context.colors.textPrimary,
+                            ).copyWith(
+                              fontWeight: a.isDefault
+                                  ? AppTextStyles.semiBold
+                                  : AppTextStyles.regular,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

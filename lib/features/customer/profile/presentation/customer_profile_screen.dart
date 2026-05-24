@@ -142,6 +142,12 @@ class _LoggedInView extends ConsumerWidget {
               label: AppStrings.myDevices,
               onTap: () => context.push('/customer/devices'),
             ),
+            const SizedBox(height: 8),
+            _QuickAction(
+              icon: Icons.location_on_outlined,
+              label: 'عناويني المحفوظة',
+              onTap: () => context.push('/customer/saved-addresses'),
+            ),
 
             AppSpacing.gapLg,
             const _SectionHeader(label: 'الإعدادات'),

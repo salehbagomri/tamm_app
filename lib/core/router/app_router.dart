@@ -32,6 +32,7 @@ import '../../features/customer/profile/presentation/my_orders_screen.dart';
 import '../../features/customer/profile/presentation/order_detail_screen.dart';
 import '../../features/customer/profile/presentation/my_devices_screen.dart';
 import '../../features/customer/profile/presentation/help_center_screen.dart';
+import '../../features/customer/profile/presentation/saved_addresses_screen.dart';
 import '../../features/profile/screens/edit_profile_screen.dart';
 
 // Manager (web-only redirect)
@@ -206,6 +207,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         path: '/customer/help-center',
         builder: (_, __) => const HelpCenterScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/customer/saved-addresses',
+        builder: (_, __) => const SavedAddressesScreen(),
       ),
 
       // Edit Profile
