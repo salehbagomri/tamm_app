@@ -186,6 +186,10 @@ class AuthRepository {
       }
       final cleanExt = extension.toLowerCase().replaceAll('.', '');
       final path = '${user.id}/avatar.$cleanExt';
+      // الخادم يدعم mime type: image/jpeg وليس image/jpg
+      final mimeType = cleanExt == 'jpg' || cleanExt == 'jpeg'
+          ? 'jpeg'
+          : cleanExt;
 
       await _client.storage
           .from('avatars')
@@ -193,7 +197,7 @@ class AuthRepository {
             path,
             bytes,
             fileOptions: FileOptions(
-              contentType: 'image/$cleanExt',
+              contentType: 'image/$mimeType',
               upsert: true,
             ),
           );
