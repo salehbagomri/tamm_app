@@ -55,79 +55,7 @@ class ProductDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Stack(
-                  children: [
-                    Container(
-                      height: 300,
-                      width: double.infinity,
-                      color: context.colors.bgSurface2,
-                      child: p.imageUrl != null
-                          ? CachedNetworkImage(
-                              imageUrl: p.imageUrl!,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => TammShimmer(
-                                width: double.infinity,
-                                height: double.infinity,
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              errorWidget: (context, url, error) => Icon(
-                                Icons.image_outlined,
-                                size: 80,
-                                color: context.colors.textFaint,
-                              ),
-                            )
-                          : Center(
-                              child: Icon(
-                                Icons.image_outlined,
-                                size: 80,
-                                color: context.colors.textFaint,
-                              ),
-                            ),
-                    ),
-                    if (p.isFeatured && !p.hasDiscount)
-                      Positioned(
-                        top: 16,
-                        right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: context.colors.warning,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'مميز ⭐',
-                            style: AppTextStyles.bodySmall(
-                              Colors.white,
-                            ).copyWith(fontWeight: AppTextStyles.bold),
-                          ),
-                        ),
-                      ),
-                    if (p.hasDiscount)
-                      Positioned(
-                        top: 16,
-                        right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: context.colors.error,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'عرض خاص: خصم ${p.discountPercentage}% 🏷️',
-                            style: AppTextStyles.bodySmall(
-                              Colors.white,
-                            ).copyWith(fontWeight: AppTextStyles.bold),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+                _PremiumProductGallery(product: p),
                 Padding(
                   padding: AppSpacing.pagePadding,
                   child: Column(
@@ -638,6 +566,290 @@ class _StockBadge extends StatelessWidget {
               color,
             ).copyWith(fontWeight: AppTextStyles.semiBold),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── معرض الصور الدوار المتفاعل الفاخر ───────────────────────────────────────────
+
+class _PremiumProductGallery extends StatefulWidget {
+  final Product product;
+  const _PremiumProductGallery({required this.product});
+
+  @override
+  State<_PremiumProductGallery> createState() => _PremiumProductGalleryState();
+}
+
+class _PremiumProductGalleryState extends State<_PremiumProductGallery> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final urls = widget.product.allImageUrls;
+    if (urls.isEmpty) {
+      return Container(
+        height: 320,
+        width: double.infinity,
+        color: context.colors.bgSurface2,
+        child: Center(
+          child: Icon(
+            Icons.image_outlined,
+            size: 80,
+            color: context.colors.textFaint,
+          ),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        // المعرض الدوار الرئيسي
+        Container(
+          height: 320,
+          width: double.infinity,
+          color: context.colors.bgSurface2,
+          child: PageView.builder(
+            itemCount: urls.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => _FullScreenGallery(
+                        imageUrls: urls,
+                        initialIndex: index,
+                      ),
+                    ),
+                  );
+                },
+                child: Hero(
+                  tag: urls[index],
+                  child: CachedNetworkImage(
+                    imageUrl: urls[index],
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => TammShimmer(
+                      width: double.infinity,
+                      height: double.infinity,
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.image_outlined,
+                      size: 80,
+                      color: context.colors.textFaint,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        // الشارات العائمة الزجاجية
+        if (widget.product.isFeatured && !widget.product.hasDiscount)
+          Positioned(
+            top: 16,
+            right: 16,
+            child: _GlassmorphicBadge(
+              label: 'مميز ⭐',
+              color: context.colors.warning,
+            ),
+          ),
+        if (widget.product.hasDiscount)
+          Positioned(
+            top: 16,
+            right: 16,
+            child: _GlassmorphicBadge(
+              label: 'خصم ${widget.product.discountPercentage}% 🏷️',
+              color: context.colors.error,
+            ),
+          ),
+        // مؤشر التصفح النقطي المخصص ذو الحركات الصغرى الفاخرة
+        if (urls.length > 1)
+          Positioned(
+            bottom: 16,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(urls.length, (index) {
+                final isSelected = _currentIndex == index;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  height: 6,
+                  width: isSelected ? 18 : 6,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? context.colors.bluePrimary
+                        : context.colors.textFaint.withValues(alpha: 0.5),
+                    borderRadius: AppSpacing.radiusFull,
+                  ),
+                );
+              }),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _GlassmorphicBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _GlassmorphicBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: AppSpacing.radiusSm,
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.bodySmall(
+          Colors.white,
+        ).copyWith(fontWeight: AppTextStyles.bold),
+      ),
+    );
+  }
+}
+
+// ─── نافذة المعاينة الكبرى والتكبير ────────────────────────────────────────────────
+
+class _FullScreenGallery extends StatefulWidget {
+  final List<String> imageUrls;
+  final int initialIndex;
+  const _FullScreenGallery({
+    required this.imageUrls,
+    required this.initialIndex,
+  });
+
+  @override
+  State<_FullScreenGallery> createState() => _FullScreenGalleryState();
+}
+
+class _FullScreenGalleryState extends State<_FullScreenGallery> {
+  late int _currentIndex;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // صور شاشة كاملة
+          GestureDetector(
+            onVerticalDragEnd: (details) {
+              if (details.primaryVelocity != null &&
+                  details.primaryVelocity!.abs() > 400) {
+                Navigator.pop(context);
+              }
+            },
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: widget.imageUrls.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                return InteractiveViewer(
+                  minScale: 1.0,
+                  maxScale: 4.0,
+                  child: Center(
+                    child: Hero(
+                      tag: widget.imageUrls[index],
+                      child: CachedNetworkImage(
+                        imageUrl: widget.imageUrls[index],
+                        fit: BoxFit.contain,
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.image_outlined,
+                          size: 80,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          // زر الإغلاق العائم الزجاجي
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 16,
+            left: 16,
+            child: ClipRRect(
+              borderRadius: AppSpacing.radiusFull,
+              child: Material(
+                color: Colors.white.withValues(alpha: 0.15),
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+          ),
+          // مؤشر الصفحة الرقمي الفاخر
+          if (widget.imageUrls.length > 1)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 24,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    borderRadius: AppSpacing.radiusFull,
+                  ),
+                  child: Text(
+                    '${_currentIndex + 1} / ${widget.imageUrls.length}',
+                    style: AppTextStyles.bodySmall(Colors.white).copyWith(
+                      fontWeight: AppTextStyles.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

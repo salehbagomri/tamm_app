@@ -6,6 +6,7 @@ class Product {
   final double? price;
   final bool isPriceOnRequest;
   final String? imageUrl;
+  final List<String> imageUrls;
   final String? brand;
   final Map<String, dynamic> specs;
   final bool isAvailable;
@@ -30,6 +31,7 @@ class Product {
     this.price,
     this.isPriceOnRequest = false,
     this.imageUrl,
+    this.imageUrls = const [],
     this.brand,
     this.specs = const {},
     this.isAvailable = true,
@@ -53,6 +55,9 @@ class Product {
     price: (m['price'] as num?)?.toDouble(),
     isPriceOnRequest: m['is_price_on_request'] ?? false,
     imageUrl: m['image_url'],
+    imageUrls: m['image_urls'] != null
+        ? List<String>.from(m['image_urls'])
+        : [],
     brand: m['brand'],
     specs: m['specs'] ?? {},
     isAvailable: m['is_available'] ?? true,
@@ -75,6 +80,7 @@ class Product {
     'price': price,
     'is_price_on_request': isPriceOnRequest,
     'image_url': imageUrl,
+    'image_urls': imageUrls,
     'brand': brand,
     'specs': specs,
     'is_available': isAvailable,
@@ -89,6 +95,12 @@ class Product {
     'supplier_name': supplierName,
     'supplier_sku': supplierSku,
   };
+
+  List<String> get allImageUrls {
+    if (imageUrls.isNotEmpty) return imageUrls;
+    if (imageUrl != null && imageUrl!.isNotEmpty) return [imageUrl!];
+    return [];
+  }
 
   bool get hasDiscount =>
       oldPrice != null && price != null && oldPrice! > price!;
