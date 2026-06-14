@@ -164,7 +164,7 @@ See [LICENSE](LICENSE) for the full terms.
 
 ## Contact
 
-**Saleh Bagomri**
-Website: [bagomri.com](https://www.bagomri.com)
-Email: s.bagomri@gmail.com
-GitHub: [github.com/salehbagomri](https://github.com/salehbagomri)
+- **Developer:** Saleh Bagomri
+- **Website:** [www.bagomri.com](https://www.bagomri.com)
+- **Email:** [s.bagomri@gmail.com](mailto:s.bagomri@gmail.com)
+- **Google Play:** [Tamm](https://play.google.com/store/apps/details?id=com.bagomri.tamm)
