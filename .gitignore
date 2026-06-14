@@ -44,7 +44,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Secrets
+# Secrets and signing
 .mcp.json
 firebase-key.json
 clint_id*
@@ -60,3 +60,9 @@ tamm-release-cert.pem
 *.jks
 *.keystore
 .env
+android/app/google-services.json
+
+# Temporary and generated project documents
+claude_project_*.md
+tamm_app_summary.md
+order-flow-and-commission-report.md
