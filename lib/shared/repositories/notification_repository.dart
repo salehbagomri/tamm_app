@@ -66,6 +66,7 @@ class NotificationRepository {
         'title': 'سند تحويل جديد',
         'body': 'قام العميل بإرفاق سند التحويل للطلب #$orderNumber',
         'notification_type': 'payment_receipt',
+        'type': 'payment_receipt',
         'order_id': orderId,
         'is_read': false,
       });
