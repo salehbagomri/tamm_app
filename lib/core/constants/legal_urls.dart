@@ -12,5 +12,5 @@ class LegalUrls {
 
   /// رابط التطبيق على Google Play — يُستخدم للمشاركة والتقييم.
   static const String playStore =
-      'https://play.google.com/store/apps/details?id=com.tamm.tamm_app';
+      'https://play.google.com/store/apps/details?id=com.bagomri.tamm';
 }
