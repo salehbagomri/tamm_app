@@ -10,6 +10,7 @@ import '../../../core/widgets/tamm_button.dart';
 import '../../../core/widgets/tamm_text_field.dart';
 import '../../../shared/providers/auth_providers.dart';
 import '../../../core/services/fcm_service.dart';
+import '../../../core/errors/app_exception.dart';
 import 'package:tamm_app/core/theme/tamm_colors.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
