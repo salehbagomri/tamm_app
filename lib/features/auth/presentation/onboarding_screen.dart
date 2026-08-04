@@ -153,9 +153,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       if (v.trim().length < 3) {
                         return 'الاسم يجب أن يكون 3 أحرف على الأقل';
                       }
-                      if (RegExp(r'[0-9!@#%^&*(),.?":{}|<>]').hasMatch(v)) {
-                        return 'الاسم يجب أن يحتوي على أحرف فقط';
-                      }
                       return null;
                     },
                   ),
