@@ -83,9 +83,18 @@ class AuthRepository {
   Future<AuthResponse> signUpWithEmail({
     required String email,
     required String password,
+    String? fullName,
+    String? phone,
   }) async {
     try {
-      return await _client.auth.signUp(email: email, password: password);
+      return await _client.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          if (fullName != null) 'full_name': fullName,
+          if (phone != null) 'phone': phone,
+        },
+      );
     } catch (e) {
       throw ErrorMapper.from(e);
     }

@@ -43,7 +43,11 @@ abstract final class ErrorMapper {
 
     // ── 2. AuthException من Supabase ─────────────────────────────────────────
     if (error is supabase.AuthException) {
-      return const AuthException();
+      return AuthException(
+        message: error.message.isNotEmpty
+            ? error.message
+            : 'انتهت جلستك، يرجى تسجيل الدخول مجدداً',
+      );
     }
 
     // ── 3. TimeoutException (انتهى وقت الاتصال) ─────────────────────────────

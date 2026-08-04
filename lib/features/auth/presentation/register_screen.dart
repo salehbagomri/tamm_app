@@ -83,6 +83,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       final response = await repo.signUpWithEmail(
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text,
+        fullName: _nameCtrl.text.trim(),
+        phone: phoneFormatted,
       );
 
       if (response.session == null) {
@@ -133,6 +135,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           msg.contains('user_already_exists') ||
           msg.contains('already been registered')) {
         _showError('البريد الإلكتروني مسجل مسبقاً');
+      } else if (e is AppException && e.message.isNotEmpty) {
+        _showError(e.message);
       } else {
         _showError('فشل إنشاء الحساب، تأكد من صحة البيانات.');
       }
