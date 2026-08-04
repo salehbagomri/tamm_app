@@ -148,12 +148,15 @@ class AuthRepository {
 
   /// إكمال بيانات البروفايل (Onboarding)
   Future<void> completeProfile({
+    String? userId,
     required String fullName,
     required String phone,
   }) async {
     try {
-      final userId = _client.auth.currentUser?.id;
-      if (userId == null) throw const AuthException();
+      final targetUserId = userId ?? _client.auth.currentUser?.id;
+      if (targetUserId == null) {
+        throw const AuthException(message: 'لم يتم العثور على معرف المستخدم');
+      }
 
       await _client
           .from('profiles')
@@ -163,7 +166,7 @@ class AuthRepository {
             'is_complete': true,
             'updated_at': DateTime.now().toIso8601String(),
           })
-          .eq('id', userId);
+          .eq('id', targetUserId);
     } catch (e) {
       if (e is AppException) rethrow;
       throw ErrorMapper.from(e);

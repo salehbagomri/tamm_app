@@ -108,6 +108,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // ── Step 2: Complete profile ───────────────────────────────────────────
       // Phone is guaranteed unique at this point; completeProfile should succeed.
       await repo.completeProfile(
+        userId: response.user?.id,
         fullName: _nameCtrl.text.trim(),
         phone: phoneFormatted,
       );
@@ -115,8 +116,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       await FcmService.registerToken();
       if (!mounted) return;
       context.go('/customer/home');
-    } catch (e) {
-      debugPrint('Registration error: $e');
+    } catch (e, st) {
+      debugPrint('Registration error: $e\n$st');
       final msg = e.toString().toLowerCase();
 
       if (msg.contains('23505') ||
@@ -139,7 +140,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       } else if (e is AppException && e.message.isNotEmpty) {
         _showError(e.message);
       } else {
-        _showError('فشل إنشاء الحساب، تأكد من صحة البيانات.');
+        _showError('فشل إنشاء الحساب، تأكد من صحة البيانات: $e');
       }
     } finally {
       if (mounted) setState(() => _loading = false);

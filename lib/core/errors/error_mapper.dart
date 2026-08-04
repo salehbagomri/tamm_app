@@ -25,9 +25,16 @@ abstract final class ErrorMapper {
     if (error is supabase.PostgrestException) {
       final code = error.code ?? '';
       if (code == '42501' || code == '403') {
-        return const PermissionException();
+        return PermissionException(
+          message: error.message.isNotEmpty
+              ? error.message
+              : 'ليس لديك صلاحية للوصول لهذا المورد',
+        );
       }
-      return const ServerException();
+      final msg = error.message.isNotEmpty ? error.message : 'حدث خطأ في الخادم';
+      final details = error.details?.toString();
+      final fullMsg = (details != null && details.isNotEmpty) ? '$msg ($details)' : msg;
+      return ServerException(message: fullMsg);
     }
 
     // ── 1.5 StorageException من Supabase ─────────────────────────────────────
