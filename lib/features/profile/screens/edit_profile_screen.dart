@@ -43,11 +43,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _currentProfile = profile;
         _nameCtrl.text = profile.fullName;
 
-        // Remove '+967' prefix for display in input field
-        String phoneStr = profile.phone;
-        if (phoneStr.startsWith('+967')) {
-          phoneStr = phoneStr.substring(4);
-        }
+        String phoneStr = profile.phone.replaceAll(RegExp(r'^\+?967|^0'), '');
         _phoneCtrl.text = phoneStr;
         _loading = false;
         _hasChanges = false;
@@ -60,9 +56,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _checkForChanges() {
     if (_currentProfile == null) return;
 
-    final currentPhoneRaw = _currentProfile!.phone.startsWith('+967')
-        ? _currentProfile!.phone.substring(4)
-        : _currentProfile!.phone;
+    final currentPhoneRaw = _currentProfile!.phone.replaceAll(RegExp(r'^\+?967|^0'), '');
 
     final newHasChanges =
         _nameCtrl.text.trim() != _currentProfile!.fullName ||
@@ -83,11 +77,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     try {
       final repo = ref.read(authRepositoryProvider);
       final currentUserId = repo.currentUserId;
-      final phoneFormatted = '+967${_phoneCtrl.text.trim()}';
+      final phoneFormatted = _phoneCtrl.text.trim().replaceAll(RegExp(r'^\+?967|^0'), '');
 
       // Check phone uniqueness if phone changed
       if (_phoneCtrl.text.trim() !=
-          (_currentProfile?.phone.replaceFirst('+967', '') ?? '')) {
+          _currentProfile?.phone.replaceAll(RegExp(r'^\+?967|^0'), '')) {
         final exists = await Supabase.instance.client
             .from('profiles')
             .select('id')

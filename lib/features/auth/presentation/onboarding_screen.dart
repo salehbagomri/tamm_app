@@ -32,7 +32,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       final currentUserId = repo.currentUserId;
 
       // التاكد من عدم تكرار الرقم
-      final phoneFormatted = '+967${_phoneCtrl.text.trim()}';
+      final phoneFormatted = _phoneCtrl.text.trim().replaceAll(RegExp(r'^\+?967|^0'), '');
       final exists = await Supabase.instance.client
           .from('profiles')
           .select('id')

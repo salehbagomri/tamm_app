@@ -62,7 +62,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     try {
       final repo = ref.read(authRepositoryProvider);
-      final phoneFormatted = '+967${_phoneCtrl.text.trim()}';
+      final phoneFormatted = _phoneCtrl.text.trim().replaceAll(RegExp(r'^\+?967|^0'), '');
 
       // ── Step 0: Pre-flight phone uniqueness check ──────────────────────────
       // This MUST happen before signUpWithEmail so we never create an orphan
